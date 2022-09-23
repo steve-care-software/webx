@@ -5,6 +5,61 @@ import (
 	"github.com/steve-care-software/syntax/domain/bytes/grammars/values"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewChannelsBuilder creates a new channels builder
+func NewChannelsBuilder() ChannelsBuilder {
+	return createChannelsBuilder()
+}
+
+// NewChannelBuilder creates a new channel builder
+func NewChannelBuilder() ChannelBuilder {
+	return createChannelBuilder()
+}
+
+// NewChannelConditionBuilder creates a new chanel condition builder
+func NewChannelConditionBuilder() ChannelConditionBuilder {
+	return createChannelConditionBuilder()
+}
+
+// NewExternalBuilder creates a new external builder
+func NewExternalBuilder() ExternalBuilder {
+	return createExternalBuilder()
+}
+
+// NewTokenBuilder creates a new token builder
+func NewTokenBuilder() TokenBuilder {
+	return createTokenBuilder()
+}
+
+// NewSuitesBuilder creates a new suites builder
+func NewSuitesBuilder() SuitesBuilder {
+	return createSuitesBuilder()
+}
+
+// NewSuiteBuilder creates a new suite builder
+func NewSuiteBuilder() SuiteBuilder {
+	return createSuiteBuilder()
+}
+
+// NewBlockBuilder creates a new block builder
+func NewBlockBuilder() BlockBuilder {
+	return createBlockBuilder()
+}
+
+// NewLineBuilder creates a new line builder
+func NewLineBuilder() LineBuilder {
+	return createLineBuilder()
+}
+
+// NewElementBuilder creates a new element builder
+func NewElementBuilder() ElementBuilder {
+	return createElementBuilder()
+}
+
 // Builder represents a grammar builder
 type Builder interface {
 	Create() Builder
@@ -16,6 +71,7 @@ type Builder interface {
 // Grammar represents a grammar
 type Grammar interface {
 	Root() Token
+	HasChannels() bool
 	Channels() Channels
 }
 
