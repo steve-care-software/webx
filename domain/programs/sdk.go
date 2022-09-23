@@ -1,7 +1,7 @@
 package programs
 
 import (
-	"github.com/steve-care-software/logics/domain/programs/instructions"
+	"github.com/steve-care-software/syntax/domain/programs/instructions"
 )
 
 // Program represents a program

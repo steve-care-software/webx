@@ -1,8 +1,8 @@
 package trees
 
 import (
-	"github.com/steve-care-software/logics/domain/bytes/grammars"
-	"github.com/steve-care-software/logics/domain/bytes/grammars/values"
+	"github.com/steve-care-software/syntax/domain/bytes/grammars"
+	"github.com/steve-care-software/syntax/domain/bytes/grammars/values"
 )
 
 // TreeBuilder represents a tree builder

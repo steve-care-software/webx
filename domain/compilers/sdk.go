@@ -1,8 +1,8 @@
 package compilers
 
 import (
-	"github.com/steve-care-software/logics/domain/bytes/criterias"
-	"github.com/steve-care-software/logics/domain/bytes/grammars"
+	"github.com/steve-care-software/syntax/domain/bytes/criterias"
+	"github.com/steve-care-software/syntax/domain/bytes/grammars"
 )
 
 // Compiler represents a compiler

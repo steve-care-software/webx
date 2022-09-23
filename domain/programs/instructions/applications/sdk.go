@@ -1,7 +1,7 @@
 package applications
 
 import (
-	"github.com/steve-care-software/logics/domain/programs/instructions/applications/modules"
+	"github.com/steve-care-software/syntax/domain/programs/instructions/applications/modules"
 )
 
 // Application represents an application

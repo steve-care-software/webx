@@ -1,3 +1,3 @@
-module github.com/steve-care-software/logics
+module github.com/steve-care-software/syntax
 
 go 1.16

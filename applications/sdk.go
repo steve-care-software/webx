@@ -1,12 +1,12 @@
 package applications
 
 import (
-	"github.com/steve-care-software/logics/domain/bytes/criterias"
-	"github.com/steve-care-software/logics/domain/bytes/grammars"
-	"github.com/steve-care-software/logics/domain/bytes/trees"
-	"github.com/steve-care-software/logics/domain/compilers"
-	"github.com/steve-care-software/logics/domain/outputs"
-	"github.com/steve-care-software/logics/domain/programs"
+	"github.com/steve-care-software/syntax/domain/bytes/criterias"
+	"github.com/steve-care-software/syntax/domain/bytes/grammars"
+	"github.com/steve-care-software/syntax/domain/bytes/trees"
+	"github.com/steve-care-software/syntax/domain/compilers"
+	"github.com/steve-care-software/syntax/domain/outputs"
+	"github.com/steve-care-software/syntax/domain/programs"
 )
 
 // Application represents the syntax application

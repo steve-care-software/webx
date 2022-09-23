@@ -1,8 +1,8 @@
 package grammars
 
 import (
-	"github.com/steve-care-software/logics/domain/bytes/grammars/cardinalities"
-	"github.com/steve-care-software/logics/domain/bytes/grammars/values"
+	"github.com/steve-care-software/syntax/domain/bytes/grammars/cardinalities"
+	"github.com/steve-care-software/syntax/domain/bytes/grammars/values"
 )
 
 // Builder represents a grammar builder

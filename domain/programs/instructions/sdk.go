@@ -1,7 +1,7 @@
 package instructions
 
 import (
-	"github.com/steve-care-software/logics/domain/programs/instructions/applications"
+	"github.com/steve-care-software/syntax/domain/programs/instructions/applications"
 )
 
 // Instructions represents instructions
