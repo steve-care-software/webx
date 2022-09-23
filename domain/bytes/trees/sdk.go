@@ -5,11 +5,41 @@ import (
 	"github.com/steve-care-software/syntax/domain/bytes/grammars/values"
 )
 
-// TreeBuilder represents a tree builder
-type TreeBuilder interface {
-	Create() TreeBuilder
-	WithGrammar(grammar grammars.Token) TreeBuilder
-	WithBlock(block Block) TreeBuilder
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewBlockBuilder creates a new block builder
+func NewBlockBuilder() BlockBuilder {
+	return createBlockBuilder()
+}
+
+// NewLineBuilder creates a new line builder
+func NewLineBuilder() LineBuilder {
+	return createLineBuilder()
+}
+
+// NewElementsBuilder creates a new elements builder
+func NewElementsBuilder() ElementsBuilder {
+	return createElementsBuilder()
+}
+
+// NewElementBuilder creates a new element builder
+func NewElementBuilder() ElementBuilder {
+	return createElementBuilder()
+}
+
+// NewContentBuilder creates a new content builder
+func NewContentBuilder() ContentBuilder {
+	return createContentBuilder()
+}
+
+// Builder represents a tree builder
+type Builder interface {
+	Create() Builder
+	WithGrammar(grammar grammars.Token) Builder
+	WithBlock(block Block) Builder
 	Now() (Tree, error)
 }
 
@@ -57,8 +87,7 @@ type ElementsBuilder interface {
 
 // Elements represents elements
 type Elements interface {
-	List() []Element
-	Value(isChannelAccepted bool) []byte
+	List(isChannelsAccepted bool) []Element
 }
 
 // ElementBuilder represents an element builder
