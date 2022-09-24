@@ -1,11 +1,16 @@
 package criterias
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represents a criteria builder
 type Builder interface {
 	Create() Builder
 	WithName(name string) Builder
 	WithIndex(index uint) Builder
-	WithRequirement(requirement uint) Builder
+	WithRequirement(requirement []uint) Builder
 	WithChild(child Criteria) Builder
 	Now() (Criteria, error)
 }
@@ -13,9 +18,14 @@ type Builder interface {
 // Criteria represents a criteria
 type Criteria interface {
 	Name() string
-	Index() bool
-	HasRequirement() bool
-	Requirement() *uint
-	HasChild() bool
+	Index() uint
+	Content() Content
+}
+
+// Content represents a criteria's content
+type Content interface {
+	IsRequirement() bool
+	Requirement() []uint
+	IsChild() bool
 	Child() Criteria
 }
