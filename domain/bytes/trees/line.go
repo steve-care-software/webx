@@ -32,6 +32,6 @@ func (obj *line) Elements() Elements {
 // IsSuccessful returns true if successful, false otherwise
 func (obj *line) IsSuccessful() bool {
 	requested := obj.grammar.Elements()
-	elementsWithoutChannels := obj.elements.List(false)
-	return len(requested) == len(elementsWithoutChannels)
+	elements := obj.elements.List()
+	return len(requested) == len(elements)
 }

@@ -4,7 +4,7 @@ import "errors"
 
 type builder struct {
 	name    string
-	pNumber *uint8
+	pNumber *byte
 }
 
 func createBuilder() Builder {
@@ -28,7 +28,7 @@ func (app *builder) WithName(name string) Builder {
 }
 
 // WithNumber adds a number to the builder
-func (app *builder) WithNumber(number uint8) Builder {
+func (app *builder) WithNumber(number byte) Builder {
 	app.pNumber = &number
 	return app
 }

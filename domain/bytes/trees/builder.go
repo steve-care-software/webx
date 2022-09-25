@@ -1,20 +1,14 @@
 package trees
 
-import (
-	"errors"
-
-	"github.com/steve-care-software/syntax/domain/bytes/grammars"
-)
+import "errors"
 
 type builder struct {
-	grammar grammars.Token
-	block   Block
+	list []Tree
 }
 
 func createBuilder() Builder {
 	out := builder{
-		grammar: nil,
-		block:   nil,
+		list: nil,
 	}
 
 	return &out
@@ -25,27 +19,21 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithGrammar adds a grammar to the builder
-func (app *builder) WithGrammar(grammar grammars.Token) Builder {
-	app.grammar = grammar
+// WithList adds a list to the builder
+func (app *builder) WithList(list []Tree) Builder {
+	app.list = list
 	return app
 }
 
-// WithBlock adds a block to the builder
-func (app *builder) WithBlock(block Block) Builder {
-	app.block = block
-	return app
-}
-
-// Now builds a new Tree instance
-func (app *builder) Now() (Tree, error) {
-	if app.grammar == nil {
-		return nil, errors.New("the grammar is mandatory in order to build a Tree instance")
+// Now builds a new Trees instance
+func (app *builder) Now() (Trees, error) {
+	if app.list != nil && len(app.list) <= 0 {
+		app.list = nil
 	}
 
-	if app.block == nil {
-		return nil, errors.New("the block is mandatory in order to build a Tree instance")
+	if app.list == nil {
+		return nil, errors.New("there must be at least 1 Tree in order to build a Trees instance")
 	}
 
-	return createTree(app.grammar, app.block), nil
+	return createTrees(app.list), nil
 }

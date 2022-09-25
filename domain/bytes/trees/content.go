@@ -1,14 +1,12 @@
 package trees
 
-import "github.com/steve-care-software/syntax/domain/bytes/grammars/values"
-
 type content struct {
-	value values.Value
+	value Value
 	tree  Tree
 }
 
 func createContentWithValue(
-	value values.Value,
+	value Value,
 ) Content {
 	return createContentInternally(value, nil)
 }
@@ -20,7 +18,7 @@ func createContentWithTree(
 }
 
 func createContentInternally(
-	value values.Value,
+	value Value,
 	tree Tree,
 ) Content {
 	out := content{
@@ -37,7 +35,7 @@ func (obj *content) IsValue() bool {
 }
 
 // Value returns the value if any
-func (obj *content) Value() values.Value {
+func (obj *content) Value() Value {
 	return obj.value
 }
 

@@ -9,12 +9,12 @@ func NewBuilder() Builder {
 type Builder interface {
 	Create() Builder
 	WithName(name string) Builder
-	WithNumber(number uint8) Builder
+	WithNumber(number byte) Builder
 	Now() (Value, error)
 }
 
 // Value represents a value
 type Value interface {
 	Name() string
-	Number() uint8
+	Number() byte
 }

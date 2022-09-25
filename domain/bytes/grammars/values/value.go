@@ -2,12 +2,12 @@ package values
 
 type value struct {
 	name   string
-	number uint8
+	number byte
 }
 
 func createValue(
 	name string,
-	number uint8,
+	number byte,
 ) Value {
 	out := value{
 		name:   name,
@@ -23,6 +23,6 @@ func (obj *value) Name() string {
 }
 
 // Number returns the number
-func (obj *value) Number() uint8 {
+func (obj *value) Number() byte {
 	return obj.number
 }

@@ -10,6 +10,11 @@ func NewBuilder() Builder {
 	return createBuilder()
 }
 
+// NewTreeBuilder creates a new tree builder instance
+func NewTreeBuilder() TreeBuilder {
+	return createTreeBuilder()
+}
+
 // NewBlockBuilder creates a new block builder
 func NewBlockBuilder() BlockBuilder {
 	return createBlockBuilder()
@@ -35,11 +40,23 @@ func NewContentBuilder() ContentBuilder {
 	return createContentBuilder()
 }
 
-// Builder represents a tree builder
+// Builder represents a trees builder
 type Builder interface {
 	Create() Builder
-	WithGrammar(grammar grammars.Token) Builder
-	WithBlock(block Block) Builder
+	WithList(list []Tree) Builder
+	Now() (Trees, error)
+}
+
+// Trees represents a trees
+type Trees interface {
+	List() []Tree
+}
+
+// TreeBuilder represents a tree builder
+type TreeBuilder interface {
+	Create() TreeBuilder
+	WithGrammar(grammar grammars.Token) TreeBuilder
+	WithBlock(block Block) TreeBuilder
 	Now() (Tree, error)
 }
 
@@ -87,7 +104,7 @@ type ElementsBuilder interface {
 
 // Elements represents elements
 type Elements interface {
-	List(isChannelsAccepted bool) []Element
+	List() []Element
 }
 
 // ElementBuilder represents an element builder
@@ -96,7 +113,6 @@ type ElementBuilder interface {
 	WithGrammar(grammar grammars.Element) ElementBuilder
 	WithContent(content Content) ElementBuilder
 	WithAmount(amount uint) ElementBuilder
-	IsChannel() ElementBuilder
 	Now() (Element, error)
 }
 
@@ -105,13 +121,12 @@ type Element interface {
 	Grammar() grammars.Element
 	Content() Content
 	Amount() uint
-	IsChannel() bool
 }
 
 // ContentBuilder represents a content builder
 type ContentBuilder interface {
 	Create() ContentBuilder
-	WithValue(value values.Value) ContentBuilder
+	WithValue(value Value) ContentBuilder
 	WithTree(tree Tree) ContentBuilder
 	Now() (Content, error)
 }
@@ -119,7 +134,22 @@ type ContentBuilder interface {
 // Content represents an element token
 type Content interface {
 	IsValue() bool
-	Value() values.Value
+	Value() Value
 	IsTree() bool
 	Tree() Tree
+}
+
+// ValueBuilder represents a value builder
+type ValueBuilder interface {
+	Create() ValueBuilder
+	WithContent(content values.Value) ValueBuilder
+	WithPrefix(prefix Trees) ValueBuilder
+	Now() (Value, error)
+}
+
+// Value represents a value
+type Value interface {
+	Content() values.Value
+	HasPrefix() bool
+	Prefix() Trees
 }

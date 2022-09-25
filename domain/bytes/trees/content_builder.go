@@ -2,12 +2,10 @@ package trees
 
 import (
 	"errors"
-
-	"github.com/steve-care-software/syntax/domain/bytes/grammars/values"
 )
 
 type contentBuilder struct {
-	value values.Value
+	value Value
 	tree  Tree
 }
 
@@ -26,7 +24,7 @@ func (app *contentBuilder) Create() ContentBuilder {
 }
 
 // WithValue adds a value to the builder
-func (app *contentBuilder) WithValue(value values.Value) ContentBuilder {
+func (app *contentBuilder) WithValue(value Value) ContentBuilder {
 	app.value = value
 	return app
 }

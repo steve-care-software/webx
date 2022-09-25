@@ -35,14 +35,5 @@ func (app *elementsBuilder) Now() (Elements, error) {
 		return nil, errors.New("there must be at least 1 Element in order to build a Elements instance")
 	}
 
-	listWithoutChannels := []Element{}
-	for _, oneElement := range app.list {
-		if oneElement.IsChannel() {
-			continue
-		}
-
-		listWithoutChannels = append(listWithoutChannels, oneElement)
-	}
-
-	return createElements(app.list, listWithoutChannels), nil
+	return createElements(app.list), nil
 }
