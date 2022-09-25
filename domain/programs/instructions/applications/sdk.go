@@ -4,6 +4,31 @@ import (
 	"github.com/steve-care-software/syntax/domain/programs/instructions/applications/modules"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewAttachmentsBuilder creates a new attachments builder
+func NewAttachmentsBuilder() AttachmentsBuilder {
+	return createAttachmentsBuilder()
+}
+
+// NewAttachmentBuilder creates a new attachment builder
+func NewAttachmentBuilder() AttachmentBuilder {
+	return createAttachmentBuilder()
+}
+
+// NewAssignmentBuilder creates a new assignment builder
+func NewAssignmentBuilder() AssignmentBuilder {
+	return createAssignmentBuilder()
+}
+
+// NewValueBuilder creates a new value builder
+func NewValueBuilder() ValueBuilder {
+	return createValueBuilder()
+}
+
 // Builder represents an application builder
 type Builder interface {
 	Create() Builder
@@ -51,24 +76,31 @@ type Attachment interface {
 type AssignmentBuilder interface {
 	Create() AssignmentBuilder
 	WithName(name string) AssignmentBuilder
-	WithInput(input string) AssignmentBuilder
-	WithValue(value string) AssignmentBuilder
-	WithExecution(execution Application) AssignmentBuilder
+	WithValue(value Value) AssignmentBuilder
 	Now() (Assignment, error)
 }
 
 // Assignment repesents an assignment
 type Assignment interface {
 	Name() string
-	Content() AssignmentContent
+	Value() Value
 }
 
-// AssignmentContent represents an assignment content
-type AssignmentContent interface {
+// ValueBuilder represents a value builder
+type ValueBuilder interface {
+	Create() ValueBuilder
+	WithInput(input string) ValueBuilder
+	WithString(str string) ValueBuilder
+	WithExecution(execution Application) ValueBuilder
+	Now() (Value, error)
+}
+
+// Value represents a value
+type Value interface {
 	IsInput() bool
 	Input() string
-	IsValue() bool
-	Value() string
+	IsString() bool
+	String() string
 	IsExecution() bool
 	Execution() Application
 }

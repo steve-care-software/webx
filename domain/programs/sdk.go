@@ -4,6 +4,11 @@ import (
 	"github.com/steve-care-software/syntax/domain/programs/instructions"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represents a program builder
 type Builder interface {
 	Create() Builder

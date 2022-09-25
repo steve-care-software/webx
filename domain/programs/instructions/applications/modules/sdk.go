@@ -1,7 +1,12 @@
 package modules
 
 // ExecuteFn represents the execute func
-type ExecuteFn func(input map[string]interface{}) (interface{}, error)
+type ExecuteFn func(input map[string]interface{}, currentPath string) (interface{}, error)
+
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
 
 // Builder creates a new module builder
 type Builder interface {
