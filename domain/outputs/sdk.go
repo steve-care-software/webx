@@ -1,16 +1,26 @@
 package outputs
 
+// NewBuilder creates a new buiklder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewVariableBuilder creates a new variable builder
+func NewVariableBuilder() VariableBuilder {
+	return createVariableBuilder()
+}
+
 // Builder represents an output builder
 type Builder interface {
 	Create() Builder
-	WithVariables(variables []Variable) Builder
+	WithList(list []Variable) Builder
 	Now() (Output, error)
 }
 
 // Output represents an output
 type Output interface {
 	List() []Variable
-	Find(variable string) (Variable, error)
+	Find(name string) (Variable, error)
 }
 
 // VariableBuilder represents a variable builder
