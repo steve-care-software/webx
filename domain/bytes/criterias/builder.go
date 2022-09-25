@@ -5,7 +5,7 @@ import "errors"
 type builder struct {
 	name        string
 	pIndex      *uint
-	requirement []uint
+	requirement []byte
 	child       Criteria
 }
 
@@ -38,7 +38,7 @@ func (app *builder) WithIndex(index uint) Builder {
 }
 
 // WithRequirement adds a requirement to the builder
-func (app *builder) WithRequirement(requirement []uint) Builder {
+func (app *builder) WithRequirement(requirement []byte) Builder {
 	app.requirement = requirement
 	return app
 }

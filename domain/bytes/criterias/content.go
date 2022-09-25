@@ -1,12 +1,12 @@
 package criterias
 
 type content struct {
-	requirement []uint
+	requirement []byte
 	child       Criteria
 }
 
 func createContentWithRequirement(
-	requirement []uint,
+	requirement []byte,
 ) Content {
 	return createContentInternally(requirement, nil)
 }
@@ -18,7 +18,7 @@ func createContentWithChild(
 }
 
 func createContentInternally(
-	requirement []uint,
+	requirement []byte,
 	child Criteria,
 ) Content {
 	out := content{
@@ -35,7 +35,7 @@ func (obj *content) IsRequirement() bool {
 }
 
 // Requirement returns the requirement, if any
-func (obj *content) Requirement() []uint {
+func (obj *content) Requirement() []byte {
 	return obj.requirement
 }
 
