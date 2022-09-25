@@ -68,7 +68,18 @@ func (app *application) token(token grammars.Token, channels grammars.Channels, 
 		return nil, nil, err
 	}
 
-	ins, err := app.treeBuilder.Create().WithGrammar(token).WithBlock(block).Now()
+	builder := app.treeBuilder.Create().WithGrammar(token).WithBlock(block)
+	if !isInChannel {
+		suffix, rem, err := app.channels(channels, prevData, remaining)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		builder.WithSuffix(suffix)
+		remaining = rem
+	}
+
+	ins, err := builder.Now()
 	if err != nil {
 		return nil, nil, err
 	}

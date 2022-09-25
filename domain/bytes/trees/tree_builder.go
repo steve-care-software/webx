@@ -9,12 +9,14 @@ import (
 type treeBuilder struct {
 	grammar grammars.Token
 	block   Block
+	suffix  Trees
 }
 
 func createTreeBuilder() TreeBuilder {
 	out := treeBuilder{
 		grammar: nil,
 		block:   nil,
+		suffix:  nil,
 	}
 
 	return &out
@@ -37,6 +39,12 @@ func (app *treeBuilder) WithBlock(block Block) TreeBuilder {
 	return app
 }
 
+// WithSuffix adds a suffix to the builder
+func (app *treeBuilder) WithSuffix(suffix Trees) TreeBuilder {
+	app.suffix = suffix
+	return app
+}
+
 // Now builds a new Tree instance
 func (app *treeBuilder) Now() (Tree, error) {
 	if app.grammar == nil {
@@ -45,6 +53,10 @@ func (app *treeBuilder) Now() (Tree, error) {
 
 	if app.block == nil {
 		return nil, errors.New("the block is mandatory in order to build a Tree instance")
+	}
+
+	if app.suffix != nil {
+		return createTreeWithSuffix(app.grammar, app.block, app.suffix), nil
 	}
 
 	return createTree(app.grammar, app.block), nil

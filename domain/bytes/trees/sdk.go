@@ -57,6 +57,7 @@ type TreeBuilder interface {
 	Create() TreeBuilder
 	WithGrammar(grammar grammars.Token) TreeBuilder
 	WithBlock(block Block) TreeBuilder
+	WithSuffix(suffix Trees) TreeBuilder
 	Now() (Tree, error)
 }
 
@@ -64,6 +65,8 @@ type TreeBuilder interface {
 type Tree interface {
 	Grammar() grammars.Token
 	Block() Block
+	HasSuffix() bool
+	Suffix() Trees
 }
 
 // BlockBuilder represents a block builder
