@@ -4,20 +4,30 @@ import (
 	"github.com/steve-care-software/syntax/domain/programs/instructions/applications"
 )
 
+// Builder represents an instructions builder
+type Builder interface {
+	Create() Builder
+	WithList(list []Instruction) Builder
+	Now() (Instructions, error)
+}
+
 // Instructions represents instructions
 type Instructions interface {
 	List() []Instruction
-	Compose() string
+}
+
+// InstructionBuilder represents an instruction builder
+type InstructionBuilder interface {
+	Create() InstructionBuilder
+	WithAssignment(assignment applications.Assignment) InstructionBuilder
+	WithExecution(execution applications.Application) InstructionBuilder
+	WithDelete(delete applications.Application) InstructionBuilder
+	WithSetPath(setPath string) InstructionBuilder
+	Now() (Instruction, error)
 }
 
 // Instruction represents an instruction
 type Instruction interface {
-	Content() Content
-	Compose() string
-}
-
-// Content represents an instruction content
-type Content interface {
 	IsAssignment() bool
 	Assignment() applications.Assignment
 	IsExecution() bool

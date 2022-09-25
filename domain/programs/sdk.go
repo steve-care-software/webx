@@ -4,12 +4,20 @@ import (
 	"github.com/steve-care-software/syntax/domain/programs/instructions"
 )
 
+// Builder represents a program builder
+type Builder interface {
+	Create() Builder
+	WithInstructions(instructions instructions.Instructions) Builder
+	WithInputs(inputs []string) Builder
+	WithOutputs(outputs []string) Builder
+	Now() (Program, error)
+}
+
 // Program represents a program
 type Program interface {
-	Compose() string
 	Instructions() instructions.Instructions
-	HasInput() bool
-	Input() []string
-	HasOutput() bool
-	Output() []string
+	HasInputs() bool
+	Inputs() []string
+	HasOutputs() bool
+	Outputs() []string
 }
