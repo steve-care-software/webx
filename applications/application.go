@@ -1,6 +1,7 @@
 package applications
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"strings"
@@ -421,8 +422,49 @@ func (app *application) Combine(trees []trees.Tree, includeChannels bool) ([]byt
 	return output, nil
 }
 
-// Compile compiles a script into a program using the provided compiler
-func (app *application) Compile(compiler compilers.Compiler, script []byte) (programs.Program, error) {
+// Compile compiles a script into a program's instructions using the provided compiler
+func (app *application) Compile(compiler compilers.Compiler, script []byte) ([]byte, []byte, error) {
+	output := []byte{}
+	remaining := script
+	elements := compiler.Elements()
+	for _, oneElement := range elements {
+		grammar := oneElement.Grammar()
+		tree, rem, err := app.Tokenize(grammar, remaining)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		composition := oneElement.Composition()
+		prefix := composition.Prefix()
+		suffix := composition.Suffix()
+		pattern := composition.Pattern()
+		replacements := composition.Replacements().List()
+		for _, oneReplacement := range replacements {
+			name := oneReplacement.Name()
+			criteria := oneReplacement.Criteria()
+			data, err := app.Extract(criteria, tree)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			variable := bytes.Join([][]byte{
+				prefix,
+				name,
+				suffix,
+			}, []byte{})
+
+			pattern = bytes.Replace(pattern, variable, data, -1)
+		}
+
+		output = append(output, pattern...)
+		remaining = rem
+	}
+
+	return output, remaining, nil
+}
+
+// Program converts instructions to a program instance
+func (app *application) Program(instructions string) (programs.Program, error) {
 	return nil, nil
 }
 
