@@ -412,8 +412,13 @@ func (app *application) extractWithPath(path []string, criteria criterias.Criter
 }
 
 // Combine combines the data of trees
-func (app *application) Combine(trees []trees.Tree) ([]byte, error) {
-	return nil, nil
+func (app *application) Combine(trees []trees.Tree, includeChannels bool) ([]byte, error) {
+	output := []byte{}
+	for _, oneTree := range trees {
+		output = append(output, oneTree.Bytes(includeChannels)...)
+	}
+
+	return output, nil
 }
 
 // Compile compiles a script into a program using the provided compiler
