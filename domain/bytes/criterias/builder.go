@@ -3,18 +3,18 @@ package criterias
 import "errors"
 
 type builder struct {
-	name        string
-	pIndex      *uint
-	requirement []byte
-	child       Criteria
+	name            string
+	pIndex          *uint
+	includeChannels bool
+	child           Criteria
 }
 
 func createBuilder() Builder {
 	out := builder{
-		name:        "",
-		pIndex:      nil,
-		requirement: nil,
-		child:       nil,
+		name:            "",
+		pIndex:          nil,
+		includeChannels: false,
+		child:           nil,
 	}
 
 	return &out
@@ -37,9 +37,9 @@ func (app *builder) WithIndex(index uint) Builder {
 	return app
 }
 
-// WithRequirement adds a requirement to the builder
-func (app *builder) WithRequirement(requirement []byte) Builder {
-	app.requirement = requirement
+// IncludeChannels flags the builder as include channels
+func (app *builder) IncludeChannels() Builder {
+	app.includeChannels = true
 	return app
 }
 
@@ -59,19 +59,9 @@ func (app *builder) Now() (Criteria, error) {
 		return nil, errors.New("the index is mandatory in order to build a Criteria instance")
 	}
 
-	if app.requirement != nil && len(app.requirement) <= 0 {
-		app.requirement = nil
-	}
-
-	if app.requirement != nil {
-		content := createContentWithRequirement(app.requirement)
-		return createCriteria(app.name, *app.pIndex, content), nil
-	}
-
 	if app.child != nil {
-		content := createContentWithChild(app.child)
-		return createCriteria(app.name, *app.pIndex, content), nil
+		return createCriteriaWithChild(app.name, *app.pIndex, app.includeChannels, app.child), nil
 	}
 
-	return nil, errors.New("the Criteria is invalid")
+	return createCriteria(app.name, *app.pIndex, app.includeChannels), nil
 }

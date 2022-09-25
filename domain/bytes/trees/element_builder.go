@@ -7,18 +7,16 @@ import (
 )
 
 type elementBuilder struct {
-	grammar   grammars.Element
-	content   Content
-	amount    uint
-	isChannel bool
+	grammar grammars.Element
+	content Content
+	amount  uint
 }
 
 func createElementBuilder() ElementBuilder {
 	out := elementBuilder{
-		grammar:   nil,
-		content:   nil,
-		amount:    0,
-		isChannel: false,
+		grammar: nil,
+		content: nil,
+		amount:  0,
 	}
 
 	return &out
@@ -47,12 +45,6 @@ func (app *elementBuilder) WithAmount(amount uint) ElementBuilder {
 	return app
 }
 
-// IsChannel flags the builder as a channel
-func (app *elementBuilder) IsChannel() ElementBuilder {
-	app.isChannel = true
-	return app
-}
-
 // Now builds a new Element instance
 func (app *elementBuilder) Now() (Element, error) {
 	if app.grammar == nil {
@@ -67,5 +59,5 @@ func (app *elementBuilder) Now() (Element, error) {
 		return nil, errors.New("the amount must be greater than zero (0) in order to build an Element instance")
 	}
 
-	return createElement(app.grammar, app.content, app.amount, app.isChannel), nil
+	return createElement(app.grammar, app.content, app.amount), nil
 }

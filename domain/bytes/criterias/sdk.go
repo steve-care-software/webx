@@ -10,8 +10,8 @@ type Builder interface {
 	Create() Builder
 	WithName(name string) Builder
 	WithIndex(index uint) Builder
-	WithRequirement(requirement []byte) Builder
 	WithChild(child Criteria) Builder
+	IncludeChannels() Builder
 	Now() (Criteria, error)
 }
 
@@ -19,13 +19,7 @@ type Builder interface {
 type Criteria interface {
 	Name() string
 	Index() uint
-	Content() Content
-}
-
-// Content represents a criteria's content
-type Content interface {
-	IsRequirement() bool
-	Requirement() []byte
-	IsChild() bool
+	IncludeChannels() bool
+	HasChild() bool
 	Child() Criteria
 }

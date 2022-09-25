@@ -49,6 +49,7 @@ type Builder interface {
 
 // Trees represents a trees
 type Trees interface {
+	Bytes(includeChannels bool) []byte
 	List() []Tree
 }
 
@@ -63,6 +64,8 @@ type TreeBuilder interface {
 
 // Tree represents a tree
 type Tree interface {
+	Fetch(name string, elementIndex uint) (Tree, Element, error)
+	Bytes(includeChannels bool) []byte
 	Grammar() grammars.Token
 	Block() Block
 	HasSuffix() bool
@@ -121,6 +124,8 @@ type ElementBuilder interface {
 
 // Element represents an element
 type Element interface {
+	Fetch(name string, elementIndex uint) (Tree, Element, error)
+	Bytes(includeChannels bool) []byte
 	Grammar() grammars.Element
 	Content() Content
 	Amount() uint

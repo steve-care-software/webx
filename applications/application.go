@@ -3,6 +3,7 @@ package applications
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/steve-care-software/syntax/domain/bytes/criterias"
 	"github.com/steve-care-software/syntax/domain/bytes/grammars"
@@ -381,7 +382,33 @@ func (app *application) channelCondition(condition grammars.ChannelCondition, pr
 
 // Extract extracts data from a tree using the provided criteria
 func (app *application) Extract(criteria criterias.Criteria, tree trees.Tree) ([]byte, error) {
-	return nil, nil
+	return app.extractWithPath([]string{}, criteria, tree)
+}
+
+func (app *application) extractWithPath(path []string, criteria criterias.Criteria, tree trees.Tree) ([]byte, error) {
+	name := criteria.Name()
+	index := criteria.Index()
+	subTree, element, err := tree.Fetch(name, index)
+	if err != nil {
+		return nil, err
+	}
+
+	includeChannels := criteria.IncludeChannels()
+	if subTree != nil {
+		if criteria.HasChild() {
+			child := criteria.Child()
+			return app.extractWithPath(append(path, name), child, subTree)
+		}
+
+		return subTree.Bytes(includeChannels), nil
+	}
+
+	if criteria.HasChild() {
+		str := fmt.Sprintf("the extraction did NOT succeed because it found an element (path: %s) but the criteria had a child", strings.Join(append(path, name), "/"))
+		return nil, errors.New(str)
+	}
+
+	return element.Bytes(includeChannels), nil
 }
 
 // Combine combines the data of trees
