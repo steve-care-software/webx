@@ -3,18 +3,25 @@ package connections
 import (
 	uuid "github.com/satori/go.uuid"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/encryptions/keys"
-	"github.com/steve-care-software/syntax/domain/identity/publics"
 )
 
 type connection struct {
 	id         uuid.UUID
-	public     publics.Public
+	public     uuid.UUID
 	encryption keys.PrivateKey
 }
 
 func createConnection(
 	id uuid.UUID,
-	public publics.Public,
+	public uuid.UUID,
+	encryption keys.PrivateKey,
+) Connection {
+	return createConnectionInternally(id, public, encryption)
+}
+
+func createConnectionInternally(
+	id uuid.UUID,
+	public uuid.UUID,
 	encryption keys.PrivateKey,
 ) Connection {
 	out := connection{
@@ -32,7 +39,7 @@ func (obj *connection) ID() uuid.UUID {
 }
 
 // Public returns the public
-func (obj *connection) Public() publics.Public {
+func (obj *connection) Public() uuid.UUID {
 	return obj.public
 }
 

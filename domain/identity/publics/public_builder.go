@@ -4,27 +4,33 @@ import (
 	"errors"
 
 	uuid "github.com/satori/go.uuid"
+	"github.com/steve-care-software/syntax/domain/identity/connections"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/encryptions/keys"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/hash"
+	"github.com/steve-care-software/syntax/domain/identity/publics/assets"
 )
 
 type publicBuilder struct {
-	pID        *uuid.UUID
-	name       string
-	encryption keys.PublicKey
-	signature  hash.Hash
-	host       string
-	pPort      *uint
+	pID         *uuid.UUID
+	name        string
+	encryption  keys.PublicKey
+	signature   hash.Hash
+	host        string
+	pPort       *uint
+	connections connections.Connections
+	assets      assets.Assets
 }
 
 func createPublicBuilder() PublicBuilder {
 	out := publicBuilder{
-		pID:        nil,
-		name:       "",
-		encryption: nil,
-		signature:  nil,
-		host:       "",
-		pPort:      nil,
+		pID:         nil,
+		name:        "",
+		encryption:  nil,
+		signature:   nil,
+		host:        "",
+		pPort:       nil,
+		connections: nil,
+		assets:      nil,
 	}
 
 	return &out
@@ -71,6 +77,18 @@ func (app *publicBuilder) WithPort(port uint) PublicBuilder {
 	return app
 }
 
+// WithConnections adds a connection to the builder
+func (app *publicBuilder) WithConnections(connections connections.Connections) PublicBuilder {
+	app.connections = connections
+	return app
+}
+
+// WithAssets add assets to the builder
+func (app *publicBuilder) WithAssets(assets assets.Assets) PublicBuilder {
+	app.assets = assets
+	return app
+}
+
 // Now builds a new Public instance
 func (app *publicBuilder) Now() (Public, error) {
 	if app.pID == nil {
@@ -95,6 +113,18 @@ func (app *publicBuilder) Now() (Public, error) {
 
 	if app.pPort == nil {
 		return nil, errors.New("the port is mandatory in order to build a Public instance")
+	}
+
+	if app.connections != nil && app.assets != nil {
+		return createPublicWithConnectionsAndAssets(*app.pID, app.name, app.encryption, app.signature, app.host, *app.pPort, app.connections, app.assets), nil
+	}
+
+	if app.connections != nil {
+		return createPublicWithConnections(*app.pID, app.name, app.encryption, app.signature, app.host, *app.pPort, app.connections), nil
+	}
+
+	if app.assets != nil {
+		return createPublicWithAssets(*app.pID, app.name, app.encryption, app.signature, app.host, *app.pPort, app.assets), nil
 	}
 
 	return createPublic(*app.pID, app.name, app.encryption, app.signature, app.host, *app.pPort), nil

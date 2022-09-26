@@ -40,6 +40,9 @@ type application struct {
 	identityBuilder     identity.Builder
 	identityRepository  identity.Repository
 	identityService     identity.Service
+	publicBuilder       publics.PublicBuilder
+	publicRepository    publics.Repository
+	publicService       publics.Service
 	name                string
 	password            []byte
 	genesisRingSize     uint
@@ -61,6 +64,9 @@ func createAppliationInternally(
 	identityBuilder identity.Builder,
 	identityRepository identity.Repository,
 	identityService identity.Service,
+	publicBuilder publics.PublicBuilder,
+	publicRepository publics.Repository,
+	publicService publics.Service,
 	name string,
 	password []byte,
 	genesisRingSize uint,
@@ -81,6 +87,9 @@ func createAppliationInternally(
 		identityBuilder:     identityBuilder,
 		identityRepository:  identityRepository,
 		identityService:     identityService,
+		publicBuilder:       publicBuilder,
+		publicRepository:    publicRepository,
+		publicService:       publicService,
 		name:                name,
 		password:            password,
 		genesisRingSize:     genesisRingSize,
@@ -105,52 +114,6 @@ func (app *application) Delete() error {
 	return app.identityService.Delete(identity, app.password)
 }
 
-// Connect connects with a public connection
-func (app *application) Connect(connection publics.Public) error {
-	identity, err := app.Retrieve()
-	if err != nil {
-		return err
-	}
-
-	list := []connections.Connection{}
-	if identity.HasConnections() {
-		list = identity.Connections().List()
-	}
-
-	connID := uuid.NewV4()
-	pk, err := app.encryptionPKFactory.Create()
-	if err != nil {
-		return err
-	}
-
-	conn, err := app.connectionBuilder.Create().WithID(connID).WithPublic(connection).WithEncryption(pk).Now()
-	if err != nil {
-		return err
-	}
-
-	list = append(list, conn)
-	connections, err := app.connectionsBuilder.Create().WithList(list).Now()
-	if err != nil {
-		return err
-	}
-
-	id := identity.ID()
-	public := identity.Public()
-	sigPK := identity.PrivateKey()
-	builder := app.identityBuilder.Create().WithID(id).WithPublic(public).WithPrivateKey(sigPK).WithConnections(connections)
-	if identity.HasWallets() {
-		wallets := identity.Wallets()
-		builder.WithWallets(wallets)
-	}
-
-	updated, err := builder.Now()
-	if err != nil {
-		return err
-	}
-
-	return app.identityService.Save(updated, app.password)
-}
-
 // Disconnect disconnects from a public connection
 func (app *application) Disconnect(id uuid.UUID) error {
 	identity, err := app.Retrieve()
@@ -158,19 +121,29 @@ func (app *application) Disconnect(id uuid.UUID) error {
 		return err
 	}
 
-	list := []connections.Connection{}
-	if identity.HasConnections() {
-		list = identity.Connections().ListExcept(id)
+	public, err := app.publicRepository.RetrieveByID(id)
+	if err != nil {
+		return err
 	}
 
-	identityID := identity.ID()
-	public := identity.Public()
-	sigPK := identity.PrivateKey()
-	builder := app.identityBuilder.Create().WithID(identityID).WithPublic(public).WithPrivateKey(sigPK)
-	if identity.HasWallets() {
-		wallets := identity.Wallets()
-		builder.WithWallets(wallets)
+	list := []connections.Connection{}
+	if identity.Public().HasConnections() {
+		list = identity.Public().Connections().ListExcept(id)
 	}
+
+	identityPublic := identity.Public()
+	identityPublicID := identityPublic.ID()
+	identityPublicName := identityPublic.Name()
+	identityPublicEncPubKey := identityPublic.Encryption()
+	identityPublicSigHash := identityPublic.Signature()
+	identityPublicHost := identityPublic.Host()
+	identityPublicPort := identityPublic.Port()
+	publicBuilder := app.publicBuilder.Create().WithID(identityPublicID).
+		WithName(identityPublicName).
+		WithEncryption(identityPublicEncPubKey).
+		WithSignature(identityPublicSigHash).
+		WithHost(identityPublicHost).
+		WithPort(identityPublicPort)
 
 	if len(list) > 0 {
 		connections, err := app.connectionsBuilder.Create().WithList(list).Now()
@@ -178,10 +151,33 @@ func (app *application) Disconnect(id uuid.UUID) error {
 			return err
 		}
 
-		builder.WithConnections(connections)
+		publicBuilder.WithConnections(connections)
+	}
+
+	if identityPublic.HasAssets() {
+		assets := identityPublic.Assets()
+		publicBuilder.WithAssets(assets)
+	}
+
+	updatedIdentityPublic, err := publicBuilder.Now()
+	if err != nil {
+		return err
+	}
+
+	identityID := identity.ID()
+	sigPK := identity.PrivateKey()
+	builder := app.identityBuilder.Create().WithID(identityID).WithPublic(updatedIdentityPublic).WithPrivateKey(sigPK)
+	if identity.HasWallets() {
+		wallets := identity.Wallets()
+		builder.WithWallets(wallets)
 	}
 
 	updated, err := builder.Now()
+	if err != nil {
+		return err
+	}
+
+	err = app.publicService.Delete(public)
 	if err != nil {
 		return err
 	}
@@ -388,13 +384,13 @@ func (app *application) updateWallet(identity identities.Identity, updatedWallet
 	public := identity.Public()
 	sigPK := identity.PrivateKey()
 
-	builder := app.identityBuilder.Create().WithID(identityID).WithPublic(public).WithPrivateKey(sigPK).WithWallets(updatedWallets)
-	if identity.HasConnections() {
-		connections := identity.Connections()
-		builder.WithConnections(connections)
-	}
+	updated, err := app.identityBuilder.Create().
+		WithID(identityID).
+		WithPublic(public).
+		WithPrivateKey(sigPK).
+		WithWallets(updatedWallets).
+		Now()
 
-	updated, err := builder.Now()
 	if err != nil {
 		return err
 	}

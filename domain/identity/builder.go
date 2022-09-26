@@ -4,27 +4,24 @@ import (
 	"errors"
 
 	uuid "github.com/satori/go.uuid"
-	"github.com/steve-care-software/syntax/domain/identity/connections"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/signatures"
 	"github.com/steve-care-software/syntax/domain/identity/publics"
 	"github.com/steve-care-software/syntax/domain/identity/wallets"
 )
 
 type builder struct {
-	pID         *uuid.UUID
-	public      publics.Public
-	pk          signatures.PrivateKey
-	connections connections.Connections
-	wallets     wallets.Wallets
+	pID     *uuid.UUID
+	public  publics.Public
+	pk      signatures.PrivateKey
+	wallets wallets.Wallets
 }
 
 func createBuilder() Builder {
 	out := builder{
-		pID:         nil,
-		public:      nil,
-		pk:          nil,
-		connections: nil,
-		wallets:     nil,
+		pID:     nil,
+		public:  nil,
+		pk:      nil,
+		wallets: nil,
 	}
 
 	return &out
@@ -53,12 +50,6 @@ func (app *builder) WithPrivateKey(pk signatures.PrivateKey) Builder {
 	return app
 }
 
-// WithConnections add connections to the builder
-func (app *builder) WithConnections(connections connections.Connections) Builder {
-	app.connections = connections
-	return app
-}
-
 // WithWallets add wallets to the builder
 func (app *builder) WithWallets(wallets wallets.Wallets) Builder {
 	app.wallets = wallets
@@ -77,14 +68,6 @@ func (app *builder) Now() (Identity, error) {
 
 	if app.pk == nil {
 		return nil, errors.New("the pk is mandatory in order to build an Identity instance")
-	}
-
-	if app.connections != nil && app.wallets != nil {
-		return createIdentityWithConnectionsAndWallets(*app.pID, app.public, app.pk, app.connections, app.wallets), nil
-	}
-
-	if app.connections != nil {
-		return createIdentityWithConnections(*app.pID, app.public, app.pk, app.connections), nil
 	}
 
 	if app.wallets != nil {

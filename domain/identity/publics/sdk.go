@@ -2,8 +2,10 @@ package publics
 
 import (
 	uuid "github.com/satori/go.uuid"
+	"github.com/steve-care-software/syntax/domain/identity/connections"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/encryptions/keys"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/hash"
+	"github.com/steve-care-software/syntax/domain/identity/publics/assets"
 )
 
 // NewBuilder creates a new builder instance
@@ -37,6 +39,8 @@ type PublicBuilder interface {
 	WithSignature(signature hash.Hash) PublicBuilder
 	WithHost(host string) PublicBuilder
 	WithPort(port uint) PublicBuilder
+	WithConnections(connections connections.Connections) PublicBuilder
+	WithAssets(assets assets.Assets) PublicBuilder
 	Now() (Public, error)
 }
 
@@ -48,4 +52,20 @@ type Public interface {
 	Signature() hash.Hash
 	Host() string
 	Port() uint
+	HasConnections() bool
+	Connections() connections.Connections
+	HasAssets() bool
+	Assets() assets.Assets
+}
+
+// Repository represents a public repository
+type Repository interface {
+	RetrieveByID(id uuid.UUID) (Public, error)
+	RetrieveByName(name string) (Public, error)
+}
+
+// Service represents a public service
+type Service interface {
+	Save(ins Public) error
+	Delete(ins Public) error
 }

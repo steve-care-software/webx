@@ -5,19 +5,18 @@ import (
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/encryptions/keys"
-	"github.com/steve-care-software/syntax/domain/identity/publics"
 )
 
 type connectionBuilder struct {
 	pID        *uuid.UUID
-	public     publics.Public
+	pPublic    *uuid.UUID
 	encryption keys.PrivateKey
 }
 
 func createConnectionBuilder() ConnectionBuilder {
 	out := connectionBuilder{
 		pID:        nil,
-		public:     nil,
+		pPublic:    nil,
 		encryption: nil,
 	}
 
@@ -36,8 +35,8 @@ func (app *connectionBuilder) WithID(id uuid.UUID) ConnectionBuilder {
 }
 
 // WithPublic adds a public to the builder
-func (app *connectionBuilder) WithPublic(public publics.Public) ConnectionBuilder {
-	app.public = public
+func (app *connectionBuilder) WithPublic(public uuid.UUID) ConnectionBuilder {
+	app.pPublic = &public
 	return app
 }
 
@@ -53,13 +52,13 @@ func (app *connectionBuilder) Now() (Connection, error) {
 		return nil, errors.New("the ID is mandatory in order to build a Connection instance")
 	}
 
-	if app.public == nil {
-		return nil, errors.New("the public is mandatory in order to build a Connection instance")
+	if app.pPublic == nil {
+		return nil, errors.New("the public ID is mandatory in order to build a Connection instance")
 	}
 
 	if app.encryption == nil {
 		return nil, errors.New("the encryption is mandatory in order to build a Connection instance")
 	}
 
-	return createConnection(*app.pID, app.public, app.encryption), nil
+	return createConnection(*app.pID, *app.pPublic, app.encryption), nil
 }

@@ -3,7 +3,6 @@ package connections
 import (
 	uuid "github.com/satori/go.uuid"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/encryptions/keys"
-	"github.com/steve-care-software/syntax/domain/identity/publics"
 )
 
 // NewBuilder creates a new builder instance
@@ -33,7 +32,7 @@ type Connections interface {
 type ConnectionBuilder interface {
 	Create() ConnectionBuilder
 	WithID(id uuid.UUID) ConnectionBuilder
-	WithPublic(public publics.Public) ConnectionBuilder
+	WithPublic(public uuid.UUID) ConnectionBuilder
 	WithEncryption(encryption keys.PrivateKey) ConnectionBuilder
 	Now() (Connection, error)
 }
@@ -41,6 +40,6 @@ type ConnectionBuilder interface {
 // Connection represents a connection
 type Connection interface {
 	ID() uuid.UUID
-	Public() publics.Public
+	Public() uuid.UUID
 	Encryption() keys.PrivateKey
 }

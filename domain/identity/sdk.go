@@ -2,7 +2,6 @@ package identity
 
 import (
 	uuid "github.com/satori/go.uuid"
-	"github.com/steve-care-software/syntax/domain/identity/connections"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/signatures"
 	"github.com/steve-care-software/syntax/domain/identity/publics"
 	"github.com/steve-care-software/syntax/domain/identity/wallets"
@@ -19,7 +18,6 @@ type Builder interface {
 	WithID(id uuid.UUID) Builder
 	WithPublic(public publics.Public) Builder
 	WithPrivateKey(pk signatures.PrivateKey) Builder
-	WithConnections(connections connections.Connections) Builder
 	WithWallets(wallets wallets.Wallets) Builder
 	Now() (Identity, error)
 }
@@ -29,8 +27,6 @@ type Identity interface {
 	ID() uuid.UUID
 	Public() publics.Public
 	PrivateKey() signatures.PrivateKey
-	HasConnections() bool
-	Connections() connections.Connections
 	HasWallets() bool
 	Wallets() wallets.Wallets
 }
