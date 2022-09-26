@@ -3,20 +3,26 @@ package genesis
 import "github.com/steve-care-software/syntax/domain/identity/cryptography/hash"
 
 type genesis struct {
-	hash   hash.Hash
-	supply uint64
-	owner  []hash.Hash
+	hash        hash.Hash
+	ticker      string
+	description string
+	supply      uint64
+	owner       []hash.Hash
 }
 
 func createGenesis(
 	hash hash.Hash,
+	ticker string,
+	description string,
 	supply uint64,
 	owner []hash.Hash,
 ) Genesis {
 	out := genesis{
-		hash:   hash,
-		supply: supply,
-		owner:  owner,
+		hash:        hash,
+		ticker:      ticker,
+		description: description,
+		supply:      supply,
+		owner:       owner,
 	}
 
 	return &out
@@ -25,6 +31,16 @@ func createGenesis(
 // Hash returns the hash
 func (obj *genesis) Hash() hash.Hash {
 	return obj.hash
+}
+
+// Ticker returns the ticker
+func (obj *genesis) Ticker() string {
+	return obj.ticker
+}
+
+// Description returns the description
+func (obj *genesis) Description() string {
+	return obj.description
 }
 
 // Supply returns the supply

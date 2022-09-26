@@ -9,6 +9,8 @@ import (
 
 type builder struct {
 	hashAdapter hash.Adapter
+	ticker      string
+	description string
 	supply      uint64
 	owner       []hash.Hash
 }
@@ -18,6 +20,8 @@ func createBuilder(
 ) Builder {
 	out := builder{
 		hashAdapter: hashAdapter,
+		ticker:      "",
+		description: "",
 		supply:      0,
 		owner:       nil,
 	}
@@ -28,6 +32,18 @@ func createBuilder(
 // Create initializes the builder
 func (app *builder) Create() Builder {
 	return createBuilder(app.hashAdapter)
+}
+
+// WithTicker adds a ticker to the builder
+func (app *builder) WithTicker(ticker string) Builder {
+	app.ticker = ticker
+	return app
+}
+
+// WithDescription adds a description to the builder
+func (app *builder) WithDescription(description string) Builder {
+	app.description = description
+	return app
 }
 
 // WithSupply adds a supply to the builder
@@ -48,6 +64,14 @@ func (app *builder) Now() (Genesis, error) {
 		return nil, errors.New("the supply must be greater than zero (0)")
 	}
 
+	if app.ticker == "" {
+		return nil, errors.New("the ticker is mandatory in order to build a Genesis instance")
+	}
+
+	if app.description == "" {
+		return nil, errors.New("the description is mandatory in order to build a Genesis instance")
+	}
+
 	if app.owner != nil && len(app.owner) <= 0 {
 		app.owner = nil
 	}
@@ -57,6 +81,8 @@ func (app *builder) Now() (Genesis, error) {
 	}
 
 	data := [][]byte{
+		[]byte(app.ticker),
+		[]byte(app.description),
 		[]byte(fmt.Sprintf("%d", app.supply)),
 	}
 
@@ -69,5 +95,11 @@ func (app *builder) Now() (Genesis, error) {
 		return nil, err
 	}
 
-	return createGenesis(*hash, app.supply, app.owner), nil
+	return createGenesis(
+		*hash,
+		app.ticker,
+		app.description,
+		app.supply,
+		app.owner,
+	), nil
 }

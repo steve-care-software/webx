@@ -10,17 +10,20 @@ type asset struct {
 	id   uuid.UUID
 	pk   signatures.PrivateKey
 	unit units.Unit
+	ring []signatures.PublicKey
 }
 
 func createAsset(
 	id uuid.UUID,
 	pk signatures.PrivateKey,
 	unit units.Unit,
+	ring []signatures.PublicKey,
 ) Asset {
 	out := asset{
 		id:   id,
 		pk:   pk,
 		unit: unit,
+		ring: ring,
 	}
 
 	return &out
@@ -39,4 +42,9 @@ func (obj *asset) PrivateKey() signatures.PrivateKey {
 // Unit returns the unit
 func (obj *asset) Unit() units.Unit {
 	return obj.unit
+}
+
+// Ring returns the ring
+func (obj *asset) Ring() []signatures.PublicKey {
+	return obj.ring
 }

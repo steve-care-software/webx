@@ -3,6 +3,7 @@ package assets
 import (
 	"bytes"
 	"errors"
+	"fmt"
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/hash"
@@ -15,6 +16,7 @@ type assetBuilder struct {
 	pID         *uuid.UUID
 	pk          signatures.PrivateKey
 	unit        units.Unit
+	ring        []signatures.PublicKey
 }
 
 func createAssetBuilder(
@@ -25,6 +27,7 @@ func createAssetBuilder(
 		pID:         nil,
 		pk:          nil,
 		unit:        nil,
+		ring:        nil,
 	}
 
 	return &out
@@ -55,6 +58,12 @@ func (app *assetBuilder) WithUnit(unit units.Unit) AssetBuilder {
 	return app
 }
 
+// WithRing adds a ring to the builder
+func (app *assetBuilder) WithRing(ring []signatures.PublicKey) AssetBuilder {
+	app.ring = ring
+	return app
+}
+
 // Now builds a new Asset instance
 func (app *assetBuilder) Now() (Asset, error) {
 	if app.pID == nil {
@@ -69,24 +78,49 @@ func (app *assetBuilder) Now() (Asset, error) {
 		return nil, errors.New("the Unit is mandatory in order to build an Asset instance")
 	}
 
+	if app.ring != nil && len(app.ring) <= 0 {
+		app.ring = nil
+	}
+
+	if app.ring == nil {
+		return nil, errors.New("there must be at least 1 PublicKey in the ring in order to build an Asset instance")
+	}
+
 	pubKey := app.pk.PublicKey()
 	pubKeyHash, err := app.hashAdapter.FromBytes([]byte(pubKey.String()))
 	if err != nil {
 		return nil, err
 	}
 
-	isValid := false
 	ring := app.unit.Content().Owner()
+	if len(ring) != len(app.ring) {
+		str := fmt.Sprintf("the unit contains %d hash in its owner's hashes, but the asset only contain %d PublicKey in its ring.  Those number should match", len(ring), len(app.ring))
+		return nil, errors.New(str)
+	}
+
+	isUnitValid := false
 	for _, oneHash := range ring {
 		if bytes.Compare(oneHash.Bytes(), pubKeyHash.Bytes()) == 0 {
-			isValid = true
+			isUnitValid = true
 			break
 		}
 	}
 
-	if !isValid {
+	if !isUnitValid {
 		return nil, errors.New("the provided PrivateKey does not have a PublicKey that is present in the Unit's owner hashes and therefore the provided PrivateKey cannot unlock the given Unit")
 	}
 
-	return createAsset(*app.pID, app.pk, app.unit), nil
+	isRingValid := false
+	for _, onePublicKey := range app.ring {
+		if onePublicKey.Equals(pubKey) {
+			isRingValid = true
+			break
+		}
+	}
+
+	if !isRingValid {
+		return nil, errors.New("the provided PrivateKey does not have a PublicKey that is present in the Asset's PublicKey ring and therefore the provided PrivateKey cannot unlock the given Unit")
+	}
+
+	return createAsset(*app.pID, app.pk, app.unit, app.ring), nil
 }

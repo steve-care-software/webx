@@ -1,11 +1,11 @@
-package identities
+package identity
 
 import (
 	uuid "github.com/satori/go.uuid"
+	"github.com/steve-care-software/syntax/domain/identity/connections"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/signatures"
-	"github.com/steve-care-software/syntax/domain/identity/identities/assets"
-	"github.com/steve-care-software/syntax/domain/identity/identities/connections"
-	"github.com/steve-care-software/syntax/domain/identity/identities/publics"
+	"github.com/steve-care-software/syntax/domain/identity/publics"
+	"github.com/steve-care-software/syntax/domain/identity/wallets"
 )
 
 // NewBuilder creates a new builder instance
@@ -20,7 +20,7 @@ type Builder interface {
 	WithPublic(public publics.Public) Builder
 	WithPrivateKey(pk signatures.PrivateKey) Builder
 	WithConnections(connections connections.Connections) Builder
-	WithAssets(assets assets.Assets) Builder
+	WithWallets(wallets wallets.Wallets) Builder
 	Now() (Identity, error)
 }
 
@@ -31,8 +31,8 @@ type Identity interface {
 	PrivateKey() signatures.PrivateKey
 	HasConnections() bool
 	Connections() connections.Connections
-	HasAssets() bool
-	Assets() assets.Assets
+	HasWallets() bool
+	Wallets() wallets.Wallets
 }
 
 // Repository represents an identity repository

@@ -1,13 +1,13 @@
-package identities
+package identity
 
 import (
 	"errors"
 
 	uuid "github.com/satori/go.uuid"
+	"github.com/steve-care-software/syntax/domain/identity/connections"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/signatures"
-	"github.com/steve-care-software/syntax/domain/identity/identities/assets"
-	"github.com/steve-care-software/syntax/domain/identity/identities/connections"
-	"github.com/steve-care-software/syntax/domain/identity/identities/publics"
+	"github.com/steve-care-software/syntax/domain/identity/publics"
+	"github.com/steve-care-software/syntax/domain/identity/wallets"
 )
 
 type builder struct {
@@ -15,7 +15,7 @@ type builder struct {
 	public      publics.Public
 	pk          signatures.PrivateKey
 	connections connections.Connections
-	assets      assets.Assets
+	wallets     wallets.Wallets
 }
 
 func createBuilder() Builder {
@@ -24,7 +24,7 @@ func createBuilder() Builder {
 		public:      nil,
 		pk:          nil,
 		connections: nil,
-		assets:      nil,
+		wallets:     nil,
 	}
 
 	return &out
@@ -59,9 +59,9 @@ func (app *builder) WithConnections(connections connections.Connections) Builder
 	return app
 }
 
-// WithAssets add assets to the builder
-func (app *builder) WithAssets(assets assets.Assets) Builder {
-	app.assets = assets
+// WithWallets add wallets to the builder
+func (app *builder) WithWallets(wallets wallets.Wallets) Builder {
+	app.wallets = wallets
 	return app
 }
 
@@ -79,16 +79,16 @@ func (app *builder) Now() (Identity, error) {
 		return nil, errors.New("the pk is mandatory in order to build an Identity instance")
 	}
 
-	if app.connections != nil && app.assets != nil {
-		return createIdentityWithConnectionsAndAssets(*app.pID, app.public, app.pk, app.connections, app.assets), nil
+	if app.connections != nil && app.wallets != nil {
+		return createIdentityWithConnectionsAndWallets(*app.pID, app.public, app.pk, app.connections, app.wallets), nil
 	}
 
 	if app.connections != nil {
 		return createIdentityWithConnections(*app.pID, app.public, app.pk, app.connections), nil
 	}
 
-	if app.assets != nil {
-		return createIdentityWithAssets(*app.pID, app.public, app.pk, app.assets), nil
+	if app.wallets != nil {
+		return createIdentityWithWallets(*app.pID, app.public, app.pk, app.wallets), nil
 	}
 
 	return createIdentity(*app.pID, app.public, app.pk), nil

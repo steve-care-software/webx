@@ -3,7 +3,7 @@ package connections
 import (
 	uuid "github.com/satori/go.uuid"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/encryptions/keys"
-	"github.com/steve-care-software/syntax/domain/identity/identities/publics"
+	"github.com/steve-care-software/syntax/domain/identity/publics"
 )
 
 // NewBuilder creates a new builder instance
@@ -26,6 +26,7 @@ type Builder interface {
 // Connections represents connections
 type Connections interface {
 	List() []Connection
+	ListExcept(id uuid.UUID) []Connection
 }
 
 // ConnectionBuilder represents a connection builder

@@ -13,6 +13,8 @@ func NewBuilder() Builder {
 // Builder represents a genesis builder
 type Builder interface {
 	Create() Builder
+	WithTicker(ticker string) Builder
+	WithDescription(description string) Builder
 	WithSupply(supply uint64) Builder
 	WithOwner(owner []hash.Hash) Builder
 	Now() (Genesis, error)
@@ -21,6 +23,8 @@ type Builder interface {
 // Genesis represents a genesis
 type Genesis interface {
 	Hash() hash.Hash
+	Ticker() string
+	Description() string
 	Supply() uint64
 	Owner() []hash.Hash
 }

@@ -28,20 +28,23 @@ type Builder interface {
 // Assets represents assets
 type Assets interface {
 	List() []Asset
+	FetchByUnits(unitHashes []hash.Hash) ([]Asset, error)
 }
 
 // AssetBuilder represents an asset builder
 type AssetBuilder interface {
 	Create() AssetBuilder
 	WithID(id uuid.UUID) AssetBuilder
-	WithPrivateKey(pk signatures.PrivateKey) AssetBuilder
 	WithUnit(unit units.Unit) AssetBuilder
+	WithPrivateKey(pk signatures.PrivateKey) AssetBuilder
+	WithRing(ring []signatures.PublicKey) AssetBuilder
 	Now() (Asset, error)
 }
 
 // Asset represents an asset
 type Asset interface {
 	ID() uuid.UUID
-	PrivateKey() signatures.PrivateKey
 	Unit() units.Unit
+	PrivateKey() signatures.PrivateKey
+	Ring() []signatures.PublicKey
 }

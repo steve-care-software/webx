@@ -1,11 +1,11 @@
-package identities
+package identity
 
 import (
 	uuid "github.com/satori/go.uuid"
+	"github.com/steve-care-software/syntax/domain/identity/connections"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/signatures"
-	"github.com/steve-care-software/syntax/domain/identity/identities/assets"
-	"github.com/steve-care-software/syntax/domain/identity/identities/connections"
-	"github.com/steve-care-software/syntax/domain/identity/identities/publics"
+	"github.com/steve-care-software/syntax/domain/identity/publics"
+	"github.com/steve-care-software/syntax/domain/identity/wallets"
 )
 
 type identity struct {
@@ -13,7 +13,7 @@ type identity struct {
 	public      publics.Public
 	pk          signatures.PrivateKey
 	connections connections.Connections
-	assets      assets.Assets
+	wallets     wallets.Wallets
 }
 
 func createIdentity(
@@ -33,23 +33,23 @@ func createIdentityWithConnections(
 	return createIdentityInternally(id, public, pk, connections, nil)
 }
 
-func createIdentityWithAssets(
+func createIdentityWithWallets(
 	id uuid.UUID,
 	public publics.Public,
 	pk signatures.PrivateKey,
-	assets assets.Assets,
+	wallets wallets.Wallets,
 ) Identity {
-	return createIdentityInternally(id, public, pk, nil, assets)
+	return createIdentityInternally(id, public, pk, nil, wallets)
 }
 
-func createIdentityWithConnectionsAndAssets(
+func createIdentityWithConnectionsAndWallets(
 	id uuid.UUID,
 	public publics.Public,
 	pk signatures.PrivateKey,
 	connections connections.Connections,
-	assets assets.Assets,
+	wallets wallets.Wallets,
 ) Identity {
-	return createIdentityInternally(id, public, pk, connections, assets)
+	return createIdentityInternally(id, public, pk, connections, wallets)
 }
 
 func createIdentityInternally(
@@ -57,14 +57,14 @@ func createIdentityInternally(
 	public publics.Public,
 	pk signatures.PrivateKey,
 	connections connections.Connections,
-	assets assets.Assets,
+	wallets wallets.Wallets,
 ) Identity {
 	out := identity{
 		id:          id,
 		public:      public,
 		pk:          pk,
 		connections: connections,
-		assets:      assets,
+		wallets:     wallets,
 	}
 
 	return &out
@@ -95,12 +95,12 @@ func (obj *identity) Connections() connections.Connections {
 	return obj.connections
 }
 
-// HasAssets returns true if there is assets, false otherwise
-func (obj *identity) HasAssets() bool {
-	return obj.assets != nil
+// HasWallets returns true if there is wallets, false otherwise
+func (obj *identity) HasWallets() bool {
+	return obj.wallets != nil
 }
 
-// Assets returns the assets, if any
-func (obj *identity) Assets() assets.Assets {
-	return obj.assets
+// Wallets returns the wallets, if any
+func (obj *identity) Wallets() wallets.Wallets {
+	return obj.wallets
 }

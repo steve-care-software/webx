@@ -3,7 +3,7 @@ package connections
 import (
 	uuid "github.com/satori/go.uuid"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/encryptions/keys"
-	"github.com/steve-care-software/syntax/domain/identity/identities/publics"
+	"github.com/steve-care-software/syntax/domain/identity/publics"
 )
 
 type connection struct {
