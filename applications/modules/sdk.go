@@ -1,14 +1,12 @@
 package modules
 
 import (
-	"github.com/steve-care-software/syntax/applications/modules/methods"
-	"github.com/steve-care-software/syntax/applications/modules/objects"
-	"github.com/steve-care-software/syntax/domain/programs/instructions/applications/modules"
+	"github.com/steve-care-software/syntax/applications/modules/identity"
+	"github.com/steve-care-software/syntax/applications/modules/syntax"
 )
 
-// Application represents the module application
+// Application represents the action application
 type Application interface {
-	All() modules.Modules
-	Methods() methods.Application
-	Objects() objects.Application
+	Syntax() syntax.Application
+	Identity() identity.Application
 }
