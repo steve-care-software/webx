@@ -13,6 +13,7 @@ type builder struct {
 	description string
 	supply      uint64
 	owner       []hash.Hash
+	pProof      *hash.Hash
 }
 
 func createBuilder(
@@ -24,6 +25,7 @@ func createBuilder(
 		description: "",
 		supply:      0,
 		owner:       nil,
+		pProof:      nil,
 	}
 
 	return &out
@@ -55,6 +57,12 @@ func (app *builder) WithSupply(supply uint64) Builder {
 // WithOwner adds an owner to the builder
 func (app *builder) WithOwner(owner []hash.Hash) Builder {
 	app.owner = owner
+	return app
+}
+
+// WithProof adds a proof to the builder
+func (app *builder) WithProof(proof hash.Hash) Builder {
+	app.pProof = &proof
 	return app
 }
 
@@ -90,9 +98,24 @@ func (app *builder) Now() (Genesis, error) {
 		data = append(data, oneHash.Bytes())
 	}
 
+	if app.pProof != nil {
+		data = append(data, app.pProof.Bytes())
+	}
+
 	hash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
+	}
+
+	if app.pProof != nil {
+		return createGenesisWithProof(
+			*hash,
+			app.ticker,
+			app.description,
+			app.supply,
+			app.owner,
+			app.pProof,
+		), nil
 	}
 
 	return createGenesis(

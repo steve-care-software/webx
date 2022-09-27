@@ -4,7 +4,7 @@ import (
 	"time"
 
 	uuid "github.com/satori/go.uuid"
-	"github.com/steve-care-software/syntax/domain/identity/units"
+	"github.com/steve-care-software/syntax/domain/identity/publics/assets/units"
 )
 
 // Builder represents a transactions builder

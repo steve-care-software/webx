@@ -1,6 +1,9 @@
 package assets
 
-import "github.com/steve-care-software/syntax/domain/identity/units"
+import (
+	"github.com/steve-care-software/syntax/domain/identity/publics/assets/claims"
+	"github.com/steve-care-software/syntax/domain/identity/publics/assets/units"
+)
 
 // Builder represents an assets builder
 type Builder interface {
@@ -18,6 +21,7 @@ type Assets interface {
 type AssetBuilder interface {
 	Create() AssetBuilder
 	WithUnit(unit units.Unit) AssetBuilder
+	WithClaim(claim claims.Claim) AssetBuilder
 	Now() (Asset, error)
 }
 
@@ -25,4 +29,6 @@ type AssetBuilder interface {
 type Asset interface {
 	IsUnit() bool
 	Unit() units.Unit
+	IsClaim() bool
+	Claim() claims.Claim
 }

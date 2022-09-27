@@ -17,6 +17,7 @@ type Builder interface {
 	WithDescription(description string) Builder
 	WithSupply(supply uint64) Builder
 	WithOwner(owner []hash.Hash) Builder
+	WithProof(proof hash.Hash) Builder
 	Now() (Genesis, error)
 }
 
@@ -27,4 +28,6 @@ type Genesis interface {
 	Description() string
 	Supply() uint64
 	Owner() []hash.Hash
+	HasProof() bool
+	Proof() *hash.Hash
 }

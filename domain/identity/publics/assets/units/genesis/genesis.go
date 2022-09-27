@@ -8,6 +8,7 @@ type genesis struct {
 	description string
 	supply      uint64
 	owner       []hash.Hash
+	pProof      *hash.Hash
 }
 
 func createGenesis(
@@ -17,12 +18,35 @@ func createGenesis(
 	supply uint64,
 	owner []hash.Hash,
 ) Genesis {
+	return createGenesisInternally(hash, ticker, description, supply, owner, nil)
+}
+
+func createGenesisWithProof(
+	hash hash.Hash,
+	ticker string,
+	description string,
+	supply uint64,
+	owner []hash.Hash,
+	pProof *hash.Hash,
+) Genesis {
+	return createGenesisInternally(hash, ticker, description, supply, owner, pProof)
+}
+
+func createGenesisInternally(
+	hash hash.Hash,
+	ticker string,
+	description string,
+	supply uint64,
+	owner []hash.Hash,
+	pProof *hash.Hash,
+) Genesis {
 	out := genesis{
 		hash:        hash,
 		ticker:      ticker,
 		description: description,
 		supply:      supply,
 		owner:       owner,
+		pProof:      pProof,
 	}
 
 	return &out
@@ -51,4 +75,14 @@ func (obj *genesis) Supply() uint64 {
 // Owner returns the owner
 func (obj *genesis) Owner() []hash.Hash {
 	return obj.owner
+}
+
+// HasProof returns true if there is a proof, false otherwise
+func (obj *genesis) HasProof() bool {
+	return obj.pProof != nil
+}
+
+// Proof returns the proof if any
+func (obj *genesis) Proof() *hash.Hash {
+	return obj.pProof
 }

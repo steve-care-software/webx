@@ -2,7 +2,7 @@ package units
 
 import (
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/hash"
-	"github.com/steve-care-software/syntax/domain/identity/units/genesis"
+	"github.com/steve-care-software/syntax/domain/identity/publics/assets/units/genesis"
 )
 
 type previous struct {

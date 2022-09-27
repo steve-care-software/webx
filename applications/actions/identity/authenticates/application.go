@@ -14,8 +14,8 @@ import (
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/hash"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/signatures"
 	"github.com/steve-care-software/syntax/domain/identity/publics"
-	"github.com/steve-care-software/syntax/domain/identity/units"
-	"github.com/steve-care-software/syntax/domain/identity/units/genesis"
+	"github.com/steve-care-software/syntax/domain/identity/publics/assets/units"
+	"github.com/steve-care-software/syntax/domain/identity/publics/assets/units/genesis"
 	"github.com/steve-care-software/syntax/domain/identity/wallets"
 	"github.com/steve-care-software/syntax/domain/identity/wallets/assets"
 	"github.com/steve-care-software/syntax/domain/identity/wallets/transactions"
@@ -186,14 +186,19 @@ func (app *application) Disconnect(id uuid.UUID) error {
 }
 
 // Generate generates a new unit
-func (app *application) Generate(depositTo wallets.Wallet, supply uint64, ticker string, description string) error {
+func (app *application) Generate(depositTo wallets.Wallet, supply uint64, ticker string, description string, proof *hash.Hash) error {
 	genPK := app.sigPKFactory.Create()
 	genRing, genPubKeys, err := app.generateRing(app.genesisRingSize, genPK)
 	if err != nil {
 		return err
 	}
 
-	genesis, err := app.genesisBuilder.Create().WithTicker(ticker).WithDescription(description).WithSupply(supply).WithOwner(genRing).Now()
+	genesisBuilder := app.genesisBuilder.Create().WithTicker(ticker).WithDescription(description).WithSupply(supply).WithOwner(genRing)
+	if proof != nil {
+		genesisBuilder.WithProof(*proof)
+	}
+
+	genesis, err := genesisBuilder.Now()
 	if err != nil {
 		return err
 	}

@@ -7,7 +7,7 @@ import (
 	"github.com/steve-care-software/syntax/domain/identity/pendings"
 	"github.com/steve-care-software/syntax/domain/identity/publics"
 	"github.com/steve-care-software/syntax/domain/identity/publics/assets"
-	"github.com/steve-care-software/syntax/domain/identity/units"
+	"github.com/steve-care-software/syntax/domain/identity/publics/assets/units"
 	"github.com/steve-care-software/syntax/domain/identity/wallets"
 )
 

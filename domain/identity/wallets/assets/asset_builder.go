@@ -8,14 +8,14 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/hash"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/signatures"
-	"github.com/steve-care-software/syntax/domain/identity/units"
+	public_assets "github.com/steve-care-software/syntax/domain/identity/publics/assets"
 )
 
 type assetBuilder struct {
 	hashAdapter hash.Adapter
 	pID         *uuid.UUID
 	pk          signatures.PrivateKey
-	unit        units.Unit
+	public      public_assets.Asset
 	ring        []signatures.PublicKey
 }
 
@@ -26,7 +26,7 @@ func createAssetBuilder(
 		hashAdapter: hashAdapter,
 		pID:         nil,
 		pk:          nil,
-		unit:        nil,
+		public:      nil,
 		ring:        nil,
 	}
 
@@ -52,9 +52,9 @@ func (app *assetBuilder) WithPrivateKey(pk signatures.PrivateKey) AssetBuilder {
 	return app
 }
 
-// WithUnit adds a unit to the builder
-func (app *assetBuilder) WithUnit(unit units.Unit) AssetBuilder {
-	app.unit = unit
+// WithPublic adds a public asset to the builder
+func (app *assetBuilder) WithPublic(public public_assets.Asset) AssetBuilder {
+	app.public = public
 	return app
 }
 
@@ -74,8 +74,8 @@ func (app *assetBuilder) Now() (Asset, error) {
 		return nil, errors.New("the PrivateKey is mandatory in order to build an Asset instance")
 	}
 
-	if app.unit == nil {
-		return nil, errors.New("the Unit is mandatory in order to build an Asset instance")
+	if app.public == nil {
+		return nil, errors.New("the public Asset is mandatory in order to build an Asset instance")
 	}
 
 	if app.ring != nil && len(app.ring) <= 0 {
@@ -92,7 +92,7 @@ func (app *assetBuilder) Now() (Asset, error) {
 		return nil, err
 	}
 
-	ring := app.unit.Content().Owner()
+	ring := app.public.Unit().Content().Owner()
 	if len(ring) != len(app.ring) {
 		str := fmt.Sprintf("the unit contains %d hash in its owner's hashes, but the asset only contain %d PublicKey in its ring.  Those number should match", len(ring), len(app.ring))
 		return nil, errors.New(str)
@@ -122,5 +122,5 @@ func (app *assetBuilder) Now() (Asset, error) {
 		return nil, errors.New("the provided PrivateKey does not have a PublicKey that is present in the Asset's PublicKey ring and therefore the provided PrivateKey cannot unlock the given Unit")
 	}
 
-	return createAsset(*app.pID, app.pk, app.unit, app.ring), nil
+	return createAsset(*app.pID, app.pk, app.public, app.ring), nil
 }

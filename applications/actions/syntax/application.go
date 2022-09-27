@@ -11,6 +11,7 @@ import (
 	"github.com/steve-care-software/syntax/domain/syntax/bytes/trees"
 	"github.com/steve-care-software/syntax/domain/syntax/commands"
 	"github.com/steve-care-software/syntax/domain/syntax/compilers"
+	"github.com/steve-care-software/syntax/domain/syntax/composers"
 	"github.com/steve-care-software/syntax/domain/syntax/outputs"
 	"github.com/steve-care-software/syntax/domain/syntax/programs"
 )
@@ -470,6 +471,11 @@ func (app *application) Compile(compiler compilers.Compiler, script []byte) (com
 	}
 
 	return instructions, remaining, nil
+}
+
+// Compose execute a composer
+func (app *application) Compose(composer composers.Composer) ([]byte, error) {
+	return nil, nil
 }
 
 // Program converts commands to a program instance

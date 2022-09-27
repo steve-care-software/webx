@@ -4,7 +4,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/hash"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/signatures"
-	"github.com/steve-care-software/syntax/domain/identity/units"
+	public_assets "github.com/steve-care-software/syntax/domain/identity/publics/assets"
 )
 
 // NewBuilder creates a new builder instance
@@ -35,7 +35,7 @@ type Assets interface {
 type AssetBuilder interface {
 	Create() AssetBuilder
 	WithID(id uuid.UUID) AssetBuilder
-	WithUnit(unit units.Unit) AssetBuilder
+	WithPublic(public public_assets.Asset) AssetBuilder
 	WithPrivateKey(pk signatures.PrivateKey) AssetBuilder
 	WithRing(ring []signatures.PublicKey) AssetBuilder
 	Now() (Asset, error)
@@ -44,7 +44,7 @@ type AssetBuilder interface {
 // Asset represents an asset
 type Asset interface {
 	ID() uuid.UUID
-	Unit() units.Unit
+	Public() public_assets.Asset
 	PrivateKey() signatures.PrivateKey
 	Ring() []signatures.PublicKey
 }

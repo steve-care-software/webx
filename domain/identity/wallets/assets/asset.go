@@ -3,27 +3,27 @@ package assets
 import (
 	uuid "github.com/satori/go.uuid"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/signatures"
-	"github.com/steve-care-software/syntax/domain/identity/units"
+	public_assets "github.com/steve-care-software/syntax/domain/identity/publics/assets"
 )
 
 type asset struct {
-	id   uuid.UUID
-	pk   signatures.PrivateKey
-	unit units.Unit
-	ring []signatures.PublicKey
+	id     uuid.UUID
+	pk     signatures.PrivateKey
+	public public_assets.Asset
+	ring   []signatures.PublicKey
 }
 
 func createAsset(
 	id uuid.UUID,
 	pk signatures.PrivateKey,
-	unit units.Unit,
+	public public_assets.Asset,
 	ring []signatures.PublicKey,
 ) Asset {
 	out := asset{
-		id:   id,
-		pk:   pk,
-		unit: unit,
-		ring: ring,
+		id:     id,
+		pk:     pk,
+		public: public,
+		ring:   ring,
 	}
 
 	return &out
@@ -39,9 +39,9 @@ func (obj *asset) PrivateKey() signatures.PrivateKey {
 	return obj.pk
 }
 
-// Unit returns the unit
-func (obj *asset) Unit() units.Unit {
-	return obj.unit
+// Public returns the public asset
+func (obj *asset) Public() public_assets.Asset {
+	return obj.public
 }
 
 // Ring returns the ring

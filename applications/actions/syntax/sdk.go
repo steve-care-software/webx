@@ -6,6 +6,7 @@ import (
 	"github.com/steve-care-software/syntax/domain/syntax/bytes/trees"
 	"github.com/steve-care-software/syntax/domain/syntax/commands"
 	"github.com/steve-care-software/syntax/domain/syntax/compilers"
+	"github.com/steve-care-software/syntax/domain/syntax/composers"
 	"github.com/steve-care-software/syntax/domain/syntax/outputs"
 	"github.com/steve-care-software/syntax/domain/syntax/programs"
 	"github.com/steve-care-software/syntax/domain/syntax/programs/instructions/applications/modules"
@@ -24,6 +25,7 @@ type Application interface {
 	Extract(criteria criterias.Criteria, tree trees.Tree) ([]byte, error)
 	Combine(trees []trees.Tree, includeChannels bool) ([]byte, error)
 	Compile(compiler compilers.Compiler, script []byte) (commands.Commands, []byte, error)
+	Compose(composer composers.Composer) ([]byte, error)
 	Program(commands commands.Commands) (programs.Program, error)
 	Execute(input map[string]interface{}, program programs.Program) (outputs.Output, error)
 }

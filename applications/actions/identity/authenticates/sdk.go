@@ -22,6 +22,6 @@ type Application interface {
 	Retrieve() (identities.Identity, error)
 	Delete() error
 	Disconnect(id uuid.UUID) error
-	Generate(depositTo wallets.Wallet, supply uint64, ticker string, description string) error
+	Generate(depositTo wallets.Wallet, supply uint64, ticker string, description string, proof *hash.Hash) error
 	Transfer(fromUnitHashes []hash.Hash, toOwner []hash.Hash, amount uint64, details string) error
 }
