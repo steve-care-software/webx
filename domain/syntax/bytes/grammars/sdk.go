@@ -30,6 +30,21 @@ func NewExternalBuilder() ExternalBuilder {
 	return createExternalBuilder()
 }
 
+// NewInstanceBuilder creates a new instance builder
+func NewInstanceBuilder() InstanceBuilder {
+	return createInstanceBuilder()
+}
+
+// NewEverythingBuilder creates a new everything builder
+func NewEverythingBuilder() EverythingBuilder {
+	return createEverythingBuilder()
+}
+
+// NewTokensBuilder creates a new tokens builder
+func NewTokensBuilder() TokensBuilder {
+	return createTokensBuilder()
+}
+
 // NewTokenBuilder creates a new token builder
 func NewTokenBuilder() TokenBuilder {
 	return createTokenBuilder()
@@ -134,6 +149,56 @@ type External interface {
 	Grammar() Grammar
 }
 
+// InstanceBuilder represents an instance builder
+type InstanceBuilder interface {
+	Create() InstanceBuilder
+	WithToken(token Token) InstanceBuilder
+	WithEverything(everything Everything) InstanceBuilder
+	IsReverse() InstanceBuilder
+	Now() (Instance, error)
+}
+
+// Instance represents an instance
+type Instance interface {
+	Content() InstanceContent
+	IsReverse() bool
+}
+
+// InstanceContent represents an instance content
+type InstanceContent interface {
+	IsToken() bool
+	Token() Token
+	IsEverything() bool
+	Everything() Everything
+}
+
+// EverythingBuilder represents an everything builder
+type EverythingBuilder interface {
+	Create() EverythingBuilder
+	WithException(exception Line) EverythingBuilder
+	WithEscape(escape Line) EverythingBuilder
+	Now() (Everything, error)
+}
+
+// Everything represents an everything except
+type Everything interface {
+	Exception() Line
+	HasEscape() bool
+	Escape() Line
+}
+
+// TokensBuilder represents a tokens builder
+type TokensBuilder interface {
+	Create() TokensBuilder
+	WithList(list []Token) TokensBuilder
+	Now() (Tokens, error)
+}
+
+// Tokens represents tokens
+type Tokens interface {
+	List() []Token
+}
+
 // TokenBuilder represents a token builder
 type TokenBuilder interface {
 	Create() TokenBuilder
@@ -209,8 +274,8 @@ type ElementBuilder interface {
 	WithName(name string) ElementBuilder
 	WithCardinality(cardinality cardinalities.Cardinality) ElementBuilder
 	WithValue(value values.Value) ElementBuilder
-	WithToken(token Token) ElementBuilder
 	WithExternal(external External) ElementBuilder
+	WithInstance(instance Instance) ElementBuilder
 	Now() (Element, error)
 }
 
@@ -225,8 +290,8 @@ type Element interface {
 type ElementContent interface {
 	IsValue() bool
 	Value() values.Value
-	IsToken() bool
-	Token() Token
 	IsExternal() bool
 	External() External
+	IsInstance() bool
+	Instance() Instance
 }

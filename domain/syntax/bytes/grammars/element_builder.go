@@ -11,8 +11,8 @@ type elementBuilder struct {
 	name        string
 	cardinality cardinalities.Cardinality
 	value       values.Value
-	token       Token
 	external    External
+	instance    Instance
 }
 
 func createElementBuilder() ElementBuilder {
@@ -20,8 +20,8 @@ func createElementBuilder() ElementBuilder {
 		name:        "",
 		cardinality: nil,
 		value:       nil,
-		token:       nil,
 		external:    nil,
+		instance:    nil,
 	}
 
 	return &out
@@ -50,15 +50,15 @@ func (app *elementBuilder) WithValue(value values.Value) ElementBuilder {
 	return app
 }
 
-// WithToken adds a token to the builder
-func (app *elementBuilder) WithToken(token Token) ElementBuilder {
-	app.token = token
-	return app
-}
-
 // WithExternal adds an external to the builder
 func (app *elementBuilder) WithExternal(external External) ElementBuilder {
 	app.external = external
+	return app
+}
+
+// WithInstance adds an instance to the builder
+func (app *elementBuilder) WithInstance(instance Instance) ElementBuilder {
+	app.instance = instance
 	return app
 }
 
@@ -69,13 +69,13 @@ func (app *elementBuilder) Now() (Element, error) {
 		return createElement(app.name, content, app.cardinality), nil
 	}
 
-	if app.token != nil {
-		content := createElementContentWithToken(app.token)
+	if app.external != nil {
+		content := createElementContentWithExternalToken(app.external)
 		return createElement(app.name, content, app.cardinality), nil
 	}
 
-	if app.external != nil {
-		content := createElementContentWithExternalToken(app.external)
+	if app.instance != nil {
+		content := createElementContentWithInstance(app.instance)
 		return createElement(app.name, content, app.cardinality), nil
 	}
 
