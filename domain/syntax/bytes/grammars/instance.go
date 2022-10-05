@@ -17,6 +17,15 @@ func createInstance(
 	return &out
 }
 
+// Name returns the name
+func (obj *instance) Name() string {
+	if obj.content.IsToken() {
+		return obj.content.Token().Name()
+	}
+
+	return obj.content.Everything().Name()
+}
+
 // Content returns the content
 func (obj *instance) Content() InstanceContent {
 	return obj.content

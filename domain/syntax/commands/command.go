@@ -1,30 +1,60 @@
 package commands
 
-import "github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
-
 type command struct {
-	grammar grammars.Grammar
-	content Content
+	execution   Execution
+	attachment  Attachment
+	variable    VariableAssignment
+	parameter   ParameterDeclaration
+	application ApplicationDeclaration
+	module      ModuleDeclaration
 }
 
 func createCommand(
-	grammar grammars.Grammar,
-	content Content,
+	execution Execution,
+	attachment Attachment,
+	variable VariableAssignment,
+	parameter ParameterDeclaration,
+	application ApplicationDeclaration,
+	module ModuleDeclaration,
 ) Command {
 	out := command{
-		grammar: grammar,
-		content: content,
+		execution:   execution,
+		attachment:  attachment,
+		variable:    variable,
+		parameter:   parameter,
+		application: application,
+		module:      module,
 	}
 
 	return &out
 }
 
-// Grammar returns the grammar
-func (obj *command) Grammar() grammars.Grammar {
-	return obj.grammar
+// Execution returns the execution, if any
+func (obj *command) Execution() Execution {
+	return obj.execution
 }
 
-// Content returns the content
-func (obj *command) Content() Content {
-	return obj.content
+// Attachment returns the attachment, if any
+func (obj *command) Attachment() Attachment {
+	return obj.attachment
+}
+
+// VariableAssignment returns the variable assignment, if any
+func (obj *command) VariableAssignment() VariableAssignment {
+	return obj.variable
+}
+
+// ParameterDeclaration returns the parameter declaration, if any
+func (obj *command) ParameterDeclaration() ParameterDeclaration {
+	return obj.parameter
+}
+
+// ApplicationDeclaration returns the application declaration, if any
+func (obj *command) ApplicationDeclaration() ApplicationDeclaration {
+	return obj.application
+}
+
+// ModuleDeclaration returns the module declaration, if any
+func (obj *command) ModuleDeclaration() ModuleDeclaration {
+	return obj.module
 }

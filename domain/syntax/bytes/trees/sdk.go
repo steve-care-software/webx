@@ -2,7 +2,6 @@ package trees
 
 import (
 	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars/values"
 )
 
 // NewBuilder creates a new builder instance
@@ -38,6 +37,11 @@ func NewElementBuilder() ElementBuilder {
 // NewContentBuilder creates a new content builder
 func NewContentBuilder() ContentBuilder {
 	return createContentBuilder()
+}
+
+// NewValueBuilder creates a new value builder
+func NewValueBuilder() ValueBuilder {
+	return createValueBuilder()
 }
 
 // Builder represents a trees builder
@@ -150,14 +154,14 @@ type Content interface {
 // ValueBuilder represents a value builder
 type ValueBuilder interface {
 	Create() ValueBuilder
-	WithContent(content values.Value) ValueBuilder
+	WithContent(content byte) ValueBuilder
 	WithPrefix(prefix Trees) ValueBuilder
 	Now() (Value, error)
 }
 
 // Value represents a value
 type Value interface {
-	Content() values.Value
+	Content() byte
 	HasPrefix() bool
 	Prefix() Trees
 }

@@ -52,12 +52,12 @@ func (obj *elementContent) Value() values.Value {
 	return obj.value
 }
 
-// IsExternal returns true if there is an external token, false otherwise
+// IsExternal returns true if there is an external grammar, false otherwise
 func (obj *elementContent) IsExternal() bool {
 	return obj.external != nil
 }
 
-// External returns the external token, if any
+// External returns the external grammar, if any
 func (obj *elementContent) External() External {
 	return obj.external
 }

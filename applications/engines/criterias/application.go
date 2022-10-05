@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/steve-care-software/syntax/domain/syntax/bytes/criterias"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
 	"github.com/steve-care-software/syntax/domain/syntax/bytes/trees"
 )
 
@@ -18,13 +17,8 @@ func createApplication() Application {
 	return &out
 }
 
-// Grammar build a grammar from the input
-func (app *application) Grammar(input []byte) (grammars.Grammar, []byte, error) {
-	return nil, nil, nil
-}
-
-// Extract extracts data from a tree using the provided criteria
-func (app *application) Extract(criteria criterias.Criteria, tree trees.Tree) ([]byte, error) {
+// Execute extracts data from a tree using the provided criteria
+func (app *application) Execute(criteria criterias.Criteria, tree trees.Tree) ([]byte, error) {
 	return app.extractWithPath([]string{}, criteria, tree)
 }
 

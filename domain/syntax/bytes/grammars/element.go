@@ -3,18 +3,15 @@ package grammars
 import "github.com/steve-care-software/syntax/domain/syntax/bytes/grammars/cardinalities"
 
 type element struct {
-	name        string
 	content     ElementContent
 	cardinality cardinalities.Cardinality
 }
 
 func createElement(
-	name string,
 	content ElementContent,
 	cardinality cardinalities.Cardinality,
 ) Element {
 	out := element{
-		name:        name,
 		content:     content,
 		cardinality: cardinality,
 	}
@@ -24,7 +21,15 @@ func createElement(
 
 // Name returns the name
 func (obj *element) Name() string {
-	return obj.name
+	if obj.content.IsValue() {
+		return obj.content.Value().Name()
+	}
+
+	if obj.content.IsExternal() {
+		return obj.content.External().Name()
+	}
+
+	return obj.content.Instance().Name()
 }
 
 // Content returns the content

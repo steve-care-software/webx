@@ -8,7 +8,6 @@ import (
 )
 
 type elementBuilder struct {
-	name        string
 	cardinality cardinalities.Cardinality
 	value       values.Value
 	external    External
@@ -17,7 +16,6 @@ type elementBuilder struct {
 
 func createElementBuilder() ElementBuilder {
 	out := elementBuilder{
-		name:        "",
 		cardinality: nil,
 		value:       nil,
 		external:    nil,
@@ -32,12 +30,6 @@ func (app *elementBuilder) Create() ElementBuilder {
 	return createElementBuilder()
 }
 
-// WithName adds a name to the builder
-func (app *elementBuilder) WithName(name string) ElementBuilder {
-	app.name = name
-	return app
-}
-
 // WithCardinality adds a cardinality to the builder
 func (app *elementBuilder) WithCardinality(cardinality cardinalities.Cardinality) ElementBuilder {
 	app.cardinality = cardinality
@@ -50,7 +42,7 @@ func (app *elementBuilder) WithValue(value values.Value) ElementBuilder {
 	return app
 }
 
-// WithExternal adds an external to the builder
+// WithExternal adds an external grammar to the builder
 func (app *elementBuilder) WithExternal(external External) ElementBuilder {
 	app.external = external
 	return app
@@ -66,17 +58,17 @@ func (app *elementBuilder) WithInstance(instance Instance) ElementBuilder {
 func (app *elementBuilder) Now() (Element, error) {
 	if app.value != nil {
 		content := createElementContentWithValue(app.value)
-		return createElement(app.name, content, app.cardinality), nil
+		return createElement(content, app.cardinality), nil
 	}
 
 	if app.external != nil {
 		content := createElementContentWithExternalToken(app.external)
-		return createElement(app.name, content, app.cardinality), nil
+		return createElement(content, app.cardinality), nil
 	}
 
 	if app.instance != nil {
 		content := createElementContentWithInstance(app.instance)
-		return createElement(app.name, content, app.cardinality), nil
+		return createElement(content, app.cardinality), nil
 	}
 
 	return nil, errors.New("the Element is invalid")

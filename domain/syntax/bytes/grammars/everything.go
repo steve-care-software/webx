@@ -1,28 +1,33 @@
 package grammars
 
 type everything struct {
-	exception Line
-	escape    Line
+	name      string
+	exception Token
+	escape    Token
 }
 
 func createEverything(
-	exception Line,
+	name string,
+	exception Token,
 ) Everything {
-	return createEverythingInternally(exception, nil)
+	return createEverythingInternally(name, exception, nil)
 }
 
 func createEverythingWithEscape(
-	exception Line,
-	escape Line,
+	name string,
+	exception Token,
+	escape Token,
 ) Everything {
-	return createEverythingInternally(exception, escape)
+	return createEverythingInternally(name, exception, escape)
 }
 
 func createEverythingInternally(
-	exception Line,
-	escape Line,
+	name string,
+	exception Token,
+	escape Token,
 ) Everything {
 	out := everything{
+		name:      name,
 		exception: exception,
 		escape:    escape,
 	}
@@ -30,8 +35,13 @@ func createEverythingInternally(
 	return &out
 }
 
+// Name returns the name
+func (obj *everything) Name() string {
+	return obj.name
+}
+
 // Exception returns the exception
-func (obj *everything) Exception() Line {
+func (obj *everything) Exception() Token {
 	return obj.exception
 }
 
@@ -41,6 +51,6 @@ func (obj *everything) HasEscape() bool {
 }
 
 // Escape returns the escape, if any
-func (obj *everything) Escape() Line {
+func (obj *everything) Escape() Token {
 	return obj.escape
 }

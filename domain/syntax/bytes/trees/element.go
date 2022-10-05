@@ -29,19 +29,12 @@ func createElement(
 
 // Fetch fetches a tree or value by name
 func (obj *element) Fetch(name string, elementIndex uint) (Tree, Element, error) {
-	if obj.Grammar().Name() == name {
+	if obj.grammar.Name() == name {
 		return nil, obj, nil
 	}
 
 	if obj.content.IsTree() {
 		return obj.content.Tree().Fetch(name, elementIndex)
-	}
-
-	if obj.content.IsValue() {
-		valueName := obj.content.Value().Content().Name()
-		if valueName == name {
-			return nil, obj, nil
-		}
 	}
 
 	str := fmt.Sprintf("there is no Tree or Element associated to the given name: %s", name)
@@ -59,7 +52,7 @@ func (obj *element) Bytes(includeChannels bool) []byte {
 				output = append(output, value.Prefix().Bytes(includeChannels)...)
 			}
 
-			output = append(output, value.Content().Number())
+			output = append(output, value.Content())
 			continue
 		}
 	}

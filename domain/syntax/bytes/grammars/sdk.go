@@ -160,6 +160,7 @@ type InstanceBuilder interface {
 
 // Instance represents an instance
 type Instance interface {
+	Name() string
 	Content() InstanceContent
 	IsReverse() bool
 }
@@ -175,16 +176,18 @@ type InstanceContent interface {
 // EverythingBuilder represents an everything builder
 type EverythingBuilder interface {
 	Create() EverythingBuilder
-	WithException(exception Line) EverythingBuilder
-	WithEscape(escape Line) EverythingBuilder
+	WithName(name string) EverythingBuilder
+	WithException(exception Token) EverythingBuilder
+	WithEscape(escape Token) EverythingBuilder
 	Now() (Everything, error)
 }
 
 // Everything represents an everything except
 type Everything interface {
-	Exception() Line
+	Name() string
+	Exception() Token
 	HasEscape() bool
-	Escape() Line
+	Escape() Token
 }
 
 // TokensBuilder represents a tokens builder
@@ -271,7 +274,6 @@ type Line interface {
 // ElementBuilder represents an element builder
 type ElementBuilder interface {
 	Create() ElementBuilder
-	WithName(name string) ElementBuilder
 	WithCardinality(cardinality cardinalities.Cardinality) ElementBuilder
 	WithValue(value values.Value) ElementBuilder
 	WithExternal(external External) ElementBuilder

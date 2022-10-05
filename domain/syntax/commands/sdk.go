@@ -2,22 +2,11 @@ package commands
 
 import (
 	"github.com/steve-care-software/syntax/domain/syntax/bytes/criterias"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
 )
 
 // NewBuilder creates a new builder
 func NewBuilder() Builder {
 	return createBuilder()
-}
-
-// NewCommandBuilder creates a new command builder
-func NewCommandBuilder() CommandBuilder {
-	return createCommandBuilder()
-}
-
-// NewContentBuilder creates a new content builder
-func NewContentBuilder() ContentBuilder {
-	return createContentBuilder()
 }
 
 // NewExecutionBuilder creates a new execution builder
@@ -50,62 +39,25 @@ func NewModuleDeclarationBuilder() ModuleDeclarationBuilder {
 	return createModuleDeclarationBuilder()
 }
 
-// Adapter represents commands adapter
-type Adapter interface {
-	ToCommands(data []byte) (Commands, error)
-}
-
-// Builder represents an instructions builder
+// Builder represents a command builder
 type Builder interface {
 	Create() Builder
-	WithList(list []Command) Builder
-	Now() (Commands, error)
-}
-
-// Commands represents commands
-type Commands interface {
-	List() []Command
-}
-
-// CommandBuilder represents a command builder
-type CommandBuilder interface {
-	Create() CommandBuilder
-	WithGrammar(grammar grammars.Grammar) CommandBuilder
-	WithContent(content Content) CommandBuilder
+	WithExecution(execution Execution) Builder
+	WithAttachment(attachment Attachment) Builder
+	WithVariableAssignment(variableAssignment VariableAssignment) Builder
+	WithParameterDeclaration(parameterDeclaration ParameterDeclaration) Builder
+	WithApplicationDeclaration(applicationDeclaration ApplicationDeclaration) Builder
+	WithModuleDeclaration(moduleDeclaration ModuleDeclaration) Builder
 	Now() (Command, error)
 }
 
-// Command represents a command
+// Command represents the possible commands
 type Command interface {
-	Grammar() grammars.Grammar
-	Content() Content
-}
-
-// ContentBuilder represents a content builder
-type ContentBuilder interface {
-	Create() ContentBuilder
-	WithExecution(execution Execution) ContentBuilder
-	WithAttachment(attachment Attachment) ContentBuilder
-	WithVariableAssignment(variableAssignment VariableAssignment) ContentBuilder
-	WithParameterDeclaration(parameterDeclaration ParameterDeclaration) ContentBuilder
-	WithApplicationDeclaration(applicationDeclaration ApplicationDeclaration) ContentBuilder
-	WithModuleDeclaration(moduleDeclaration ModuleDeclaration) ContentBuilder
-	Now() (Content, error)
-}
-
-// Content represents an instruction content
-type Content interface {
-	IsExecution() bool
 	Execution() Execution
-	IsAttachment() bool
 	Attachment() Attachment
-	IsVariableAssignment() bool
 	VariableAssignment() VariableAssignment
-	IsParameterDeclaration() bool
 	ParameterDeclaration() ParameterDeclaration
-	IsApplicationDeclaration() bool
 	ApplicationDeclaration() ApplicationDeclaration
-	IsModuleDeclaration() bool
 	ModuleDeclaration() ModuleDeclaration
 }
 

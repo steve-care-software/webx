@@ -48,13 +48,8 @@ func createApplication(
 	return &out
 }
 
-// Grammar converts bytes to a grammar instance
-func (app *application) Grammar(input []byte) (grammars.Grammar, []byte, error) {
-	return nil, nil, nil
-}
-
-// Tree converts the given grammar and data into a Tree instance
-func (app *application) Tree(grammar grammars.Grammar, values []byte) (trees.Tree, []byte, error) {
+// Execute executes the application
+func (app *application) Execute(grammar grammars.Grammar, values []byte) (trees.Tree, []byte, error) {
 	return app.grammar(grammar, false, []byte{}, values)
 }
 
@@ -249,7 +244,7 @@ func (app *application) element(element grammars.Element, channels grammars.Chan
 }
 
 func (app *application) elementContent(content grammars.ElementContent, channels grammars.Channels, isInChannel bool, prevData []byte, currentData []byte) (trees.Value, trees.Tree, []byte, error) {
-	if content.IsExternal() {
+	/*if content.IsExternal() {
 		external := content.External()
 		tree, remaining, err := app.external(external, isInChannel, prevData, currentData)
 		if err != nil {
@@ -257,7 +252,7 @@ func (app *application) elementContent(content grammars.ElementContent, channels
 		}
 
 		return nil, tree, remaining, nil
-	}
+	}*/
 
 	/*if content.IsToken() {
 		token := content.Token()
@@ -289,10 +284,9 @@ func (app *application) elementContent(content grammars.ElementContent, channels
 		remaining = rem
 	}
 
-	value := content.Value()
-	number := value.Number()
+	number := content.Value().Number()
 	if number == remaining[0] {
-		ins, err := builder.WithContent(value).Now()
+		ins, err := builder.WithContent(number).Now()
 		if err != nil {
 			return nil, nil, nil, err
 		}
