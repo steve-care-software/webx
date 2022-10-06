@@ -3,16 +3,15 @@ The syntax application makes it easy to create a grammar, use that grammar to ex
 
 ## VM syntax
     // module declaration:
-    module myModule;;
-
+    module @myModule;;
 
     // application declaration:
-    myModule $myApplication;;
+    @myModule $myApplication;;
 
     // this is an input parameter:
     -> $myInput;;
 
-    // this isan output variable:
+    // this is an output variable:
     <- $myOutput;;
 
     // assignment:
@@ -25,7 +24,7 @@ The syntax application makes it easy to create a grammar, use that grammar to ex
     $myOutput = execute $myAppVariable;;
 
     // execute module application without a return clause:
-    execute myAppVariable;;
+    execute $myAppVariable;;
 
 ## Grammar syntax
 

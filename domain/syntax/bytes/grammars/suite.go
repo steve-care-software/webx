@@ -1,29 +1,29 @@
 package grammars
 
 type suite struct {
-	valid   []byte
-	invalid []byte
+	isValid bool
+	content []byte
 }
 
 func createSuiteWithValid(
 	valid []byte,
 ) Suite {
-	return createSuiteInternally(valid, nil)
+	return createSuiteInternally(true, valid)
 }
 
 func createSuiteWithInvalid(
 	invalid []byte,
 ) Suite {
-	return createSuiteInternally(nil, invalid)
+	return createSuiteInternally(false, invalid)
 }
 
 func createSuiteInternally(
-	valid []byte,
-	invalid []byte,
+	isValid bool,
+	content []byte,
 ) Suite {
 	out := suite{
-		valid:   valid,
-		invalid: invalid,
+		isValid: isValid,
+		content: content,
 	}
 
 	return &out
@@ -31,20 +31,10 @@ func createSuiteInternally(
 
 // IsValid returns true if valid, false otherwise
 func (obj *suite) IsValid() bool {
-	return obj.valid != nil
+	return obj.isValid
 }
 
-// Valid returns the valid bytes, if any
-func (obj *suite) Valid() []byte {
-	return obj.valid
-}
-
-// IsInvalid returns true if invalid, false otherwise
-func (obj *suite) IsInvalid() bool {
-	return obj.invalid != nil
-}
-
-// Invalid returns the invalid bytes, if any
-func (obj *suite) Invalid() []byte {
-	return obj.invalid
+// Content returns the the content
+func (obj *suite) Content() []byte {
+	return obj.content
 }

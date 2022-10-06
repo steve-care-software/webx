@@ -1,30 +1,32 @@
 package coverages
 
-import "github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
+import (
+	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
+)
 
 type execution struct {
-	suite grammars.Suite
-	line  Line
+	expectation grammars.Suite
+	result      Result
 }
 
 func createExecution(
-	suite grammars.Suite,
-	line Line,
+	expectation grammars.Suite,
+	result Result,
 ) Execution {
 	out := execution{
-		suite: suite,
-		line:  line,
+		expectation: expectation,
+		result:      result,
 	}
 
 	return &out
 }
 
-// Suite returns the suite
-func (obj *execution) Suite() grammars.Suite {
-	return obj.suite
+// Expectation returns the expectation
+func (obj *execution) Expectation() grammars.Suite {
+	return obj.expectation
 }
 
-// Line returns the line
-func (obj *execution) Line() Line {
-	return obj.line
+// Result returns the result
+func (obj *execution) Result() Result {
+	return obj.result
 }

@@ -8,20 +8,17 @@ import (
 )
 
 type element struct {
-	grammar grammars.Element
-	content Content
-	amount  uint
+	grammar  grammars.Element
+	contents Contents
 }
 
 func createElement(
 	grammar grammars.Element,
-	content Content,
-	amount uint,
+	contents Contents,
 ) Element {
 	out := element{
-		grammar: grammar,
-		content: content,
-		amount:  amount,
+		grammar:  grammar,
+		contents: contents,
 	}
 
 	return &out
@@ -33,8 +30,24 @@ func (obj *element) Fetch(name string, elementIndex uint) (Tree, Element, error)
 		return nil, obj, nil
 	}
 
-	if obj.content.IsTree() {
-		return obj.content.Tree().Fetch(name, elementIndex)
+	list := obj.contents.List()
+	for _, oneContent := range list {
+		if !oneContent.IsTree() {
+			continue
+		}
+
+		tree, element, err := oneContent.Tree().Fetch(name, elementIndex)
+		if err != nil {
+			continue
+		}
+
+		if tree != nil {
+			return tree, nil, nil
+		}
+
+		if element != nil {
+			return nil, element, nil
+		}
 	}
 
 	str := fmt.Sprintf("there is no Tree or Element associated to the given name: %s", name)
@@ -44,10 +57,10 @@ func (obj *element) Fetch(name string, elementIndex uint) (Tree, Element, error)
 // Bytes returns the element's bytes
 func (obj *element) Bytes(includeChannels bool) []byte {
 	output := []byte{}
-	castedAmount := int(obj.amount)
-	for i := 0; i < castedAmount; i++ {
-		if obj.content.IsValue() {
-			value := obj.content.Value()
+	list := obj.contents.List()
+	for _, oneContent := range list {
+		if oneContent.IsValue() {
+			value := oneContent.Value()
 			if includeChannels && value.HasPrefix() {
 				output = append(output, value.Prefix().Bytes(includeChannels)...)
 			}
@@ -55,8 +68,11 @@ func (obj *element) Bytes(includeChannels bool) []byte {
 			output = append(output, value.Content())
 			continue
 		}
+
+		output = append(output, oneContent.Tree().Bytes(includeChannels)...)
 	}
-	return nil
+
+	return output
 }
 
 // Grammar returns the grammar
@@ -64,12 +80,12 @@ func (obj *element) Grammar() grammars.Element {
 	return obj.grammar
 }
 
-// Content returns the content
-func (obj *element) Content() Content {
-	return obj.content
+// Contents returns the contents
+func (obj *element) Contents() Contents {
+	return obj.contents
 }
 
 // Amount returns the amount
 func (obj *element) Amount() uint {
-	return obj.amount
+	return uint(len(obj.contents.List()))
 }

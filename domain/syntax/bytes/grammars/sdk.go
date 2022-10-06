@@ -154,19 +154,12 @@ type InstanceBuilder interface {
 	Create() InstanceBuilder
 	WithToken(token Token) InstanceBuilder
 	WithEverything(everything Everything) InstanceBuilder
-	IsReverse() InstanceBuilder
 	Now() (Instance, error)
 }
 
 // Instance represents an instance
 type Instance interface {
 	Name() string
-	Content() InstanceContent
-	IsReverse() bool
-}
-
-// InstanceContent represents an instance content
-type InstanceContent interface {
 	IsToken() bool
 	Token() Token
 	IsEverything() bool
@@ -242,9 +235,7 @@ type SuiteBuilder interface {
 // Suite represents a test suite
 type Suite interface {
 	IsValid() bool
-	Valid() []byte
-	IsInvalid() bool
-	Invalid() []byte
+	Content() []byte
 }
 
 // BlockBuilder represents a block builder

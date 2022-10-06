@@ -7,16 +7,14 @@ import (
 )
 
 type elementBuilder struct {
-	grammar grammars.Element
-	content Content
-	amount  uint
+	grammar  grammars.Element
+	contents Contents
 }
 
 func createElementBuilder() ElementBuilder {
 	out := elementBuilder{
-		grammar: nil,
-		content: nil,
-		amount:  0,
+		grammar:  nil,
+		contents: nil,
 	}
 
 	return &out
@@ -33,15 +31,9 @@ func (app *elementBuilder) WithGrammar(grammar grammars.Element) ElementBuilder 
 	return app
 }
 
-// WithContent adds a content to the builder
-func (app *elementBuilder) WithContent(content Content) ElementBuilder {
-	app.content = content
-	return app
-}
-
-// WithAmount adds an amount to the builder
-func (app *elementBuilder) WithAmount(amount uint) ElementBuilder {
-	app.amount = amount
+// WithContents adds a contents to the builder
+func (app *elementBuilder) WithContents(contents Contents) ElementBuilder {
+	app.contents = contents
 	return app
 }
 
@@ -51,13 +43,9 @@ func (app *elementBuilder) Now() (Element, error) {
 		return nil, errors.New("the grammar is mandatory in order to build an Element instance")
 	}
 
-	if app.content == nil {
-		return nil, errors.New("the content is mandatory in order to build an Element instance")
+	if app.contents == nil {
+		return nil, errors.New("the contents is mandatory in order to build an Element instance")
 	}
 
-	if app.amount <= 0 {
-		return nil, errors.New("the amount must be greater than zero (0) in order to build an Element instance")
-	}
-
-	return createElement(app.grammar, app.content, app.amount), nil
+	return createElement(app.grammar, app.contents), nil
 }

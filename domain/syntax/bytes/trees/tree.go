@@ -8,16 +8,25 @@ import (
 )
 
 type tree struct {
-	grammar grammars.Token
-	block   Block
-	suffix  Trees
+	grammar   grammars.Token
+	block     Block
+	suffix    Trees
+	remaining []byte
 }
 
 func createTree(
 	grammar grammars.Token,
 	block Block,
 ) Tree {
-	return createTreeInternally(grammar, block, nil)
+	return createTreeInternally(grammar, block, nil, nil)
+}
+
+func createTreeWithRemaining(
+	grammar grammars.Token,
+	block Block,
+	remaining []byte,
+) Tree {
+	return createTreeInternally(grammar, block, nil, remaining)
 }
 
 func createTreeWithSuffix(
@@ -25,18 +34,29 @@ func createTreeWithSuffix(
 	block Block,
 	suffix Trees,
 ) Tree {
-	return createTreeInternally(grammar, block, suffix)
+	return createTreeInternally(grammar, block, suffix, nil)
+}
+
+func createTreeWithSuffixAndRemaining(
+	grammar grammars.Token,
+	block Block,
+	suffix Trees,
+	remaining []byte,
+) Tree {
+	return createTreeInternally(grammar, block, suffix, remaining)
 }
 
 func createTreeInternally(
 	grammar grammars.Token,
 	block Block,
 	suffix Trees,
+	remaining []byte,
 ) Tree {
 	out := tree{
-		grammar: grammar,
-		block:   block,
-		suffix:  suffix,
+		grammar:   grammar,
+		block:     block,
+		suffix:    suffix,
+		remaining: remaining,
 	}
 
 	return &out
@@ -77,6 +97,10 @@ func (obj *tree) Fetch(name string, elementIndex uint) (Tree, Element, error) {
 // Bytes returns the tree's bytes
 func (obj *tree) Bytes(includeChannels bool) []byte {
 	output := []byte{}
+	if !obj.block.HasSuccessful() {
+		return output
+	}
+
 	elements := obj.block.Successful().Elements().List()
 	for _, oneElement := range elements {
 		output = append(output, oneElement.Bytes(includeChannels)...)
@@ -107,4 +131,14 @@ func (obj *tree) HasSuffix() bool {
 // Suffix returns the block
 func (obj *tree) Suffix() Trees {
 	return obj.suffix
+}
+
+// HasRemaining returns true if there is remaining, false otherwise
+func (obj *tree) HasRemaining() bool {
+	return obj.remaining != nil
+}
+
+// Remaining returns remaining, if any
+func (obj *tree) Remaining() []byte {
+	return obj.remaining
 }

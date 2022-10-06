@@ -6,20 +6,25 @@ import (
 
 	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
 	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars/coverages"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars/coverages/uncovers"
 	"github.com/steve-care-software/syntax/domain/syntax/bytes/trees"
 )
 
 type application struct {
-	grammarTokenBuilder grammars.TokenBuilder
-	treesBuilder        trees.Builder
-	treeBuilder         trees.TreeBuilder
-	treeBlockBuilder    trees.BlockBuilder
-	treeLineBuilder     trees.LineBuilder
-	treeElementsBuilder trees.ElementsBuilder
-	treeElementBuilder  trees.ElementBuilder
-	treeContentBuilder  trees.ContentBuilder
-	treeValueBuilder    trees.ValueBuilder
+	grammarTokenBuilder       grammars.TokenBuilder
+	treesBuilder              trees.Builder
+	treeBuilder               trees.TreeBuilder
+	treeBlockBuilder          trees.BlockBuilder
+	treeLineBuilder           trees.LineBuilder
+	treeElementsBuilder       trees.ElementsBuilder
+	treeElementBuilder        trees.ElementBuilder
+	treeContentsBuilder       trees.ContentsBuilder
+	treeContentBuilder        trees.ContentBuilder
+	treeValueBuilder          trees.ValueBuilder
+	coveragesBuilder          coverages.Builder
+	coverageBuilder           coverages.CoverageBuilder
+	coverageExecutionsBuilder coverages.ExecutionsBuilder
+	coverageExecutionBuilder  coverages.ExecutionBuilder
+	coverageResultBuilder     coverages.ResultBuilder
 }
 
 func createApplication(
@@ -30,66 +35,448 @@ func createApplication(
 	treeLineBuilder trees.LineBuilder,
 	treeElementsBuilder trees.ElementsBuilder,
 	treeElementBuilder trees.ElementBuilder,
+	treeContentsBuilder trees.ContentsBuilder,
 	treeContentBuilder trees.ContentBuilder,
 	treeValueBuilder trees.ValueBuilder,
+	coveragesBuilder coverages.Builder,
+	coverageBuilder coverages.CoverageBuilder,
+	coverageExecutionsBuilder coverages.ExecutionsBuilder,
+	coverageExecutionBuilder coverages.ExecutionBuilder,
+	coverageResultBuilder coverages.ResultBuilder,
 ) Application {
 	out := application{
-		grammarTokenBuilder: grammarTokenBuilder,
-		treesBuilder:        treesBuilder,
-		treeBuilder:         treeBuilder,
-		treeBlockBuilder:    treeBlockBuilder,
-		treeLineBuilder:     treeLineBuilder,
-		treeElementsBuilder: treeElementsBuilder,
-		treeElementBuilder:  treeElementBuilder,
-		treeContentBuilder:  treeContentBuilder,
-		treeValueBuilder:    treeValueBuilder,
+		grammarTokenBuilder:       grammarTokenBuilder,
+		treesBuilder:              treesBuilder,
+		treeBuilder:               treeBuilder,
+		treeBlockBuilder:          treeBlockBuilder,
+		treeLineBuilder:           treeLineBuilder,
+		treeElementsBuilder:       treeElementsBuilder,
+		treeElementBuilder:        treeElementBuilder,
+		treeContentsBuilder:       treeContentsBuilder,
+		treeContentBuilder:        treeContentBuilder,
+		treeValueBuilder:          treeValueBuilder,
+		coveragesBuilder:          coveragesBuilder,
+		coverageBuilder:           coverageBuilder,
+		coverageExecutionsBuilder: coverageExecutionsBuilder,
+		coverageExecutionBuilder:  coverageExecutionBuilder,
+		coverageResultBuilder:     coverageResultBuilder,
 	}
 
 	return &out
 }
 
 // Execute executes the application
-func (app *application) Execute(grammar grammars.Grammar, values []byte) (trees.Tree, []byte, error) {
+func (app *application) Execute(grammar grammars.Grammar, values []byte) (trees.Tree, error) {
 	return app.grammar(grammar, false, []byte{}, values)
 }
 
-func (app *application) grammar(grammar grammars.Grammar, isInChannel bool, prevData []byte, currentData []byte) (trees.Tree, []byte, error) {
+// Coverages returns the coverages
+func (app *application) Coverages(grammar grammars.Grammar) (coverages.Coverages, error) {
 	root := grammar.Root()
 	channels := grammar.Channels()
-	return app.token(root, channels, isInChannel, prevData, currentData)
+	skip := map[string]bool{}
+	rootCoverages, err := app.coveragesToken(root, channels, &skip)
+	if err != nil {
+		return nil, err
+	}
+
+	list := []coverages.Coverage{}
+	if grammar.HasChannels() {
+		channels := grammar.Channels().List()
+		for _, oneChannel := range channels {
+			token := oneChannel.Token()
+			coverages, err := app.coveragesToken(token, nil, &skip)
+			if err != nil {
+				return nil, err
+			}
+
+			if coverages != nil {
+				list = append(list, coverages.List()...)
+			}
+		}
+	}
+
+	if rootCoverages != nil {
+		list = append(list, rootCoverages.List()...)
+	}
+
+	if len(list) <= 0 {
+		return nil, nil
+	}
+
+	return app.coveragesBuilder.Create().WithList(list).Now()
 }
 
-func (app *application) token(token grammars.Token, channels grammars.Channels, isInChannel bool, prevData []byte, currentData []byte) (trees.Tree, []byte, error) {
-	tokenBlock := token.Block()
-	block, remaining, err := app.block(tokenBlock, channels, isInChannel, prevData, currentData)
+func (app *application) coveragesToken(token grammars.Token, channels grammars.Channels, pSkip *map[string]bool) (coverages.Coverages, error) {
+	name := token.Name()
+	skip := *pSkip
+	if _, ok := skip[name]; ok {
+		return nil, nil
+	}
+
+	skip[name] = true
+	pSkip = &skip
+	executionsList := []coverages.Execution{}
+	if token.HasSuites() {
+		suites := token.Suites().List()
+		for _, oneSuite := range suites {
+			execution, err := app.coverageTokenSuite(token, channels, oneSuite)
+			if err != nil {
+				return nil, err
+			}
+
+			if execution == nil {
+				continue
+			}
+
+			executionsList = append(executionsList, execution)
+		}
+	}
+
+	list := []coverages.Coverage{}
+	lines := token.Block().Lines()
+	for _, oneLine := range lines {
+		elements := oneLine.Elements()
+		for _, oneElement := range elements {
+			content := oneElement.Content()
+			if content.IsExternal() {
+				grammar := content.External().Grammar()
+				coverages, err := app.Coverages(grammar)
+				if err != nil {
+					return nil, err
+				}
+
+				if coverages != nil {
+					list = append(list, coverages.List()...)
+				}
+			}
+
+			if content.IsInstance() {
+				instance := content.Instance()
+				if instance.IsToken() {
+					token := instance.Token()
+					coverages, err := app.coveragesToken(token, channels, pSkip)
+					if err != nil {
+						return nil, err
+					}
+
+					if coverages != nil {
+						list = append(list, coverages.List()...)
+					}
+				}
+
+				if instance.IsEverything() {
+					everything := instance.Everything()
+					exception := everything.Exception()
+					coverages, err := app.coveragesToken(exception, channels, pSkip)
+					if err != nil {
+						return nil, err
+					}
+
+					if coverages != nil {
+						list = append(list, coverages.List()...)
+					}
+
+					if everything.HasEscape() {
+						escape := everything.Escape()
+						coverages, err := app.coveragesToken(escape, channels, pSkip)
+						if err != nil {
+							return nil, err
+						}
+
+						if coverages != nil {
+							list = append(list, coverages.List()...)
+						}
+					}
+				}
+			}
+
+		}
+	}
+
+	if len(executionsList) > 0 {
+		executions, err := app.coverageExecutionsBuilder.Create().WithList(executionsList).Now()
+		if err != nil {
+			return nil, err
+		}
+
+		coverage, err := app.coverageBuilder.Create().WithToken(token).WithExecutions(executions).Now()
+		if err != nil {
+			return nil, err
+		}
+
+		list = append(list, coverage)
+	}
+
+	if len(list) <= 0 {
+		return nil, nil
+	}
+
+	return app.coveragesBuilder.Create().WithList(list).Now()
+}
+
+func (app *application) coverageTokenSuite(token grammars.Token, channels grammars.Channels, suite grammars.Suite) (coverages.Execution, error) {
+	input := suite.Content()
+	tree, err := app.token(token, nil, channels, false, []byte{}, input)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
+	}
+
+	resultBuilder := app.coverageResultBuilder.Create()
+	if tree != nil {
+		resultBuilder.WithTree(tree)
+	}
+
+	if err != nil {
+		resultBuilder.WithError(err.Error())
+	}
+
+	result, err := resultBuilder.Now()
+	if err != nil {
+		return nil, err
+	}
+
+	return app.coverageExecutionBuilder.Create().
+		WithExpectation(suite).
+		WithResult(result).
+		Now()
+}
+
+// Covered returns the covered report
+func (app *application) Covered(coverages coverages.Coverages) (map[string]map[uint]map[uint]string, error) {
+	coveredElements := map[string]map[uint]map[uint]string{}
+	err := app.findCoveraredElements(coverages, &coveredElements)
+	if err != nil {
+		return nil, err
+	}
+
+	return coveredElements, nil
+}
+
+// Uncovered returns the uncovered report
+func (app *application) Uncovered(grammar grammars.Grammar) (map[string]map[uint]map[uint]string, error) {
+	coverages, err := app.Coverages(grammar)
+	if err != nil {
+		return nil, err
+	}
+
+	coveredElements, err := app.Covered(coverages)
+	if err != nil {
+		return nil, err
+	}
+
+	allElements := map[string]map[uint]map[uint]string{}
+	err = app.findElements(grammar, &allElements)
+	if err != nil {
+		return nil, err
+	}
+
+	uncoveredElements := map[string]map[uint]map[uint]string{}
+	for tokenName, lines := range allElements {
+		for lineIdx, elements := range lines {
+			for elIdx, element := range elements {
+				if _, ok := coveredElements[tokenName][lineIdx][elIdx]; !ok {
+					if _, ok := uncoveredElements[tokenName]; !ok {
+						uncoveredElements[tokenName] = map[uint]map[uint]string{}
+					}
+
+					if _, ok := uncoveredElements[tokenName][lineIdx]; !ok {
+						uncoveredElements[tokenName][lineIdx] = map[uint]string{}
+					}
+
+					uncoveredElements[tokenName][lineIdx][elIdx] = element
+				}
+			}
+		}
+
+	}
+
+	return uncoveredElements, nil
+}
+
+func (app *application) findElements(grammar grammars.Grammar, pElements *map[string]map[uint]map[uint]string) error {
+	elements := *pElements
+	root := grammar.Root()
+	err := app.findElementsFromToken(root, &elements)
+	if err != nil {
+		return err
+	}
+
+	if grammar.HasChannels() {
+		channels := grammar.Channels().List()
+		for _, oneChannel := range channels {
+			token := oneChannel.Token()
+			err := app.findElementsFromToken(token, &elements)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (app *application) findElementsFromToken(token grammars.Token, pElements *map[string]map[uint]map[uint]string) error {
+	elements := *pElements
+	tokenName := token.Name()
+	if _, ok := elements[tokenName]; !ok {
+		elements[tokenName] = map[uint]map[uint]string{}
+	}
+
+	lines := token.Block().Lines()
+	for idx, oneLine := range lines {
+		castedIdx := uint(idx)
+		if _, ok := elements[tokenName][castedIdx]; !ok {
+			elements[tokenName][castedIdx] = map[uint]string{}
+		}
+
+		elementsList := oneLine.Elements()
+		for elIdx, oneElement := range elementsList {
+			castedElIdx := uint(elIdx)
+			elements[tokenName][castedIdx][castedElIdx] = oneElement.Name()
+
+			content := oneElement.Content()
+			if content.IsExternal() {
+				grammar := content.External().Grammar()
+				err := app.findElements(grammar, &elements)
+				if err != nil {
+					return err
+				}
+			}
+
+			if content.IsInstance() {
+				instance := content.Instance()
+				if instance.IsToken() {
+					token := instance.Token()
+					err := app.findElementsFromToken(token, &elements)
+					if err != nil {
+						return err
+					}
+				}
+
+				if instance.IsEverything() {
+					everything := instance.Everything()
+					exception := everything.Exception()
+					err := app.findElementsFromToken(exception, &elements)
+					if err != nil {
+						return err
+					}
+
+					if everything.HasEscape() {
+						escape := everything.Escape()
+						err := app.findElementsFromToken(escape, &elements)
+						if err != nil {
+							return err
+						}
+					}
+				}
+			}
+
+		}
+	}
+
+	pElements = &elements
+	return nil
+}
+
+func (app *application) findCoveraredElements(coverages coverages.Coverages, pCovered *map[string]map[uint]map[uint]string) error {
+	list := coverages.List()
+	for _, oneCoverage := range list {
+		tokenName := oneCoverage.Token().Name()
+		executionsList := oneCoverage.Executions().List()
+		for _, oneExecution := range executionsList {
+			result := oneExecution.Result()
+			if !result.IsTree() {
+				continue
+			}
+
+			block := result.Tree().Block()
+			err := app.findCoveraredElementsFromBlock(tokenName, block, pCovered)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (app *application) findCoveraredElementsFromBlock(tokenName string, block trees.Block, pCovered *map[string]map[uint]map[uint]string) error {
+	if !block.HasSuccessful() {
+		return nil
+	}
+
+	line := block.Successful()
+	index := line.Index()
+	elementsList := line.Elements().List()
+	for elIdx, oneElement := range elementsList {
+		elementName := oneElement.Grammar().Name()
+		covered := *pCovered
+		if _, ok := covered[tokenName]; !ok {
+			covered[tokenName] = map[uint]map[uint]string{}
+		}
+
+		if _, ok := covered[tokenName][index]; !ok {
+			covered[tokenName][index] = map[uint]string{}
+		}
+
+		castedElIdx := uint(elIdx)
+		if _, ok := covered[tokenName][index][castedElIdx]; !ok {
+			covered[tokenName][index][castedElIdx] = elementName
+		}
+
+		contents := oneElement.Contents().List()
+		for _, oneContent := range contents {
+			if oneContent.IsTree() {
+				subBlock := oneContent.Tree().Block()
+				err := app.findCoveraredElementsFromBlock(elementName, subBlock, &covered)
+				if err != nil {
+					return err
+				}
+			}
+		}
+
+		pCovered = &covered
+	}
+
+	return nil
+}
+
+func (app *application) grammar(grammar grammars.Grammar, isReverse bool, prevData []byte, currentData []byte) (trees.Tree, error) {
+	root := grammar.Root()
+	channels := grammar.Channels()
+	return app.token(root, nil, channels, isReverse, prevData, currentData)
+}
+
+func (app *application) token(token grammars.Token, escape grammars.Token, channels grammars.Channels, isReverse bool, prevData []byte, currentData []byte) (trees.Tree, error) {
+	tokenName := token.Name()
+	tokenBlock := token.Block()
+	block, remaining, err := app.block(tokenName, tokenBlock, escape, channels, isReverse, prevData, currentData)
+	if err != nil {
+		return nil, err
 	}
 
 	builder := app.treeBuilder.Create().WithGrammar(token).WithBlock(block)
-	if !isInChannel {
+	if channels != nil {
 		suffix, rem, err := app.channels(channels, prevData, remaining)
-		if err != nil {
-			return nil, nil, err
+		if err == nil {
+			builder.WithSuffix(suffix)
+			remaining = rem
 		}
-
-		builder.WithSuffix(suffix)
-		remaining = rem
 	}
 
-	ins, err := builder.Now()
-	if err != nil {
-		return nil, nil, err
+	if len(remaining) > 0 {
+		builder.WithRemaining(remaining)
 	}
 
-	return ins, remaining, nil
+	return builder.Now()
 }
 
-func (app *application) external(external grammars.External, isInChannel bool, prevData []byte, currentData []byte) (trees.Tree, []byte, error) {
+func (app *application) external(external grammars.External, isReverse bool, prevData []byte, currentData []byte) (trees.Tree, error) {
 	grammar := external.Grammar()
-	treeIns, remaining, err := app.grammar(grammar, isInChannel, prevData, currentData)
+	treeIns, err := app.grammar(grammar, isReverse, prevData, currentData)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	name := external.Name()
@@ -103,26 +490,21 @@ func (app *application) external(external grammars.External, isInChannel bool, p
 
 	grammarRoot, err := builder.Now()
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	treeBlock := treeIns.Block()
-	ins, err := app.treeBuilder.Create().WithGrammar(grammarRoot).WithBlock(treeBlock).Now()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return ins, remaining, nil
+	return app.treeBuilder.Create().WithGrammar(grammarRoot).WithBlock(treeBlock).Now()
 }
 
-func (app *application) block(block grammars.Block, channels grammars.Channels, isInChannel bool, prevData []byte, currentData []byte) (trees.Block, []byte, error) {
+func (app *application) block(tokenName string, block grammars.Block, escape grammars.Token, channels grammars.Channels, isReverse bool, prevData []byte, currentData []byte) (trees.Block, []byte, error) {
 	list := []trees.Line{}
 	lines := block.Lines()
 	remaining := currentData
-	for _, oneLine := range lines {
-		lineIns, rem, err := app.line(oneLine, channels, isInChannel, prevData, remaining)
+	for idx, oneLine := range lines {
+		lineIns, rem, err := app.line(tokenName, oneLine, uint(idx), escape, channels, isReverse, prevData, remaining)
 		if err != nil {
-			return nil, nil, err
+			continue
 		}
 
 		list = append(list, lineIns)
@@ -140,13 +522,13 @@ func (app *application) block(block grammars.Block, channels grammars.Channels, 
 	return blockIns, remaining, nil
 }
 
-func (app *application) line(line grammars.Line, channels grammars.Channels, isInChannel bool, prevData []byte, currentData []byte) (trees.Line, []byte, error) {
+func (app *application) line(tokenName string, line grammars.Line, index uint, escape grammars.Token, channels grammars.Channels, isReverse bool, prevData []byte, currentData []byte) (trees.Line, []byte, error) {
 	list := []trees.Element{}
 	grElements := line.Elements()
 	remaining := currentData
 	previousData := prevData
 	for _, oneElement := range grElements {
-		element, rem, err := app.element(oneElement, channels, isInChannel, previousData, remaining)
+		element, rem, err := app.element(oneElement, escape, channels, isReverse, previousData, remaining)
 		if err != nil {
 			break
 		}
@@ -156,16 +538,20 @@ func (app *application) line(line grammars.Line, channels grammars.Channels, isI
 		remaining = rem
 	}
 
-	elements, err := app.treeElementsBuilder.Create().WithList(list).Now()
-	if err != nil {
-		return nil, nil, err
+	builder := app.treeLineBuilder.Create().
+		WithIndex(index).
+		WithGrammar(line)
+
+	if len(list) > 0 {
+		elements, err := app.treeElementsBuilder.Create().WithList(list).Now()
+		if err != nil {
+			return nil, nil, err
+		}
+
+		builder.WithElements(elements)
 	}
 
-	lineIns, err := app.treeLineBuilder.Create().
-		WithGrammar(line).
-		WithElements(elements).
-		Now()
-
+	lineIns, err := builder.Now()
 	if err != nil {
 		return nil, nil, err
 	}
@@ -173,67 +559,73 @@ func (app *application) line(line grammars.Line, channels grammars.Channels, isI
 	return lineIns, remaining, nil
 }
 
-func (app *application) element(element grammars.Element, channels grammars.Channels, isInChannel bool, prevData []byte, currentData []byte) (trees.Element, []byte, error) {
+func (app *application) element(element grammars.Element, escape grammars.Token, channels grammars.Channels, isReverse bool, prevData []byte, currentData []byte) (trees.Element, []byte, error) {
 	content := element.Content()
 	cardinality := element.Cardinality()
 	min := cardinality.Min()
 	pMax := cardinality.Max()
 
-	cpt := uint(0)
 	remaining := currentData
 	previousData := prevData
-	var value trees.Value
-	var tree trees.Tree
+	contentsList := []trees.Content{}
 	for {
-		if cpt >= *pMax {
+		if cardinality.HasMax() {
+			amount := uint(len(contentsList))
+			if amount >= *pMax {
+				break
+			}
+		}
+
+		if len(remaining) <= 0 {
 			break
 		}
 
-		val, tr, rem, err := app.elementContent(content, channels, isInChannel, previousData, remaining)
+		value, tree, rem, err := app.elementContent(content, escape, channels, isReverse, previousData, remaining)
 		if err != nil {
 			return nil, nil, err
 		}
 
-		if val == nil && tr == nil {
+		if value == nil && tree == nil {
 			break
 		}
 
-		if val != nil {
-			value = val
+		if tree != nil && !tree.Block().HasSuccessful() {
+			break
 		}
 
-		if tr != nil {
-			tree = tr
+		contentBuilder := app.treeContentBuilder.Create()
+		if value != nil {
+			contentBuilder.WithValue(value)
 		}
 
+		if tree != nil {
+			contentBuilder.WithTree(tree)
+		}
+
+		contentIns, err := contentBuilder.Now()
+		if err != nil {
+			return nil, nil, err
+		}
+
+		contentsList = append(contentsList, contentIns)
 		previousData = remaining
 		remaining = rem
-		cpt++
 	}
 
-	if cpt < min {
-		str := fmt.Sprintf("the cardinality's minimum is %d, %d elements found", min, cpt)
+	amount := uint(len(contentsList))
+	if amount < min {
+		str := fmt.Sprintf("the element's (name: %s) cardinality's minimum is %d, %d elements found", element.Name(), min, amount)
 		return nil, nil, errors.New(str)
 	}
 
-	contentBuilder := app.treeContentBuilder.Create()
-	if value != nil {
-		contentBuilder.WithValue(value)
-	}
-
-	if tree != nil {
-		contentBuilder.WithTree(tree)
-	}
-
-	contentIns, err := contentBuilder.Now()
+	contents, err := app.treeContentsBuilder.Create().WithList(contentsList).Now()
 	if err != nil {
 		return nil, nil, err
 	}
 
 	elementIns, err := app.treeElementBuilder.Create().
 		WithGrammar(element).
-		WithContent(contentIns).
-		WithAmount(cpt).
+		WithContents(contents).
 		Now()
 
 	if err != nil {
@@ -243,49 +635,64 @@ func (app *application) element(element grammars.Element, channels grammars.Chan
 	return elementIns, remaining, nil
 }
 
-func (app *application) elementContent(content grammars.ElementContent, channels grammars.Channels, isInChannel bool, prevData []byte, currentData []byte) (trees.Value, trees.Tree, []byte, error) {
-	/*if content.IsExternal() {
+func (app *application) elementContent(content grammars.ElementContent, escape grammars.Token, channels grammars.Channels, isReverse bool, prevData []byte, currentData []byte) (trees.Value, trees.Tree, []byte, error) {
+	if content.IsExternal() {
 		external := content.External()
-		tree, remaining, err := app.external(external, isInChannel, prevData, currentData)
+		tree, err := app.external(external, isReverse, prevData, currentData)
 		if err != nil {
 			return nil, nil, nil, err
 		}
 
-		return nil, tree, remaining, nil
-	}*/
-
-	/*if content.IsToken() {
-		token := content.Token()
-		tree, remaining, err := app.token(token, channels, isInChannel, prevData, currentData)
-		if err != nil {
-			return nil, nil, nil, err
+		remaining := []byte{}
+		if tree.HasRemaining() {
+			remaining = tree.Remaining()
 		}
 
 		return nil, tree, remaining, nil
-	}*/
-
-	if content.IsInstance() {
-
 	}
 
-	if len(currentData) <= 1 {
+	if content.IsInstance() {
+		instance := content.Instance()
+		tree, err := app.instance(instance, escape, channels, isReverse, prevData, currentData)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+
+		remaining := []byte{}
+		if tree.HasRemaining() {
+			remaining = tree.Remaining()
+		}
+
+		return nil, tree, remaining, nil
+	}
+
+	if len(currentData) < 1 {
 		return nil, nil, nil, errors.New("there must be at least 1 value in the given data in order to have an element match, 0 provided")
 	}
 
 	remaining := currentData
 	builder := app.treeValueBuilder.Create()
-	if !isInChannel {
+	if channels != nil {
 		prefix, rem, err := app.channels(channels, prevData, remaining)
+		if err == nil {
+			builder.WithPrefix(prefix)
+			remaining = rem
+		}
+	}
+
+	if escape != nil {
+		fmt.Printf("finish escape!!")
+		//panic(errors.New("finish escape!!!"))
+		/*tree, remainingAfterEscape, err := app.token(escape, nil, channels, isReverse, prevData, currentData)
 		if err != nil {
-			return nil, nil, nil, err
+			return nil, nil, err
 		}
 
-		builder.WithPrefix(prefix)
-		remaining = rem
+		remaining = remainingAfterEscape*/
 	}
 
 	number := content.Value().Number()
-	if number == remaining[0] {
+	if (number == remaining[0]) == !isReverse {
 		ins, err := builder.WithContent(number).Now()
 		if err != nil {
 			return nil, nil, nil, err
@@ -297,6 +704,22 @@ func (app *application) elementContent(content grammars.ElementContent, channels
 	return nil, nil, nil, nil
 }
 
+func (app *application) instance(instance grammars.Instance, escape grammars.Token, channels grammars.Channels, isReverse bool, prevData []byte, currentData []byte) (trees.Tree, error) {
+	if instance.IsToken() {
+		token := instance.Token()
+		return app.token(token, escape, channels, isReverse, prevData, currentData)
+	}
+
+	everything := instance.Everything()
+	return app.everything(everything, channels, isReverse, prevData, currentData)
+}
+
+func (app *application) everything(everything grammars.Everything, channels grammars.Channels, isReverse bool, prevData []byte, currentData []byte) (trees.Tree, error) {
+	exception := everything.Exception()
+	escape := everything.Escape()
+	return app.token(exception, escape, channels, !isReverse, prevData, currentData)
+}
+
 func (app *application) channels(channels grammars.Channels, prevData []byte, currentData []byte) (trees.Trees, []byte, error) {
 	list := channels.List()
 	treeList := []trees.Tree{}
@@ -306,12 +729,21 @@ func (app *application) channels(channels grammars.Channels, prevData []byte, cu
 	for {
 		beginAmount := len(treeList)
 		for _, oneChannel := range list {
-			tree, rem, err := app.channel(oneChannel, previousData, remaining)
+			tree, err := app.channel(oneChannel, previousData, remaining)
 			if err != nil {
-				return nil, nil, err
+				continue
 			}
 
 			if tree == nil {
+				continue
+			}
+
+			rem := []byte{}
+			if tree.HasRemaining() {
+				rem = tree.Remaining()
+			}
+
+			if len(rem) == len(remaining) {
 				continue
 			}
 
@@ -320,7 +752,7 @@ func (app *application) channels(channels grammars.Channels, prevData []byte, cu
 			remaining = rem
 		}
 
-		if beginAmount == len(treeList) {
+		if beginAmount <= len(treeList) {
 			break
 		}
 	}
@@ -333,33 +765,38 @@ func (app *application) channels(channels grammars.Channels, prevData []byte, cu
 	return trees, remaining, nil
 }
 
-func (app *application) channel(channel grammars.Channel, prevData []byte, currentData []byte) (trees.Tree, []byte, error) {
+func (app *application) channel(channel grammars.Channel, prevData []byte, currentData []byte) (trees.Tree, error) {
 	token := channel.Token()
-	tree, remaining, err := app.token(token, nil, true, prevData, currentData)
+	tree, err := app.token(token, nil, nil, false, prevData, currentData)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	if channel.HasCondition() {
+		remaining := []byte{}
+		if tree.HasRemaining() {
+			remaining = tree.Remaining()
+		}
+
 		condition := channel.Condition()
 		isAccepted, err := app.channelCondition(condition, prevData, remaining)
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 
 		if !isAccepted {
-			return nil, nil, nil
+			return nil, nil
 		}
 	}
 
-	return tree, remaining, nil
+	return tree, nil
 }
 
 func (app *application) channelCondition(condition grammars.ChannelCondition, prevData []byte, nextData []byte) (bool, error) {
 	isPrevMatch := true
 	if condition.HasPrevious() {
 		prevToken := condition.Previous()
-		tree, _, err := app.token(prevToken, nil, true, []byte{}, prevData)
+		tree, err := app.token(prevToken, nil, nil, false, []byte{}, prevData)
 		if err != nil {
 			return false, err
 		}
@@ -370,7 +807,7 @@ func (app *application) channelCondition(condition grammars.ChannelCondition, pr
 	isNextMatch := true
 	if condition.HasNext() {
 		nextToken := condition.Next()
-		tree, _, err := app.token(nextToken, nil, true, []byte{}, nextData)
+		tree, err := app.token(nextToken, nil, nil, false, []byte{}, nextData)
 		if err != nil {
 			return false, err
 		}
@@ -378,14 +815,4 @@ func (app *application) channelCondition(condition grammars.ChannelCondition, pr
 		isNextMatch = tree != nil
 	}
 	return isPrevMatch && isNextMatch, nil
-}
-
-// Test executes the tests
-func (app *application) Test(grammar grammars.Grammar) (coverages.Coverage, error) {
-	return nil, nil
-}
-
-// Uncovered returns an uncovered report
-func (app *application) Uncovered(coverage coverages.Coverage) (uncovers.Uncovers, error) {
-	return nil, nil
 }

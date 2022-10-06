@@ -5,14 +5,12 @@ import "errors"
 type instanceBuilder struct {
 	token      Token
 	everything Everything
-	isReverse  bool
 }
 
 func createInstanceBuilder() InstanceBuilder {
 	out := instanceBuilder{
 		token:      nil,
 		everything: nil,
-		isReverse:  false,
 	}
 
 	return &out
@@ -35,22 +33,14 @@ func (app *instanceBuilder) WithEverything(everything Everything) InstanceBuilde
 	return app
 }
 
-// IsReverse flags the builder as isReverse
-func (app *instanceBuilder) IsReverse() InstanceBuilder {
-	app.isReverse = true
-	return app
-}
-
 // Now builds a new Instance instance
 func (app *instanceBuilder) Now() (Instance, error) {
 	if app.token != nil {
-		content := createInstanceContentWithToken(app.token)
-		return createInstance(content, app.isReverse), nil
+		return createInstanceWithToken(app.token), nil
 	}
 
 	if app.everything != nil {
-		content := createInstanceContentWithEverything(app.everything)
-		return createInstance(content, app.isReverse), nil
+		return createInstanceWithEverything(app.everything), nil
 	}
 
 	return nil, errors.New("the Instance is invalid")

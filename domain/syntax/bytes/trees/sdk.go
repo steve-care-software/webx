@@ -34,6 +34,11 @@ func NewElementBuilder() ElementBuilder {
 	return createElementBuilder()
 }
 
+// NewContentsBuilder creates a new contents builder
+func NewContentsBuilder() ContentsBuilder {
+	return createContentsBuilder()
+}
+
 // NewContentBuilder creates a new content builder
 func NewContentBuilder() ContentBuilder {
 	return createContentBuilder()
@@ -63,6 +68,7 @@ type TreeBuilder interface {
 	WithGrammar(grammar grammars.Token) TreeBuilder
 	WithBlock(block Block) TreeBuilder
 	WithSuffix(suffix Trees) TreeBuilder
+	WithRemaining(remaining []byte) TreeBuilder
 	Now() (Tree, error)
 }
 
@@ -74,6 +80,8 @@ type Tree interface {
 	Block() Block
 	HasSuffix() bool
 	Suffix() Trees
+	HasRemaining() bool
+	Remaining() []byte
 }
 
 // BlockBuilder represents a block builder
@@ -93,6 +101,7 @@ type Block interface {
 // LineBuilder represents a line builder
 type LineBuilder interface {
 	Create() LineBuilder
+	WithIndex(index uint) LineBuilder
 	WithGrammar(grammar grammars.Line) LineBuilder
 	WithElements(elements Elements) LineBuilder
 	Now() (Line, error)
@@ -100,9 +109,11 @@ type LineBuilder interface {
 
 // Line represents a line of elements
 type Line interface {
+	Index() uint
 	Grammar() grammars.Line
-	Elements() Elements
 	IsSuccessful() bool
+	HasElements() bool
+	Elements() Elements
 }
 
 // ElementsBuilder represents elements builder
@@ -121,8 +132,7 @@ type Elements interface {
 type ElementBuilder interface {
 	Create() ElementBuilder
 	WithGrammar(grammar grammars.Element) ElementBuilder
-	WithContent(content Content) ElementBuilder
-	WithAmount(amount uint) ElementBuilder
+	WithContents(contents Contents) ElementBuilder
 	Now() (Element, error)
 }
 
@@ -131,8 +141,20 @@ type Element interface {
 	Fetch(name string, elementIndex uint) (Tree, Element, error)
 	Bytes(includeChannels bool) []byte
 	Grammar() grammars.Element
-	Content() Content
+	Contents() Contents
 	Amount() uint
+}
+
+// ContentsBuilder represents contents builder
+type ContentsBuilder interface {
+	Create() ContentsBuilder
+	WithList(list []Content) ContentsBuilder
+	Now() (Contents, error)
+}
+
+// Contents represents contents
+type Contents interface {
+	List() []Content
 }
 
 // ContentBuilder represents a content builder

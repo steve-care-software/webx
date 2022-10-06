@@ -1,17 +1,29 @@
 package grammars
 
 type instance struct {
-	content   InstanceContent
-	isReverse bool
+	token      Token
+	everything Everything
 }
 
-func createInstance(
-	content InstanceContent,
-	isReverse bool,
+func createInstanceWithToken(
+	token Token,
+) Instance {
+	return createInstanceInternally(token, nil)
+}
+
+func createInstanceWithEverything(
+	everything Everything,
+) Instance {
+	return createInstanceInternally(nil, everything)
+}
+
+func createInstanceInternally(
+	token Token,
+	everything Everything,
 ) Instance {
 	out := instance{
-		content:   content,
-		isReverse: isReverse,
+		token:      token,
+		everything: everything,
 	}
 
 	return &out
@@ -19,19 +31,29 @@ func createInstance(
 
 // Name returns the name
 func (obj *instance) Name() string {
-	if obj.content.IsToken() {
-		return obj.content.Token().Name()
+	if obj.IsToken() {
+		return obj.Token().Name()
 	}
 
-	return obj.content.Everything().Name()
+	return obj.Everything().Name()
 }
 
-// Content returns the content
-func (obj *instance) Content() InstanceContent {
-	return obj.content
+// IsToken returns true if there is a token, false otherwise
+func (obj *instance) IsToken() bool {
+	return obj.token != nil
 }
 
-// IsReverse returns true if reverse, false otherwise
-func (obj *instance) IsReverse() bool {
-	return obj.isReverse
+// Token returns the token, if any
+func (obj *instance) Token() Token {
+	return obj.token
+}
+
+// IsEverything returns true if there is an everything, false otherwise
+func (obj *instance) IsEverything() bool {
+	return obj.everything != nil
+}
+
+// Everything returns the everything, if any
+func (obj *instance) Everything() Everything {
+	return obj.everything
 }

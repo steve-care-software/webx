@@ -7,16 +7,18 @@ import (
 )
 
 type treeBuilder struct {
-	grammar grammars.Token
-	block   Block
-	suffix  Trees
+	grammar   grammars.Token
+	block     Block
+	suffix    Trees
+	remaining []byte
 }
 
 func createTreeBuilder() TreeBuilder {
 	out := treeBuilder{
-		grammar: nil,
-		block:   nil,
-		suffix:  nil,
+		grammar:   nil,
+		block:     nil,
+		suffix:    nil,
+		remaining: nil,
 	}
 
 	return &out
@@ -45,6 +47,12 @@ func (app *treeBuilder) WithSuffix(suffix Trees) TreeBuilder {
 	return app
 }
 
+// WithRemaining adds a remaining to the builder
+func (app *treeBuilder) WithRemaining(remaining []byte) TreeBuilder {
+	app.remaining = remaining
+	return app
+}
+
 // Now builds a new Tree instance
 func (app *treeBuilder) Now() (Tree, error) {
 	if app.grammar == nil {
@@ -53,6 +61,18 @@ func (app *treeBuilder) Now() (Tree, error) {
 
 	if app.block == nil {
 		return nil, errors.New("the block is mandatory in order to build a Tree instance")
+	}
+
+	if app.remaining != nil && len(app.remaining) <= 0 {
+		app.remaining = nil
+	}
+
+	if app.remaining != nil && app.suffix != nil {
+		return createTreeWithSuffixAndRemaining(app.grammar, app.block, app.suffix, app.remaining), nil
+	}
+
+	if app.remaining != nil {
+		return createTreeWithRemaining(app.grammar, app.block, app.remaining), nil
 	}
 
 	if app.suffix != nil {

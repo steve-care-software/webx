@@ -1,6 +1,9 @@
 package coverages
 
-import "github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
+import (
+	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
+	"github.com/steve-care-software/syntax/domain/syntax/bytes/trees"
+)
 
 // NewBuilder initializes the builder
 func NewBuilder() Builder {
@@ -22,14 +25,9 @@ func NewExecutionBuilder() ExecutionBuilder {
 	return createExecutionBuilder()
 }
 
-// NewLineBuilder creates a new line builder
-func NewLineBuilder() LineBuilder {
-	return createLineBuilder()
-}
-
-// NewElementBuilder creates a new element builder
-func NewElementBuilder() ElementBuilder {
-	return createElementBuilder()
+// NewResultBuilder creates a new result builder
+func NewResultBuilder() ResultBuilder {
+	return createResultBuilder()
 }
 
 // Builder represents a coverages builder
@@ -73,40 +71,29 @@ type Executions interface {
 // ExecutionBuilder represents an execution builder
 type ExecutionBuilder interface {
 	Create() ExecutionBuilder
-	WithSuite(suite grammars.Suite) ExecutionBuilder
-	WithLine(line Line) ExecutionBuilder
+	WithExpectation(expectation grammars.Suite) ExecutionBuilder
+	WithResult(result Result) ExecutionBuilder
 	Now() (Execution, error)
 }
 
 // Execution represents a suite's execution
 type Execution interface {
-	Suite() grammars.Suite
-	Line() Line
+	Expectation() grammars.Suite
+	Result() Result
 }
 
-// LineBuilder represents a line builder
-type LineBuilder interface {
-	Create() LineBuilder
-	WithList(list []Element) LineBuilder
-	Now() (Line, error)
+// ResultBuilder represents a result builder
+type ResultBuilder interface {
+	Create() ResultBuilder
+	WithTree(tree trees.Tree) ResultBuilder
+	WithError(error string) ResultBuilder
+	Now() (Result, error)
 }
 
-// Line represents a coverage line
-type Line interface {
-	List() []Element
-}
-
-// ElementBuilder represents an element builder
-type ElementBuilder interface {
-	Create() ElementBuilder
-	WithName(name string) ElementBuilder
-	WithValue(value []byte) ElementBuilder
-	Now() (Element, error)
-}
-
-// Element represents a coverage element
-type Element interface {
-	Name() string
-	HasValue() bool
-	Value() []byte
+// Result represents an expectation's result
+type Result interface {
+	IsTree() bool
+	Tree() trees.Tree
+	IsError() bool
+	Error() string
 }
