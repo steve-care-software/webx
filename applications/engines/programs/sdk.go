@@ -3,7 +3,7 @@ package programs
 import (
 	"github.com/steve-care-software/syntax/applications/engines/criterias"
 	grammar_application "github.com/steve-care-software/syntax/applications/engines/grammars"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
+	"github.com/steve-care-software/syntax/domain/syntax/grammars"
 	"github.com/steve-care-software/syntax/domain/syntax/commands"
 	"github.com/steve-care-software/syntax/domain/syntax/programs"
 	"github.com/steve-care-software/syntax/domain/syntax/programs/applications"

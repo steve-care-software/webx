@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/syntax/applications/engines"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars/values"
+	"github.com/steve-care-software/syntax/domain/syntax/grammars/values"
 )
 
 func TestModule_engineGrammarValue_Success(t *testing.T) {

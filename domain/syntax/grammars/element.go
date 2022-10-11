@@ -1,6 +1,6 @@
 package grammars
 
-import "github.com/steve-care-software/syntax/domain/syntax/bytes/grammars/cardinalities"
+import "github.com/steve-care-software/syntax/domain/syntax/grammars/cardinalities"
 
 type element struct {
 	content     ElementContent

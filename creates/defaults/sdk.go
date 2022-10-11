@@ -2,11 +2,11 @@ package defaults
 
 import (
 	"github.com/steve-care-software/syntax/applications/engines/creates"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/criterias"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars/cardinalities"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars/values"
-	grammar_values "github.com/steve-care-software/syntax/domain/syntax/bytes/grammars/values"
+	"github.com/steve-care-software/syntax/domain/syntax/criterias"
+	"github.com/steve-care-software/syntax/domain/syntax/grammars"
+	"github.com/steve-care-software/syntax/domain/syntax/grammars/cardinalities"
+	"github.com/steve-care-software/syntax/domain/syntax/grammars/values"
+	grammar_values "github.com/steve-care-software/syntax/domain/syntax/grammars/values"
 	"github.com/steve-care-software/syntax/domain/syntax/commands"
 	"github.com/steve-care-software/syntax/domain/syntax/programs/applications/modules"
 )

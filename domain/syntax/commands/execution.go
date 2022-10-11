@@ -1,6 +1,6 @@
 package commands
 
-import "github.com/steve-care-software/syntax/domain/syntax/bytes/criterias"
+import "github.com/steve-care-software/syntax/domain/syntax/criterias"
 
 type execution struct {
 	application criterias.Criteria

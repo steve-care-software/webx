@@ -1,6 +1,6 @@
 package coverages
 
-import "github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
+import "github.com/steve-care-software/syntax/domain/syntax/grammars"
 
 type coverage struct {
 	token      grammars.Token

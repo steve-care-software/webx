@@ -2,7 +2,7 @@ package databases
 
 import (
 	uuid "github.com/satori/go.uuid"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
+	"github.com/steve-care-software/syntax/domain/syntax/grammars"
 )
 
 // Database represents a database

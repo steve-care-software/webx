@@ -1,6 +1,6 @@
 package commands
 
-import "github.com/steve-care-software/syntax/domain/syntax/bytes/criterias"
+import "github.com/steve-care-software/syntax/domain/syntax/criterias"
 
 type attachment struct {
 	global      criterias.Criteria

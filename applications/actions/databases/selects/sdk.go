@@ -2,7 +2,7 @@ package selects
 
 import (
 	"github.com/steve-care-software/syntax/domain/databases/transactions"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/criterias"
+	"github.com/steve-care-software/syntax/domain/syntax/criterias"
 )
 
 // Builder represents a database builder

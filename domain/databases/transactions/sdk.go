@@ -1,7 +1,7 @@
 package transactions
 
 import (
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/criterias"
+	"github.com/steve-care-software/syntax/domain/syntax/criterias"
 	"github.com/steve-care-software/syntax/domain/syntax/composers"
 )
 

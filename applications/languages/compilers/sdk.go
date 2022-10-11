@@ -3,8 +3,8 @@ package compilers
 import (
 	coverage_application "github.com/steve-care-software/syntax/applications/grammars/coverages"
 	"github.com/steve-care-software/syntax/applications/interpreters"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/trees"
+	"github.com/steve-care-software/syntax/domain/syntax/grammars"
+	"github.com/steve-care-software/syntax/domain/syntax/trees"
 	"github.com/steve-care-software/syntax/domain/syntax/commands"
 	"github.com/steve-care-software/syntax/domain/syntax/compilers"
 	"github.com/steve-care-software/syntax/domain/syntax/programs/instructions/applications/modules"

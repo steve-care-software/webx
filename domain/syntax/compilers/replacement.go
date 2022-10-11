@@ -1,6 +1,6 @@
 package compilers
 
-import "github.com/steve-care-software/syntax/domain/syntax/bytes/criterias"
+import "github.com/steve-care-software/syntax/domain/syntax/criterias"
 
 type replacement struct {
 	name     []byte

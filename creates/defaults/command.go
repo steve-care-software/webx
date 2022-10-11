@@ -2,7 +2,7 @@ package defaults
 
 import (
 	creates_command "github.com/steve-care-software/syntax/applications/engines/creates/commands"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/criterias"
+	"github.com/steve-care-software/syntax/domain/syntax/criterias"
 	"github.com/steve-care-software/syntax/domain/syntax/commands"
 )
 

@@ -4,8 +4,8 @@ import (
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/hash"
 	"github.com/steve-care-software/syntax/domain/identity/cryptography/signatures"
 	"github.com/steve-care-software/syntax/domain/identity/publics/assets/units/genesis"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/criterias"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
+	"github.com/steve-care-software/syntax/domain/syntax/criterias"
+	"github.com/steve-care-software/syntax/domain/syntax/grammars"
 	"github.com/steve-care-software/syntax/domain/syntax/compilers"
 )
 

@@ -1,7 +1,7 @@
 package combiners
 
 import (
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/trees"
+	"github.com/steve-care-software/syntax/domain/syntax/trees"
 )
 
 // Application represents the combine application

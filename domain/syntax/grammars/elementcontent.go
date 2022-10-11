@@ -1,7 +1,7 @@
 package grammars
 
 import (
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars/values"
+	"github.com/steve-care-software/syntax/domain/syntax/grammars/values"
 )
 
 type elementContent struct {

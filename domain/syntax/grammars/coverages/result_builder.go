@@ -3,7 +3,7 @@ package coverages
 import (
 	"errors"
 
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/trees"
+	"github.com/steve-care-software/syntax/domain/syntax/trees"
 )
 
 type resultBuilder struct {

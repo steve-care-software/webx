@@ -1,6 +1,6 @@
 package compilers
 
-import "github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
+import "github.com/steve-care-software/syntax/domain/syntax/grammars"
 
 type element struct {
 	grammar     grammars.Grammar

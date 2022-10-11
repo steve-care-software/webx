@@ -1,6 +1,6 @@
 package coverages
 
-import "github.com/steve-care-software/syntax/domain/syntax/bytes/trees"
+import "github.com/steve-care-software/syntax/domain/syntax/trees"
 
 type result struct {
 	tree trees.Tree

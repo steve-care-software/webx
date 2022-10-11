@@ -1,7 +1,7 @@
 package trees
 
 import (
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
+	"github.com/steve-care-software/syntax/domain/syntax/grammars"
 )
 
 type line struct {

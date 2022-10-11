@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/criterias"
+	"github.com/steve-care-software/syntax/domain/syntax/criterias"
 )
 
 // NewBuilder creates a new builder

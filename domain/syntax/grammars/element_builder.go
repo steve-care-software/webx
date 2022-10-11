@@ -3,8 +3,8 @@ package grammars
 import (
 	"errors"
 
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars/cardinalities"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars/values"
+	"github.com/steve-care-software/syntax/domain/syntax/grammars/cardinalities"
+	"github.com/steve-care-software/syntax/domain/syntax/grammars/values"
 )
 
 type elementBuilder struct {

@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	creates_module "github.com/steve-care-software/syntax/applications/engines/creates/modules"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars/values"
+	"github.com/steve-care-software/syntax/domain/syntax/grammars/values"
 	"github.com/steve-care-software/syntax/domain/syntax/programs/applications/modules"
 )
 

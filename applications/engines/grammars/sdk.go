@@ -1,9 +1,9 @@
 package grammars
 
 import (
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars/coverages"
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/trees"
+	"github.com/steve-care-software/syntax/domain/syntax/grammars"
+	"github.com/steve-care-software/syntax/domain/syntax/grammars/coverages"
+	"github.com/steve-care-software/syntax/domain/syntax/trees"
 )
 
 // NewApplication creates a new application

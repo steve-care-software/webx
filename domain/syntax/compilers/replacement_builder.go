@@ -3,7 +3,7 @@ package compilers
 import (
 	"errors"
 
-	"github.com/steve-care-software/syntax/domain/syntax/bytes/criterias"
+	"github.com/steve-care-software/syntax/domain/syntax/criterias"
 )
 
 type replacementBuilder struct {
