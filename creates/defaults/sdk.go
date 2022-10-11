@@ -2,12 +2,12 @@ package defaults
 
 import (
 	"github.com/steve-care-software/syntax/applications/engines/creates"
+	"github.com/steve-care-software/syntax/domain/syntax/commands"
 	"github.com/steve-care-software/syntax/domain/syntax/criterias"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars/cardinalities"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars/values"
 	grammar_values "github.com/steve-care-software/syntax/domain/syntax/grammars/values"
-	"github.com/steve-care-software/syntax/domain/syntax/commands"
 	"github.com/steve-care-software/syntax/domain/syntax/programs/applications/modules"
 )
 
@@ -43,6 +43,7 @@ func NewApplication() creates.Application {
 		createModule(
 			modules.NewBuilder(),
 			modules.NewModuleBuilder(),
+			cardinalities.NewBuilder(),
 			values.NewBuilder(),
 		),
 	)

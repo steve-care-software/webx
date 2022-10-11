@@ -11,15 +11,15 @@ import (
 func TestModule_engineGrammarValue_Success(t *testing.T) {
 	script := `
 		module @engineGrammarValue;;
-		@engineGrammarValue $myValue;;
+		@engineGrammarValue $valueApp;;
 		-> $myName;;
 		<- $myValue;;
 
 		$myNumber = 157;;
-		attach $myNumber:$number $myValue;;
-		attach $myName:$name $myValue;;
+		attach $myNumber:$number $valueApp;;
+		attach $myName:$name $valueApp;;
 
-		$myValue = execute $myValue;;
+		$myValue = execute $valueApp;;
 		invalid
 	`
 

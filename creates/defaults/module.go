@@ -7,25 +7,29 @@ import (
 	"strings"
 
 	creates_module "github.com/steve-care-software/syntax/applications/engines/creates/modules"
+	"github.com/steve-care-software/syntax/domain/syntax/grammars/cardinalities"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars/values"
 	"github.com/steve-care-software/syntax/domain/syntax/programs/applications/modules"
 )
 
 type module struct {
-	builder             modules.Builder
-	moduleBuilder       modules.ModuleBuilder
-	grammarValueBuilder values.Builder
+	builder                   modules.Builder
+	moduleBuilder             modules.ModuleBuilder
+	grammarCardinalityBuilder cardinalities.Builder
+	grammarValueBuilder       values.Builder
 }
 
 func createModule(
 	builder modules.Builder,
 	moduleBuilder modules.ModuleBuilder,
+	grammarCardinalityBuilder cardinalities.Builder,
 	grammarValueBuilder values.Builder,
 ) creates_module.Application {
 	out := module{
-		builder:             builder,
-		moduleBuilder:       moduleBuilder,
-		grammarValueBuilder: grammarValueBuilder,
+		builder:                   builder,
+		moduleBuilder:             moduleBuilder,
+		grammarCardinalityBuilder: grammarCardinalityBuilder,
+		grammarValueBuilder:       grammarValueBuilder,
 	}
 
 	return &out
@@ -55,17 +59,60 @@ func (app *module) engine() ([]modules.Module, error) {
 }
 
 func (app *module) grammar() ([]modules.Module, error) {
-	value, err := app.grammarValue()
+	value, err := app.engineGrammarValue()
+	if err != nil {
+		return nil, err
+	}
+
+	cardinality, err := app.engineGrammarCardinality()
 	if err != nil {
 		return nil, err
 	}
 
 	return []modules.Module{
 		value,
+		cardinality,
 	}, nil
 }
 
-func (app *module) grammarValue() (modules.Module, error) {
+func (app *module) engineGrammarCardinality() (modules.Module, error) {
+	name := "engineGrammarCardinality"
+	fn := func(input map[string]interface{}) (interface{}, error) {
+		if min, ok := input["min"].(string); ok {
+			intMin, err := strconv.Atoi(strings.TrimSpace(min))
+			if err != nil {
+				return nil, err
+			}
+
+			if intMin <= 0 {
+				return nil, errors.New("the minimum cannot be smaller or equal than 0")
+			}
+
+			builder := app.grammarCardinalityBuilder.Create().WithMin(uint(intMin))
+			if max, ok := input["max"].(string); ok {
+				intMax, err := strconv.Atoi(strings.TrimSpace(max))
+				if err != nil {
+					return nil, err
+				}
+
+				if intMax < 0 {
+					return nil, errors.New("the maximum cannot be smaller or equal than 0")
+				}
+
+				builder.WithMax(uint(intMax))
+			}
+
+			return builder.Now()
+		}
+
+		str := fmt.Sprintf("the name was expected to be valid and contain a string")
+		return nil, errors.New(str)
+	}
+
+	return app.module(name, fn)
+}
+
+func (app *module) engineGrammarValue() (modules.Module, error) {
 	name := "engineGrammarValue"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		if name, ok := input["name"].(string); ok {
