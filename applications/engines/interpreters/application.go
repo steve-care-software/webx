@@ -4,25 +4,15 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/steve-care-software/syntax/domain/syntax/outputs"
 	"github.com/steve-care-software/syntax/domain/syntax/programs"
 	"github.com/steve-care-software/syntax/domain/syntax/programs/applications"
 )
 
 type application struct {
-	builder         outputs.Builder
-	variableBuilder outputs.VariableBuilder
 }
 
-func createApplication(
-	builder outputs.Builder,
-	variableBuilder outputs.VariableBuilder,
-) Application {
-	out := application{
-		builder:         builder,
-		variableBuilder: variableBuilder,
-	}
-
+func createApplication() Application {
+	out := application{}
 	return &out
 }
 
