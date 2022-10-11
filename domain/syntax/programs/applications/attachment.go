@@ -1,25 +1,25 @@
 package applications
 
 type attachment struct {
-	assignment Assignment
-	local      string
+	value Value
+	local string
 }
 
 func createAttachment(
-	assignment Assignment,
+	value Value,
 	local string,
 ) Attachment {
 	out := attachment{
-		assignment: assignment,
-		local:      local,
+		value: value,
+		local: local,
 	}
 
 	return &out
 }
 
-// Assignment returns the assignment
-func (obj *attachment) Assignment() Assignment {
-	return obj.assignment
+// Value returns the value
+func (obj *attachment) Value() Value {
+	return obj.value
 }
 
 // Local returns the local

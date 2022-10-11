@@ -104,6 +104,7 @@ type LineBuilder interface {
 	WithIndex(index uint) LineBuilder
 	WithGrammar(grammar grammars.Line) LineBuilder
 	WithElements(elements Elements) LineBuilder
+	IsReverse() LineBuilder
 	Now() (Line, error)
 }
 
@@ -111,6 +112,7 @@ type LineBuilder interface {
 type Line interface {
 	Index() uint
 	Grammar() grammars.Line
+	IsReverse() bool
 	IsSuccessful() bool
 	HasElements() bool
 	Elements() Elements
@@ -140,9 +142,11 @@ type ElementBuilder interface {
 type Element interface {
 	Fetch(name string, elementIndex uint) (Tree, Element, error)
 	Bytes(includeChannels bool) []byte
-	Grammar() grammars.Element
+	IsSuccessful() bool
 	Contents() Contents
 	Amount() uint
+	HasGrammar() bool
+	Grammar() grammars.Element
 }
 
 // ContentsBuilder represents contents builder

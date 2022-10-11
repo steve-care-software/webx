@@ -1,7 +1,7 @@
 package programs
 
 import (
-	program_instructions "github.com/steve-care-software/syntax/domain/syntax/programs/instructions"
+	"github.com/steve-care-software/syntax/domain/syntax/programs/applications"
 )
 
 // NewBuilder creates a new builder instance
@@ -12,17 +12,14 @@ func NewBuilder() Builder {
 // Builder represents a program builder
 type Builder interface {
 	Create() Builder
-	WithInstructions(instructions program_instructions.Instructions) Builder
-	WithInputs(inputs []string) Builder
+	WithAssignments(assignments []applications.Assignment) Builder
 	WithOutputs(outputs []string) Builder
 	Now() (Program, error)
 }
 
 // Program represents a program
 type Program interface {
-	Instructions() program_instructions.Instructions
-	HasInputs() bool
-	Inputs() []string
+	Assignments() []applications.Assignment
 	HasOutputs() bool
 	Outputs() []string
 }

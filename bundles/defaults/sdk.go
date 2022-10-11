@@ -2,10 +2,13 @@ package defaults
 
 import (
 	"github.com/steve-care-software/syntax/applications/engines/creates"
+	"github.com/steve-care-software/syntax/domain/syntax/bytes/criterias"
 	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
 	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars/cardinalities"
+	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars/values"
 	grammar_values "github.com/steve-care-software/syntax/domain/syntax/bytes/grammars/values"
 	"github.com/steve-care-software/syntax/domain/syntax/commands"
+	"github.com/steve-care-software/syntax/domain/syntax/programs/applications/modules"
 )
 
 // NewApplication creates a new create application
@@ -35,7 +38,12 @@ func NewApplication() creates.Application {
 			commands.NewParameterDeclarationBuilder(),
 			commands.NewApplicationDeclarationBuilder(),
 			commands.NewModuleDeclarationBuilder(),
+			criterias.NewBuilder(),
 		),
-		createModule(),
+		createModule(
+			modules.NewBuilder(),
+			modules.NewModuleBuilder(),
+			values.NewBuilder(),
+		),
 	)
 }

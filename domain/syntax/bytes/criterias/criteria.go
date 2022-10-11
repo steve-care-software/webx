@@ -4,7 +4,7 @@ type criteria struct {
 	name            string
 	index           uint
 	includeChannels bool
-	content         Content
+	child           Criteria
 }
 
 func createCriteria(
@@ -15,26 +15,26 @@ func createCriteria(
 	return createCriteriaInternally(name, index, includeChannels, nil)
 }
 
-func createCriteriaWithContent(
+func createCriteriaWithChild(
 	name string,
 	index uint,
 	includeChannels bool,
-	content Content,
+	child Criteria,
 ) Criteria {
-	return createCriteriaInternally(name, index, includeChannels, content)
+	return createCriteriaInternally(name, index, includeChannels, child)
 }
 
 func createCriteriaInternally(
 	name string,
 	index uint,
 	includeChannels bool,
-	content Content,
+	child Criteria,
 ) Criteria {
 	out := criteria{
 		name:            name,
 		index:           index,
 		includeChannels: includeChannels,
-		content:         content,
+		child:           child,
 	}
 
 	return &out
@@ -55,12 +55,12 @@ func (obj *criteria) IncludeChannels() bool {
 	return obj.includeChannels
 }
 
-// HasContent returns true if there is a content, false otherwise
-func (obj *criteria) HasContent() bool {
-	return obj.content != nil
+// HasChild returns true if there is a child, false otherwise
+func (obj *criteria) HasChild() bool {
+	return obj.child != nil
 }
 
-// Content returns the content, if any
-func (obj *criteria) Content() Content {
-	return obj.content
+// Child returns the child, if any
+func (obj *criteria) Child() Criteria {
+	return obj.child
 }

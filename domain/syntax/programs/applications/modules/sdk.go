@@ -1,7 +1,7 @@
 package modules
 
 // ExecuteFn represents the execute func
-type ExecuteFn func(input map[string]interface{}, currentPath string) (interface{}, error)
+type ExecuteFn func(input map[string]interface{}) (interface{}, error)
 
 // NewBuilder creates a new builder
 func NewBuilder() Builder {
@@ -23,6 +23,7 @@ type Builder interface {
 // Modules represents modules
 type Modules interface {
 	List() []Module
+	Fetch(name string) (Module, error)
 }
 
 // ModuleBuilder creates a new module builder

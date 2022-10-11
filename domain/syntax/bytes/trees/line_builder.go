@@ -7,16 +7,18 @@ import (
 )
 
 type lineBuilder struct {
-	pIndex   *uint
-	grammar  grammars.Line
-	elements Elements
+	pIndex    *uint
+	grammar   grammars.Line
+	isReverse bool
+	elements  Elements
 }
 
 func createLineBuilder() LineBuilder {
 	out := lineBuilder{
-		pIndex:   nil,
-		grammar:  nil,
-		elements: nil,
+		pIndex:    nil,
+		grammar:   nil,
+		isReverse: false,
+		elements:  nil,
 	}
 
 	return &out
@@ -45,6 +47,12 @@ func (app *lineBuilder) WithElements(elements Elements) LineBuilder {
 	return app
 }
 
+// IsReverse flags the builder as reverse
+func (app *lineBuilder) IsReverse() LineBuilder {
+	app.isReverse = true
+	return app
+}
+
 // Now builds a new Line instance
 func (app *lineBuilder) Now() (Line, error) {
 	if app.pIndex == nil {
@@ -56,8 +64,8 @@ func (app *lineBuilder) Now() (Line, error) {
 	}
 
 	if app.elements != nil {
-		return createLineWithElements(*app.pIndex, app.grammar, app.elements), nil
+		return createLineWithElements(*app.pIndex, app.grammar, app.isReverse, app.elements), nil
 	}
 
-	return createLine(*app.pIndex, app.grammar), nil
+	return createLine(*app.pIndex, app.grammar, app.isReverse), nil
 }

@@ -1,7 +1,7 @@
 package applications
 
 import (
-	"github.com/steve-care-software/syntax/domain/syntax/programs/instructions/applications/modules"
+	"github.com/steve-care-software/syntax/domain/syntax/programs/applications/modules"
 )
 
 // NewBuilder creates a new builder instance
@@ -61,20 +61,21 @@ type Attachments interface {
 // AttachmentBuilder represents an attachment builder
 type AttachmentBuilder interface {
 	Create() AttachmentBuilder
-	WithAssignment(assignment Assignment) AttachmentBuilder
+	WithValue(value Value) AttachmentBuilder
 	WithLocal(local string) AttachmentBuilder
 	Now() (Attachment, error)
 }
 
 // Attachment represents an attachment
 type Attachment interface {
-	Assignment() Assignment
+	Value() Value
 	Local() string
 }
 
 // AssignmentBuilder represents an assignment builder
 type AssignmentBuilder interface {
 	Create() AssignmentBuilder
+	WithIndex(index uint) AssignmentBuilder
 	WithName(name string) AssignmentBuilder
 	WithValue(value Value) AssignmentBuilder
 	Now() (Assignment, error)
@@ -82,6 +83,7 @@ type AssignmentBuilder interface {
 
 // Assignment repesents an assignment
 type Assignment interface {
+	Index() uint
 	Name() string
 	Value() Value
 }

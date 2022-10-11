@@ -72,7 +72,6 @@ type ExecutionBuilder interface {
 // Execution represents an execution
 type Execution interface {
 	Application() criterias.Criteria
-	HasAssignee() bool
 	Assignee() criterias.Criteria
 }
 
@@ -111,7 +110,6 @@ type ParameterDeclarationBuilder interface {
 	Create() ParameterDeclarationBuilder
 	WithInput(input criterias.Criteria) ParameterDeclarationBuilder
 	WithOutput(output criterias.Criteria) ParameterDeclarationBuilder
-	WithName(name criterias.Criteria) ParameterDeclarationBuilder
 	Now() (ParameterDeclaration, error)
 }
 
@@ -119,7 +117,6 @@ type ParameterDeclarationBuilder interface {
 type ParameterDeclaration interface {
 	Input() criterias.Criteria
 	Output() criterias.Criteria
-	Name() criterias.Criteria
 }
 
 // ApplicationDeclarationBuilder represents an application declaration builder

@@ -7,7 +7,6 @@ type builder struct {
 	pIndex          *uint
 	includeChannels bool
 	child           Criteria
-	match           []byte
 }
 
 func createBuilder() Builder {
@@ -16,7 +15,6 @@ func createBuilder() Builder {
 		pIndex:          nil,
 		includeChannels: false,
 		child:           nil,
-		match:           nil,
 	}
 
 	return &out
@@ -51,12 +49,6 @@ func (app *builder) WithChild(child Criteria) Builder {
 	return app
 }
 
-// WithMatch adds a match to the builder
-func (app *builder) WithMatch(match []byte) Builder {
-	app.match = match
-	return app
-}
-
 // Now builds a new Criteria instance
 func (app *builder) Now() (Criteria, error) {
 	if app.name == "" {
@@ -67,14 +59,8 @@ func (app *builder) Now() (Criteria, error) {
 		return nil, errors.New("the index is mandatory in order to build a Criteria instance")
 	}
 
-	if app.match != nil {
-		content := createContentWithMatch(app.match)
-		return createCriteriaWithContent(app.name, *app.pIndex, app.includeChannels, content), nil
-	}
-
 	if app.child != nil {
-		content := createContentWithChild(app.child)
-		return createCriteriaWithContent(app.name, *app.pIndex, app.includeChannels, content), nil
+		return createCriteriaWithChild(app.name, *app.pIndex, app.includeChannels, app.child), nil
 	}
 
 	return createCriteria(app.name, *app.pIndex, app.includeChannels), nil

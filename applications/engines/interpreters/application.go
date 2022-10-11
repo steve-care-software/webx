@@ -2,74 +2,97 @@ package interpreters
 
 import (
 	"errors"
+	"fmt"
 
-	"github.com/steve-care-software/syntax/applications/engines/creates"
-	grammar_application "github.com/steve-care-software/syntax/applications/engines/grammars"
-	program_application "github.com/steve-care-software/syntax/applications/engines/programs"
 	"github.com/steve-care-software/syntax/domain/syntax/outputs"
 	"github.com/steve-care-software/syntax/domain/syntax/programs"
-	"github.com/steve-care-software/syntax/domain/syntax/programs/instructions/applications/modules"
+	"github.com/steve-care-software/syntax/domain/syntax/programs/applications"
 )
 
 type application struct {
-	programApp program_application.Application
-	grammarApp grammar_application.Application
-	create     creates.Application
+	builder         outputs.Builder
+	variableBuilder outputs.VariableBuilder
 }
 
 func createApplication(
-	programApp program_application.Application,
-	grammarApp grammar_application.Application,
-	create creates.Application,
+	builder outputs.Builder,
+	variableBuilder outputs.VariableBuilder,
 ) Application {
 	out := application{
-		programApp: programApp,
-		grammarApp: grammarApp,
-		create:     create,
+		builder:         builder,
+		variableBuilder: variableBuilder,
 	}
 
 	return &out
 }
 
-// Execute executes the interpreter
-func (app *application) Execute(input map[string]interface{}, script []byte) (outputs.Output, []byte, error) {
-	if app.create == nil {
-		return nil, nil, errors.New("the create application is mandatory in order to build an interpreter Application instance")
+func (app *application) value(input map[string]interface{}, values map[string]interface{}, value applications.Value) (interface{}, error) {
+	if value.IsInput() {
+		inputName := value.Input()
+		if ins, ok := input[inputName]; ok {
+			return ins, nil
+		}
+
+		str := fmt.Sprintf("the requested input (name: %s) is undefined", inputName)
+		return nil, errors.New(str)
 	}
 
-	grammar, err := app.create.Grammar().Execute()
-	if err != nil {
-		return nil, nil, err
+	if value.IsString() {
+		str := value.String()
+		return str, nil
 	}
 
-	tree, remaining, err := app.grammarApp.Execute(grammar, script)
-	if err != nil {
-		return nil, nil, err
+	execution := value.Execution()
+	module := execution.Module()
+	parameters := map[string]interface{}{}
+	if execution.HasAttachments() {
+		attachments := execution.Attachments().List()
+		for _, oneAttachment := range attachments {
+			attachedValue := oneAttachment.Value()
+			ins, err := app.value(input, values, attachedValue)
+			if err != nil {
+				return nil, err
+			}
+
+			local := oneAttachment.Local()
+			parameters[local] = ins
+		}
 	}
 
-	command, err := app.create.Command().Execute()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	progIns, err := app.programApp.Execute(tree, command)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	modules, err := app.create.Modules().Execute()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	output, err := app.execute(input, progIns, modules)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return output, remaining, nil
+	execFn := module.Func()
+	return execFn(parameters)
 }
 
-func (app *application) execute(input map[string]interface{}, program programs.Program, modules modules.Modules) (outputs.Output, error) {
-	return nil, nil
+// Execute executes the interpreter
+func (app *application) Execute(input map[string]interface{}, program programs.Program) (map[string]interface{}, error) {
+	values := map[string]interface{}{}
+	assignments := program.Assignments()
+	for idx, oneAssignment := range assignments {
+		name := oneAssignment.Name()
+		value := oneAssignment.Value()
+
+		ins, err := app.value(input, values, value)
+		if err != nil {
+			str := fmt.Sprintf("there was an error while executing an an assignment (index: %d. name: %s): %s", idx, name, err.Error())
+			return nil, errors.New(str)
+		}
+
+		values[name] = ins
+	}
+
+	filtered := map[string]interface{}{}
+	if program.HasOutputs() {
+		outputs := program.Outputs()
+		for _, oneOutput := range outputs {
+			if ins, ok := values[oneOutput]; ok {
+				filtered[oneOutput] = ins
+				continue
+			}
+
+			str := fmt.Sprintf("the program has an output parameter (name: %s), but the executed program doesnot contain that value", oneOutput)
+			return nil, errors.New(str)
+		}
+	}
+
+	return filtered, nil
 }

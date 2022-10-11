@@ -43,9 +43,9 @@ func (app *executionBuilder) Now() (Execution, error) {
 		return nil, errors.New("the application is mandatory in order to build an Execution instance")
 	}
 
-	if app.assignee != nil {
-		return createExecutionWithAssignee(app.application, app.assignee), nil
+	if app.assignee == nil {
+		return nil, errors.New("the assignee is mandatory in order to build an Execution instance")
 	}
 
-	return createExecution(app.application), nil
+	return createExecution(app.application, app.assignee), nil
 }

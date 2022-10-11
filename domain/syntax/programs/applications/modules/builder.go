@@ -35,5 +35,11 @@ func (app *builder) Now() (Modules, error) {
 		return nil, errors.New("there must be at least 1 Module in order to build a Modules instance")
 	}
 
-	return createModules(app.list), nil
+	mp := map[string]Module{}
+	for _, oneModule := range app.list {
+		name := oneModule.Name()
+		mp[name] = oneModule
+	}
+
+	return createModules(app.list, mp), nil
 }

@@ -1,37 +1,44 @@
 package trees
 
-import "github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
+import (
+	"github.com/steve-care-software/syntax/domain/syntax/bytes/grammars"
+)
 
 type line struct {
-	index    uint
-	grammar  grammars.Line
-	elements Elements
+	index     uint
+	grammar   grammars.Line
+	isReverse bool
+	elements  Elements
 }
 
 func createLine(
 	index uint,
 	grammar grammars.Line,
+	isReverse bool,
 ) Line {
-	return createLineInternally(index, grammar, nil)
+	return createLineInternally(index, grammar, isReverse, nil)
 }
 
 func createLineWithElements(
 	index uint,
 	grammar grammars.Line,
+	isReverse bool,
 	elements Elements,
 ) Line {
-	return createLineInternally(index, grammar, elements)
+	return createLineInternally(index, grammar, isReverse, elements)
 }
 
 func createLineInternally(
 	index uint,
 	grammar grammars.Line,
+	isReverse bool,
 	elements Elements,
 ) Line {
 	out := line{
-		index:    index,
-		grammar:  grammar,
-		elements: elements,
+		index:     index,
+		grammar:   grammar,
+		isReverse: isReverse,
+		elements:  elements,
 	}
 
 	return &out
@@ -40,6 +47,11 @@ func createLineInternally(
 // Index returns the index
 func (obj *line) Index() uint {
 	return obj.index
+}
+
+// IsReverse returns true if reverse, false otherwise
+func (obj *line) IsReverse() bool {
+	return obj.isReverse
 }
 
 // Grammar returns the grammar
@@ -65,5 +77,15 @@ func (obj *line) IsSuccessful() bool {
 
 	requested := obj.grammar.Elements()
 	elements := obj.elements.List()
+	for _, oneElement := range elements {
+		if !oneElement.IsSuccessful() {
+			return false
+		}
+	}
+
+	if obj.IsReverse() {
+		return true
+	}
+
 	return len(requested) == len(elements)
 }

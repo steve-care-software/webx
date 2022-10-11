@@ -29,32 +29,32 @@ func createCommand(
 	return &out
 }
 
-// Execution returns the execution, if any
+// Execution returns the execution
 func (obj *command) Execution() Execution {
 	return obj.execution
 }
 
-// Attachment returns the attachment, if any
+// Attachment returns the attachment
 func (obj *command) Attachment() Attachment {
 	return obj.attachment
 }
 
-// VariableAssignment returns the variable assignment, if any
+// VariableAssignment returns the variable assignment
 func (obj *command) VariableAssignment() VariableAssignment {
 	return obj.variable
 }
 
-// ParameterDeclaration returns the parameter declaration, if any
+// ParameterDeclaration returns the parameter declaration
 func (obj *command) ParameterDeclaration() ParameterDeclaration {
 	return obj.parameter
 }
 
-// ApplicationDeclaration returns the application declaration, if any
+// ApplicationDeclaration returns the application declaration
 func (obj *command) ApplicationDeclaration() ApplicationDeclaration {
 	return obj.application
 }
 
-// ModuleDeclaration returns the module declaration, if any
+// ModuleDeclaration returns the module declaration
 func (obj *command) ModuleDeclaration() ModuleDeclaration {
 	return obj.module
 }

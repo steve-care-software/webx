@@ -1,6 +1,6 @@
 package applications
 
-import "github.com/steve-care-software/syntax/domain/syntax/programs/instructions/applications/modules"
+import "github.com/steve-care-software/syntax/domain/syntax/programs/applications/modules"
 
 type application struct {
 	name        string

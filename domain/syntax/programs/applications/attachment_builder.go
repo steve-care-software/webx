@@ -3,14 +3,14 @@ package applications
 import "errors"
 
 type attachmentBuilder struct {
-	assignment Assignment
-	local      string
+	value Value
+	local string
 }
 
 func createAttachmentBuilder() AttachmentBuilder {
 	out := attachmentBuilder{
-		assignment: nil,
-		local:      "",
+		value: nil,
+		local: "",
 	}
 
 	return &out
@@ -21,9 +21,9 @@ func (app *attachmentBuilder) Create() AttachmentBuilder {
 	return createAttachmentBuilder()
 }
 
-// WithAssignment adds an assignment to the builder
-func (app *attachmentBuilder) WithAssignment(assignment Assignment) AttachmentBuilder {
-	app.assignment = assignment
+// WithValue adds a value to the builder
+func (app *attachmentBuilder) WithValue(value Value) AttachmentBuilder {
+	app.value = value
 	return app
 }
 
@@ -35,13 +35,13 @@ func (app *attachmentBuilder) WithLocal(local string) AttachmentBuilder {
 
 // Now builds a new Attachment instance
 func (app *attachmentBuilder) Now() (Attachment, error) {
-	if app.assignment == nil {
-		return nil, errors.New("the assignment is mandatory in order to build an Attachment instance")
+	if app.value == nil {
+		return nil, errors.New("the value is mandatory in order to build an Attachment instance")
 	}
 
 	if app.local == "" {
 		return nil, errors.New("the local is mandatory in order to build an Attachment instance")
 	}
 
-	return createAttachment(app.assignment, app.local), nil
+	return createAttachment(app.value, app.local), nil
 }

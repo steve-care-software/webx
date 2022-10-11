@@ -39,13 +39,13 @@ func (app *elementBuilder) WithContents(contents Contents) ElementBuilder {
 
 // Now builds a new Element instance
 func (app *elementBuilder) Now() (Element, error) {
-	if app.grammar == nil {
-		return nil, errors.New("the grammar is mandatory in order to build an Element instance")
-	}
-
 	if app.contents == nil {
 		return nil, errors.New("the contents is mandatory in order to build an Element instance")
 	}
 
-	return createElement(app.grammar, app.contents), nil
+	if app.grammar != nil {
+		return createElementWithGrammar(app.contents, app.grammar), nil
+	}
+
+	return createElement(app.contents), nil
 }

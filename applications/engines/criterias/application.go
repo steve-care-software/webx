@@ -31,25 +31,35 @@ func (app *application) extractWithPath(path []string, criteria criterias.Criter
 	}
 
 	includeChannels := criteria.IncludeChannels()
-	if criteria.HasContent() {
-		content := criteria.Content()
+	if criteria.HasChild() {
+		child := criteria.Child()
 		if subTree != nil {
-			if content.IsChild() {
-				child := content.Child()
-				return app.extractWithPath(append(path, name), child, subTree)
+			return app.extractWithPath(append(path, name), child, subTree)
+		}
+
+		output := []byte{}
+		contents := element.Contents().List()
+		for _, oneContent := range contents {
+			if !oneContent.IsTree() {
+				continue
 			}
 
-			return subTree.Bytes(includeChannels), nil
+			subTree := oneContent.Tree()
+			data, err := app.extractWithPath(append(path, name), child, subTree)
+			if err != nil {
+				continue
+			}
+
+			output = data
+			break
 		}
 
-		if content.IsChild() {
-			str := fmt.Sprintf("the extraction did NOT succeed because it found an element (path: %s) but the criteria had a child", strings.Join(append(path, name), "/"))
-			return nil, errors.New(str)
+		if len(output) > 0 {
+			return output, nil
 		}
 
-		if content.IsMatch() {
-
-		}
+		str := fmt.Sprintf("the extraction did NOT succeed because it found an element (path: %s) but the criteria had a child", strings.Join(append(path, name), "/"))
+		return nil, errors.New(str)
 	}
 
 	return element.Bytes(includeChannels), nil

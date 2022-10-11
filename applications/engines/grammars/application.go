@@ -410,6 +410,10 @@ func (app *application) findCoveraredElementsFromBlock(tokenName string, block t
 	index := line.Index()
 	elementsList := line.Elements().List()
 	for elIdx, oneElement := range elementsList {
+		if !oneElement.HasGrammar() {
+			continue
+		}
+
 		elementName := oneElement.Grammar().Name()
 		covered := *pCovered
 		if _, ok := covered[tokenName]; !ok {
@@ -456,6 +460,11 @@ func (app *application) token(token grammars.Token, escape grammars.Token, chann
 		return nil, err
 	}
 
+	if block == nil {
+		str := fmt.Sprintf("there was no line discovered in the token (name: %s) using the given data: %v", token.Name(), currentData)
+		return nil, errors.New(str)
+	}
+
 	builder := app.treeBuilder.Create().WithGrammar(token).WithBlock(block)
 	if channels != nil {
 		suffix, rem, err := app.channels(channels, prevData, remaining)
@@ -482,6 +491,10 @@ func (app *application) external(external grammars.External, isReverse bool, pre
 	name := external.Name()
 	root := grammar.Root()
 	block := root.Block()
+	if block == nil {
+		return nil, nil
+	}
+
 	builder := app.grammarTokenBuilder.Create().WithName(name).WithBlock(block)
 	if root.HasSuites() {
 		suites := root.Suites()
@@ -502,6 +515,71 @@ func (app *application) block(tokenName string, block grammars.Block, escape gra
 	lines := block.Lines()
 	remaining := currentData
 	for idx, oneLine := range lines {
+		if isReverse {
+			previousData := prevData
+			contentsList := []trees.Content{}
+			for {
+				if len(remaining) <= 0 {
+					break
+				}
+
+				if escape != nil {
+					fmt.Printf("\n finish escape!!! \n ")
+					//escapeIns, rem, err:= app.element(oneElement, escape, channels, isReverse, previousData, remaining)
+				}
+
+				_, _, err := app.line(tokenName, oneLine, uint(idx), escape, channels, isReverse, previousData, remaining)
+				if err == nil {
+					break
+				}
+
+				value, err := app.treeValueBuilder.Create().WithContent(remaining[0]).Now()
+				if err != nil {
+					return nil, nil, err
+				}
+
+				contentIns, err := app.treeContentBuilder.Create().WithValue(value).Now()
+				if err != nil {
+					return nil, nil, err
+				}
+
+				contentsList = append(contentsList, contentIns)
+				previousData = remaining
+				remaining = remaining[1:]
+			}
+
+			contents, err := app.treeContentsBuilder.Create().WithList(contentsList).Now()
+			if err != nil {
+				return nil, nil, err
+			}
+
+			elementIns, err := app.treeElementBuilder.Create().WithContents(contents).Now()
+			if err != nil {
+				return nil, nil, err
+			}
+
+			elements, err := app.treeElementsBuilder.Create().WithList([]trees.Element{
+				elementIns,
+			}).Now()
+			if err != nil {
+				return nil, nil, err
+			}
+
+			lineIns, err := app.treeLineBuilder.Create().
+				WithIndex(uint(idx)).
+				WithGrammar(oneLine).
+				WithElements(elements).
+				IsReverse().
+				Now()
+
+			if err != nil {
+				return nil, nil, err
+			}
+
+			list = append(list, lineIns)
+			break
+		}
+
 		lineIns, rem, err := app.line(tokenName, oneLine, uint(idx), escape, channels, isReverse, prevData, remaining)
 		if err != nil {
 			continue
@@ -512,6 +590,10 @@ func (app *application) block(tokenName string, block grammars.Block, escape gra
 			remaining = rem
 			break
 		}
+	}
+
+	if len(list) <= 0 {
+		return nil, remaining, nil
 	}
 
 	blockIns, err := app.treeBlockBuilder.Create().WithLines(list).Now()
@@ -528,14 +610,43 @@ func (app *application) line(tokenName string, line grammars.Line, index uint, e
 	remaining := currentData
 	previousData := prevData
 	for _, oneElement := range grElements {
-		element, rem, err := app.element(oneElement, escape, channels, isReverse, previousData, remaining)
-		if err != nil {
-			break
+		contentsList := []trees.Content{}
+		cardinality := oneElement.Cardinality()
+		pMax := cardinality.Max()
+		for {
+
+			if len(remaining) <= 0 {
+				break
+			}
+
+			if cardinality.HasMax() {
+				amount := uint(len(contentsList))
+				if amount >= *pMax {
+					break
+				}
+			}
+
+			contentIns, rem, err := app.element(oneElement, escape, channels, isReverse, previousData, remaining)
+			if err != nil {
+				break
+			}
+
+			contentsList = append(contentsList, contentIns)
+			previousData = remaining
+			remaining = rem
 		}
 
-		list = append(list, element)
-		previousData = remaining
-		remaining = rem
+		contents, err := app.treeContentsBuilder.Create().WithList(contentsList).Now()
+		if err != nil {
+			return nil, nil, err
+		}
+
+		elementIns, err := app.treeElementBuilder.Create().WithGrammar(oneElement).WithContents(contents).Now()
+		if err != nil {
+			return nil, nil, err
+		}
+
+		list = append(list, elementIns)
 	}
 
 	builder := app.treeLineBuilder.Create().
@@ -559,80 +670,40 @@ func (app *application) line(tokenName string, line grammars.Line, index uint, e
 	return lineIns, remaining, nil
 }
 
-func (app *application) element(element grammars.Element, escape grammars.Token, channels grammars.Channels, isReverse bool, prevData []byte, currentData []byte) (trees.Element, []byte, error) {
+func (app *application) element(element grammars.Element, escape grammars.Token, channels grammars.Channels, isReverse bool, prevData []byte, currentData []byte) (trees.Content, []byte, error) {
+	if len(currentData) <= 0 {
+		return nil, nil, errors.New("no remaining data")
+	}
+
 	content := element.Content()
-	cardinality := element.Cardinality()
-	min := cardinality.Min()
-	pMax := cardinality.Max()
-
-	remaining := currentData
-	previousData := prevData
-	contentsList := []trees.Content{}
-	for {
-		if cardinality.HasMax() {
-			amount := uint(len(contentsList))
-			if amount >= *pMax {
-				break
-			}
-		}
-
-		if len(remaining) <= 0 {
-			break
-		}
-
-		value, tree, rem, err := app.elementContent(content, escape, channels, isReverse, previousData, remaining)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		if value == nil && tree == nil {
-			break
-		}
-
-		if tree != nil && !tree.Block().HasSuccessful() {
-			break
-		}
-
-		contentBuilder := app.treeContentBuilder.Create()
-		if value != nil {
-			contentBuilder.WithValue(value)
-		}
-
-		if tree != nil {
-			contentBuilder.WithTree(tree)
-		}
-
-		contentIns, err := contentBuilder.Now()
-		if err != nil {
-			return nil, nil, err
-		}
-
-		contentsList = append(contentsList, contentIns)
-		previousData = remaining
-		remaining = rem
-	}
-
-	amount := uint(len(contentsList))
-	if amount < min {
-		str := fmt.Sprintf("the element's (name: %s) cardinality's minimum is %d, %d elements found", element.Name(), min, amount)
-		return nil, nil, errors.New(str)
-	}
-
-	contents, err := app.treeContentsBuilder.Create().WithList(contentsList).Now()
+	value, tree, rem, err := app.elementContent(content, escape, channels, isReverse, prevData, currentData)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	elementIns, err := app.treeElementBuilder.Create().
-		WithGrammar(element).
-		WithContents(contents).
-		Now()
+	if value == nil && tree == nil {
+		return nil, nil, errors.New("no value/tree found")
+	}
 
+	if tree != nil && !tree.Block().HasSuccessful() {
+		return nil, nil, errors.New("no successfull tree found")
+	}
+
+	contentBuilder := app.treeContentBuilder.Create()
+	if value != nil {
+		contentBuilder.WithValue(value)
+	}
+
+	if tree != nil {
+		contentBuilder.WithTree(tree)
+	}
+
+	contentIns, err := contentBuilder.Now()
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return elementIns, remaining, nil
+	return contentIns, rem, nil
 }
 
 func (app *application) elementContent(content grammars.ElementContent, escape grammars.Token, channels grammars.Channels, isReverse bool, prevData []byte, currentData []byte) (trees.Value, trees.Tree, []byte, error) {
@@ -641,6 +712,10 @@ func (app *application) elementContent(content grammars.ElementContent, escape g
 		tree, err := app.external(external, isReverse, prevData, currentData)
 		if err != nil {
 			return nil, nil, nil, err
+		}
+
+		if tree == nil {
+			return nil, nil, nil, nil
 		}
 
 		remaining := []byte{}
@@ -680,20 +755,9 @@ func (app *application) elementContent(content grammars.ElementContent, escape g
 		}
 	}
 
-	if escape != nil {
-		fmt.Printf("finish escape!!")
-		//panic(errors.New("finish escape!!!"))
-		/*tree, remainingAfterEscape, err := app.token(escape, nil, channels, isReverse, prevData, currentData)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		remaining = remainingAfterEscape*/
-	}
-
 	number := content.Value().Number()
-	if (number == remaining[0]) == !isReverse {
-		ins, err := builder.WithContent(number).Now()
+	if number == remaining[0] {
+		ins, err := builder.WithContent(remaining[0]).Now()
 		if err != nil {
 			return nil, nil, nil, err
 		}
@@ -711,13 +775,13 @@ func (app *application) instance(instance grammars.Instance, escape grammars.Tok
 	}
 
 	everything := instance.Everything()
-	return app.everything(everything, channels, isReverse, prevData, currentData)
+	return app.everything(everything, isReverse, prevData, currentData)
 }
 
-func (app *application) everything(everything grammars.Everything, channels grammars.Channels, isReverse bool, prevData []byte, currentData []byte) (trees.Tree, error) {
+func (app *application) everything(everything grammars.Everything, isReverse bool, prevData []byte, currentData []byte) (trees.Tree, error) {
 	exception := everything.Exception()
 	escape := everything.Escape()
-	return app.token(exception, escape, channels, !isReverse, prevData, currentData)
+	return app.token(exception, escape, nil, !isReverse, prevData, currentData)
 }
 
 func (app *application) channels(channels grammars.Channels, prevData []byte, currentData []byte) (trees.Trees, []byte, error) {
@@ -738,11 +802,8 @@ func (app *application) channels(channels grammars.Channels, prevData []byte, cu
 				continue
 			}
 
-			rem := []byte{}
-			if tree.HasRemaining() {
-				rem = tree.Remaining()
-			}
-
+			prefixLength := len(tree.Bytes(true))
+			rem := remaining[prefixLength:]
 			if len(rem) == len(remaining) {
 				continue
 			}
@@ -752,7 +813,7 @@ func (app *application) channels(channels grammars.Channels, prevData []byte, cu
 			remaining = rem
 		}
 
-		if beginAmount <= len(treeList) {
+		if beginAmount == len(treeList) {
 			break
 		}
 	}

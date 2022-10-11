@@ -3,7 +3,7 @@ package applications
 import (
 	"errors"
 
-	"github.com/steve-care-software/syntax/domain/syntax/programs/instructions/applications/modules"
+	"github.com/steve-care-software/syntax/domain/syntax/programs/applications/modules"
 )
 
 type builder struct {

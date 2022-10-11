@@ -1,68 +1,40 @@
 package programs
 
-import "github.com/steve-care-software/syntax/domain/syntax/programs/instructions"
+import "github.com/steve-care-software/syntax/domain/syntax/programs/applications"
 
 type program struct {
-	instructions instructions.Instructions
-	inputs       []string
-	outputs      []string
+	assignments []applications.Assignment
+	outputs     []string
 }
 
 func createProgram(
-	instructions instructions.Instructions,
+	assignments []applications.Assignment,
 ) Program {
-	return createProgramInternally(instructions, nil, nil)
-}
-
-func createProgramWithInputs(
-	instructions instructions.Instructions,
-	inputs []string,
-) Program {
-	return createProgramInternally(instructions, inputs, nil)
+	return createProgramInternally(assignments, nil)
 }
 
 func createProgramWithOutputs(
-	instructions instructions.Instructions,
+	assignments []applications.Assignment,
 	outputs []string,
 ) Program {
-	return createProgramInternally(instructions, nil, outputs)
-}
-
-func createProgramWithInputsAndOutputs(
-	instructions instructions.Instructions,
-	inputs []string,
-	outputs []string,
-) Program {
-	return createProgramInternally(instructions, inputs, outputs)
+	return createProgramInternally(assignments, outputs)
 }
 
 func createProgramInternally(
-	instructions instructions.Instructions,
-	inputs []string,
+	assignments []applications.Assignment,
 	outputs []string,
 ) Program {
 	out := program{
-		instructions: instructions,
-		inputs:       inputs,
-		outputs:      outputs,
+		assignments: assignments,
+		outputs:     outputs,
 	}
 
 	return &out
 }
 
-// Instructions returns the instructions
-func (obj *program) Instructions() instructions.Instructions {
-	return obj.instructions
-}
-
-// HasInputs returns true if there is inputs, false otherwise
-func (obj *program) HasInputs() bool {
-	return obj.inputs != nil
-}
-
-// Inputs returns the inputs, if any
-func (obj *program) Inputs() []string {
-	return obj.inputs
+// Assignments returns the assignments
+func (obj *program) Assignments() []applications.Assignment {
+	return obj.assignments
 }
 
 // HasOutputs returns true if there is outputs, false otherwise

@@ -68,6 +68,11 @@ func (obj *tree) Fetch(name string, elementIndex uint) (Tree, Element, error) {
 		return obj, nil, nil
 	}
 
+	str := fmt.Sprintf("there is no Tree or Element associated to the given name: %s,at element's index: %d", name, elementIndex)
+	if !obj.Block().HasSuccessful() {
+		return nil, nil, errors.New(str)
+	}
+
 	cpt := uint(0)
 	elementsList := obj.Block().Successful().Elements().List()
 	for _, oneElement := range elementsList {
@@ -90,7 +95,6 @@ func (obj *tree) Fetch(name string, elementIndex uint) (Tree, Element, error) {
 		}
 	}
 
-	str := fmt.Sprintf("there is no Tree or Element associated to the given name: %s,at element's index: %d", name, elementIndex)
 	return nil, nil, errors.New(str)
 }
 

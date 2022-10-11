@@ -3,14 +3,16 @@ package applications
 import "errors"
 
 type assignmentBuilder struct {
-	name  string
-	value Value
+	pIndex *uint
+	name   string
+	value  Value
 }
 
 func createAssignmentBuilder() AssignmentBuilder {
 	out := assignmentBuilder{
-		name:  "",
-		value: nil,
+		pIndex: nil,
+		name:   "",
+		value:  nil,
 	}
 
 	return &out
@@ -19,6 +21,12 @@ func createAssignmentBuilder() AssignmentBuilder {
 // Create initializes the builder
 func (app *assignmentBuilder) Create() AssignmentBuilder {
 	return createAssignmentBuilder()
+}
+
+// WithIndex adds an index to the builder
+func (app *assignmentBuilder) WithIndex(index uint) AssignmentBuilder {
+	app.pIndex = &index
+	return app
 }
 
 // WithName adds a name to the builder
@@ -43,5 +51,9 @@ func (app *assignmentBuilder) Now() (Assignment, error) {
 		return nil, errors.New("the value is mandatory in order to build an Assignment instance")
 	}
 
-	return createAssignment(app.name, app.value), nil
+	if app.pIndex == nil {
+		return nil, errors.New("the index is mandatory in order to build an Assignment instance")
+	}
+
+	return createAssignment(*app.pIndex, app.name, app.value), nil
 }

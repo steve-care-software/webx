@@ -215,7 +215,7 @@ func (app *grammar) Execute() (grammars.Grammar, error) {
 		return nil, err
 	}
 
-	variableAssignee, err := app.assigneeToken(escapeChar, endOfInstruction)
+	assignmentValue, err := app.assignmentValueToken(escapeChar, endOfInstruction)
 	if err != nil {
 		return nil, err
 	}
@@ -241,7 +241,7 @@ func (app *grammar) Execute() (grammars.Grammar, error) {
 		return nil, err
 	}
 
-	variableAssignment, err := app.assignmentToken("variableAssignment", variableName, equalChar, variableAssignee, variableAssignmentSuites)
+	variableAssignment, err := app.assignmentToken("variableAssignment", variableName, equalChar, assignmentValue, endOfInstruction, variableAssignmentSuites)
 	if err != nil {
 		return nil, err
 	}
@@ -274,7 +274,7 @@ func (app *grammar) Execute() (grammars.Grammar, error) {
 		return nil, err
 	}
 
-	execute, err := app.executeToken(executeStr, variableName, endOfInstruction)
+	execute, err := app.executeToken(executeStr, variableName)
 	if err != nil {
 		return nil, err
 	}
@@ -287,7 +287,7 @@ func (app *grammar) Execute() (grammars.Grammar, error) {
 		return nil, err
 	}
 
-	executeAssignment, err := app.assignmentToken("executeAssignment", variableName, equalChar, execute, executeAssignmentSuites)
+	executeAssignment, err := app.assignmentToken("executeAssignment", variableName, equalChar, execute, endOfInstruction, executeAssignmentSuites)
 	if err != nil {
 		return nil, err
 	}
@@ -297,10 +297,9 @@ func (app *grammar) Execute() (grammars.Grammar, error) {
 		applicationDeclaration,
 		inputParameter,
 		outputParameter,
-		variableAssignment,
 		attach,
-		execute,
 		executeAssignment,
+		variableAssignment, // variable assignment must be after execute assignment
 	}
 
 	cardinality, err := app.cardinalityOneOccurence()
@@ -326,7 +325,6 @@ func (app *grammar) Execute() (grammars.Grammar, error) {
 		[]byte("$myVariable = ANY VALUE EXCEPT \\;; NON-ESCAPED SEMI-COLON;;"),
 		[]byte("attach $myDataVariable:$data $myAppVariable;;"),
 		[]byte("$myOutput = execute $myAppVariable;;"),
-		[]byte("execute $myAppVariable;;"),
 	}, nil)
 
 	if err != nil {
@@ -423,7 +421,6 @@ func (app *grammar) channels() (grammars.Channels, error) {
 func (app *grammar) executeToken(
 	executeStr grammars.Token,
 	variableName grammars.Token,
-	endOfInstruction grammars.Token,
 ) (grammars.Token, error) {
 	cardinality, err := app.cardinalityOneOccurence()
 	if err != nil {
@@ -440,23 +437,17 @@ func (app *grammar) executeToken(
 		return nil, err
 	}
 
-	endOfInsElement, err := app.elementFromToken(endOfInstruction, cardinality)
-	if err != nil {
-		return nil, err
-	}
-
 	suites, err := app.suites([][]byte{
-		[]byte("execute $myVariable;;"),
+		[]byte("execute $myVariable"),
 	}, nil)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return app.oneLineTokenFromElements("variableAssignment", []grammars.Element{
+	return app.oneLineTokenFromElements("execute", []grammars.Element{
 		executeElement,
 		variableNameElement,
-		endOfInsElement,
 	}, suites)
 }
 
@@ -499,7 +490,7 @@ func (app *grammar) attachToken(
 		return nil, err
 	}
 
-	return app.oneLineTokenFromElements("variableAssignment", []grammars.Element{
+	return app.oneLineTokenFromElements("attachment", []grammars.Element{
 		attachElement,
 		variableNameElement,
 		semiColonElement,
@@ -513,7 +504,8 @@ func (app *grammar) assignmentToken(
 	name string,
 	variableName grammars.Token,
 	equalChar grammars.Token,
-	assignee grammars.Token,
+	assignmentValue grammars.Token,
+	endOfInstruction grammars.Token,
 	suites grammars.Suites,
 ) (grammars.Token, error) {
 	cardinality, err := app.cardinalityOneOccurence()
@@ -531,7 +523,12 @@ func (app *grammar) assignmentToken(
 		return nil, err
 	}
 
-	assigneeElement, err := app.elementFromToken(assignee, cardinality)
+	assignmentValueElement, err := app.elementFromToken(assignmentValue, cardinality)
+	if err != nil {
+		return nil, err
+	}
+
+	endOfInsElement, err := app.elementFromToken(endOfInstruction, cardinality)
 	if err != nil {
 		return nil, err
 	}
@@ -539,15 +536,19 @@ func (app *grammar) assignmentToken(
 	return app.oneLineTokenFromElements(name, []grammars.Element{
 		variableNameElement,
 		equalElement,
-		assigneeElement,
+		assignmentValueElement,
+		endOfInsElement,
 	}, suites)
 }
 
-func (app *grammar) assigneeToken(
+func (app *grammar) assignmentValueToken(
 	escapeChar grammars.Token,
 	endOfInstruction grammars.Token,
 ) (grammars.Token, error) {
-	cardinality, err := app.cardinalityOneOccurence()
+	cardinality, err := app.cardinalityBuilder.Create().
+		WithMin(1).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
@@ -575,7 +576,7 @@ func (app *grammar) assigneeToken(
 		return nil, err
 	}
 
-	return app.oneLineTokenFromElements("assignee", []grammars.Element{
+	return app.oneLineTokenFromElements("assignmentValue", []grammars.Element{
 		element,
 	}, suites)
 }
