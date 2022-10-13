@@ -108,12 +108,17 @@ func (app *grammar) Execute() (grammars.Grammar, error) {
 		return nil, err
 	}
 
+	anyNumber, err := app.anyCharacterToken("anyNumber", "0123456789")
+	if err != nil {
+		return nil, err
+	}
+
 	anyCaseLetter, err := app.anyCaseLetterToken(lowerCaseLetter, upperCaseLetter)
 	if err != nil {
 		return nil, err
 	}
 
-	name, err := app.nameToken(lowerCaseLetter, anyCaseLetter)
+	name, err := app.nameToken(lowerCaseLetter, anyCaseLetter, anyNumber)
 	if err != nil {
 		return nil, err
 	}
@@ -397,11 +402,17 @@ func (app *grammar) channels() (grammars.Channels, error) {
 		return nil, err
 	}
 
+	singleLineComment, err := app.singleLineComment(newLine)
+	if err != nil {
+		return nil, err
+	}
+
 	tokensList := []grammars.Token{
 		space,
 		tab,
 		newLine,
 		newRetCar,
+		singleLineComment,
 	}
 
 	channelsList := []grammars.Channel{}
@@ -416,6 +427,58 @@ func (app *grammar) channels() (grammars.Channels, error) {
 	}
 
 	return app.channelsBuilder.Create().WithList(channelsList).Now()
+}
+
+func (app *grammar) singleLineComment(
+	endOfCommentIns grammars.Token,
+) (grammars.Token, error) {
+	cardinality, err := app.cardinalityOneOccurence()
+	if err != nil {
+		return nil, err
+	}
+
+	slashSlashStr, err := app.allCharacterToken("slashSlash", "//")
+	if err != nil {
+		return nil, err
+	}
+
+	slashSlashIns, err := app.instanceBuilder.Create().WithToken(slashSlashStr).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	slashSlashElement, err := app.elementBuilder.Create().WithCardinality(cardinality).WithInstance(slashSlashIns).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	everything, err := app.everythingBuilder.Create().WithName("anythingExceptEndOfCommentInstruction").WithException(endOfCommentIns).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	instance, err := app.instanceBuilder.Create().WithEverything(everything).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	element, err := app.elementBuilder.Create().WithCardinality(cardinality).WithInstance(instance).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	suites, err := app.suites([][]byte{
+		[]byte("// this is a comment"),
+	}, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return app.oneLineTokenFromElements("singleLineComment", []grammars.Element{
+		slashSlashElement,
+		element,
+	}, suites)
 }
 
 func (app *grammar) executeToken(
@@ -764,28 +827,34 @@ func (app *grammar) moduleDeclarationToken(
 func (app *grammar) nameToken(
 	lowerCaseLetter grammars.Token,
 	anyCaseLetter grammars.Token,
+	anyNumber grammars.Token,
 ) (grammars.Token, error) {
-	firstLetterCardinality, err := app.cardinalityOneOccurence()
+	oneCardinality, err := app.cardinalityOneOccurence()
 	if err != nil {
 		return nil, err
 	}
 
-	firstLetterElement, err := app.elementFromToken(lowerCaseLetter, firstLetterCardinality)
+	firstLetterElement, err := app.elementFromToken(lowerCaseLetter, oneCardinality)
 	if err != nil {
 		return nil, err
 	}
 
-	lettersCardinality, err := app.cardinalityBuilder.Create().WithMin(1).Now()
+	onePlusCardinality, err := app.cardinalityBuilder.Create().WithMin(1).Now()
 	if err != nil {
 		return nil, err
 	}
 
-	lettersElement, err := app.elementFromToken(anyCaseLetter, lettersCardinality)
+	lettersElement, err := app.elementFromToken(anyCaseLetter, onePlusCardinality)
 	if err != nil {
 		return nil, err
 	}
 
-	line, err := app.lineBuilder.Create().WithElements([]grammars.Element{
+	numberElement, err := app.elementFromToken(anyNumber, onePlusCardinality)
+	if err != nil {
+		return nil, err
+	}
+
+	firstLine, err := app.lineBuilder.Create().WithElements([]grammars.Element{
 		firstLetterElement,
 		lettersElement,
 	}).Now()
@@ -794,8 +863,17 @@ func (app *grammar) nameToken(
 		return nil, err
 	}
 
+	secondLine, err := app.lineBuilder.Create().WithElements([]grammars.Element{
+		numberElement,
+	}).Now()
+
+	if err != nil {
+		return nil, err
+	}
+
 	block, err := app.blockBuilder.Create().WithLines([]grammars.Line{
-		line,
+		firstLine,
+		secondLine,
 	}).Now()
 
 	if err != nil {
@@ -804,6 +882,7 @@ func (app *grammar) nameToken(
 
 	suites, err := app.suites([][]byte{
 		[]byte("myName"),
+		[]byte("0"),
 	}, nil)
 
 	if err != nil {

@@ -63,7 +63,7 @@ func (app *application) Execute(input map[string]interface{}, program programs.P
 
 		ins, err := app.value(input, values, value)
 		if err != nil {
-			str := fmt.Sprintf("there was an error while executing an an assignment (index: %d. name: %s): %s", idx, name, err.Error())
+			str := fmt.Sprintf("there was an error while executing an assignment (index: %d. name: %s): %s", idx, name, err.Error())
 			return nil, errors.New(str)
 		}
 
@@ -79,7 +79,7 @@ func (app *application) Execute(input map[string]interface{}, program programs.P
 				continue
 			}
 
-			str := fmt.Sprintf("the program has an output parameter (name: %s), but the executed program doesnot contain that value", oneOutput)
+			str := fmt.Sprintf("the program has an output parameter (name: %s), but the executed program does not contain that value", oneOutput)
 			return nil, errors.New(str)
 		}
 	}

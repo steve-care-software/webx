@@ -20,11 +20,8 @@ The syntax application makes it easy to create a grammar, use that grammar to ex
     // attach variable to application:
     attach $myDataVariable:$data $myAppVariable;;
 
-    // execute module application that returns a variable:
+    // execute module application and return its output:
     $myOutput = execute $myAppVariable;;
-
-    // execute module application without a return clause:
-    execute $myAppVariable;;
 
 ## Grammar syntax
 

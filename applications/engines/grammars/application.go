@@ -524,7 +524,7 @@ func (app *application) block(tokenName string, block grammars.Block, escape gra
 				}
 
 				if escape != nil {
-					fmt.Printf("\n finish escape!!! \n ")
+					//fmt.Printf("\n finish escape!!! \n ")
 					//escapeIns, rem, err:= app.element(oneElement, escape, channels, isReverse, previousData, remaining)
 				}
 
@@ -753,6 +753,10 @@ func (app *application) elementContent(content grammars.ElementContent, escape g
 			builder.WithPrefix(prefix)
 			remaining = rem
 		}
+	}
+
+	if len(remaining) < 1 {
+		return nil, nil, nil, errors.New("there must be at least 1 value in the given data in order to have an element match, 0 provided")
 	}
 
 	number := content.Value().Number()
