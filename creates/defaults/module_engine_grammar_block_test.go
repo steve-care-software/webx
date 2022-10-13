@@ -12,18 +12,30 @@ func TestModule_engineGrammarBlock_Success(t *testing.T) {
 		-> $name;;
 		<- $block;;
 
-        // value app
+		// cast to uint app:
+		module @castToUint;;
+		@castToUint $castToUintApp;;
+
+		// number casting to uint:
+		$myNumber = 157;;
+		attach $myNumber:$value $castToUintApp;;
+		$number = execute $castToUintApp;;
+
+        // value app:
         module @engineGrammarValue;;
 		@engineGrammarValue $valueApp;;
-		$number = 157;;
 		attach $number:$number $valueApp;;
 		attach $name:$name $valueApp;;
         $value = execute $valueApp;;
 
+		// min casting to uint:
+		$myMinStr = 1;;
+		attach $myMinStr:$value $castToUintApp;;
+		$myMin = execute $castToUintApp;;
+
         // cardinality:
         module @engineGrammarCardinality;;
 		@engineGrammarCardinality $cardinalityApp;;
-        $myMin = 1;;
 		attach $myMin:$min $cardinalityApp;;
         $cardinality = execute $cardinalityApp;;
 

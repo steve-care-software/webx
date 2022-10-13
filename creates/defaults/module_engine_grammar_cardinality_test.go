@@ -13,9 +13,17 @@ func TestModule_engineGrammarCardinality_withMin_withoutMax_Success(t *testing.T
 		@engineGrammarCardinality $cardinalityApp;;
 		<- $output;;
 
-		$myMin = 1;;
-		attach $myMin:$min $cardinalityApp;;
+		// cast to uint app:
+		module @castToUint;;
+		@castToUint $castToUintApp;;
 
+		// min casting to uint:
+		$myMinStr = 1;;
+		attach $myMinStr:$value $castToUintApp;;
+		$myMin = execute $castToUintApp;;
+
+		// cardinality app:
+		attach $myMin:$min $cardinalityApp;;
 		$output = execute $cardinalityApp;;
 	`
 
@@ -54,8 +62,21 @@ func TestModule_engineGrammarCardinality_withMin_withMax_Success(t *testing.T) {
 		@engineGrammarCardinality $cardinalityApp;;
 		<- $output;;
 
-		$myMin = 1;;
-        $myMax = 2;;
+		// cast to uint app:
+		module @castToUint;;
+		@castToUint $castToUintApp;;
+
+		// min casting to uint:
+		$myMinStr = 1;;
+		attach $myMinStr:$value $castToUintApp;;
+		$myMin = execute $castToUintApp;;
+
+		// max casting to uint:
+		$myMaxStr = 2;;
+		attach $myMaxStr:$value $castToUintApp;;
+		$myMax = execute $castToUintApp;;
+
+		// cardinality app:
 		attach $myMin:$min $cardinalityApp;;
         attach $myMax:$max $cardinalityApp;;
 

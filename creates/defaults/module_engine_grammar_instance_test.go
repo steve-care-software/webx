@@ -47,17 +47,29 @@ func TestModule_engineGrammarInstance_withEverything_Success(t *testing.T) {
         attach $list:$suites $suitesApp;;
         $suites = execute $suitesApp;;
 
+		// cast to uint app:
+		module @castToUint;;
+		@castToUint $castToUintApp;;
+
+		// number casting to uint:
+		$myNumber = 157;;
+		attach $myNumber:$value $castToUintApp;;
+		$number = execute $castToUintApp;;
+
         // value app:
 		@engineGrammarValue $valueApp;;
-		$number = 157;;
         $name = myName;;
 		attach $number:$number $valueApp;;
 		attach $name:$name $valueApp;;
         $value = execute $valueApp;;
 
+		// min casting to uint:
+		$myMinStr = 1;;
+		attach $myMinStr:$value $castToUintApp;;
+		$myMin = execute $castToUintApp;;
+
         // cardinality:
 		@engineGrammarCardinality $cardinalityApp;;
-        $myMin = 1;;
 		attach $myMin:$min $cardinalityApp;;
         $cardinality = execute $cardinalityApp;;
 
@@ -167,17 +179,29 @@ func TestModule_engineGrammarInstance_withToken_Success(t *testing.T) {
         attach $list:$suites $suitesApp;;
         $suites = execute $suitesApp;;
 
+		// cast to uint app:
+		module @castToUint;;
+		@castToUint $castToUintApp;;
+
+		// number casting to uint:
+		$myNumber = 157;;
+		attach $myNumber:$value $castToUintApp;;
+		$number = execute $castToUintApp;;
+
         // value app:
 		@engineGrammarValue $valueApp;;
-		$number = 157;;
         $name = myName;;
 		attach $number:$number $valueApp;;
 		attach $name:$name $valueApp;;
         $value = execute $valueApp;;
 
+		// min casting to uint:
+		$myMinStr = 1;;
+		attach $myMinStr:$value $castToUintApp;;
+		$myMin = execute $castToUintApp;;
+
         // cardinality:
 		@engineGrammarCardinality $cardinalityApp;;
-        $myMin = 1;;
 		attach $myMin:$min $cardinalityApp;;
         $cardinality = execute $cardinalityApp;;
 

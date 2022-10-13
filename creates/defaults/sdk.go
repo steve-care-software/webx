@@ -43,6 +43,7 @@ func NewApplication() creates.Application {
 		createModule(
 			modules.NewBuilder(),
 			modules.NewModuleBuilder(),
+			criterias.NewBuilder(),
 			grammars.NewBuilder(),
 			grammars.NewChannelsBuilder(),
 			grammars.NewChannelBuilder(),

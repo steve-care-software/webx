@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	creates_module "github.com/steve-care-software/syntax/applications/engines/creates/modules"
+	"github.com/steve-care-software/syntax/domain/syntax/criterias"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars/cardinalities"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars/values"
@@ -16,6 +17,7 @@ import (
 type module struct {
 	builder                        modules.Builder
 	moduleBuilder                  modules.ModuleBuilder
+	criteriaBuilder                criterias.Builder
 	grammarBuilder                 grammars.Builder
 	grammarChannelsBuilder         grammars.ChannelsBuilder
 	grammarChannelBuilder          grammars.ChannelBuilder
@@ -36,6 +38,7 @@ type module struct {
 func createModule(
 	builder modules.Builder,
 	moduleBuilder modules.ModuleBuilder,
+	criteriaBuilder criterias.Builder,
 	grammarBuilder grammars.Builder,
 	grammarChannelsBuilder grammars.ChannelsBuilder,
 	grammarChannelBuilder grammars.ChannelBuilder,
@@ -55,6 +58,7 @@ func createModule(
 	out := module{
 		builder:                        builder,
 		moduleBuilder:                  moduleBuilder,
+		criteriaBuilder:                criteriaBuilder,
 		grammarBuilder:                 grammarBuilder,
 		grammarChannelsBuilder:         grammarChannelsBuilder,
 		grammarChannelBuilder:          grammarChannelBuilder,
@@ -88,8 +92,14 @@ func (app *module) Execute() (modules.Modules, error) {
 		return nil, err
 	}
 
+	castTo, err := app.castTo()
+	if err != nil {
+		return nil, err
+	}
+
 	list = append(list, engine...)
 	list = append(list, container...)
+	list = append(list, castTo...)
 	return app.builder.Create().WithList(list).Now()
 }
 
@@ -111,8 +121,42 @@ func (app *module) engine() ([]modules.Module, error) {
 		return nil, err
 	}
 
+	criteria, err := app.engineCriteria()
+	if err != nil {
+		return nil, err
+	}
+
 	list = append(list, grammar...)
+	list = append(list, criteria)
 	return list, nil
+}
+
+func (app *module) engineCriteria() (modules.Module, error) {
+	name := "engineCriteria"
+	fn := func(input map[string]interface{}) (interface{}, error) {
+		builder := app.criteriaBuilder.Create()
+		if name, ok := input["name"].(string); ok {
+			builder.WithName(name)
+		}
+
+		if index, ok := input["index"].(uint); ok {
+			builder.WithIndex(index)
+		}
+
+		if includeChannels, ok := input["includeChannels"].(bool); ok {
+			if includeChannels {
+				builder.IncludeChannels()
+			}
+		}
+
+		if child, ok := input["child"].(criterias.Criteria); ok {
+			builder.WithChild(child)
+		}
+
+		return builder.Now()
+	}
+
+	return app.module(name, fn)
 }
 
 func (app *module) grammar() ([]modules.Module, error) {
@@ -507,28 +551,18 @@ func (app *module) engineGrammarElement() (modules.Module, error) {
 func (app *module) engineGrammarCardinality() (modules.Module, error) {
 	name := "engineGrammarCardinality"
 	fn := func(input map[string]interface{}) (interface{}, error) {
-		if min, ok := input["min"].(string); ok {
-			intMin, err := strconv.Atoi(strings.TrimSpace(min))
-			if err != nil {
-				return nil, err
-			}
-
-			if intMin <= 0 {
+		if min, ok := input["min"].(uint); ok {
+			if min <= 0 {
 				return nil, errors.New("the minimum cannot be smaller or equal than 0")
 			}
 
-			builder := app.grammarCardinalityBuilder.Create().WithMin(uint(intMin))
-			if max, ok := input["max"].(string); ok {
-				intMax, err := strconv.Atoi(strings.TrimSpace(max))
-				if err != nil {
-					return nil, err
-				}
-
-				if intMax < 0 {
+			builder := app.grammarCardinalityBuilder.Create().WithMin(min)
+			if max, ok := input["max"].(uint); ok {
+				if max < 0 {
 					return nil, errors.New("the maximum cannot be smaller or equal than 0")
 				}
 
-				builder.WithMax(uint(intMax))
+				builder.WithMax(max)
 			}
 
 			return builder.Now()
@@ -544,34 +578,20 @@ func (app *module) engineGrammarCardinality() (modules.Module, error) {
 func (app *module) engineGrammarValue() (modules.Module, error) {
 	name := "engineGrammarValue"
 	fn := func(input map[string]interface{}) (interface{}, error) {
+		builder := app.grammarValueBuilder.Create()
 		if name, ok := input["name"].(string); ok {
-			if number, ok := input["number"].(string); ok {
-				intNumber, err := strconv.Atoi(strings.TrimSpace(number))
-				if err != nil {
-					return nil, err
-				}
-
-				if intNumber < 0 {
-					return nil, errors.New("the number cannot be smaller than 0")
-				}
-
-				if intNumber > 255 {
-					return nil, errors.New("the number cannot be bigger than 255")
-				}
-
-				return app.grammarValueBuilder.Create().
-					WithName(name).
-					WithNumber(byte(intNumber)).
-					Now()
-			}
-
-			str := fmt.Sprintf("the number was expected to be valid and contain a string")
-			return nil, errors.New(str)
-
+			builder.WithName(name)
 		}
 
-		str := fmt.Sprintf("the name was expected to be valid and contain a string")
-		return nil, errors.New(str)
+		if number, ok := input["number"].(uint); ok {
+			if number > 255 {
+				return nil, errors.New("the number cannot be bigger than 255")
+			}
+
+			builder.WithNumber(byte(number))
+		}
+
+		return builder.Now()
 	}
 
 	return app.module(name, fn)
@@ -591,6 +611,195 @@ func (app *module) containerList() (modules.Module, error) {
 		}
 
 		return values, nil
+	}
+
+	return app.module(name, fn)
+}
+
+func (app *module) castTo() ([]modules.Module, error) {
+	toInt, err := app.castToInt()
+	if err != nil {
+		return nil, err
+	}
+
+	toUint, err := app.castToUint()
+	if err != nil {
+		return nil, err
+	}
+
+	toBool, err := app.castToBool()
+	if err != nil {
+		return nil, err
+	}
+
+	toFloat32, err := app.castToFloat32()
+	if err != nil {
+		return nil, err
+	}
+
+	toFloat64, err := app.castToFloat64()
+	if err != nil {
+		return nil, err
+	}
+
+	return []modules.Module{
+		toInt,
+		toUint,
+		toBool,
+		toFloat32,
+		toFloat64,
+	}, nil
+}
+
+func (app *module) castToInt() (modules.Module, error) {
+	name := "castToInt"
+	fn := func(input map[string]interface{}) (interface{}, error) {
+		if ins, ok := input["value"]; ok {
+			if casted, ok := ins.(string); ok {
+				return strconv.Atoi(casted)
+			}
+
+			if casted, ok := ins.(uint); ok {
+				return int(casted), nil
+			}
+
+			str := fmt.Sprintf("the value was expected to contain a string or uint")
+			return nil, errors.New(str)
+		}
+
+		str := fmt.Sprintf("the value was expected to be valid")
+		return nil, errors.New(str)
+	}
+
+	return app.module(name, fn)
+}
+
+func (app *module) castToUint() (modules.Module, error) {
+	name := "castToUint"
+	fn := func(input map[string]interface{}) (interface{}, error) {
+		if ins, ok := input["value"]; ok {
+			if casted, ok := ins.(string); ok {
+				intValue, err := strconv.Atoi(casted)
+				if err != nil {
+					return nil, err
+				}
+
+				return uint(intValue), nil
+			}
+
+			if casted, ok := ins.(int); ok {
+				return uint(casted), nil
+			}
+
+			str := fmt.Sprintf("the value was expected to contain a string or int")
+			return nil, errors.New(str)
+		}
+
+		str := fmt.Sprintf("the value was expected to be valid")
+		return nil, errors.New(str)
+	}
+
+	return app.module(name, fn)
+}
+
+func (app *module) castToBool() (modules.Module, error) {
+	name := "castToBool"
+	fn := func(input map[string]interface{}) (interface{}, error) {
+		if ins, ok := input["value"]; ok {
+			if casted, ok := ins.(string); ok {
+				if strings.TrimSpace(casted) == "true" {
+					return true, nil
+				}
+
+				if strings.TrimSpace(casted) == "false" {
+					return false, nil
+				}
+
+				str := fmt.Sprintf("the value was expected to contain true/false when a string is provided")
+				return nil, errors.New(str)
+			}
+
+			if casted, ok := ins.(int); ok {
+				if casted == 0 {
+					return false, nil
+				}
+
+				return true, nil
+			}
+
+			if casted, ok := ins.(uint); ok {
+				if casted == 0 {
+					return false, nil
+				}
+
+				return true, nil
+			}
+
+			str := fmt.Sprintf("the value was expected to contain a string, int or uint")
+			return nil, errors.New(str)
+		}
+
+		str := fmt.Sprintf("the value was expected to be valid")
+		return nil, errors.New(str)
+	}
+
+	return app.module(name, fn)
+}
+
+func (app *module) castToFloat32() (modules.Module, error) {
+	name := "castToFloat32"
+	fn := func(input map[string]interface{}) (interface{}, error) {
+		if ins, ok := input["value"]; ok {
+			if casted, ok := ins.(string); ok {
+				floatSixtyFour, err := strconv.ParseFloat(casted, 32)
+				if err != nil {
+					return nil, err
+				}
+
+				return float32(floatSixtyFour), nil
+			}
+
+			if casted, ok := ins.(int); ok {
+				return float32(casted), nil
+			}
+
+			if casted, ok := ins.(uint); ok {
+				return float32(casted), nil
+			}
+
+			str := fmt.Sprintf("the value was expected to contain a string, int or uint")
+			return nil, errors.New(str)
+		}
+
+		str := fmt.Sprintf("the value was expected to be valid")
+		return nil, errors.New(str)
+	}
+
+	return app.module(name, fn)
+}
+
+func (app *module) castToFloat64() (modules.Module, error) {
+	name := "castToFloat64"
+	fn := func(input map[string]interface{}) (interface{}, error) {
+		if ins, ok := input["value"]; ok {
+			if casted, ok := ins.(string); ok {
+				return strconv.ParseFloat(casted, 64)
+			}
+
+			if casted, ok := ins.(int); ok {
+				return float64(casted), nil
+			}
+
+			if casted, ok := ins.(uint); ok {
+				return float64(casted), nil
+			}
+
+			str := fmt.Sprintf("the value was expected to contain a string, int or uint")
+			return nil, errors.New(str)
+		}
+
+		str := fmt.Sprintf("the value was expected to be valid")
+		return nil, errors.New(str)
 	}
 
 	return app.module(name, fn)

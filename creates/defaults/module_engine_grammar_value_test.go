@@ -11,11 +11,19 @@ import (
 func TestModule_engineGrammarValue_Success(t *testing.T) {
 	script := `
 		module @engineGrammarValue;;
-		@engineGrammarValue $valueApp;;
+		module @castToUint;;
+
 		-> $myName;;
 		<- $myValue;;
 
-		$myNumber = 157;;
+		// cast to uint:
+		$myNumberStr = 157;;
+		@castToUint $castToUintApp;;
+		attach $myNumberStr:$value $castToUintApp;;
+		$myNumber = execute $castToUintApp;;
+
+		// value app:
+		@engineGrammarValue $valueApp;;
 		attach $myNumber:$number $valueApp;;
 		attach $myName:$name $valueApp;;
 
