@@ -1,33 +1,39 @@
 package grammars
 
 import (
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars/cardinalities"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars/values"
 )
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
-	return createBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(hashAdapter)
 }
 
 // NewChannelsBuilder creates a new channels builder
 func NewChannelsBuilder() ChannelsBuilder {
-	return createChannelsBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createChannelsBuilder(hashAdapter)
 }
 
 // NewChannelBuilder creates a new channel builder
 func NewChannelBuilder() ChannelBuilder {
-	return createChannelBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createChannelBuilder(hashAdapter)
 }
 
 // NewChannelConditionBuilder creates a new chanel condition builder
 func NewChannelConditionBuilder() ChannelConditionBuilder {
-	return createChannelConditionBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createChannelConditionBuilder(hashAdapter)
 }
 
 // NewExternalBuilder creates a new external builder
 func NewExternalBuilder() ExternalBuilder {
-	return createExternalBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createExternalBuilder(hashAdapter)
 }
 
 // NewInstanceBuilder creates a new instance builder
@@ -37,42 +43,50 @@ func NewInstanceBuilder() InstanceBuilder {
 
 // NewEverythingBuilder creates a new everything builder
 func NewEverythingBuilder() EverythingBuilder {
-	return createEverythingBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createEverythingBuilder(hashAdapter)
 }
 
 // NewTokensBuilder creates a new tokens builder
 func NewTokensBuilder() TokensBuilder {
-	return createTokensBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createTokensBuilder(hashAdapter)
 }
 
 // NewTokenBuilder creates a new token builder
 func NewTokenBuilder() TokenBuilder {
-	return createTokenBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createTokenBuilder(hashAdapter)
 }
 
 // NewSuitesBuilder creates a new suites builder
 func NewSuitesBuilder() SuitesBuilder {
-	return createSuitesBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createSuitesBuilder(hashAdapter)
 }
 
 // NewSuiteBuilder creates a new suite builder
 func NewSuiteBuilder() SuiteBuilder {
-	return createSuiteBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createSuiteBuilder(hashAdapter)
 }
 
 // NewBlockBuilder creates a new block builder
 func NewBlockBuilder() BlockBuilder {
-	return createBlockBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createBlockBuilder(hashAdapter)
 }
 
 // NewLineBuilder creates a new line builder
 func NewLineBuilder() LineBuilder {
-	return createLineBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createLineBuilder(hashAdapter)
 }
 
 // NewElementBuilder creates a new element builder
 func NewElementBuilder() ElementBuilder {
-	return createElementBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createElementBuilder(hashAdapter)
 }
 
 // Builder represents a grammar builder
@@ -85,6 +99,7 @@ type Builder interface {
 
 // Grammar represents a grammar
 type Grammar interface {
+	Hash() hash.Hash
 	Root() Token
 	HasChannels() bool
 	Channels() Channels
@@ -99,6 +114,7 @@ type ChannelsBuilder interface {
 
 // Channels represents channels
 type Channels interface {
+	Hash() hash.Hash
 	List() []Channel
 }
 
@@ -113,6 +129,7 @@ type ChannelBuilder interface {
 
 // Channel represents a channel
 type Channel interface {
+	Hash() hash.Hash
 	Name() string
 	Token() Token
 	HasCondition() bool
@@ -129,6 +146,7 @@ type ChannelConditionBuilder interface {
 
 // ChannelCondition represents a channel condition
 type ChannelCondition interface {
+	Hash() hash.Hash
 	HasPrevious() bool
 	Previous() Token
 	HasNext() bool
@@ -145,6 +163,7 @@ type ExternalBuilder interface {
 
 // External represents an external token
 type External interface {
+	Hash() hash.Hash
 	Name() string
 	Grammar() Grammar
 }
@@ -159,6 +178,7 @@ type InstanceBuilder interface {
 
 // Instance represents an instance
 type Instance interface {
+	Hash() hash.Hash
 	Name() string
 	IsToken() bool
 	Token() Token
@@ -177,6 +197,7 @@ type EverythingBuilder interface {
 
 // Everything represents an everything except
 type Everything interface {
+	Hash() hash.Hash
 	Name() string
 	Exception() Token
 	HasEscape() bool
@@ -192,6 +213,7 @@ type TokensBuilder interface {
 
 // Tokens represents tokens
 type Tokens interface {
+	Hash() hash.Hash
 	List() []Token
 }
 
@@ -206,6 +228,7 @@ type TokenBuilder interface {
 
 // Token represents a token
 type Token interface {
+	Hash() hash.Hash
 	Name() string
 	Block() Block
 	HasSuites() bool
@@ -221,6 +244,7 @@ type SuitesBuilder interface {
 
 // Suites represets a list of test suites
 type Suites interface {
+	Hash() hash.Hash
 	List() []Suite
 }
 
@@ -234,6 +258,7 @@ type SuiteBuilder interface {
 
 // Suite represents a test suite
 type Suite interface {
+	Hash() hash.Hash
 	IsValid() bool
 	Content() []byte
 }
@@ -247,6 +272,7 @@ type BlockBuilder interface {
 
 // Block represents a decision block
 type Block interface {
+	Hash() hash.Hash
 	Lines() []Line
 }
 
@@ -259,6 +285,7 @@ type LineBuilder interface {
 
 // Line represents a line of elements
 type Line interface {
+	Hash() hash.Hash
 	Elements() []Element
 }
 
@@ -274,6 +301,7 @@ type ElementBuilder interface {
 
 // Element represents an element
 type Element interface {
+	Hash() hash.Hash
 	Name() string
 	Content() ElementContent
 	Cardinality() cardinalities.Cardinality
@@ -281,6 +309,7 @@ type Element interface {
 
 // ElementContent represents an element content
 type ElementContent interface {
+	Hash() hash.Hash
 	IsValue() bool
 	Value() values.Value
 	IsExternal() bool

@@ -1,8 +1,11 @@
 package criterias
 
+import "github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
-	return createBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(hashAdapter)
 }
 
 // Builder represents a criteria builder
@@ -17,6 +20,7 @@ type Builder interface {
 
 // Criteria represents a criteria
 type Criteria interface {
+	Hash() hash.Hash
 	Name() string
 	Index() uint
 	IncludeChannels() bool

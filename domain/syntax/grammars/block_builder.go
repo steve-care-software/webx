@@ -1,14 +1,22 @@
 package grammars
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+)
 
 type blockBuilder struct {
-	lines []Line
+	hashAdapter hash.Adapter
+	lines       []Line
 }
 
-func createBlockBuilder() BlockBuilder {
+func createBlockBuilder(
+	hashAdapter hash.Adapter,
+) BlockBuilder {
 	out := blockBuilder{
-		lines: nil,
+		hashAdapter: hashAdapter,
+		lines:       nil,
 	}
 
 	return &out
@@ -16,7 +24,9 @@ func createBlockBuilder() BlockBuilder {
 
 // Create initializes the builder
 func (app *blockBuilder) Create() BlockBuilder {
-	return createBlockBuilder()
+	return createBlockBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithLines add lines to the builder
@@ -35,5 +45,15 @@ func (app *blockBuilder) Now() (Block, error) {
 		return nil, errors.New("there must be at least 1 Line in order to build a Block instance")
 	}
 
-	return createBlock(app.lines), nil
+	data := [][]byte{}
+	for _, oneLine := range app.lines {
+		data = append(data, oneLine.Hash().Bytes())
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	return createBlock(*pHash, app.lines), nil
 }

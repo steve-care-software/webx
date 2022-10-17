@@ -1,14 +1,22 @@
 package grammars
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+)
 
 type tokensBuilder struct {
-	list []Token
+	hashAdapter hash.Adapter
+	list        []Token
 }
 
-func createTokensBuilder() TokensBuilder {
+func createTokensBuilder(
+	hashAdapter hash.Adapter,
+) TokensBuilder {
 	out := tokensBuilder{
-		list: nil,
+		hashAdapter: hashAdapter,
+		list:        nil,
 	}
 
 	return &out
@@ -16,7 +24,9 @@ func createTokensBuilder() TokensBuilder {
 
 // Create initializes the builder
 func (app *tokensBuilder) Create() TokensBuilder {
-	return createTokensBuilder()
+	return createTokensBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithList adds a list to the builder
@@ -35,5 +45,15 @@ func (app *tokensBuilder) Now() (Tokens, error) {
 		return nil, errors.New("there must be at least 1 Token in order to build a Tokens instance")
 	}
 
-	return createTokens(app.list), nil
+	data := [][]byte{}
+	for _, oneToken := range app.list {
+		data = append(data, oneToken.Hash().Bytes())
+	}
+
+	phash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	return createTokens(*phash, app.list), nil
 }

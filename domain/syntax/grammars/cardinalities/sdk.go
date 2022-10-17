@@ -1,8 +1,11 @@
 package cardinalities
 
+import "github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
-	return createBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(hashAdapter)
 }
 
 // Builder represents a cardinality builder
@@ -15,6 +18,7 @@ type Builder interface {
 
 // Cardinality represents a cardinality
 type Cardinality interface {
+	Hash() hash.Hash
 	Min() uint
 	HasMax() bool
 	Max() *uint

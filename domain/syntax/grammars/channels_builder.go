@@ -1,14 +1,22 @@
 package grammars
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+)
 
 type channelsBuilder struct {
-	list []Channel
+	hashAdapter hash.Adapter
+	list        []Channel
 }
 
-func createChannelsBuilder() ChannelsBuilder {
+func createChannelsBuilder(
+	hashAdapter hash.Adapter,
+) ChannelsBuilder {
 	out := channelsBuilder{
-		list: nil,
+		hashAdapter: hashAdapter,
+		list:        nil,
 	}
 
 	return &out
@@ -16,7 +24,9 @@ func createChannelsBuilder() ChannelsBuilder {
 
 // Create initializes the builder
 func (app *channelsBuilder) Create() ChannelsBuilder {
-	return createChannelsBuilder()
+	return createChannelsBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithList adds a list to the builder
@@ -35,5 +45,15 @@ func (app *channelsBuilder) Now() (Channels, error) {
 		return nil, errors.New("there must be at least 1 Channel in order to build a Channels instance")
 	}
 
-	return createChannels(app.list), nil
+	data := [][]byte{}
+	for _, oneChannel := range app.list {
+		data = append(data, oneChannel.Hash().Bytes())
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	return createChannels(*pHash, app.list), nil
 }

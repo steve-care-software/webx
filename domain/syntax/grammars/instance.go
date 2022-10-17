@@ -1,5 +1,7 @@
 package grammars
 
+import "github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+
 type instance struct {
 	token      Token
 	everything Everything
@@ -27,6 +29,15 @@ func createInstanceInternally(
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *instance) Hash() hash.Hash {
+	if obj.IsToken() {
+		return obj.Token().Hash()
+	}
+
+	return obj.Everything().Hash()
 }
 
 // Name returns the name

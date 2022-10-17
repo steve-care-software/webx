@@ -7,6 +7,7 @@ import (
 	"github.com/steve-care-software/syntax/applications/engines/interpreters"
 	"github.com/steve-care-software/syntax/applications/engines/programs"
 	program_application "github.com/steve-care-software/syntax/applications/engines/programs"
+	"github.com/steve-care-software/syntax/domain/syntax/compilers"
 )
 
 type application struct {
@@ -83,4 +84,9 @@ func (app *application) ParseThenInterpret(input map[string]interface{}, script 
 	}
 
 	return output, remaining, nil
+}
+
+// CompileThenParseThenInterpret compiles then parses then interpret
+func (app *application) CompileThenParseThenInterpret(input map[string]interface{}, compiler compilers.Compiler, script []byte) (map[string]interface{}, []byte, []byte, error) {
+	return nil, nil, nil, nil
 }

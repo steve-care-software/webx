@@ -1,16 +1,25 @@
 package cardinalities
 
-import "errors"
+import (
+	"errors"
+	"strconv"
+
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+)
 
 type builder struct {
-	pMin *uint
-	pMax *uint
+	hashAdapter hash.Adapter
+	pMin        *uint
+	pMax        *uint
 }
 
-func createBuilder() Builder {
+func createBuilder(
+	hashAdapter hash.Adapter,
+) Builder {
 	out := builder{
-		pMin: nil,
-		pMax: nil,
+		hashAdapter: hashAdapter,
+		pMin:        nil,
+		pMax:        nil,
 	}
 
 	return &out
@@ -18,7 +27,9 @@ func createBuilder() Builder {
 
 // Create initializes the builder
 func (app *builder) Create() Builder {
-	return createBuilder()
+	return createBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithMin adds a minimum to the builder
@@ -39,9 +50,22 @@ func (app *builder) Now() (Cardinality, error) {
 		return nil, errors.New("the minimum is mandatory in order to build a Cardinality instance")
 	}
 
-	if app.pMax != nil {
-		return createCardinalityWithMax(*app.pMin, app.pMax), nil
+	data := [][]byte{
+		[]byte(strconv.Itoa(int(*app.pMin))),
 	}
 
-	return createCardinality(*app.pMin), nil
+	if app.pMax != nil {
+		data = append(data, []byte(strconv.Itoa(int(*app.pMax))))
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	if app.pMax != nil {
+		return createCardinalityWithMax(*pHash, *app.pMin, app.pMax), nil
+	}
+
+	return createCardinality(*pHash, *app.pMin), nil
 }

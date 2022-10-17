@@ -1,16 +1,24 @@
 package values
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+)
 
 type builder struct {
-	name    string
-	pNumber *byte
+	hashAdapter hash.Adapter
+	name        string
+	pNumber     *byte
 }
 
-func createBuilder() Builder {
+func createBuilder(
+	hashAdapter hash.Adapter,
+) Builder {
 	out := builder{
-		name:    "",
-		pNumber: nil,
+		hashAdapter: hashAdapter,
+		name:        "",
+		pNumber:     nil,
 	}
 
 	return &out
@@ -18,7 +26,9 @@ func createBuilder() Builder {
 
 // Create initializes the builder
 func (app *builder) Create() Builder {
-	return createBuilder()
+	return createBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithName adds a name to the builder
@@ -43,5 +53,16 @@ func (app *builder) Now() (Value, error) {
 		return nil, errors.New("the value is mandatory in order to build a Value instance")
 	}
 
-	return createValue(app.name, *app.pNumber), nil
+	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+		[]byte(app.name),
+		[]byte{
+			*app.pNumber,
+		},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return createValue(*pHash, app.name, *app.pNumber), nil
 }

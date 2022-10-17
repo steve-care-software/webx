@@ -1,8 +1,11 @@
 package values
 
+import "github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
-	return createBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(hashAdapter)
 }
 
 // Builder represents a value builder
@@ -15,6 +18,7 @@ type Builder interface {
 
 // Value represents a value
 type Value interface {
+	Hash() hash.Hash
 	Name() string
 	Number() byte
 }

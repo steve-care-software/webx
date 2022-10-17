@@ -1,14 +1,22 @@
 package grammars
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+)
 
 type suitesBuilder struct {
-	list []Suite
+	hashAdapter hash.Adapter
+	list        []Suite
 }
 
-func createSuitesBuilder() SuitesBuilder {
+func createSuitesBuilder(
+	hashAdapter hash.Adapter,
+) SuitesBuilder {
 	out := suitesBuilder{
-		list: nil,
+		hashAdapter: hashAdapter,
+		list:        nil,
 	}
 
 	return &out
@@ -16,7 +24,9 @@ func createSuitesBuilder() SuitesBuilder {
 
 // Create initializes the builder
 func (app *suitesBuilder) Create() SuitesBuilder {
-	return createSuitesBuilder()
+	return createSuitesBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithList adds a list to the builder
@@ -35,5 +45,15 @@ func (app *suitesBuilder) Now() (Suites, error) {
 		return nil, errors.New("there must be at least 1 Suite in order to build a Suites instance")
 	}
 
-	return createSuites(app.list), nil
+	data := [][]byte{}
+	for _, oneSuite := range app.list {
+		data = append(data, oneSuite.Hash().Bytes())
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	return createSuites(*pHash, app.list), nil
 }

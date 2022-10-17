@@ -1,18 +1,26 @@
 package grammars
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+)
 
 type tokenBuilder struct {
-	name   string
-	block  Block
-	suites Suites
+	hashAdapter hash.Adapter
+	name        string
+	block       Block
+	suites      Suites
 }
 
-func createTokenBuilder() TokenBuilder {
+func createTokenBuilder(
+	hashAdapter hash.Adapter,
+) TokenBuilder {
 	out := tokenBuilder{
-		name:   "",
-		block:  nil,
-		suites: nil,
+		hashAdapter: hashAdapter,
+		name:        "",
+		block:       nil,
+		suites:      nil,
 	}
 
 	return &out
@@ -20,7 +28,9 @@ func createTokenBuilder() TokenBuilder {
 
 // Create initializes the builder
 func (app *tokenBuilder) Create() TokenBuilder {
-	return createTokenBuilder()
+	return createTokenBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithName adds a name to the builder
@@ -51,9 +61,23 @@ func (app *tokenBuilder) Now() (Token, error) {
 		return nil, errors.New("the block is mandatory in order to build a Token instance")
 	}
 
-	if app.suites != nil {
-		return createTokenWithSuites(app.name, app.block, app.suites), nil
+	data := [][]byte{
+		[]byte(app.name),
+		app.block.Hash().Bytes(),
 	}
 
-	return createToken(app.name, app.block), nil
+	if app.suites != nil {
+		data = append(data, app.suites.Hash().Bytes())
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	if app.suites != nil {
+		return createTokenWithSuites(*pHash, app.name, app.block, app.suites), nil
+	}
+
+	return createToken(*pHash, app.name, app.block), nil
 }

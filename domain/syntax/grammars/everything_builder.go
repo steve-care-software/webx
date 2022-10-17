@@ -1,18 +1,26 @@
 package grammars
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+)
 
 type everythingBuilder struct {
-	name      string
-	exception Token
-	escape    Token
+	hashAdapter hash.Adapter
+	name        string
+	exception   Token
+	escape      Token
 }
 
-func createEverythingBuilder() EverythingBuilder {
+func createEverythingBuilder(
+	hashAdapter hash.Adapter,
+) EverythingBuilder {
 	out := everythingBuilder{
-		name:      "",
-		exception: nil,
-		escape:    nil,
+		hashAdapter: hashAdapter,
+		name:        "",
+		exception:   nil,
+		escape:      nil,
 	}
 
 	return &out
@@ -20,7 +28,9 @@ func createEverythingBuilder() EverythingBuilder {
 
 // Create initializes the builder
 func (app *everythingBuilder) Create() EverythingBuilder {
-	return createEverythingBuilder()
+	return createEverythingBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithName adds a name to the builder
@@ -51,9 +61,23 @@ func (app *everythingBuilder) Now() (Everything, error) {
 		return nil, errors.New("the name is mandatory in order to build an Everything instance")
 	}
 
-	if app.escape != nil {
-		return createEverythingWithEscape(app.name, app.exception, app.escape), nil
+	data := [][]byte{
+		[]byte(app.name),
+		app.exception.Hash().Bytes(),
 	}
 
-	return createEverything(app.name, app.exception), nil
+	if app.escape != nil {
+		data = append(data, app.escape.Hash().Bytes())
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	if app.escape != nil {
+		return createEverythingWithEscape(*pHash, app.name, app.exception, app.escape), nil
+	}
+
+	return createEverything(*pHash, app.name, app.exception), nil
 }

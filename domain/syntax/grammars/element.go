@@ -1,22 +1,33 @@
 package grammars
 
-import "github.com/steve-care-software/syntax/domain/syntax/grammars/cardinalities"
+import (
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+	"github.com/steve-care-software/syntax/domain/syntax/grammars/cardinalities"
+)
 
 type element struct {
+	hash        hash.Hash
 	content     ElementContent
 	cardinality cardinalities.Cardinality
 }
 
 func createElement(
+	hash hash.Hash,
 	content ElementContent,
 	cardinality cardinalities.Cardinality,
 ) Element {
 	out := element{
+		hash:        hash,
 		content:     content,
 		cardinality: cardinality,
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *element) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Name returns the name

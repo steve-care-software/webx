@@ -1,39 +1,52 @@
 package grammars
 
+import "github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+
 type channelCondition struct {
+	hash hash.Hash
 	prev Token
 	next Token
 }
 
 func createChannelConditionWithPrevious(
+	hash hash.Hash,
 	prev Token,
 ) ChannelCondition {
-	return createChannelConditionInternally(prev, nil)
+	return createChannelConditionInternally(hash, prev, nil)
 }
 
 func createChannelConditionWithNext(
+	hash hash.Hash,
 	next Token,
 ) ChannelCondition {
-	return createChannelConditionInternally(nil, next)
+	return createChannelConditionInternally(hash, nil, next)
 }
 
 func createChannelConditionWithPreviousAndNext(
+	hash hash.Hash,
 	prev Token,
 	next Token,
 ) ChannelCondition {
-	return createChannelConditionInternally(prev, next)
+	return createChannelConditionInternally(hash, prev, next)
 }
 
 func createChannelConditionInternally(
+	hash hash.Hash,
 	prev Token,
 	next Token,
 ) ChannelCondition {
 	out := channelCondition{
+		hash: hash,
 		prev: prev,
 		next: next,
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *channelCondition) Hash() hash.Hash {
+	return obj.hash
 }
 
 // HasPrevious returns true if there is a previous token, false otherwise

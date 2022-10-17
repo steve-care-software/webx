@@ -1,16 +1,24 @@
 package grammars
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+)
 
 type channelConditionBuilder struct {
-	prev Token
-	next Token
+	hashAdapter hash.Adapter
+	prev        Token
+	next        Token
 }
 
-func createChannelConditionBuilder() ChannelConditionBuilder {
+func createChannelConditionBuilder(
+	hashAdapter hash.Adapter,
+) ChannelConditionBuilder {
 	out := channelConditionBuilder{
-		prev: nil,
-		next: nil,
+		hashAdapter: hashAdapter,
+		prev:        nil,
+		next:        nil,
 	}
 
 	return &out
@@ -18,7 +26,9 @@ func createChannelConditionBuilder() ChannelConditionBuilder {
 
 // Create initializes the builder
 func (app *channelConditionBuilder) Create() ChannelConditionBuilder {
-	return createChannelConditionBuilder()
+	return createChannelConditionBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithPrevious adds a previous token to the builder
@@ -35,17 +45,32 @@ func (app *channelConditionBuilder) WithNext(next Token) ChannelConditionBuilder
 
 // Now builds a new ChannelCondition instance
 func (app *channelConditionBuilder) Now() (ChannelCondition, error) {
-	if app.next != nil && app.prev != nil {
-		return createChannelConditionWithPreviousAndNext(app.prev, app.next), nil
-	}
 
+	data := [][]byte{}
 	if app.next != nil {
-		return createChannelConditionWithNext(app.next), nil
+		data = append(data, app.next.Hash().Bytes())
 	}
 
 	if app.prev != nil {
-		return createChannelConditionWithPrevious(app.prev), nil
+		data = append(data, app.prev.Hash().Bytes())
 	}
 
-	return nil, errors.New("the ChannelCondition is invalid")
+	if len(data) <= 0 {
+		return nil, errors.New("the ChannelCondition is invalid")
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	if app.next != nil && app.prev != nil {
+		return createChannelConditionWithPreviousAndNext(*pHash, app.prev, app.next), nil
+	}
+
+	if app.next != nil {
+		return createChannelConditionWithNext(*pHash, app.next), nil
+	}
+
+	return createChannelConditionWithPrevious(*pHash, app.prev), nil
 }

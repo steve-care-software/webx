@@ -1,16 +1,25 @@
 package criterias
 
-import "errors"
+import (
+	"errors"
+	"strconv"
+
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+)
 
 type builder struct {
+	hashAdapter     hash.Adapter
 	name            string
 	pIndex          *uint
 	includeChannels bool
 	child           Criteria
 }
 
-func createBuilder() Builder {
+func createBuilder(
+	hashAdapter hash.Adapter,
+) Builder {
 	out := builder{
+		hashAdapter:     hashAdapter,
 		name:            "",
 		pIndex:          nil,
 		includeChannels: false,
@@ -22,7 +31,9 @@ func createBuilder() Builder {
 
 // Create initializes the builder
 func (app *builder) Create() Builder {
-	return createBuilder()
+	return createBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithName adds a name to the builder
@@ -59,9 +70,29 @@ func (app *builder) Now() (Criteria, error) {
 		return nil, errors.New("the index is mandatory in order to build a Criteria instance")
 	}
 
-	if app.child != nil {
-		return createCriteriaWithChild(app.name, *app.pIndex, app.includeChannels, app.child), nil
+	includeChannelsStr := "false"
+	if app.includeChannels {
+		includeChannelsStr = "true"
 	}
 
-	return createCriteria(app.name, *app.pIndex, app.includeChannels), nil
+	data := [][]byte{
+		[]byte(app.name),
+		[]byte(strconv.Itoa(int(*app.pIndex))),
+		[]byte(includeChannelsStr),
+	}
+
+	if app.child != nil {
+		data = append(data, app.child.Hash().Bytes())
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	if app.child != nil {
+		return createCriteriaWithChild(*pHash, app.name, *app.pIndex, app.includeChannels, app.child), nil
+	}
+
+	return createCriteria(*pHash, app.name, *app.pIndex, app.includeChannels), nil
 }

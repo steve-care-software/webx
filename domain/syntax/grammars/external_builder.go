@@ -1,16 +1,24 @@
 package grammars
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+)
 
 type externalBuilder struct {
-	name    string
-	grammar Grammar
+	hashAdapter hash.Adapter
+	name        string
+	grammar     Grammar
 }
 
-func createExternalBuilder() ExternalBuilder {
+func createExternalBuilder(
+	hashAdapter hash.Adapter,
+) ExternalBuilder {
 	out := externalBuilder{
-		name:    "",
-		grammar: nil,
+		hashAdapter: hashAdapter,
+		name:        "",
+		grammar:     nil,
 	}
 
 	return &out
@@ -18,7 +26,9 @@ func createExternalBuilder() ExternalBuilder {
 
 // Create initializes the builder
 func (app *externalBuilder) Create() ExternalBuilder {
-	return createExternalBuilder()
+	return createExternalBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithName adds a name to the builder
@@ -43,5 +53,14 @@ func (app *externalBuilder) Now() (External, error) {
 		return nil, errors.New("the grammar is mandatory in order to build an External instance")
 	}
 
-	return createExternal(app.name, app.grammar), nil
+	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+		[]byte(app.name),
+		app.grammar.Hash().Bytes(),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return createExternal(*pHash, app.name, app.grammar), nil
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/steve-care-software/syntax/applications/engines/grammars"
 	"github.com/steve-care-software/syntax/applications/engines/interpreters"
 	"github.com/steve-care-software/syntax/applications/engines/programs"
+	"github.com/steve-care-software/syntax/domain/syntax/compilers"
 )
 
 // NewApplication creates a new application
@@ -41,4 +42,5 @@ type Application interface {
 	Interpreter() interpreters.Application
 	Program() programs.Application
 	ParseThenInterpret(input map[string]interface{}, script []byte) (map[string]interface{}, []byte, error)
+	CompileThenParseThenInterpret(input map[string]interface{}, compiler compilers.Compiler, script []byte) (map[string]interface{}, []byte, []byte, error)
 }

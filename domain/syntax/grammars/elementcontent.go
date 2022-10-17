@@ -1,6 +1,7 @@
 package grammars
 
 import (
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars/values"
 )
 
@@ -40,6 +41,19 @@ func createElementContentInternally(
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *elementContent) Hash() hash.Hash {
+	if obj.IsValue() {
+		return obj.Value().Hash()
+	}
+
+	if obj.IsExternal() {
+		return obj.External().Hash()
+	}
+
+	return obj.Instance().Hash()
 }
 
 // IsValue returns true if there is a value, false otherwise

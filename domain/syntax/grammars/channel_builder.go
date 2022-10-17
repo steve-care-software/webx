@@ -1,18 +1,26 @@
 package grammars
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+)
 
 type channelBuilder struct {
-	name      string
-	token     Token
-	condition ChannelCondition
+	hashAdapter hash.Adapter
+	name        string
+	token       Token
+	condition   ChannelCondition
 }
 
-func createChannelBuilder() ChannelBuilder {
+func createChannelBuilder(
+	hashAdapter hash.Adapter,
+) ChannelBuilder {
 	out := channelBuilder{
-		name:      "",
-		token:     nil,
-		condition: nil,
+		hashAdapter: hashAdapter,
+		name:        "",
+		token:       nil,
+		condition:   nil,
 	}
 
 	return &out
@@ -20,7 +28,9 @@ func createChannelBuilder() ChannelBuilder {
 
 // Create initializes the builder
 func (app *channelBuilder) Create() ChannelBuilder {
-	return createChannelBuilder()
+	return createChannelBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithName adds a name to the builder
@@ -51,9 +61,23 @@ func (app *channelBuilder) Now() (Channel, error) {
 		return nil, errors.New("the token is mandatory in order to build a Channel instance")
 	}
 
-	if app.condition != nil {
-		return createChannelWithCondition(app.name, app.token, app.condition), nil
+	data := [][]byte{
+		[]byte(app.name),
+		app.token.Hash().Bytes(),
 	}
 
-	return createChannel(app.name, app.token), nil
+	if app.condition != nil {
+		data = append(data, app.condition.Hash().Bytes())
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	if app.condition != nil {
+		return createChannelWithCondition(*pHash, app.name, app.token, app.condition), nil
+	}
+
+	return createChannel(*pHash, app.name, app.token), nil
 }

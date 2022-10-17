@@ -3,19 +3,24 @@ package grammars
 import (
 	"errors"
 
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars/cardinalities"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars/values"
 )
 
 type elementBuilder struct {
+	hashAdapter hash.Adapter
 	cardinality cardinalities.Cardinality
 	value       values.Value
 	external    External
 	instance    Instance
 }
 
-func createElementBuilder() ElementBuilder {
+func createElementBuilder(
+	hashAdapter hash.Adapter,
+) ElementBuilder {
 	out := elementBuilder{
+		hashAdapter: hashAdapter,
 		cardinality: nil,
 		value:       nil,
 		external:    nil,
@@ -27,7 +32,9 @@ func createElementBuilder() ElementBuilder {
 
 // Create initializes the builder
 func (app *elementBuilder) Create() ElementBuilder {
-	return createElementBuilder()
+	return createElementBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithCardinality adds a cardinality to the builder
@@ -56,20 +63,39 @@ func (app *elementBuilder) WithInstance(instance Instance) ElementBuilder {
 
 // Now builds a new Element instance
 func (app *elementBuilder) Now() (Element, error) {
+
+	if app.cardinality == nil {
+		return nil, errors.New("the cardinality is mandatory in order to build an Element instance")
+	}
+
+	data := [][]byte{
+		app.cardinality.Hash().Bytes(),
+	}
+
+	var content ElementContent
 	if app.value != nil {
-		content := createElementContentWithValue(app.value)
-		return createElement(content, app.cardinality), nil
+		content = createElementContentWithValue(app.value)
+		data = append(data, content.Hash().Bytes())
 	}
 
 	if app.external != nil {
-		content := createElementContentWithExternalToken(app.external)
-		return createElement(content, app.cardinality), nil
+		content = createElementContentWithExternalToken(app.external)
+		data = append(data, content.Hash().Bytes())
 	}
 
 	if app.instance != nil {
-		content := createElementContentWithInstance(app.instance)
-		return createElement(content, app.cardinality), nil
+		content = createElementContentWithInstance(app.instance)
+		data = append(data, content.Hash().Bytes())
 	}
 
-	return nil, errors.New("the Element is invalid")
+	if content == nil {
+		return nil, errors.New("the Element is invalid")
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	return createElement(*pHash, content, app.cardinality), nil
 }

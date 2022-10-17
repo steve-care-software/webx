@@ -1,6 +1,9 @@
 package criterias
 
+import "github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+
 type criteria struct {
+	hash            hash.Hash
 	name            string
 	index           uint
 	includeChannels bool
@@ -8,29 +11,33 @@ type criteria struct {
 }
 
 func createCriteria(
+	hash hash.Hash,
 	name string,
 	index uint,
 	includeChannels bool,
 ) Criteria {
-	return createCriteriaInternally(name, index, includeChannels, nil)
+	return createCriteriaInternally(hash, name, index, includeChannels, nil)
 }
 
 func createCriteriaWithChild(
+	hash hash.Hash,
 	name string,
 	index uint,
 	includeChannels bool,
 	child Criteria,
 ) Criteria {
-	return createCriteriaInternally(name, index, includeChannels, child)
+	return createCriteriaInternally(hash, name, index, includeChannels, child)
 }
 
 func createCriteriaInternally(
+	hash hash.Hash,
 	name string,
 	index uint,
 	includeChannels bool,
 	child Criteria,
 ) Criteria {
 	out := criteria{
+		hash:            hash,
 		name:            name,
 		index:           index,
 		includeChannels: includeChannels,
@@ -38,6 +45,11 @@ func createCriteriaInternally(
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *criteria) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Name returns the name

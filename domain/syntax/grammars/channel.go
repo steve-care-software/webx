@@ -1,38 +1,50 @@
 package grammars
 
+import "github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+
 type channel struct {
+	hash      hash.Hash
 	name      string
 	token     Token
 	condition ChannelCondition
 }
 
 func createChannel(
+	hash hash.Hash,
 	name string,
 	token Token,
 ) Channel {
-	return createChannelInternally(name, token, nil)
+	return createChannelInternally(hash, name, token, nil)
 }
 
 func createChannelWithCondition(
+	hash hash.Hash,
 	name string,
 	token Token,
 	condition ChannelCondition,
 ) Channel {
-	return createChannelInternally(name, token, condition)
+	return createChannelInternally(hash, name, token, condition)
 }
 
 func createChannelInternally(
+	hash hash.Hash,
 	name string,
 	token Token,
 	condition ChannelCondition,
 ) Channel {
 	out := channel{
+		hash:      hash,
 		name:      name,
 		token:     token,
 		condition: condition,
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *channel) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Name returns the name

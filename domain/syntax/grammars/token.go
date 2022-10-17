@@ -1,38 +1,50 @@
 package grammars
 
+import "github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+
 type token struct {
+	hash   hash.Hash
 	name   string
 	block  Block
 	suites Suites
 }
 
 func createToken(
+	hash hash.Hash,
 	name string,
 	block Block,
 ) Token {
-	return createTokenInternally(name, block, nil)
+	return createTokenInternally(hash, name, block, nil)
 }
 
 func createTokenWithSuites(
+	hash hash.Hash,
 	name string,
 	block Block,
 	suites Suites,
 ) Token {
-	return createTokenInternally(name, block, suites)
+	return createTokenInternally(hash, name, block, suites)
 }
 
 func createTokenInternally(
+	hash hash.Hash,
 	name string,
 	block Block,
 	suites Suites,
 ) Token {
 	out := token{
+		hash:   hash,
 		name:   name,
 		block:  block,
 		suites: suites,
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *token) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Name returns the name

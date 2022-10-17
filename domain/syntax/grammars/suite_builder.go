@@ -1,16 +1,24 @@
 package grammars
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+)
 
 type suiteBuilder struct {
-	valid   []byte
-	invalid []byte
+	hashAdapter hash.Adapter
+	valid       []byte
+	invalid     []byte
 }
 
-func createSuiteBuilder() SuiteBuilder {
+func createSuiteBuilder(
+	hashAdapter hash.Adapter,
+) SuiteBuilder {
 	out := suiteBuilder{
-		valid:   nil,
-		invalid: nil,
+		hashAdapter: hashAdapter,
+		valid:       nil,
+		invalid:     nil,
 	}
 
 	return &out
@@ -18,7 +26,9 @@ func createSuiteBuilder() SuiteBuilder {
 
 // Create initializes the builder
 func (app *suiteBuilder) Create() SuiteBuilder {
-	return createSuiteBuilder()
+	return createSuiteBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithValid add valid bytes to the builder
@@ -35,12 +45,35 @@ func (app *suiteBuilder) WithInvalid(invalid []byte) SuiteBuilder {
 
 // Now builds a new Suite instance
 func (app *suiteBuilder) Now() (Suite, error) {
+
+	isValidStr := "false"
 	if app.valid != nil {
-		return createSuiteWithValid(app.valid), nil
+		isValidStr = "true"
+	}
+
+	data := [][]byte{
+		[]byte(isValidStr),
+	}
+
+	if app.valid != nil {
+		data = append(data, app.valid)
 	}
 
 	if app.invalid != nil {
-		return createSuiteWithInvalid(app.invalid), nil
+		data = append(data, app.invalid)
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	if app.valid != nil {
+		return createSuiteWithValid(*pHash, app.valid), nil
+	}
+
+	if app.invalid != nil {
+		return createSuiteWithInvalid(*pHash, app.invalid), nil
 	}
 
 	return nil, errors.New("the Suite is invalid")

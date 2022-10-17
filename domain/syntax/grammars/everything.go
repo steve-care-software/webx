@@ -1,38 +1,50 @@
 package grammars
 
+import "github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+
 type everything struct {
+	hash      hash.Hash
 	name      string
 	exception Token
 	escape    Token
 }
 
 func createEverything(
+	hash hash.Hash,
 	name string,
 	exception Token,
 ) Everything {
-	return createEverythingInternally(name, exception, nil)
+	return createEverythingInternally(hash, name, exception, nil)
 }
 
 func createEverythingWithEscape(
+	hash hash.Hash,
 	name string,
 	exception Token,
 	escape Token,
 ) Everything {
-	return createEverythingInternally(name, exception, escape)
+	return createEverythingInternally(hash, name, exception, escape)
 }
 
 func createEverythingInternally(
+	hash hash.Hash,
 	name string,
 	exception Token,
 	escape Token,
 ) Everything {
 	out := everything{
+		hash:      hash,
 		name:      name,
 		exception: exception,
 		escape:    escape,
 	}
 
 	return &out
+}
+
+// Hash returns the name
+func (obj *everything) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Name returns the name

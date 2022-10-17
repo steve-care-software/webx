@@ -1,33 +1,45 @@
 package grammars
 
+import "github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/hash"
+
 type grammar struct {
+	hash     hash.Hash
 	root     Token
 	channels Channels
 }
 
 func createGrammar(
+	hash hash.Hash,
 	root Token,
 ) Grammar {
-	return createGrammarInternally(root, nil)
+	return createGrammarInternally(hash, root, nil)
 }
 
 func createGrammarWithChannels(
+	hash hash.Hash,
 	root Token,
 	channels Channels,
 ) Grammar {
-	return createGrammarInternally(root, channels)
+	return createGrammarInternally(hash, root, channels)
 }
 
 func createGrammarInternally(
+	hash hash.Hash,
 	root Token,
 	channels Channels,
 ) Grammar {
 	out := grammar{
+		hash:     hash,
 		root:     root,
 		channels: channels,
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *grammar) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Root returns the root token
