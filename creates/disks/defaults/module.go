@@ -150,34 +150,6 @@ func (app *module) container() ([]modules.Module, error) {
 	}, nil
 }
 
-func (app *module) compiler() ([]modules.Module, error) {
-	return nil, nil
-}
-
-func (app *module) executeCompiler() (modules.Module, error) {
-	return nil, nil
-}
-
-func (app *module) newCompiler() (modules.Module, error) {
-	return nil, nil
-}
-
-func (app *module) newCompilerElement() (modules.Module, error) {
-	return nil, nil
-}
-
-func (app *module) newCompilerComposition() (modules.Module, error) {
-	return nil, nil
-}
-
-func (app *module) newCompilerReplacements() (modules.Module, error) {
-	return nil, nil
-}
-
-func (app *module) newCompilerReplacement() (modules.Module, error) {
-	return nil, nil
-}
-
 func (app *module) identity() ([]modules.Module, error) {
 	modifyIdentity, err := app.modifyIdentity()
 	if err != nil {
