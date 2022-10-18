@@ -7,24 +7,23 @@ import (
 	"github.com/steve-care-software/syntax/domain/syntax/grammars"
 )
 
-func TestModule_engineGrammarInstance_withEverything_Success(t *testing.T) {
+func TestModule_newGrammarEverything_withEscape_Success(t *testing.T) {
 	script := `
-        module @engineGrammarSuite;;
+        module @newGrammarSuite;;
         module @containerList;;
-        module @engineGrammarSuites;;
-        module @engineGrammarValue;;
-        module @engineGrammarCardinality;;
-        module @engineGrammarElement;;
-        module @engineGrammarLine;;
-        module @engineGrammarBlock;;
-        module @engineGrammarToken;;
-        module @engineGrammarEverything;;
-        module @engineGrammarInstance;;
+        module @newGrammarSuites;;
+        module @newGrammarValue;;
+        module @newGrammarCardinality;;
+        module @newGrammarElement;;
+        module @newGrammarLine;;
+        module @newGrammarBlock;;
+        module @newGrammarToken;;
+        module @newGrammarEverything;;
 
-        <- $instance;;
+        <- $everything;;
 
         // suite app:
-		@engineGrammarSuite $suiteApp;;
+		@newGrammarSuite $suiteApp;;
 
         // first suite:
 		$valid = 157;;
@@ -43,7 +42,7 @@ func TestModule_engineGrammarInstance_withEverything_Success(t *testing.T) {
         $list = execute $suitesListApp;;
 
         // suites:
-        @engineGrammarSuites $suitesApp;;
+        @newGrammarSuites $suitesApp;;
         attach $list:$suites $suitesApp;;
         $suites = execute $suitesApp;;
 
@@ -57,7 +56,7 @@ func TestModule_engineGrammarInstance_withEverything_Success(t *testing.T) {
 		$number = execute $castToUintApp;;
 
         // value app:
-		@engineGrammarValue $valueApp;;
+		@newGrammarValue $valueApp;;
         $name = myName;;
 		attach $number:$number $valueApp;;
 		attach $name:$name $valueApp;;
@@ -69,12 +68,12 @@ func TestModule_engineGrammarInstance_withEverything_Success(t *testing.T) {
 		$myMin = execute $castToUintApp;;
 
         // cardinality:
-		@engineGrammarCardinality $cardinalityApp;;
+		@newGrammarCardinality $cardinalityApp;;
 		attach $myMin:$min $cardinalityApp;;
         $cardinality = execute $cardinalityApp;;
 
         // element:
-		@engineGrammarElement $elementApp;;
+		@newGrammarElement $elementApp;;
         attach $cardinality:$cardinality $elementApp;;
         attach $value:$value $elementApp;;
         $element = execute $elementApp;;
@@ -85,7 +84,7 @@ func TestModule_engineGrammarInstance_withEverything_Success(t *testing.T) {
         $elements = execute $listApp;;
 
         // line:
-		@engineGrammarLine $lineApp;;
+		@newGrammarLine $lineApp;;
         attach $elements:$elements $lineApp;;
         $line = execute $lineApp;;
 
@@ -94,13 +93,13 @@ func TestModule_engineGrammarInstance_withEverything_Success(t *testing.T) {
         $lines = execute $listApp;;
 
         // block:
-		@engineGrammarBlock $blockApp;;
+		@newGrammarBlock $blockApp;;
         attach $lines:$lines $blockApp;;
         $block = execute $blockApp;;
 
         // token:
         $tokenName = myToken;;
-		@engineGrammarToken $tokenApp;;
+		@newGrammarToken $tokenApp;;
         attach $tokenName:$name $tokenApp;;
         attach $suites:$suites $tokenApp;;
         attach $block:$block $tokenApp;;
@@ -108,55 +107,50 @@ func TestModule_engineGrammarInstance_withEverything_Success(t *testing.T) {
 
         // everything:
         $everythingName = myEverything;;
-		@engineGrammarEverything $everythingApp;;
+		@newGrammarEverything $everythingApp;;
         attach $everythingName:$name $everythingApp;;
         attach $token:$exception $everythingApp;;
+        attach $token:$escape $everythingApp;;
         $everything = execute $everythingApp;;
-
-        // instance:
-		@engineGrammarInstance $instanceApp;;
-        attach $everything:$everything $instanceApp;;
-        $instance = execute $instanceApp;;
 
 	`
 
-	output, _, err := engines.NewApplication(NewApplication()).ParseThenInterpret(map[string]interface{}{}, []byte(script))
+	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{}, []byte(script))
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
 	}
 
-	if ins, ok := output["instance"].(grammars.Instance); ok {
-		if !ins.IsEverything() {
-			t.Errorf("the instance was expected to contain an Everything instance")
+	if ins, ok := output["everything"].(grammars.Everything); ok {
+		if !ins.HasEscape() {
+			t.Errorf("the escape was expected to be valid")
 			return
 		}
 
 		return
 	}
 
-	t.Errorf("the instance output was expected to contain an Instance instance")
+	t.Errorf("the everything output was expected to contain an Everything instance")
 	return
 }
 
-func TestModule_engineGrammarInstance_withToken_Success(t *testing.T) {
+func TestModule_newGrammarEverything_withoutEscape_Success(t *testing.T) {
 	script := `
-        module @engineGrammarSuite;;
+        module @newGrammarSuite;;
         module @containerList;;
-        module @engineGrammarSuites;;
-        module @engineGrammarValue;;
-        module @engineGrammarCardinality;;
-        module @engineGrammarElement;;
-        module @engineGrammarLine;;
-        module @engineGrammarBlock;;
-        module @engineGrammarToken;;
-        module @engineGrammarEverything;;
-        module @engineGrammarInstance;;
+        module @newGrammarSuites;;
+        module @newGrammarValue;;
+        module @newGrammarCardinality;;
+        module @newGrammarElement;;
+        module @newGrammarLine;;
+        module @newGrammarBlock;;
+        module @newGrammarToken;;
+        module @newGrammarEverything;;
 
-        <- $instance;;
+        <- $everything;;
 
         // suite app:
-		@engineGrammarSuite $suiteApp;;
+		@newGrammarSuite $suiteApp;;
 
         // first suite:
 		$valid = 157;;
@@ -175,7 +169,7 @@ func TestModule_engineGrammarInstance_withToken_Success(t *testing.T) {
         $list = execute $suitesListApp;;
 
         // suites:
-        @engineGrammarSuites $suitesApp;;
+        @newGrammarSuites $suitesApp;;
         attach $list:$suites $suitesApp;;
         $suites = execute $suitesApp;;
 
@@ -189,7 +183,7 @@ func TestModule_engineGrammarInstance_withToken_Success(t *testing.T) {
 		$number = execute $castToUintApp;;
 
         // value app:
-		@engineGrammarValue $valueApp;;
+		@newGrammarValue $valueApp;;
         $name = myName;;
 		attach $number:$number $valueApp;;
 		attach $name:$name $valueApp;;
@@ -201,12 +195,12 @@ func TestModule_engineGrammarInstance_withToken_Success(t *testing.T) {
 		$myMin = execute $castToUintApp;;
 
         // cardinality:
-		@engineGrammarCardinality $cardinalityApp;;
+		@newGrammarCardinality $cardinalityApp;;
 		attach $myMin:$min $cardinalityApp;;
         $cardinality = execute $cardinalityApp;;
 
         // element:
-		@engineGrammarElement $elementApp;;
+		@newGrammarElement $elementApp;;
         attach $cardinality:$cardinality $elementApp;;
         attach $value:$value $elementApp;;
         $element = execute $elementApp;;
@@ -217,7 +211,7 @@ func TestModule_engineGrammarInstance_withToken_Success(t *testing.T) {
         $elements = execute $listApp;;
 
         // line:
-		@engineGrammarLine $lineApp;;
+		@newGrammarLine $lineApp;;
         attach $elements:$elements $lineApp;;
         $line = execute $lineApp;;
 
@@ -226,40 +220,42 @@ func TestModule_engineGrammarInstance_withToken_Success(t *testing.T) {
         $lines = execute $listApp;;
 
         // block:
-		@engineGrammarBlock $blockApp;;
+		@newGrammarBlock $blockApp;;
         attach $lines:$lines $blockApp;;
         $block = execute $blockApp;;
 
         // token:
         $tokenName = myToken;;
-		@engineGrammarToken $tokenApp;;
+		@newGrammarToken $tokenApp;;
         attach $tokenName:$name $tokenApp;;
         attach $suites:$suites $tokenApp;;
         attach $block:$block $tokenApp;;
         $token = execute $tokenApp;;
 
-        // instance:
-		@engineGrammarInstance $instanceApp;;
-        attach $token:$token $instanceApp;;
-        $instance = execute $instanceApp;;
+        // everything:
+        $everythingName = myEverything;;
+		@newGrammarEverything $everythingApp;;
+        attach $everythingName:$name $everythingApp;;
+        attach $token:$exception $everythingApp;;
+        $everything = execute $everythingApp;;
 
 	`
 
-	output, _, err := engines.NewApplication(NewApplication()).ParseThenInterpret(map[string]interface{}{}, []byte(script))
+	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{}, []byte(script))
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
 	}
 
-	if ins, ok := output["instance"].(grammars.Instance); ok {
-		if !ins.IsToken() {
-			t.Errorf("the instance was expected to contain a Token instance")
+	if ins, ok := output["everything"].(grammars.Everything); ok {
+		if ins.HasEscape() {
+			t.Errorf("the escape was expected to NOT be valid")
 			return
 		}
 
 		return
 	}
 
-	t.Errorf("the instance output was expected to contain an Instance instance")
+	t.Errorf("the everything output was expected to contain an Everything instance")
 	return
 }

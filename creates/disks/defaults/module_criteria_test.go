@@ -7,7 +7,7 @@ import (
 	"github.com/steve-care-software/syntax/domain/syntax/criterias"
 )
 
-func TestModule_engineCriteria_Success(t *testing.T) {
+func TestModule_newCriteria_Success(t *testing.T) {
 	script := `
 		-> $name;;
         -> $index;;
@@ -15,8 +15,8 @@ func TestModule_engineCriteria_Success(t *testing.T) {
 		<- $criteria;;
 
         // criteria app
-        module @engineCriteria;;
-		@engineCriteria $criteriaApp;;
+        module @newCriteria;;
+		@newCriteria $criteriaApp;;
 		attach $name:$name $criteriaApp;;
 		attach $index:$index $criteriaApp;;
         attach $includeChannels:$includeChannels $criteriaApp;;
@@ -26,7 +26,7 @@ func TestModule_engineCriteria_Success(t *testing.T) {
 
 	name := "roger"
 	index := uint(0)
-	output, _, err := engines.NewApplication(NewApplication()).ParseThenInterpret(map[string]interface{}{
+	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
 		"name":            name,
 		"index":           index,
 		"includeChannels": true,

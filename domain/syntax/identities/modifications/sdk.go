@@ -27,6 +27,7 @@ type Builder interface {
 // Modifications represents modifications
 type Modifications interface {
 	List() []Modification
+	First() Modification
 }
 
 // ModificationBuilder represents a modification builder

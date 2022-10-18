@@ -5,18 +5,30 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	creates_module "github.com/steve-care-software/syntax/applications/engines/creates/modules"
+	identity_applications "github.com/steve-care-software/syntax/applications/engines/identities"
 	"github.com/steve-care-software/syntax/domain/syntax/criterias"
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/encryptions/keys"
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/signatures"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars/cardinalities"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars/values"
+	"github.com/steve-care-software/syntax/domain/syntax/identities"
+	"github.com/steve-care-software/syntax/domain/syntax/identities/modifications"
 	"github.com/steve-care-software/syntax/domain/syntax/programs/applications/modules"
 )
 
 type module struct {
+	identityApplication            identity_applications.Application
 	builder                        modules.Builder
 	moduleBuilder                  modules.ModuleBuilder
+	signaturePrivateKeyFactory     signatures.PrivateKeyFactory
+	encryptionPrivateKeyFactory    keys.Factory
+	identityBuilder                identities.Builder
+	identityModificationsBuilder   modifications.Builder
+	identityModificationBuilder    modifications.ModificationBuilder
 	criteriaBuilder                criterias.Builder
 	grammarBuilder                 grammars.Builder
 	grammarChannelsBuilder         grammars.ChannelsBuilder
@@ -36,8 +48,14 @@ type module struct {
 }
 
 func createModule(
+	identityApplication identity_applications.Application,
 	builder modules.Builder,
 	moduleBuilder modules.ModuleBuilder,
+	signaturePrivateKeyFactory signatures.PrivateKeyFactory,
+	encryptionPrivateKeyFactory keys.Factory,
+	identityBuilder identities.Builder,
+	identityModificationsBuilder modifications.Builder,
+	identityModificationBuilder modifications.ModificationBuilder,
 	criteriaBuilder criterias.Builder,
 	grammarBuilder grammars.Builder,
 	grammarChannelsBuilder grammars.ChannelsBuilder,
@@ -56,8 +74,14 @@ func createModule(
 	grammarValueBuilder values.Builder,
 ) creates_module.Application {
 	out := module{
+		identityApplication:            identityApplication,
 		builder:                        builder,
 		moduleBuilder:                  moduleBuilder,
+		signaturePrivateKeyFactory:     signaturePrivateKeyFactory,
+		encryptionPrivateKeyFactory:    encryptionPrivateKeyFactory,
+		identityBuilder:                identityBuilder,
+		identityModificationsBuilder:   identityModificationsBuilder,
+		identityModificationBuilder:    identityModificationBuilder,
 		criteriaBuilder:                criteriaBuilder,
 		grammarBuilder:                 grammarBuilder,
 		grammarChannelsBuilder:         grammarChannelsBuilder,
@@ -82,7 +106,17 @@ func createModule(
 // Execute executes the application
 func (app *module) Execute() (modules.Modules, error) {
 	list := []modules.Module{}
-	engine, err := app.engine()
+	identity, err := app.identity()
+	if err != nil {
+		return nil, err
+	}
+
+	grammar, err := app.grammar()
+	if err != nil {
+		return nil, err
+	}
+
+	criteria, err := app.newCriteria()
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +131,9 @@ func (app *module) Execute() (modules.Modules, error) {
 		return nil, err
 	}
 
-	list = append(list, engine...)
+	list = append(list, identity...)
+	list = append(list, grammar...)
+	list = append(list, criteria)
 	list = append(list, container...)
 	list = append(list, castTo...)
 	return app.builder.Create().WithList(list).Now()
@@ -114,25 +150,236 @@ func (app *module) container() ([]modules.Module, error) {
 	}, nil
 }
 
-func (app *module) engine() ([]modules.Module, error) {
-	list := []modules.Module{}
-	grammar, err := app.grammar()
-	if err != nil {
-		return nil, err
-	}
-
-	criteria, err := app.engineCriteria()
-	if err != nil {
-		return nil, err
-	}
-
-	list = append(list, grammar...)
-	list = append(list, criteria)
-	return list, nil
+func (app *module) compiler() ([]modules.Module, error) {
+	return nil, nil
 }
 
-func (app *module) engineCriteria() (modules.Module, error) {
-	name := "engineCriteria"
+func (app *module) executeCompiler() (modules.Module, error) {
+	return nil, nil
+}
+
+func (app *module) newCompiler() (modules.Module, error) {
+	return nil, nil
+}
+
+func (app *module) newCompilerElement() (modules.Module, error) {
+	return nil, nil
+}
+
+func (app *module) newCompilerComposition() (modules.Module, error) {
+	return nil, nil
+}
+
+func (app *module) newCompilerReplacements() (modules.Module, error) {
+	return nil, nil
+}
+
+func (app *module) newCompilerReplacement() (modules.Module, error) {
+	return nil, nil
+}
+
+func (app *module) identity() ([]modules.Module, error) {
+	modifyIdentity, err := app.modifyIdentity()
+	if err != nil {
+		return nil, err
+	}
+
+	retrieveIdentity, err := app.retrieveIdentity()
+	if err != nil {
+		return nil, err
+	}
+
+	insertIdentity, err := app.insertIdentity()
+	if err != nil {
+		return nil, err
+	}
+
+	listIdentityNames, err := app.listIdentityNames()
+	if err != nil {
+		return nil, err
+	}
+
+	newIdentity, err := app.newIdentity()
+	if err != nil {
+		return nil, err
+	}
+
+	newIdentityModification, err := app.newIdentityModification()
+	if err != nil {
+		return nil, err
+	}
+
+	return []modules.Module{
+		modifyIdentity,
+		retrieveIdentity,
+		insertIdentity,
+		listIdentityNames,
+		newIdentity,
+		newIdentityModification,
+	}, nil
+}
+
+func (app *module) modifyIdentity() (modules.Module, error) {
+	name := "modifyIdentity"
+	fn := func(input map[string]interface{}) (interface{}, error) {
+		if modification, ok := input["modification"].(modifications.Modification); ok {
+			if currentPassword, ok := input["currentPassword"].(string); ok {
+				selectedApp, err := app.identityApplication.Select(name)
+				if err != nil {
+					return nil, err
+				}
+
+				newPassword := currentPassword
+				if newPasswordStr, ok := input["newPassword"].(string); ok {
+					newPassword = newPasswordStr
+				}
+
+				err = selectedApp.Modify(modification, currentPassword, newPassword)
+				if err != nil {
+					return nil, err
+				}
+
+				return nil, nil
+			}
+
+			return nil, errors.New("the currentPassword is mandatory in order to modify an identity instance")
+		}
+
+		return nil, errors.New("the modification is mandatory in order to modify an identity instance")
+	}
+
+	return app.module(name, fn)
+}
+
+func (app *module) retrieveIdentity() (modules.Module, error) {
+	name := "retrieveIdentity"
+	fn := func(input map[string]interface{}) (interface{}, error) {
+		if name, ok := input["name"].(string); ok {
+			if password, ok := input["password"].(string); ok {
+				selectedApp, err := app.identityApplication.Select(name)
+				if err != nil {
+					return nil, err
+				}
+
+				return selectedApp.Retrieve(password)
+			}
+
+			return nil, errors.New("the password is mandatory in order to retrieve an identity instance")
+		}
+
+		return nil, errors.New("the name is mandatory in order to retrieve an identity instance")
+	}
+
+	return app.module(name, fn)
+}
+
+func (app *module) insertIdentity() (modules.Module, error) {
+	name := "insertIdentity"
+	fn := func(input map[string]interface{}) (interface{}, error) {
+		var identity identities.Identity
+		if identityIns, ok := input["identity"].(identities.Identity); ok {
+			identity = identityIns
+		} else {
+			return nil, errors.New("the identity is mandatory in order to save a new identity instance")
+		}
+
+		password := ""
+		if passwordStr, ok := input["password"].(string); ok {
+			password = passwordStr
+		} else {
+			return nil, errors.New("the password is mandatory in order to save a new identity instance")
+		}
+
+		err := app.identityApplication.New(identity, password)
+		if err != nil {
+			return nil, err
+		}
+
+		return nil, nil
+	}
+
+	return app.module(name, fn)
+}
+
+func (app *module) listIdentityNames() (modules.Module, error) {
+	name := "listIdentityNames"
+	fn := func(input map[string]interface{}) (interface{}, error) {
+		return app.identityApplication.List()
+	}
+
+	return app.module(name, fn)
+}
+
+func (app *module) newIdentity() (modules.Module, error) {
+	name := "newIdentity"
+	fn := func(input map[string]interface{}) (interface{}, error) {
+		sigPK := app.signaturePrivateKeyFactory.Create()
+		encPK, err := app.encryptionPrivateKeyFactory.Create()
+		if err != nil {
+			return nil, err
+		}
+
+		createdOn := time.Now().UTC()
+		modificationBuilder := app.identityModificationBuilder.Create().WithSignature(sigPK).WithEncryption(encPK).CreatedOn(createdOn)
+		if name, ok := input["name"].(string); ok {
+			modificationBuilder.WithName(name)
+		}
+
+		modification, err := modificationBuilder.Now()
+		if err != nil {
+			return nil, err
+		}
+
+		modifications, err := app.identityModificationsBuilder.Create().WithList([]modifications.Modification{
+			modification,
+		}).Now()
+
+		if err != nil {
+			return nil, err
+		}
+
+		return app.identityBuilder.Create().WithModifications(modifications).Now()
+	}
+
+	return app.module(name, fn)
+}
+
+func (app *module) newIdentityModification() (modules.Module, error) {
+	name := "newIdentityModification"
+	fn := func(input map[string]interface{}) (interface{}, error) {
+		builder := app.identityModificationBuilder.Create()
+		if name, ok := input["name"].(string); ok {
+			builder.WithName(name)
+		}
+
+		if isGenPK, ok := input["genSigPK"].(bool); ok {
+			if isGenPK {
+				sigPK := app.signaturePrivateKeyFactory.Create()
+				builder.WithSignature(sigPK)
+			}
+
+		}
+
+		if isGenPK, ok := input["genEncPK"].(bool); ok {
+			if isGenPK {
+				encPK, err := app.encryptionPrivateKeyFactory.Create()
+				if err != nil {
+					return nil, err
+				}
+
+				builder.WithEncryption(encPK)
+			}
+		}
+
+		createdOn := time.Now().UTC()
+		return builder.CreatedOn(createdOn).Now()
+	}
+
+	return app.module(name, fn)
+}
+
+func (app *module) newCriteria() (modules.Module, error) {
+	name := "newCriteria"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.criteriaBuilder.Create()
 		if name, ok := input["name"].(string); ok {
@@ -160,77 +407,77 @@ func (app *module) engineCriteria() (modules.Module, error) {
 }
 
 func (app *module) grammar() ([]modules.Module, error) {
-	value, err := app.engineGrammarValue()
+	value, err := app.newGrammarValue()
 	if err != nil {
 		return nil, err
 	}
 
-	cardinality, err := app.engineGrammarCardinality()
+	cardinality, err := app.newGrammarCardinality()
 	if err != nil {
 		return nil, err
 	}
 
-	element, err := app.engineGrammarElement()
+	element, err := app.newGrammarElement()
 	if err != nil {
 		return nil, err
 	}
 
-	line, err := app.engineGrammarLine()
+	line, err := app.newGrammarLine()
 	if err != nil {
 		return nil, err
 	}
 
-	block, err := app.engineGrammarBlock()
+	block, err := app.newGrammarBlock()
 	if err != nil {
 		return nil, err
 	}
 
-	suite, err := app.engineGrammarSuite()
+	suite, err := app.newGrammarSuite()
 	if err != nil {
 		return nil, err
 	}
 
-	suites, err := app.engineGrammarSuites()
+	suites, err := app.newGrammarSuites()
 	if err != nil {
 		return nil, err
 	}
 
-	token, err := app.engineGrammarToken()
+	token, err := app.newGrammarToken()
 	if err != nil {
 		return nil, err
 	}
 
-	everything, err := app.engineGrammarEverything()
+	everything, err := app.newGrammarEverything()
 	if err != nil {
 		return nil, err
 	}
 
-	instance, err := app.engineGrammarInstance()
+	instance, err := app.newGrammarInstance()
 	if err != nil {
 		return nil, err
 	}
 
-	external, err := app.engineGrammarExternal()
+	external, err := app.newGrammarExternal()
 	if err != nil {
 		return nil, err
 	}
 
-	channelCondition, err := app.engineGrammarChannelCondition()
+	channelCondition, err := app.newGrammarChannelCondition()
 	if err != nil {
 		return nil, err
 	}
 
-	channel, err := app.engineGrammarChannel()
+	channel, err := app.newGrammarChannel()
 	if err != nil {
 		return nil, err
 	}
 
-	channels, err := app.engineGrammarChannels()
+	channels, err := app.newGrammarChannels()
 	if err != nil {
 		return nil, err
 	}
 
-	grammar, err := app.engineGrammar()
+	grammar, err := app.newGrammar()
 	if err != nil {
 		return nil, err
 	}
@@ -254,8 +501,8 @@ func (app *module) grammar() ([]modules.Module, error) {
 	}, nil
 }
 
-func (app *module) engineGrammar() (modules.Module, error) {
-	name := "engineGrammar"
+func (app *module) newGrammar() (modules.Module, error) {
+	name := "newGrammar"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.grammarBuilder.Create()
 		if root, ok := input["root"].(grammars.Token); ok {
@@ -272,8 +519,8 @@ func (app *module) engineGrammar() (modules.Module, error) {
 	return app.module(name, fn)
 }
 
-func (app *module) engineGrammarChannels() (modules.Module, error) {
-	name := "engineGrammarChannels"
+func (app *module) newGrammarChannels() (modules.Module, error) {
+	name := "newGrammarChannels"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		if channelsList, ok := input["channels"].([]interface{}); ok {
 			list := []grammars.Channel{}
@@ -297,8 +544,8 @@ func (app *module) engineGrammarChannels() (modules.Module, error) {
 	return app.module(name, fn)
 }
 
-func (app *module) engineGrammarChannel() (modules.Module, error) {
-	name := "engineGrammarChannel"
+func (app *module) newGrammarChannel() (modules.Module, error) {
+	name := "newGrammarChannel"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.grammarChannelBuilder.Create()
 		if name, ok := input["name"].(string); ok {
@@ -319,8 +566,8 @@ func (app *module) engineGrammarChannel() (modules.Module, error) {
 	return app.module(name, fn)
 }
 
-func (app *module) engineGrammarChannelCondition() (modules.Module, error) {
-	name := "engineGrammarChannelCondition"
+func (app *module) newGrammarChannelCondition() (modules.Module, error) {
+	name := "newGrammarChannelCondition"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.grammarChannelConditionBuilder.Create()
 		if previous, ok := input["previous"].(grammars.Token); ok {
@@ -337,8 +584,8 @@ func (app *module) engineGrammarChannelCondition() (modules.Module, error) {
 	return app.module(name, fn)
 }
 
-func (app *module) engineGrammarExternal() (modules.Module, error) {
-	name := "engineGrammarExternal"
+func (app *module) newGrammarExternal() (modules.Module, error) {
+	name := "newGrammarExternal"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.grammarExternalBuilder.Create()
 		if name, ok := input["name"].(string); ok {
@@ -355,8 +602,8 @@ func (app *module) engineGrammarExternal() (modules.Module, error) {
 	return app.module(name, fn)
 }
 
-func (app *module) engineGrammarInstance() (modules.Module, error) {
-	name := "engineGrammarInstance"
+func (app *module) newGrammarInstance() (modules.Module, error) {
+	name := "newGrammarInstance"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.grammarInstanceBuilder.Create()
 		if token, ok := input["token"].(grammars.Token); ok {
@@ -373,8 +620,8 @@ func (app *module) engineGrammarInstance() (modules.Module, error) {
 	return app.module(name, fn)
 }
 
-func (app *module) engineGrammarEverything() (modules.Module, error) {
-	name := "engineGrammarEverything"
+func (app *module) newGrammarEverything() (modules.Module, error) {
+	name := "newGrammarEverything"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.grammarEverythingBuilder.Create()
 		if name, ok := input["name"].(string); ok {
@@ -395,8 +642,8 @@ func (app *module) engineGrammarEverything() (modules.Module, error) {
 	return app.module(name, fn)
 }
 
-func (app *module) engineGrammarToken() (modules.Module, error) {
-	name := "engineGrammarToken"
+func (app *module) newGrammarToken() (modules.Module, error) {
+	name := "newGrammarToken"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.grammarTokenBuilder.Create()
 		if name, ok := input["name"].(string); ok {
@@ -417,8 +664,8 @@ func (app *module) engineGrammarToken() (modules.Module, error) {
 	return app.module(name, fn)
 }
 
-func (app *module) engineGrammarSuites() (modules.Module, error) {
-	name := "engineGrammarSuites"
+func (app *module) newGrammarSuites() (modules.Module, error) {
+	name := "newGrammarSuites"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		if suitesList, ok := input["suites"].([]interface{}); ok {
 			list := []grammars.Suite{}
@@ -442,8 +689,8 @@ func (app *module) engineGrammarSuites() (modules.Module, error) {
 	return app.module(name, fn)
 }
 
-func (app *module) engineGrammarSuite() (modules.Module, error) {
-	name := "engineGrammarSuite"
+func (app *module) newGrammarSuite() (modules.Module, error) {
+	name := "newGrammarSuite"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.grammarSuiteBuilder.Create()
 		if valid, ok := input["valid"]; ok {
@@ -472,8 +719,8 @@ func (app *module) engineGrammarSuite() (modules.Module, error) {
 	return app.module(name, fn)
 }
 
-func (app *module) engineGrammarBlock() (modules.Module, error) {
-	name := "engineGrammarBlock"
+func (app *module) newGrammarBlock() (modules.Module, error) {
+	name := "newGrammarBlock"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		if linesList, ok := input["lines"].([]interface{}); ok {
 			list := []grammars.Line{}
@@ -497,8 +744,8 @@ func (app *module) engineGrammarBlock() (modules.Module, error) {
 	return app.module(name, fn)
 }
 
-func (app *module) engineGrammarLine() (modules.Module, error) {
-	name := "engineGrammarLine"
+func (app *module) newGrammarLine() (modules.Module, error) {
+	name := "newGrammarLine"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		if elementsList, ok := input["elements"].([]interface{}); ok {
 			list := []grammars.Element{}
@@ -522,8 +769,8 @@ func (app *module) engineGrammarLine() (modules.Module, error) {
 	return app.module(name, fn)
 }
 
-func (app *module) engineGrammarElement() (modules.Module, error) {
-	name := "engineGrammarElement"
+func (app *module) newGrammarElement() (modules.Module, error) {
+	name := "newGrammarElement"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.grammarElementBuilder.Create()
 		if cardinality, ok := input["cardinality"].(cardinalities.Cardinality); ok {
@@ -548,8 +795,8 @@ func (app *module) engineGrammarElement() (modules.Module, error) {
 	return app.module(name, fn)
 }
 
-func (app *module) engineGrammarCardinality() (modules.Module, error) {
-	name := "engineGrammarCardinality"
+func (app *module) newGrammarCardinality() (modules.Module, error) {
+	name := "newGrammarCardinality"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		if min, ok := input["min"].(uint); ok {
 			if min <= 0 {
@@ -575,8 +822,8 @@ func (app *module) engineGrammarCardinality() (modules.Module, error) {
 	return app.module(name, fn)
 }
 
-func (app *module) engineGrammarValue() (modules.Module, error) {
-	name := "engineGrammarValue"
+func (app *module) newGrammarValue() (modules.Module, error) {
+	name := "newGrammarValue"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.grammarValueBuilder.Create()
 		if name, ok := input["name"].(string); ok {

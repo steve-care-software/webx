@@ -8,7 +8,7 @@ import (
 )
 
 func TestGrammar_Success(t *testing.T) {
-	grammarIns, err := NewApplication().Grammar().Execute()
+	grammarIns, err := NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests).Grammar().Execute()
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return

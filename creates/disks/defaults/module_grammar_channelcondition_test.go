@@ -7,23 +7,23 @@ import (
 	"github.com/steve-care-software/syntax/domain/syntax/grammars"
 )
 
-func TestModule_engineGrammarChannelCondition_withPrevious_withNext_Success(t *testing.T) {
+func TestModule_newGrammarChannelCondition_withPrevious_withNext_Success(t *testing.T) {
 	script := `
-        module @engineGrammarSuite;;
+        module @newGrammarSuite;;
         module @containerList;;
-        module @engineGrammarSuites;;
-        module @engineGrammarValue;;
-        module @engineGrammarCardinality;;
-        module @engineGrammarElement;;
-        module @engineGrammarLine;;
-        module @engineGrammarBlock;;
-        module @engineGrammarToken;;
-        module @engineGrammarChannelCondition;;
+        module @newGrammarSuites;;
+        module @newGrammarValue;;
+        module @newGrammarCardinality;;
+        module @newGrammarElement;;
+        module @newGrammarLine;;
+        module @newGrammarBlock;;
+        module @newGrammarToken;;
+        module @newGrammarChannelCondition;;
 
         <- $channelCondition;;
 
         // suite app:
-		@engineGrammarSuite $suiteApp;;
+		@newGrammarSuite $suiteApp;;
 
         // first suite:
 		$valid = 157;;
@@ -42,7 +42,7 @@ func TestModule_engineGrammarChannelCondition_withPrevious_withNext_Success(t *t
         $list = execute $suitesListApp;;
 
         // suites:
-        @engineGrammarSuites $suitesApp;;
+        @newGrammarSuites $suitesApp;;
         attach $list:$suites $suitesApp;;
         $suites = execute $suitesApp;;
 
@@ -56,7 +56,7 @@ func TestModule_engineGrammarChannelCondition_withPrevious_withNext_Success(t *t
 		$number = execute $castToUintApp;;
 
         // value app:
-		@engineGrammarValue $valueApp;;
+		@newGrammarValue $valueApp;;
         $name = myName;;
 		attach $number:$number $valueApp;;
 		attach $name:$name $valueApp;;
@@ -68,12 +68,12 @@ func TestModule_engineGrammarChannelCondition_withPrevious_withNext_Success(t *t
 		$myMin = execute $castToUintApp;;
 
         // cardinality:
-		@engineGrammarCardinality $cardinalityApp;;
+		@newGrammarCardinality $cardinalityApp;;
 		attach $myMin:$min $cardinalityApp;;
         $cardinality = execute $cardinalityApp;;
 
         // element:
-		@engineGrammarElement $elementApp;;
+		@newGrammarElement $elementApp;;
         attach $cardinality:$cardinality $elementApp;;
         attach $value:$value $elementApp;;
         $element = execute $elementApp;;
@@ -84,7 +84,7 @@ func TestModule_engineGrammarChannelCondition_withPrevious_withNext_Success(t *t
         $elements = execute $listApp;;
 
         // line:
-		@engineGrammarLine $lineApp;;
+		@newGrammarLine $lineApp;;
         attach $elements:$elements $lineApp;;
         $line = execute $lineApp;;
 
@@ -93,27 +93,27 @@ func TestModule_engineGrammarChannelCondition_withPrevious_withNext_Success(t *t
         $lines = execute $listApp;;
 
         // block:
-		@engineGrammarBlock $blockApp;;
+		@newGrammarBlock $blockApp;;
         attach $lines:$lines $blockApp;;
         $block = execute $blockApp;;
 
         // token:
         $tokenName = myToken;;
-		@engineGrammarToken $tokenApp;;
+		@newGrammarToken $tokenApp;;
         attach $tokenName:$name $tokenApp;;
         attach $suites:$suites $tokenApp;;
         attach $block:$block $tokenApp;;
         $token = execute $tokenApp;;
 
         // channel condition:
-        @engineGrammarChannelCondition $channelConditionApp;;
+        @newGrammarChannelCondition $channelConditionApp;;
         attach $token:$previous $channelConditionApp;;
         attach $token:$next $channelConditionApp;;
         $channelCondition = execute $channelConditionApp;;
 
 	`
 
-	output, _, err := engines.NewApplication(NewApplication()).ParseThenInterpret(map[string]interface{}{}, []byte(script))
+	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{}, []byte(script))
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -136,23 +136,23 @@ func TestModule_engineGrammarChannelCondition_withPrevious_withNext_Success(t *t
 	return
 }
 
-func TestModule_engineGrammarChannelCondition_withPrevious__Success(t *testing.T) {
+func TestModule_newGrammarChannelCondition_withPrevious__Success(t *testing.T) {
 	script := `
-        module @engineGrammarSuite;;
+        module @newGrammarSuite;;
         module @containerList;;
-        module @engineGrammarSuites;;
-        module @engineGrammarValue;;
-        module @engineGrammarCardinality;;
-        module @engineGrammarElement;;
-        module @engineGrammarLine;;
-        module @engineGrammarBlock;;
-        module @engineGrammarToken;;
-        module @engineGrammarChannelCondition;;
+        module @newGrammarSuites;;
+        module @newGrammarValue;;
+        module @newGrammarCardinality;;
+        module @newGrammarElement;;
+        module @newGrammarLine;;
+        module @newGrammarBlock;;
+        module @newGrammarToken;;
+        module @newGrammarChannelCondition;;
 
         <- $channelCondition;;
 
         // suite app:
-		@engineGrammarSuite $suiteApp;;
+		@newGrammarSuite $suiteApp;;
 
         // first suite:
 		$valid = 157;;
@@ -171,7 +171,7 @@ func TestModule_engineGrammarChannelCondition_withPrevious__Success(t *testing.T
         $list = execute $suitesListApp;;
 
         // suites:
-        @engineGrammarSuites $suitesApp;;
+        @newGrammarSuites $suitesApp;;
         attach $list:$suites $suitesApp;;
         $suites = execute $suitesApp;;
 
@@ -185,7 +185,7 @@ func TestModule_engineGrammarChannelCondition_withPrevious__Success(t *testing.T
 		$number = execute $castToUintApp;;
 
         // value app:
-		@engineGrammarValue $valueApp;;
+		@newGrammarValue $valueApp;;
         $name = myName;;
 		attach $number:$number $valueApp;;
 		attach $name:$name $valueApp;;
@@ -197,12 +197,12 @@ func TestModule_engineGrammarChannelCondition_withPrevious__Success(t *testing.T
 		$myMin = execute $castToUintApp;;
 
         // cardinality:
-		@engineGrammarCardinality $cardinalityApp;;
+		@newGrammarCardinality $cardinalityApp;;
 		attach $myMin:$min $cardinalityApp;;
         $cardinality = execute $cardinalityApp;;
 
         // element:
-		@engineGrammarElement $elementApp;;
+		@newGrammarElement $elementApp;;
         attach $cardinality:$cardinality $elementApp;;
         attach $value:$value $elementApp;;
         $element = execute $elementApp;;
@@ -213,7 +213,7 @@ func TestModule_engineGrammarChannelCondition_withPrevious__Success(t *testing.T
         $elements = execute $listApp;;
 
         // line:
-		@engineGrammarLine $lineApp;;
+		@newGrammarLine $lineApp;;
         attach $elements:$elements $lineApp;;
         $line = execute $lineApp;;
 
@@ -222,26 +222,26 @@ func TestModule_engineGrammarChannelCondition_withPrevious__Success(t *testing.T
         $lines = execute $listApp;;
 
         // block:
-		@engineGrammarBlock $blockApp;;
+		@newGrammarBlock $blockApp;;
         attach $lines:$lines $blockApp;;
         $block = execute $blockApp;;
 
         // token:
         $tokenName = myToken;;
-		@engineGrammarToken $tokenApp;;
+		@newGrammarToken $tokenApp;;
         attach $tokenName:$name $tokenApp;;
         attach $suites:$suites $tokenApp;;
         attach $block:$block $tokenApp;;
         $token = execute $tokenApp;;
 
         // channel condition:
-        @engineGrammarChannelCondition $channelConditionApp;;
+        @newGrammarChannelCondition $channelConditionApp;;
         attach $token:$previous $channelConditionApp;;
         $channelCondition = execute $channelConditionApp;;
 
 	`
 
-	output, _, err := engines.NewApplication(NewApplication()).ParseThenInterpret(map[string]interface{}{}, []byte(script))
+	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{}, []byte(script))
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -264,23 +264,23 @@ func TestModule_engineGrammarChannelCondition_withPrevious__Success(t *testing.T
 	return
 }
 
-func TestModule_engineGrammarChannelCondition_withNext_Success(t *testing.T) {
+func TestModule_newGrammarChannelCondition_withNext_Success(t *testing.T) {
 	script := `
-        module @engineGrammarSuite;;
+        module @newGrammarSuite;;
         module @containerList;;
-        module @engineGrammarSuites;;
-        module @engineGrammarValue;;
-        module @engineGrammarCardinality;;
-        module @engineGrammarElement;;
-        module @engineGrammarLine;;
-        module @engineGrammarBlock;;
-        module @engineGrammarToken;;
-        module @engineGrammarChannelCondition;;
+        module @newGrammarSuites;;
+        module @newGrammarValue;;
+        module @newGrammarCardinality;;
+        module @newGrammarElement;;
+        module @newGrammarLine;;
+        module @newGrammarBlock;;
+        module @newGrammarToken;;
+        module @newGrammarChannelCondition;;
 
         <- $channelCondition;;
 
         // suite app:
-		@engineGrammarSuite $suiteApp;;
+		@newGrammarSuite $suiteApp;;
 
         // first suite:
 		$valid = 157;;
@@ -299,7 +299,7 @@ func TestModule_engineGrammarChannelCondition_withNext_Success(t *testing.T) {
         $list = execute $suitesListApp;;
 
         // suites:
-        @engineGrammarSuites $suitesApp;;
+        @newGrammarSuites $suitesApp;;
         attach $list:$suites $suitesApp;;
         $suites = execute $suitesApp;;
 
@@ -313,7 +313,7 @@ func TestModule_engineGrammarChannelCondition_withNext_Success(t *testing.T) {
 		$number = execute $castToUintApp;;
 
         // value app:
-		@engineGrammarValue $valueApp;;
+		@newGrammarValue $valueApp;;
         $name = myName;;
 		attach $number:$number $valueApp;;
 		attach $name:$name $valueApp;;
@@ -325,12 +325,12 @@ func TestModule_engineGrammarChannelCondition_withNext_Success(t *testing.T) {
 		$myMin = execute $castToUintApp;;
 
         // cardinality:
-		@engineGrammarCardinality $cardinalityApp;;
+		@newGrammarCardinality $cardinalityApp;;
 		attach $myMin:$min $cardinalityApp;;
         $cardinality = execute $cardinalityApp;;
 
         // element:
-		@engineGrammarElement $elementApp;;
+		@newGrammarElement $elementApp;;
         attach $cardinality:$cardinality $elementApp;;
         attach $value:$value $elementApp;;
         $element = execute $elementApp;;
@@ -341,7 +341,7 @@ func TestModule_engineGrammarChannelCondition_withNext_Success(t *testing.T) {
         $elements = execute $listApp;;
 
         // line:
-		@engineGrammarLine $lineApp;;
+		@newGrammarLine $lineApp;;
         attach $elements:$elements $lineApp;;
         $line = execute $lineApp;;
 
@@ -350,26 +350,26 @@ func TestModule_engineGrammarChannelCondition_withNext_Success(t *testing.T) {
         $lines = execute $listApp;;
 
         // block:
-		@engineGrammarBlock $blockApp;;
+		@newGrammarBlock $blockApp;;
         attach $lines:$lines $blockApp;;
         $block = execute $blockApp;;
 
         // token:
         $tokenName = myToken;;
-		@engineGrammarToken $tokenApp;;
+		@newGrammarToken $tokenApp;;
         attach $tokenName:$name $tokenApp;;
         attach $suites:$suites $tokenApp;;
         attach $block:$block $tokenApp;;
         $token = execute $tokenApp;;
 
         // channel condition:
-        @engineGrammarChannelCondition $channelConditionApp;;
+        @newGrammarChannelCondition $channelConditionApp;;
         attach $token:$next $channelConditionApp;;
         $channelCondition = execute $channelConditionApp;;
 
 	`
 
-	output, _, err := engines.NewApplication(NewApplication()).ParseThenInterpret(map[string]interface{}{}, []byte(script))
+	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{}, []byte(script))
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return

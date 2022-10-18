@@ -7,10 +7,10 @@ import (
 	"github.com/steve-care-software/syntax/domain/syntax/grammars"
 )
 
-func TestModule_engineGrammarElement_withValue_Success(t *testing.T) {
+func TestModule_newGrammarLine_Success(t *testing.T) {
 	script := `
 		-> $name;;
-		<- $element;;
+		<- $line;;
 
 		// cast to uint app:
 		module @castToUint;;
@@ -22,8 +22,8 @@ func TestModule_engineGrammarElement_withValue_Success(t *testing.T) {
 		$number = execute $castToUintApp;;
 
         // value app:
-		module @engineGrammarValue;;
-		@engineGrammarValue $valueApp;;
+		module @newGrammarValue;;
+		@newGrammarValue $valueApp;;
         $name = myName;;
 		attach $number:$number $valueApp;;
 		attach $name:$name $valueApp;;
@@ -35,22 +35,34 @@ func TestModule_engineGrammarElement_withValue_Success(t *testing.T) {
 		$myMin = execute $castToUintApp;;
 
         // cardinality:
-        module @engineGrammarCardinality;;
-		@engineGrammarCardinality $cardinalityApp;;
+        module @newGrammarCardinality;;
+		@newGrammarCardinality $cardinalityApp;;
 		attach $myMin:$min $cardinalityApp;;
         $cardinality = execute $cardinalityApp;;
 
         // element:
-        module @engineGrammarElement;;
-		@engineGrammarElement $elementApp;;
+        module @newGrammarElement;;
+		@newGrammarElement $elementApp;;
         attach $cardinality:$cardinality $elementApp;;
         attach $value:$value $elementApp;;
         $element = execute $elementApp;;
 
+        // elements:
+        module @containerList;;
+        @containerList $listApp;;
+        attach $element:$0 $listApp;;
+        $elements = execute $listApp;;
+
+        // line:
+        module @newGrammarLine;;
+		@newGrammarLine $lineApp;;
+        attach $elements:$elements $lineApp;;
+        $line = execute $lineApp;;
+
 	`
 
 	name := "roger"
-	output, _, err := engines.NewApplication(NewApplication()).ParseThenInterpret(map[string]interface{}{
+	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
 		"name": name,
 	}, []byte(script))
 
@@ -59,15 +71,16 @@ func TestModule_engineGrammarElement_withValue_Success(t *testing.T) {
 		return
 	}
 
-	if ins, ok := output["element"].(grammars.Element); ok {
-		if !ins.Content().IsValue() {
-			t.Errorf("the element was expecting a value instance")
+	if ins, ok := output["line"].(grammars.Line); ok {
+		list := ins.Elements()
+		if len(list) != 1 {
+			t.Errorf("%d elements were expected, %d returned", 1, len(list))
 			return
 		}
 
 		return
 	}
 
-	t.Errorf("the element output was expected to contain an Element instance")
+	t.Errorf("the line output was expected to contain a Line instance")
 	return
 }

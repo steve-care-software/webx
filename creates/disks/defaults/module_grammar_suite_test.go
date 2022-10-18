@@ -7,20 +7,20 @@ import (
 	"github.com/steve-care-software/syntax/domain/syntax/grammars"
 )
 
-func TestModule_engineGrammarSuite_withValid_withString_Success(t *testing.T) {
+func TestModule_newGrammarSuite_withValid_withString_Success(t *testing.T) {
 	script := `
         <- $suite;;
 
         // suite app
-        module @engineGrammarSuite;;
-		@engineGrammarSuite $suiteApp;;
+        module @newGrammarSuite;;
+		@newGrammarSuite $suiteApp;;
 		$valid = 157;;
 		attach $valid:$valid $suiteApp;;
         $suite = execute $suiteApp;;
 
 	`
 
-	output, _, err := engines.NewApplication(NewApplication()).ParseThenInterpret(map[string]interface{}{}, []byte(script))
+	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{}, []byte(script))
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -39,20 +39,20 @@ func TestModule_engineGrammarSuite_withValid_withString_Success(t *testing.T) {
 	return
 }
 
-func TestModule_engineGrammarSuite_withValid_withByte_Success(t *testing.T) {
+func TestModule_newGrammarSuite_withValid_withByte_Success(t *testing.T) {
 	script := `
         -> $input;;
         <- $suite;;
 
         // suite app
-        module @engineGrammarSuite;;
-		@engineGrammarSuite $suiteApp;;
+        module @newGrammarSuite;;
+		@newGrammarSuite $suiteApp;;
 		attach $input:$valid $suiteApp;;
         $suite = execute $suiteApp;;
 
 	`
 
-	output, _, err := engines.NewApplication(NewApplication()).ParseThenInterpret(map[string]interface{}{
+	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
 		"input": []byte("this is some data"),
 	}, []byte(script))
 	if err != nil {
@@ -73,20 +73,20 @@ func TestModule_engineGrammarSuite_withValid_withByte_Success(t *testing.T) {
 	return
 }
 
-func TestModule_engineGrammarSuite_withInvalid_withString_Success(t *testing.T) {
+func TestModule_newGrammarSuite_withInvalid_withString_Success(t *testing.T) {
 	script := `
         <- $suite;;
 
         // suite app
-        module @engineGrammarSuite;;
-		@engineGrammarSuite $suiteApp;;
+        module @newGrammarSuite;;
+		@newGrammarSuite $suiteApp;;
 		$invalid = 157;;
 		attach $valid:$invalid $suiteApp;;
         $suite = execute $suiteApp;;
 
 	`
 
-	output, _, err := engines.NewApplication(NewApplication()).ParseThenInterpret(map[string]interface{}{}, []byte(script))
+	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{}, []byte(script))
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -105,20 +105,20 @@ func TestModule_engineGrammarSuite_withInvalid_withString_Success(t *testing.T) 
 	return
 }
 
-func TestModule_engineGrammarSuite_withInvalid_withByte_Success(t *testing.T) {
+func TestModule_newGrammarSuite_withInvalid_withByte_Success(t *testing.T) {
 	script := `
         -> $input;;
         <- $suite;;
 
         // suite app
-        module @engineGrammarSuite;;
-		@engineGrammarSuite $suiteApp;;
+        module @newGrammarSuite;;
+		@newGrammarSuite $suiteApp;;
 		attach $input:$invalid $suiteApp;;
         $suite = execute $suiteApp;;
 
 	`
 
-	output, _, err := engines.NewApplication(NewApplication()).ParseThenInterpret(map[string]interface{}{
+	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
 		"input": []byte("this is some data"),
 	}, []byte(script))
 	if err != nil {

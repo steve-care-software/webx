@@ -2,17 +2,36 @@ package defaults
 
 import (
 	"github.com/steve-care-software/syntax/applications/engines/creates"
+	identity_applications "github.com/steve-care-software/syntax/applications/engines/identities"
 	"github.com/steve-care-software/syntax/domain/syntax/commands"
 	"github.com/steve-care-software/syntax/domain/syntax/criterias"
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/encryptions/keys"
+	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/signatures"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars/cardinalities"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars/values"
 	grammar_values "github.com/steve-care-software/syntax/domain/syntax/grammars/values"
+	"github.com/steve-care-software/syntax/domain/syntax/identities"
+	"github.com/steve-care-software/syntax/domain/syntax/identities/modifications"
 	"github.com/steve-care-software/syntax/domain/syntax/programs/applications/modules"
+	"github.com/steve-care-software/syntax/infrastructure/disks"
 )
 
 // NewApplication creates a new create application
-func NewApplication() creates.Application {
+func NewApplication(
+	bitrate int,
+	basePath string,
+	delimiter string,
+	extension string,
+) creates.Application {
+
+	identityRepository := disks.NewIdentityRepository(basePath, delimiter, extension)
+	identityService := disks.NewIdentityService(identityRepository, basePath, delimiter, extension)
+	identityApplication := identity_applications.NewApplication(
+		identityRepository,
+		identityService,
+	)
+
 	return creates.NewApplication(
 		createGrammar(
 			grammars.NewBuilder(),
@@ -41,8 +60,14 @@ func NewApplication() creates.Application {
 			criterias.NewBuilder(),
 		),
 		createModule(
+			identityApplication,
 			modules.NewBuilder(),
 			modules.NewModuleBuilder(),
+			signatures.NewPrivateKeyFactory(),
+			keys.NewFactory(bitrate),
+			identities.NewBuilder(),
+			modifications.NewBuilder(),
+			modifications.NewModificationBuilder(),
 			criterias.NewBuilder(),
 			grammars.NewBuilder(),
 			grammars.NewChannelsBuilder(),

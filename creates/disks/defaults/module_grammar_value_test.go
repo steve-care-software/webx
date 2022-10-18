@@ -8,9 +8,9 @@ import (
 	"github.com/steve-care-software/syntax/domain/syntax/grammars/values"
 )
 
-func TestModule_engineGrammarValue_Success(t *testing.T) {
+func TestModule_newGrammarValue_Success(t *testing.T) {
 	script := `
-		module @engineGrammarValue;;
+		module @newGrammarValue;;
 		module @castToUint;;
 
 		-> $myName;;
@@ -23,7 +23,7 @@ func TestModule_engineGrammarValue_Success(t *testing.T) {
 		$myNumber = execute $castToUintApp;;
 
 		// value app:
-		@engineGrammarValue $valueApp;;
+		@newGrammarValue $valueApp;;
 		attach $myNumber:$number $valueApp;;
 		attach $myName:$name $valueApp;;
 
@@ -32,7 +32,7 @@ func TestModule_engineGrammarValue_Success(t *testing.T) {
 	`
 
 	name := "roger"
-	output, remaining, err := engines.NewApplication(NewApplication()).ParseThenInterpret(map[string]interface{}{
+	output, remaining, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
 		"myName": name,
 	}, []byte(script))
 

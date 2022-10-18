@@ -18,3 +18,8 @@ func createModifications(
 func (obj *modifications) List() []Modification {
 	return obj.list
 }
+
+// First returns the first modification instance
+func (obj *modifications) First() Modification {
+	return obj.list[:1][0]
+}

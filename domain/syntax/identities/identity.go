@@ -3,7 +3,6 @@ package identities
 import (
 	"time"
 
-	"github.com/steve-care-software/syntax/domain/syntax/databases"
 	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/encryptions/keys"
 	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/signatures"
 	"github.com/steve-care-software/syntax/domain/syntax/identities/modifications"
@@ -11,67 +10,30 @@ import (
 
 type identity struct {
 	name          string
-	sig           signatures.PrivateKey
-	enc           keys.PrivateKey
-	createdOn     time.Time
-	databases     databases.Databases
+	sigPK         signatures.PrivateKey
+	encPK         keys.PrivateKey
 	modifications modifications.Modifications
 }
 
 func createIdentity(
 	name string,
-	sig signatures.PrivateKey,
-	enc keys.PrivateKey,
-	createdOn time.Time,
-) Identity {
-	return createIdentityInternally(name, sig, enc, createdOn, nil, nil)
-}
-
-func createIdentityWithDatabases(
-	name string,
-	sig signatures.PrivateKey,
-	enc keys.PrivateKey,
-	createdOn time.Time,
-	databases databases.Databases,
-) Identity {
-	return createIdentityInternally(name, sig, enc, createdOn, databases, nil)
-}
-
-func createIdentityWithModifications(
-	name string,
-	sig signatures.PrivateKey,
-	enc keys.PrivateKey,
-	createdOn time.Time,
+	sigPK signatures.PrivateKey,
+	encPK keys.PrivateKey,
 	modifications modifications.Modifications,
 ) Identity {
-	return createIdentityInternally(name, sig, enc, createdOn, nil, modifications)
-}
-
-func createIdentityWithDatabasesAndModifications(
-	name string,
-	sig signatures.PrivateKey,
-	enc keys.PrivateKey,
-	createdOn time.Time,
-	databases databases.Databases,
-	modifications modifications.Modifications,
-) Identity {
-	return createIdentityInternally(name, sig, enc, createdOn, databases, modifications)
+	return createIdentityInternally(name, sigPK, encPK, modifications)
 }
 
 func createIdentityInternally(
 	name string,
-	sig signatures.PrivateKey,
-	enc keys.PrivateKey,
-	createdOn time.Time,
-	databases databases.Databases,
+	sigPK signatures.PrivateKey,
+	encPK keys.PrivateKey,
 	modifications modifications.Modifications,
 ) Identity {
 	out := identity{
 		name:          name,
-		sig:           sig,
-		enc:           enc,
-		createdOn:     createdOn,
-		databases:     databases,
+		sigPK:         sigPK,
+		encPK:         encPK,
 		modifications: modifications,
 	}
 
@@ -85,32 +47,17 @@ func (obj *identity) Name() string {
 
 // Signature returns the signature's pk
 func (obj *identity) Signature() signatures.PrivateKey {
-	return obj.sig
+	return obj.sigPK
 }
 
 // Encryption returns the encryption's pk
 func (obj *identity) Encryption() keys.PrivateKey {
-	return obj.enc
+	return obj.encPK
 }
 
 // CreatedOn returns the creation time
 func (obj *identity) CreatedOn() time.Time {
-	return obj.createdOn
-}
-
-// HasDatabases returns true if there is databases, false otherwise
-func (obj *identity) HasDatabases() bool {
-	return obj.databases != nil
-}
-
-// Databases returns the databases, if any
-func (obj *identity) Databases() databases.Databases {
-	return obj.databases
-}
-
-// HasModifications returns true if there is modifications, false otherwise
-func (obj *identity) HasModifications() bool {
-	return obj.modifications != nil
+	return obj.modifications.First().CreatedOn()
 }
 
 // Modifications returns the modifications, if any

@@ -7,10 +7,10 @@ import (
 	"github.com/steve-care-software/syntax/domain/syntax/grammars"
 )
 
-func TestModule_engineGrammarLine_Success(t *testing.T) {
+func TestModule_newGrammarBlock_Success(t *testing.T) {
 	script := `
 		-> $name;;
-		<- $line;;
+		<- $block;;
 
 		// cast to uint app:
 		module @castToUint;;
@@ -22,9 +22,8 @@ func TestModule_engineGrammarLine_Success(t *testing.T) {
 		$number = execute $castToUintApp;;
 
         // value app:
-		module @engineGrammarValue;;
-		@engineGrammarValue $valueApp;;
-        $name = myName;;
+        module @newGrammarValue;;
+		@newGrammarValue $valueApp;;
 		attach $number:$number $valueApp;;
 		attach $name:$name $valueApp;;
         $value = execute $valueApp;;
@@ -35,14 +34,14 @@ func TestModule_engineGrammarLine_Success(t *testing.T) {
 		$myMin = execute $castToUintApp;;
 
         // cardinality:
-        module @engineGrammarCardinality;;
-		@engineGrammarCardinality $cardinalityApp;;
+        module @newGrammarCardinality;;
+		@newGrammarCardinality $cardinalityApp;;
 		attach $myMin:$min $cardinalityApp;;
         $cardinality = execute $cardinalityApp;;
 
         // element:
-        module @engineGrammarElement;;
-		@engineGrammarElement $elementApp;;
+        module @newGrammarElement;;
+		@newGrammarElement $elementApp;;
         attach $cardinality:$cardinality $elementApp;;
         attach $value:$value $elementApp;;
         $element = execute $elementApp;;
@@ -54,15 +53,25 @@ func TestModule_engineGrammarLine_Success(t *testing.T) {
         $elements = execute $listApp;;
 
         // line:
-        module @engineGrammarLine;;
-		@engineGrammarLine $lineApp;;
+        module @newGrammarLine;;
+		@newGrammarLine $lineApp;;
         attach $elements:$elements $lineApp;;
         $line = execute $lineApp;;
+
+        // lines:
+        attach $line:$0 $listApp;;
+        $lines = execute $listApp;;
+
+        // block:
+        module @newGrammarBlock;;
+		@newGrammarBlock $blockApp;;
+        attach $lines:$lines $blockApp;;
+        $block = execute $blockApp;;
 
 	`
 
 	name := "roger"
-	output, _, err := engines.NewApplication(NewApplication()).ParseThenInterpret(map[string]interface{}{
+	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
 		"name": name,
 	}, []byte(script))
 
@@ -71,16 +80,16 @@ func TestModule_engineGrammarLine_Success(t *testing.T) {
 		return
 	}
 
-	if ins, ok := output["line"].(grammars.Line); ok {
-		list := ins.Elements()
+	if ins, ok := output["block"].(grammars.Block); ok {
+		list := ins.Lines()
 		if len(list) != 1 {
-			t.Errorf("%d elements were expected, %d returned", 1, len(list))
+			t.Errorf("%d lines were expected, %d returned", 1, len(list))
 			return
 		}
 
 		return
 	}
 
-	t.Errorf("the line output was expected to contain a Line instance")
+	t.Errorf("the block output was expected to contain a Block instance")
 	return
 }

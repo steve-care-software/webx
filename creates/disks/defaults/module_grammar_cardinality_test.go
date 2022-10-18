@@ -7,10 +7,10 @@ import (
 	"github.com/steve-care-software/syntax/domain/syntax/grammars/cardinalities"
 )
 
-func TestModule_engineGrammarCardinality_withMin_withoutMax_Success(t *testing.T) {
+func TestModule_newGrammarCardinality_withMin_withoutMax_Success(t *testing.T) {
 	script := `
-		module @engineGrammarCardinality;;
-		@engineGrammarCardinality $cardinalityApp;;
+		module @newGrammarCardinality;;
+		@newGrammarCardinality $cardinalityApp;;
 		<- $output;;
 
 		// cast to uint app:
@@ -28,7 +28,7 @@ func TestModule_engineGrammarCardinality_withMin_withoutMax_Success(t *testing.T
 	`
 
 	name := "roger"
-	output, _, err := engines.NewApplication(NewApplication()).ParseThenInterpret(map[string]interface{}{
+	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
 		"myName": name,
 	}, []byte(script))
 
@@ -56,10 +56,10 @@ func TestModule_engineGrammarCardinality_withMin_withoutMax_Success(t *testing.T
 	return
 }
 
-func TestModule_engineGrammarCardinality_withMin_withMax_Success(t *testing.T) {
+func TestModule_newGrammarCardinality_withMin_withMax_Success(t *testing.T) {
 	script := `
-		module @engineGrammarCardinality;;
-		@engineGrammarCardinality $cardinalityApp;;
+		module @newGrammarCardinality;;
+		@newGrammarCardinality $cardinalityApp;;
 		<- $output;;
 
 		// cast to uint app:
@@ -84,7 +84,7 @@ func TestModule_engineGrammarCardinality_withMin_withMax_Success(t *testing.T) {
 	`
 
 	name := "roger"
-	output, _, err := engines.NewApplication(NewApplication()).ParseThenInterpret(map[string]interface{}{
+	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
 		"myName": name,
 	}, []byte(script))
 

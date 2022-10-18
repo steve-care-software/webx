@@ -3,7 +3,6 @@ package identities
 import (
 	"time"
 
-	"github.com/steve-care-software/syntax/domain/syntax/databases"
 	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/encryptions/keys"
 	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/signatures"
 	"github.com/steve-care-software/syntax/domain/syntax/identities/modifications"
@@ -17,12 +16,7 @@ func NewBuilder() Builder {
 // Builder represents an identity builder
 type Builder interface {
 	Create() Builder
-	WithName(name string) Builder
-	WithSignature(signature signatures.PrivateKey) Builder
-	WithEncryption(encryption keys.PrivateKey) Builder
-	WithDatabases(databases databases.Databases) Builder
 	WithModifications(modifications modifications.Modifications) Builder
-	CreatedOn(createdOn time.Time) Builder
 	Now() (Identity, error)
 }
 
@@ -32,8 +26,17 @@ type Identity interface {
 	Signature() signatures.PrivateKey
 	Encryption() keys.PrivateKey
 	CreatedOn() time.Time
-	HasDatabases() bool
-	Databases() databases.Databases
-	HasModifications() bool
 	Modifications() modifications.Modifications
+}
+
+// Repository represents an identity repository
+type Repository interface {
+	List() ([]string, error)
+	Retrieve(name string, password string) (Identity, error)
+}
+
+// Service represents an identity service
+type Service interface {
+	Insert(identity Identity, password string) error
+	Update(identity Identity, currentPassword string, newPassword string) error
 }

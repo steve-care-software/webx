@@ -7,13 +7,13 @@ import (
 	"github.com/steve-care-software/syntax/domain/syntax/grammars"
 )
 
-func TestModule_engineGrammarSuites_Success(t *testing.T) {
+func TestModule_newGrammarSuites_Success(t *testing.T) {
 	script := `
         <- $suites;;
 
         // suite app:
-        module @engineGrammarSuite;;
-		@engineGrammarSuite $suiteApp;;
+        module @newGrammarSuite;;
+		@newGrammarSuite $suiteApp;;
 
         // first suite:
 		$valid = 157;;
@@ -33,14 +33,14 @@ func TestModule_engineGrammarSuites_Success(t *testing.T) {
         $list = execute $listApp;;
 
         // suites:
-        module @engineGrammarSuites;;
-        @engineGrammarSuites $suitesApp;;
+        module @newGrammarSuites;;
+        @newGrammarSuites $suitesApp;;
         attach $list:$suites $suitesApp;;
         $suites = execute $suitesApp;;
 
 	`
 
-	output, _, err := engines.NewApplication(NewApplication()).ParseThenInterpret(map[string]interface{}{}, []byte(script))
+	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{}, []byte(script))
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
