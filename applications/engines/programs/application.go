@@ -7,19 +7,21 @@ import (
 
 	application_criteria "github.com/steve-care-software/syntax/applications/engines/criterias"
 	grammar_application "github.com/steve-care-software/syntax/applications/engines/grammars"
+	"github.com/steve-care-software/syntax/domain/syntax/commands"
 	"github.com/steve-care-software/syntax/domain/syntax/criterias"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars"
-	"github.com/steve-care-software/syntax/domain/syntax/trees"
-	"github.com/steve-care-software/syntax/domain/syntax/commands"
 	"github.com/steve-care-software/syntax/domain/syntax/programs"
 	"github.com/steve-care-software/syntax/domain/syntax/programs/applications"
 	"github.com/steve-care-software/syntax/domain/syntax/programs/applications/modules"
+	"github.com/steve-care-software/syntax/domain/syntax/programs/outputs"
+	"github.com/steve-care-software/syntax/domain/syntax/trees"
 )
 
 type application struct {
 	grammarApp         grammar_application.Application
 	criteriaApp        application_criteria.Application
 	builder            programs.Builder
+	outputBuilder      outputs.Builder
 	applicationBuilder applications.Builder
 	attachmentsBuilder applications.AttachmentsBuilder
 	attachmentBuilder  applications.AttachmentBuilder
@@ -32,6 +34,7 @@ func createApplication(
 	grammarApp grammar_application.Application,
 	criteriaApp application_criteria.Application,
 	builder programs.Builder,
+	outputBuilder outputs.Builder,
 	applicationBuilder applications.Builder,
 	attachmentsBuilder applications.AttachmentsBuilder,
 	attachmentBuilder applications.AttachmentBuilder,
@@ -42,6 +45,7 @@ func createApplication(
 		grammarApp,
 		criteriaApp,
 		builder,
+		outputBuilder,
 		applicationBuilder,
 		attachmentsBuilder,
 		attachmentBuilder,
@@ -55,6 +59,7 @@ func createApplicationWithModules(
 	grammarApp grammar_application.Application,
 	criteriaApp application_criteria.Application,
 	builder programs.Builder,
+	outputBuilder outputs.Builder,
 	applicationBuilder applications.Builder,
 	attachmentsBuilder applications.AttachmentsBuilder,
 	attachmentBuilder applications.AttachmentBuilder,
@@ -66,6 +71,7 @@ func createApplicationWithModules(
 		grammarApp,
 		criteriaApp,
 		builder,
+		outputBuilder,
 		applicationBuilder,
 		attachmentsBuilder,
 		attachmentBuilder,
@@ -79,6 +85,7 @@ func createApplicationInternally(
 	grammarApp grammar_application.Application,
 	criteriaApp application_criteria.Application,
 	builder programs.Builder,
+	outputBuilder outputs.Builder,
 	applicationBuilder applications.Builder,
 	attachmentsBuilder applications.AttachmentsBuilder,
 	attachmentBuilder applications.AttachmentBuilder,
@@ -90,6 +97,7 @@ func createApplicationInternally(
 		grammarApp:         grammarApp,
 		criteriaApp:        criteriaApp,
 		builder:            builder,
+		outputBuilder:      outputBuilder,
 		applicationBuilder: applicationBuilder,
 		attachmentsBuilder: attachmentsBuilder,
 		attachmentBuilder:  attachmentBuilder,
@@ -102,10 +110,10 @@ func createApplicationInternally(
 }
 
 // Execute executes the application
-func (app *application) Execute(grammar grammars.Grammar, command commands.Command, script []byte) (programs.Program, []byte, error) {
+func (app *application) Execute(grammar grammars.Grammar, command commands.Command, script []byte) (outputs.Output, error) {
 	assignments, outputParams, remaining, err := app.instructions(grammar, command, script)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	builder := app.builder.Create().WithAssignments(assignments)
@@ -115,10 +123,15 @@ func (app *application) Execute(grammar grammars.Grammar, command commands.Comma
 
 	ins, err := builder.Now()
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	return ins, remaining, nil
+	outputBuilder := app.outputBuilder.Create().WithProgram(ins)
+	if remaining != nil {
+		outputBuilder.WithRemaining(remaining)
+	}
+
+	return outputBuilder.Now()
 }
 
 func (app *application) instructions(grammar grammars.Grammar, command commands.Command, script []byte) ([]applications.Assignment, []string, []byte, error) {

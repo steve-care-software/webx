@@ -6,12 +6,14 @@ import (
 	"github.com/steve-care-software/syntax/domain/syntax/programs"
 	"github.com/steve-care-software/syntax/domain/syntax/programs/applications"
 	"github.com/steve-care-software/syntax/domain/syntax/programs/applications/modules"
+	"github.com/steve-care-software/syntax/domain/syntax/programs/outputs"
 )
 
 type builder struct {
 	grammarApp         grammars.Application
 	criteriaApp        criterias.Application
 	builder            programs.Builder
+	outputBuilder      outputs.Builder
 	applicationBuilder applications.Builder
 	attachmentsBuilder applications.AttachmentsBuilder
 	attachmentBuilder  applications.AttachmentBuilder
@@ -24,6 +26,7 @@ func createBuilder(
 	grammarApp grammars.Application,
 	criteriaApp criterias.Application,
 	builderIns programs.Builder,
+	outputBuilder outputs.Builder,
 	applicationBuilder applications.Builder,
 	attachmentsBuilder applications.AttachmentsBuilder,
 	attachmentBuilder applications.AttachmentBuilder,
@@ -34,6 +37,7 @@ func createBuilder(
 		grammarApp:         grammarApp,
 		criteriaApp:        criteriaApp,
 		builder:            builderIns,
+		outputBuilder:      outputBuilder,
 		applicationBuilder: applicationBuilder,
 		attachmentsBuilder: attachmentsBuilder,
 		attachmentBuilder:  attachmentBuilder,
@@ -51,6 +55,7 @@ func (app *builder) Create() Builder {
 		app.grammarApp,
 		app.criteriaApp,
 		app.builder,
+		app.outputBuilder,
 		app.applicationBuilder,
 		app.attachmentsBuilder,
 		app.attachmentBuilder,
@@ -72,6 +77,7 @@ func (app *builder) Now() (Application, error) {
 			app.grammarApp,
 			app.criteriaApp,
 			app.builder,
+			app.outputBuilder,
 			app.applicationBuilder,
 			app.attachmentsBuilder,
 			app.attachmentBuilder,
@@ -85,6 +91,7 @@ func (app *builder) Now() (Application, error) {
 		app.grammarApp,
 		app.criteriaApp,
 		app.builder,
+		app.outputBuilder,
 		app.applicationBuilder,
 		app.attachmentsBuilder,
 		app.attachmentBuilder,

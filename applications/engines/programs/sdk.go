@@ -8,6 +8,7 @@ import (
 	"github.com/steve-care-software/syntax/domain/syntax/programs"
 	"github.com/steve-care-software/syntax/domain/syntax/programs/applications"
 	"github.com/steve-care-software/syntax/domain/syntax/programs/applications/modules"
+	"github.com/steve-care-software/syntax/domain/syntax/programs/outputs"
 )
 
 // NewBuilder creates a new builder
@@ -15,12 +16,23 @@ func NewBuilder() Builder {
 	grammarApp := grammar_application.NewApplication()
 	criteriaApp := criterias.NewApplication()
 	builder := programs.NewBuilder()
+	outputBuilder := outputs.NewBuilder()
 	applicationBuilder := applications.NewBuilder()
 	attachmentsBuilder := applications.NewAttachmentsBuilder()
 	attachmentBuilder := applications.NewAttachmentBuilder()
 	assignmentBuilder := applications.NewAssignmentBuilder()
 	valueBuilder := applications.NewValueBuilder()
-	return createBuilder(grammarApp, criteriaApp, builder, applicationBuilder, attachmentsBuilder, attachmentBuilder, assignmentBuilder, valueBuilder)
+	return createBuilder(
+		grammarApp,
+		criteriaApp,
+		builder,
+		outputBuilder,
+		applicationBuilder,
+		attachmentsBuilder,
+		attachmentBuilder,
+		assignmentBuilder,
+		valueBuilder,
+	)
 }
 
 // Builder represents an application builder
@@ -32,5 +44,5 @@ type Builder interface {
 
 // Application represents a program application
 type Application interface {
-	Execute(grammar grammars.Grammar, command commands.Command, script []byte) (programs.Program, []byte, error)
+	Execute(grammar grammars.Grammar, command commands.Command, script []byte) (outputs.Output, error)
 }

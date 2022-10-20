@@ -73,17 +73,18 @@ func (app *application) ParseThenInterpret(input map[string]interface{}, script 
 		return nil, nil, err
 	}
 
-	progIns, remaining, err := app.programApp.Execute(grammar, command, script)
+	programOutput, err := app.programApp.Execute(grammar, command, script)
 	if err != nil {
 		return nil, nil, err
 	}
 
+	progIns := programOutput.Program()
 	output, err := app.interpreterApp.Execute(input, progIns)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return output, remaining, nil
+	return output, programOutput.Remaining(), nil
 }
 
 // CompileThenParseThenInterpret compiles then parses then interpret
