@@ -3,6 +3,7 @@ package compilers
 import (
 	"github.com/steve-care-software/syntax/domain/syntax/criterias"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars"
+	"github.com/steve-care-software/syntax/domain/syntax/programs"
 )
 
 // NewBuilder creates a new builder instance
@@ -10,92 +11,112 @@ func NewBuilder() Builder {
 	return createBuilder()
 }
 
+// NewElementsBuilder creates a new elements builder
+func NewElementsBuilder() ElementsBuilder {
+	return createElementsBuilder()
+}
+
 // NewElementBuilder creates a new element builder
 func NewElementBuilder() ElementBuilder {
 	return createElementBuilder()
 }
 
-// NewCompositionBuilder creates a new composition builder
-func NewCompositionBuilder() CompositionBuilder {
-	return createCompositionBuilder()
+// NewParametersBuilder creates a new parameters builder
+func NewParametersBuilder() ParametersBuilder {
+	return createParametersBuilder()
 }
 
-// NewReplacementsBuilder creates a new replacements builder
-func NewReplacementsBuilder() ReplacementsBuilder {
-	return createReplacementsBuilder()
+// NewParameterBuilder creates a new parameter builder
+func NewParameterBuilder() ParameterBuilder {
+	return createParameterBuilder()
 }
 
-// NewReplacementBuilder creates a new replacement builder
-func NewReplacementBuilder() ReplacementBuilder {
-	return createReplacementBuilder()
+// NewValueBuilder creates a new value builder
+func NewValueBuilder() ValueBuilder {
+	return createValueBuilder()
 }
 
 // Builder represents a compiler builder
 type Builder interface {
 	Create() Builder
-	WithElements(elements []Element) Builder
+	WithOutputs(outputs []string) Builder
+	WithElements(elements Elements) Builder
 	Now() (Compiler, error)
 }
 
 // Compiler represents a compiler
 type Compiler interface {
-	Elements() []Element
+	Elements() Elements
+	HasOutputs() bool
+	Outputs() []string
+}
+
+// ElementsBuilder represents an elements builder
+type ElementsBuilder interface {
+	Create() ElementsBuilder
+	WithList(list []Element) ElementsBuilder
+	Now() (Elements, error)
+}
+
+// Elements represents elements
+type Elements interface {
+	List() []Element
 }
 
 // ElementBuilder represents an element builder
 type ElementBuilder interface {
 	Create() ElementBuilder
 	WithGrammar(grammar grammars.Grammar) ElementBuilder
-	WithComposition(composition Composition) ElementBuilder
+	WithProgram(program programs.Program) ElementBuilder
+	WithParameters(parameters Parameters) ElementBuilder
 	Now() (Element, error)
 }
 
 // Element represents an element
 type Element interface {
 	Grammar() grammars.Grammar
-	Composition() Composition
+	Program() programs.Program
+	Parameters() Parameters
 }
 
-// CompositionBuilder represents a composition builder
-type CompositionBuilder interface {
-	Create() CompositionBuilder
-	WithPrefix(prefix []byte) CompositionBuilder
-	WithSuffix(suffix []byte) CompositionBuilder
-	WithPattern(pattern []byte) CompositionBuilder
-	WithReplacements(replacements Replacements) CompositionBuilder
-	Now() (Composition, error)
+// ParametersBuilder represents a parameters builder
+type ParametersBuilder interface {
+	Create() ParametersBuilder
+	WithList(list []Parameter) ParametersBuilder
+	Now() (Parameters, error)
 }
 
-// Composition represents a composition
-type Composition interface {
-	Prefix() []byte
-	Suffix() []byte
-	Pattern() []byte
-	Replacements() Replacements
+// Parameters represents parameters
+type Parameters interface {
+	List() []Parameter
 }
 
-// ReplacementsBuilder represents a replacements builder
-type ReplacementsBuilder interface {
-	Create() ReplacementsBuilder
-	WithList(list []Replacement) ReplacementsBuilder
-	Now() (Replacements, error)
+// ParameterBuilder represents a parameter value
+type ParameterBuilder interface {
+	Create() ParameterBuilder
+	WithName(name string) ParameterBuilder
+	WithValue(value Value) ParameterBuilder
+	Now() (Parameter, error)
 }
 
-// Replacements represents replacements
-type Replacements interface {
-	List() []Replacement
+// Parameter represents a parameter
+type Parameter interface {
+	Name() string
+	Value() Value
 }
 
-// ReplacementBuilder represents a replacement builder
-type ReplacementBuilder interface {
-	Create() ReplacementBuilder
-	WithName(name []byte) ReplacementBuilder
-	WithCriteria(criteria criterias.Criteria) ReplacementBuilder
-	Now() (Replacement, error)
+// ValueBuilder represents a value builder
+type ValueBuilder interface {
+	Create() ValueBuilder
+	WithConstant(constant interface{}) ValueBuilder
+	WithCriteria(criteria criterias.Criteria) ValueBuilder
+	Now() (Value, error)
 }
 
-// Replacement represents a replacement
-type Replacement interface {
-	Name() []byte
+// Value represents a value
+type Value interface {
+	IsConstant() bool
+	Constant() interface{}
+	IsCriteria() bool
 	Criteria() criterias.Criteria
 }

@@ -4,17 +4,20 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/syntax/domain/syntax/grammars"
+	"github.com/steve-care-software/syntax/domain/syntax/programs"
 )
 
 type elementBuilder struct {
-	grammar     grammars.Grammar
-	composition Composition
+	grammar    grammars.Grammar
+	program    programs.Program
+	parameters Parameters
 }
 
 func createElementBuilder() ElementBuilder {
 	out := elementBuilder{
-		grammar:     nil,
-		composition: nil,
+		grammar:    nil,
+		program:    nil,
+		parameters: nil,
 	}
 
 	return &out
@@ -31,9 +34,15 @@ func (app *elementBuilder) WithGrammar(grammar grammars.Grammar) ElementBuilder 
 	return app
 }
 
-// WithComposition adds a composition to the builder
-func (app *elementBuilder) WithComposition(composition Composition) ElementBuilder {
-	app.composition = composition
+// WithProgram adds a program to the builder
+func (app *elementBuilder) WithProgram(program programs.Program) ElementBuilder {
+	app.program = program
+	return app
+}
+
+// WithParameters add parameters to the builder
+func (app *elementBuilder) WithParameters(parameters Parameters) ElementBuilder {
+	app.parameters = parameters
 	return app
 }
 
@@ -43,9 +52,13 @@ func (app *elementBuilder) Now() (Element, error) {
 		return nil, errors.New("the grammar is mandatory in order to build an Element instance")
 	}
 
-	if app.composition == nil {
-		return nil, errors.New("the composition is mandatory in order to build an Element instance")
+	if app.program == nil {
+		return nil, errors.New("the program is mandatory in order to build an Element instance")
 	}
 
-	return createElement(app.grammar, app.composition), nil
+	if app.parameters == nil {
+		return nil, errors.New("the parameters is mandatory in order to build an Element instance")
+	}
+
+	return createElement(app.grammar, app.program, app.parameters), nil
 }

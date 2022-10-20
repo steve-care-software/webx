@@ -1,47 +1,48 @@
 package compilers
 
 import (
-	"bytes"
+	"errors"
+	"fmt"
 
 	"github.com/steve-care-software/syntax/applications/engines/creates"
 	criteria_application "github.com/steve-care-software/syntax/applications/engines/criterias"
 	grammar_application "github.com/steve-care-software/syntax/applications/engines/grammars"
-	programs_application "github.com/steve-care-software/syntax/applications/engines/programs"
+	interpreter_application "github.com/steve-care-software/syntax/applications/engines/interpreters"
 	"github.com/steve-care-software/syntax/domain/syntax/compilers"
 	"github.com/steve-care-software/syntax/domain/syntax/compilers/outputs"
 )
 
 type application struct {
-	grammarApp    grammar_application.Application
-	criteriaApp   criteria_application.Application
-	programApp    programs_application.Application
-	createApp     creates.Application
-	outputBuilder outputs.Builder
+	grammarApp     grammar_application.Application
+	criteriaApp    criteria_application.Application
+	interpreterApp interpreter_application.Application
+	createApp      creates.Application
+	outputBuilder  outputs.Builder
 }
 
 func createApplication(
 	grammarApp grammar_application.Application,
 	criteriaApp criteria_application.Application,
-	programApp programs_application.Application,
+	interpreterApp interpreter_application.Application,
 	createApp creates.Application,
 	outputBuilder outputs.Builder,
 ) Application {
 	out := application{
-		grammarApp:    grammarApp,
-		criteriaApp:   criteriaApp,
-		programApp:    programApp,
-		createApp:     createApp,
-		outputBuilder: outputBuilder,
+		grammarApp:     grammarApp,
+		criteriaApp:    criteriaApp,
+		interpreterApp: interpreterApp,
+		createApp:      createApp,
+		outputBuilder:  outputBuilder,
 	}
 
 	return &out
 }
 
-// Execute executes the application
+// Execute eecutes a compiler
 func (app *application) Execute(compiler compilers.Compiler, script []byte) (outputs.Output, error) {
 	remaining := script
-	compiledScript := []byte{}
-	elementsList := compiler.Elements()
+	elementsList := compiler.Elements().List()
+	outputs := map[string]interface{}{}
 	for _, oneElement := range elementsList {
 		grammar := oneElement.Grammar()
 		tree, err := app.grammarApp.Execute(grammar, remaining)
@@ -49,54 +50,57 @@ func (app *application) Execute(compiler compilers.Compiler, script []byte) (out
 			return nil, err
 		}
 
-		composition := oneElement.Composition()
-		prefix := composition.Prefix()
-		suffix := composition.Suffix()
-		value := composition.Pattern()
-		replacementsList := composition.Replacements().List()
-		for _, oneReplacement := range replacementsList {
-			name := oneReplacement.Name()
-			criteria := oneReplacement.Criteria()
+		input := map[string]interface{}{}
+		parameters := oneElement.Parameters().List()
+		for _, oneParameter := range parameters {
+			keyname := oneParameter.Name()
+			value := oneParameter.Value()
+			if value.IsConstant() {
+				input[keyname] = value.Constant()
+				continue
+			}
+
+			criteria := value.Criteria()
 			found, err := app.criteriaApp.Execute(criteria, tree)
 			if err != nil {
 				return nil, err
 			}
 
-			replacement := bytes.Join([][]byte{
-				prefix,
-				name,
-				suffix,
-			}, []byte{})
+			input[keyname] = found
+		}
 
-			value = bytes.ReplaceAll(value, replacement, found)
+		program := oneElement.Program()
+		output, err := app.interpreterApp.Execute(input, program)
+		if err != nil {
+			return nil, err
+		}
+
+		for name, value := range output {
+			outputs[name] = value
 		}
 
 		remaining = tree.Remaining()
-		compiledScript = append(compiledScript, value...)
 	}
 
-	grammarIns, err := app.createApp.Grammar().Execute()
-	if err != nil {
-		return nil, err
-	}
-
-	commandIns, err := app.createApp.Command().Execute()
-	if err != nil {
-		return nil, err
-	}
-
-	programIns, compiledRemaining, err := app.programApp.Execute(grammarIns, commandIns, compiledScript)
-	if err != nil {
-		return nil, err
-	}
-
-	builder := app.outputBuilder.Create().WithProgram(programIns)
+	builder := app.outputBuilder.Create()
 	if remaining != nil {
-		builder.WithScript(remaining)
+		builder.WithRemaining(remaining)
 	}
 
-	if compiledRemaining != nil {
-		builder.WithEngine(compiledRemaining)
+	if compiler.HasOutputs() {
+		names := compiler.Outputs()
+		compilerOutputs := map[string]interface{}{}
+		for _, oneName := range names {
+			if value, ok := outputs[oneName]; ok {
+				compilerOutputs[oneName] = value
+				continue
+			}
+
+			str := fmt.Sprintf("the compiler requested an output variable (name %s) that is undeclared after executing the compiler", oneName)
+			return nil, errors.New(str)
+		}
+
+		builder.WithValues(compilerOutputs)
 	}
 
 	return builder.Now()

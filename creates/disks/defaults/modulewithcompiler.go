@@ -9,19 +9,21 @@ import (
 	"github.com/steve-care-software/syntax/domain/syntax/compilers"
 	"github.com/steve-care-software/syntax/domain/syntax/criterias"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars"
+	"github.com/steve-care-software/syntax/domain/syntax/programs"
 	"github.com/steve-care-software/syntax/domain/syntax/programs/applications/modules"
 )
 
 type moduleWithCompiler struct {
-	compilerApplication         compiler_applications.Application
-	builder                     modules.Builder
-	moduleBuilder               modules.ModuleBuilder
-	compilerBuilder             compilers.Builder
-	compilerElementBuilder      compilers.ElementBuilder
-	compilerCompositionBuilder  compilers.CompositionBuilder
-	compilerReplacementsBuilder compilers.ReplacementsBuilder
-	compilerReplacementBuilder  compilers.ReplacementBuilder
-	additionalModules           modules.Modules
+	compilerApplication       compiler_applications.Application
+	builder                   modules.Builder
+	moduleBuilder             modules.ModuleBuilder
+	compilerBuilder           compilers.Builder
+	compilerElementsBuilder   compilers.ElementsBuilder
+	compilerElementBuilder    compilers.ElementBuilder
+	compilerParametersBuilder compilers.ParametersBuilder
+	compilerParameterBuilder  compilers.ParameterBuilder
+	compilerValueBuilder      compilers.ValueBuilder
+	additionalModules         modules.Modules
 }
 
 func createModuleWithCompiler(
@@ -29,22 +31,24 @@ func createModuleWithCompiler(
 	builder modules.Builder,
 	moduleBuilder modules.ModuleBuilder,
 	compilerBuilder compilers.Builder,
+	compilerElementsBuilder compilers.ElementsBuilder,
 	compilerElementBuilder compilers.ElementBuilder,
-	compilerCompositionBuilder compilers.CompositionBuilder,
-	compilerReplacementsBuilder compilers.ReplacementsBuilder,
-	compilerReplacementBuilder compilers.ReplacementBuilder,
+	compilerParametersBuilder compilers.ParametersBuilder,
+	compilerParameterBuilder compilers.ParameterBuilder,
+	compilerValueBuilder compilers.ValueBuilder,
 	additionalModules modules.Modules,
 ) creates_module.Application {
 	out := moduleWithCompiler{
-		compilerApplication:         compilerApplication,
-		builder:                     builder,
-		moduleBuilder:               moduleBuilder,
-		compilerBuilder:             compilerBuilder,
-		compilerElementBuilder:      compilerElementBuilder,
-		compilerCompositionBuilder:  compilerCompositionBuilder,
-		compilerReplacementsBuilder: compilerReplacementsBuilder,
-		compilerReplacementBuilder:  compilerReplacementBuilder,
-		additionalModules:           additionalModules,
+		compilerApplication:       compilerApplication,
+		builder:                   builder,
+		moduleBuilder:             moduleBuilder,
+		compilerBuilder:           compilerBuilder,
+		compilerElementsBuilder:   compilerElementsBuilder,
+		compilerElementBuilder:    compilerElementBuilder,
+		compilerParametersBuilder: compilerParametersBuilder,
+		compilerParameterBuilder:  compilerParameterBuilder,
+		compilerValueBuilder:      compilerValueBuilder,
+		additionalModules:         additionalModules,
 	}
 
 	return &out
@@ -74,22 +78,27 @@ func (app *moduleWithCompiler) compiler() ([]modules.Module, error) {
 		return nil, err
 	}
 
+	newCompilerElements, err := app.newCompilerElements()
+	if err != nil {
+		return nil, err
+	}
+
 	newCompilerElement, err := app.newCompilerElement()
 	if err != nil {
 		return nil, err
 	}
 
-	newCompilerComposition, err := app.newCompilerComposition()
+	newCompilerParameters, err := app.newCompilerParameters()
 	if err != nil {
 		return nil, err
 	}
 
-	newCompilerReplacements, err := app.newCompilerReplacements()
+	newCompilerParameter, err := app.newCompilerParameter()
 	if err != nil {
 		return nil, err
 	}
 
-	newCompilerReplacement, err := app.newCompilerReplacement()
+	newCompilerValue, err := app.newCompilerValue()
 	if err != nil {
 		return nil, err
 	}
@@ -97,10 +106,11 @@ func (app *moduleWithCompiler) compiler() ([]modules.Module, error) {
 	return []modules.Module{
 		executeCompiler,
 		newCompiler,
+		newCompilerElements,
 		newCompilerElement,
-		newCompilerComposition,
-		newCompilerReplacements,
-		newCompilerReplacement,
+		newCompilerParameters,
+		newCompilerParameter,
+		newCompilerValue,
 	}, nil
 }
 
@@ -125,7 +135,36 @@ func (app *moduleWithCompiler) newCompiler() (modules.Module, error) {
 	name := "newCompiler"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.compilerBuilder.Create()
-		if elements, ok := input["elements"].([]interface{}); ok {
+		if elements, ok := input["elements"].(compilers.Elements); ok {
+			builder.WithElements(elements)
+		}
+
+		if outputs, ok := input["outputs"].([]interface{}); ok {
+			outputsList := []string{}
+			for idx, oneOutput := range outputs {
+				if casted, ok := oneOutput.(string); ok {
+					outputsList = append(outputsList, casted)
+					continue
+				}
+
+				str := fmt.Sprintf("the element (index: %d) was expected to contain a string", idx)
+				return nil, errors.New(str)
+			}
+
+			builder.WithOutputs(outputsList)
+		}
+
+		return builder.Now()
+	}
+
+	return app.module(name, fn)
+}
+
+func (app *moduleWithCompiler) newCompilerElements() (modules.Module, error) {
+	name := "newCompilerElements"
+	fn := func(input map[string]interface{}) (interface{}, error) {
+		builder := app.compilerElementsBuilder.Create()
+		if elements, ok := input["list"].([]interface{}); ok {
 			elementsList := []compilers.Element{}
 			for idx, oneInstance := range elements {
 				if casted, ok := oneInstance.(compilers.Element); ok {
@@ -137,7 +176,7 @@ func (app *moduleWithCompiler) newCompiler() (modules.Module, error) {
 				return nil, errors.New(str)
 			}
 
-			builder.WithElements(elementsList)
+			builder.WithList(elementsList)
 		}
 
 		return builder.Now()
@@ -154,8 +193,12 @@ func (app *moduleWithCompiler) newCompilerElement() (modules.Module, error) {
 			builder.WithGrammar(grammar)
 		}
 
-		if composition, ok := input["composition"].(compilers.Composition); ok {
-			builder.WithComposition(composition)
+		if program, ok := input["program"].(programs.Program); ok {
+			builder.WithProgram(program)
+		}
+
+		if parameters, ok := input["parameters"].(compilers.Parameters); ok {
+			builder.WithParameters(parameters)
 		}
 
 		return builder.Now()
@@ -164,49 +207,23 @@ func (app *moduleWithCompiler) newCompilerElement() (modules.Module, error) {
 	return app.module(name, fn)
 }
 
-func (app *moduleWithCompiler) newCompilerComposition() (modules.Module, error) {
-	name := "newCompilerComposition"
+func (app *moduleWithCompiler) newCompilerParameters() (modules.Module, error) {
+	name := "newCompilerParameters"
 	fn := func(input map[string]interface{}) (interface{}, error) {
-		builder := app.compilerCompositionBuilder.Create()
-		if prefix, ok := input["prefix"].([]byte); ok {
-			builder.WithPrefix(prefix)
-		}
-
-		if suffix, ok := input["suffix"].([]byte); ok {
-			builder.WithSuffix(suffix)
-		}
-
-		if pattern, ok := input["pattern"].([]byte); ok {
-			builder.WithPattern(pattern)
-		}
-
-		if replacements, ok := input["replacements"].(compilers.Replacements); ok {
-			builder.WithReplacements(replacements)
-		}
-
-		return builder.Now()
-	}
-
-	return app.module(name, fn)
-}
-
-func (app *moduleWithCompiler) newCompilerReplacements() (modules.Module, error) {
-	name := "newCompilerReplacements"
-	fn := func(input map[string]interface{}) (interface{}, error) {
-		builder := app.compilerReplacementsBuilder.Create()
-		if list, ok := input["list"].([]interface{}); ok {
-			replacementsList := []compilers.Replacement{}
-			for idx, oneInstance := range list {
-				if casted, ok := oneInstance.(compilers.Replacement); ok {
-					replacementsList = append(replacementsList, casted)
+		builder := app.compilerParametersBuilder.Create()
+		if parameters, ok := input["list"].([]interface{}); ok {
+			parametersList := []compilers.Parameter{}
+			for idx, oneInstance := range parameters {
+				if casted, ok := oneInstance.(compilers.Parameter); ok {
+					parametersList = append(parametersList, casted)
 					continue
 				}
 
-				str := fmt.Sprintf("the element (index: %d) was expected to contain a Replacement instance", idx)
+				str := fmt.Sprintf("the parameter (index: %d) was expected to contain a Parameter instance", idx)
 				return nil, errors.New(str)
 			}
 
-			builder.WithList(replacementsList)
+			builder.WithList(parametersList)
 		}
 
 		return builder.Now()
@@ -215,12 +232,30 @@ func (app *moduleWithCompiler) newCompilerReplacements() (modules.Module, error)
 	return app.module(name, fn)
 }
 
-func (app *moduleWithCompiler) newCompilerReplacement() (modules.Module, error) {
-	name := "newCompilerReplacement"
+func (app *moduleWithCompiler) newCompilerParameter() (modules.Module, error) {
+	name := "newCompilerParameter"
 	fn := func(input map[string]interface{}) (interface{}, error) {
-		builder := app.compilerReplacementBuilder.Create()
-		if name, ok := input["name"].([]byte); ok {
+		builder := app.compilerParameterBuilder.Create()
+		if name, ok := input["name"].(string); ok {
 			builder.WithName(name)
+		}
+
+		if value, ok := input["value"].(compilers.Value); ok {
+			builder.WithValue(value)
+		}
+
+		return builder.Now()
+	}
+
+	return app.module(name, fn)
+}
+
+func (app *moduleWithCompiler) newCompilerValue() (modules.Module, error) {
+	name := "newCompilerValue"
+	fn := func(input map[string]interface{}) (interface{}, error) {
+		builder := app.compilerValueBuilder.Create()
+		if constant, ok := input["constant"].(interface{}); ok {
+			builder.WithConstant(constant)
 		}
 
 		if criteria, ok := input["criteria"].(criterias.Criteria); ok {
