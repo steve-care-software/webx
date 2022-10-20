@@ -251,6 +251,16 @@ func (app *grammar) Execute() (grammars.Grammar, error) {
 		return nil, err
 	}
 
+	assignmentCode, err := app.assignmentCodeToken("root")
+	if err != nil {
+		return nil, err
+	}
+
+	codeAssignment, err := app.assignmentToken("codeAssignment", variableName, equalChar, assignmentCode, endOfInstruction, nil)
+	if err != nil {
+		return nil, err
+	}
+
 	attachStr, err := app.allCharacterToken("attachStr", "attach")
 	if err != nil {
 		return nil, err
@@ -303,8 +313,9 @@ func (app *grammar) Execute() (grammars.Grammar, error) {
 		inputParameter,
 		outputParameter,
 		attach,
+		codeAssignment,
 		executeAssignment,
-		variableAssignment, // variable assignment must be after execute assignment
+		variableAssignment, // variable assignment must be after execute and code assignment
 	}
 
 	cardinality, err := app.cardinalityOneOccurence()
@@ -330,6 +341,7 @@ func (app *grammar) Execute() (grammars.Grammar, error) {
 		[]byte("$myVariable = ANY VALUE EXCEPT \\;; NON-ESCAPED SEMI-COLON;;"),
 		[]byte("attach $myDataVariable:$data $myAppVariable;;"),
 		[]byte("$myOutput = execute $myAppVariable;;"),
+		[]byte("$myCode = { $myVariable = ANY VALUE EXCEPT NON-ESCAPED SEMI-COLON;; };;"),
 	}, nil)
 
 	if err != nil {
@@ -479,6 +491,62 @@ func (app *grammar) singleLineComment(
 		slashSlashElement,
 		element,
 	}, suites)
+}
+
+func (app *grammar) assignmentCodeToken(
+	recursiveTokenName string,
+) (grammars.Token, error) {
+	cardinality, err := app.cardinalityOneOccurence()
+	if err != nil {
+		return nil, err
+	}
+
+	openBracketSuites, err := app.suites([][]byte{
+		[]byte("{"),
+	}, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	openBracket, err := app.singleCharacterToken("singleOpenBracket", "openBracket", []byte("{")[0], openBracketSuites)
+	if err != nil {
+		return nil, err
+	}
+
+	openBracketElement, err := app.elementFromToken(openBracket, cardinality)
+	if err != nil {
+		return nil, err
+	}
+
+	closeBracketSuites, err := app.suites([][]byte{
+		[]byte("}"),
+	}, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	closeBracket, err := app.singleCharacterToken("singleCloseBracket", "closeBracket", []byte("}")[0], closeBracketSuites)
+	if err != nil {
+		return nil, err
+	}
+
+	closeBracketElement, err := app.elementFromToken(closeBracket, cardinality)
+	if err != nil {
+		return nil, err
+	}
+
+	recursiveTokenElement, err := app.elementBuilder.Create().WithCardinality(cardinality).WithRecursive(recursiveTokenName).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	return app.oneLineTokenFromElements("assignmentCode", []grammars.Element{
+		openBracketElement,
+		recursiveTokenElement,
+		closeBracketElement,
+	}, nil)
 }
 
 func (app *grammar) executeToken(

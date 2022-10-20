@@ -296,6 +296,7 @@ type ElementBuilder interface {
 	WithValue(value values.Value) ElementBuilder
 	WithExternal(external External) ElementBuilder
 	WithInstance(instance Instance) ElementBuilder
+	WithRecursive(recursive string) ElementBuilder
 	Now() (Element, error)
 }
 
@@ -316,4 +317,6 @@ type ElementContent interface {
 	External() External
 	IsInstance() bool
 	Instance() Instance
+	IsRecursive() bool
+	Recursive() string
 }

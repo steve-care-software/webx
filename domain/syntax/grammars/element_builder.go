@@ -14,6 +14,7 @@ type elementBuilder struct {
 	value       values.Value
 	external    External
 	instance    Instance
+	recursive   string
 }
 
 func createElementBuilder(
@@ -25,6 +26,7 @@ func createElementBuilder(
 		value:       nil,
 		external:    nil,
 		instance:    nil,
+		recursive:   "",
 	}
 
 	return &out
@@ -61,6 +63,12 @@ func (app *elementBuilder) WithInstance(instance Instance) ElementBuilder {
 	return app
 }
 
+// WithRecursive adds a recursive to the builder
+func (app *elementBuilder) WithRecursive(recursive string) ElementBuilder {
+	app.recursive = recursive
+	return app
+}
+
 // Now builds a new Element instance
 func (app *elementBuilder) Now() (Element, error) {
 
@@ -74,17 +82,30 @@ func (app *elementBuilder) Now() (Element, error) {
 
 	var content ElementContent
 	if app.value != nil {
-		content = createElementContentWithValue(app.value)
+		hash := app.value.Hash()
+		content = createElementContentWithValue(hash, app.value)
 		data = append(data, content.Hash().Bytes())
 	}
 
 	if app.external != nil {
-		content = createElementContentWithExternalToken(app.external)
+		hash := app.external.Hash()
+		content = createElementContentWithExternalToken(hash, app.external)
 		data = append(data, content.Hash().Bytes())
 	}
 
 	if app.instance != nil {
-		content = createElementContentWithInstance(app.instance)
+		hash := app.instance.Hash()
+		content = createElementContentWithInstance(hash, app.instance)
+		data = append(data, content.Hash().Bytes())
+	}
+
+	if app.recursive != "" {
+		pHash, err := app.hashAdapter.FromBytes([]byte(app.recursive))
+		if err != nil {
+			return nil, err
+		}
+
+		content = createElementContentWithRecursive(*pHash, app.recursive)
 		data = append(data, content.Hash().Bytes())
 	}
 

@@ -40,6 +40,10 @@ func (obj *element) Name() string {
 		return obj.content.External().Name()
 	}
 
+	if obj.content.IsRecursive() {
+		return obj.content.Recursive()
+	}
+
 	return obj.content.Instance().Name()
 }
 

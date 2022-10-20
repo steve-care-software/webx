@@ -6,38 +6,54 @@ import (
 )
 
 type elementContent struct {
-	value    values.Value
-	external External
-	instance Instance
+	hash      hash.Hash
+	value     values.Value
+	external  External
+	instance  Instance
+	recursive string
 }
 
 func createElementContentWithValue(
+	hash hash.Hash,
 	value values.Value,
 ) ElementContent {
-	return createElementContentInternally(value, nil, nil)
+	return createElementContentInternally(hash, value, nil, nil, "")
 }
 
 func createElementContentWithExternalToken(
+	hash hash.Hash,
 	external External,
 ) ElementContent {
-	return createElementContentInternally(nil, external, nil)
+	return createElementContentInternally(hash, nil, external, nil, "")
 }
 
 func createElementContentWithInstance(
+	hash hash.Hash,
 	instance Instance,
 ) ElementContent {
-	return createElementContentInternally(nil, nil, instance)
+	return createElementContentInternally(hash, nil, nil, instance, "")
+}
+
+func createElementContentWithRecursive(
+	hash hash.Hash,
+	recursive string,
+) ElementContent {
+	return createElementContentInternally(hash, nil, nil, nil, recursive)
 }
 
 func createElementContentInternally(
+	hash hash.Hash,
 	value values.Value,
 	external External,
 	instance Instance,
+	recursive string,
 ) ElementContent {
 	out := elementContent{
-		value:    value,
-		external: external,
-		instance: instance,
+		hash:      hash,
+		value:     value,
+		external:  external,
+		instance:  instance,
+		recursive: recursive,
 	}
 
 	return &out
@@ -45,15 +61,7 @@ func createElementContentInternally(
 
 // Hash returns the hash
 func (obj *elementContent) Hash() hash.Hash {
-	if obj.IsValue() {
-		return obj.Value().Hash()
-	}
-
-	if obj.IsExternal() {
-		return obj.External().Hash()
-	}
-
-	return obj.Instance().Hash()
+	return obj.hash
 }
 
 // IsValue returns true if there is a value, false otherwise
@@ -84,4 +92,14 @@ func (obj *elementContent) IsInstance() bool {
 // Instance returns the instance, if any
 func (obj *elementContent) Instance() Instance {
 	return obj.instance
+}
+
+// IsRecursive returns true if there is a recursive token, false otherwise
+func (obj *elementContent) IsRecursive() bool {
+	return obj.recursive != ""
+}
+
+// Recursive returns the recursive, if any
+func (obj *elementContent) Recursive() string {
+	return obj.recursive
 }
