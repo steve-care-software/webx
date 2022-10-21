@@ -1,39 +1,11 @@
 package programs
 
 import (
-	"github.com/steve-care-software/syntax/applications/engines/criterias"
-	grammar_application "github.com/steve-care-software/syntax/applications/engines/grammars"
 	"github.com/steve-care-software/syntax/domain/syntax/commands"
 	"github.com/steve-care-software/syntax/domain/syntax/grammars"
-	"github.com/steve-care-software/syntax/domain/syntax/programs"
-	"github.com/steve-care-software/syntax/domain/syntax/programs/applications"
 	"github.com/steve-care-software/syntax/domain/syntax/programs/applications/modules"
 	"github.com/steve-care-software/syntax/domain/syntax/programs/outputs"
 )
-
-// NewBuilder creates a new builder
-func NewBuilder() Builder {
-	grammarApp := grammar_application.NewApplication()
-	criteriaApp := criterias.NewApplication()
-	builder := programs.NewBuilder()
-	outputBuilder := outputs.NewBuilder()
-	applicationBuilder := applications.NewBuilder()
-	attachmentsBuilder := applications.NewAttachmentsBuilder()
-	attachmentBuilder := applications.NewAttachmentBuilder()
-	assignmentBuilder := applications.NewAssignmentBuilder()
-	valueBuilder := applications.NewValueBuilder()
-	return createBuilder(
-		grammarApp,
-		criteriaApp,
-		builder,
-		outputBuilder,
-		applicationBuilder,
-		attachmentsBuilder,
-		attachmentBuilder,
-		assignmentBuilder,
-		valueBuilder,
-	)
-}
 
 // Builder represents an application builder
 type Builder interface {
@@ -46,3 +18,8 @@ type Builder interface {
 type Application interface {
 	Execute(grammar grammars.Grammar, command commands.Command, script []byte) (outputs.Output, error)
 }
+
+/*
+	Replace all inputs of the execute by instructions
+	The output is only a program instance (no remaining, therefore no need for output)
+*/

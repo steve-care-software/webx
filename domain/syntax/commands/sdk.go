@@ -24,6 +24,11 @@ func NewVariableAssignmentBuilder() VariableAssignmentBuilder {
 	return createVariableAssignmentBuilder()
 }
 
+// NewValueBuilder creates a new value builder
+func NewValueBuilder() ValueBuilder {
+	return createValueBuilder()
+}
+
 // NewParameterDeclarationBuilder creates a new parameter declaration builder
 func NewParameterDeclarationBuilder() ParameterDeclarationBuilder {
 	return createParameterDeclarationBuilder()
@@ -78,16 +83,16 @@ type Execution interface {
 // AttachmentBuilder represents an attachment builder
 type AttachmentBuilder interface {
 	Create() AttachmentBuilder
-	WithGlobal(global criterias.Criteria) AttachmentBuilder
-	WithLocal(local criterias.Criteria) AttachmentBuilder
+	WithCurrent(current criterias.Criteria) AttachmentBuilder
+	WithTarget(target criterias.Criteria) AttachmentBuilder
 	WithApplication(application criterias.Criteria) AttachmentBuilder
 	Now() (Attachment, error)
 }
 
 // Attachment represents an attachment
 type Attachment interface {
-	Global() criterias.Criteria
-	Local() criterias.Criteria
+	Current() criterias.Criteria
+	Target() criterias.Criteria
 	Application() criterias.Criteria
 }
 
@@ -95,14 +100,32 @@ type Attachment interface {
 type VariableAssignmentBuilder interface {
 	Create() VariableAssignmentBuilder
 	WithAssignee(assignee criterias.Criteria) VariableAssignmentBuilder
-	WithValue(value criterias.Criteria) VariableAssignmentBuilder
+	WithValue(value Value) VariableAssignmentBuilder
 	Now() (VariableAssignment, error)
 }
 
 // VariableAssignment represents a variable assignment
 type VariableAssignment interface {
 	Assignee() criterias.Criteria
-	Value() criterias.Criteria
+	Value() Value
+}
+
+// ValueBuilder represents a value builder
+type ValueBuilder interface {
+	Create() ValueBuilder
+	WithVariable(variable criterias.Criteria) ValueBuilder
+	WithConstant(constant criterias.Criteria) ValueBuilder
+	WithInstructions(instructions criterias.Criteria) ValueBuilder
+	WithExecution(execution criterias.Criteria) ValueBuilder
+	Now() (Value, error)
+}
+
+// Value represents a value
+type Value interface {
+	Variable() criterias.Criteria
+	Constant() criterias.Criteria
+	Instructions() criterias.Criteria
+	Execution() criterias.Criteria
 }
 
 // ParameterDeclarationBuilder represents a parameter declaration builder

@@ -3,33 +3,33 @@ package commands
 import "github.com/steve-care-software/syntax/domain/syntax/criterias"
 
 type attachment struct {
-	global      criterias.Criteria
-	local       criterias.Criteria
+	current     criterias.Criteria
+	target      criterias.Criteria
 	application criterias.Criteria
 }
 
 func createAttachment(
-	global criterias.Criteria,
-	local criterias.Criteria,
+	current criterias.Criteria,
+	target criterias.Criteria,
 	application criterias.Criteria,
 ) Attachment {
 	out := attachment{
-		global:      global,
-		local:       local,
+		current:     current,
+		target:      target,
 		application: application,
 	}
 
 	return &out
 }
 
-// Global returns the global
-func (obj *attachment) Global() criterias.Criteria {
-	return obj.global
+// Current returns the current
+func (obj *attachment) Current() criterias.Criteria {
+	return obj.current
 }
 
-// Local returns the local
-func (obj *attachment) Local() criterias.Criteria {
-	return obj.local
+// Target returns the target
+func (obj *attachment) Target() criterias.Criteria {
+	return obj.target
 }
 
 // Application returns the application

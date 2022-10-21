@@ -7,15 +7,15 @@ import (
 )
 
 type attachmentBuilder struct {
-	global      criterias.Criteria
-	local       criterias.Criteria
+	current     criterias.Criteria
+	target      criterias.Criteria
 	application criterias.Criteria
 }
 
 func createAttachmentBuilder() AttachmentBuilder {
 	out := attachmentBuilder{
-		global:      nil,
-		local:       nil,
+		current:     nil,
+		target:      nil,
 		application: nil,
 	}
 
@@ -27,15 +27,15 @@ func (app *attachmentBuilder) Create() AttachmentBuilder {
 	return createAttachmentBuilder()
 }
 
-// WithGlobal adds a global criteria to the builder
-func (app *attachmentBuilder) WithGlobal(global criterias.Criteria) AttachmentBuilder {
-	app.global = global
+// WithCurrent adds a current criteria to the builder
+func (app *attachmentBuilder) WithCurrent(current criterias.Criteria) AttachmentBuilder {
+	app.current = current
 	return app
 }
 
-// WithLocal adds a local criteria to the builder
-func (app *attachmentBuilder) WithLocal(local criterias.Criteria) AttachmentBuilder {
-	app.local = local
+// WithTarget adds a target criteria to the builder
+func (app *attachmentBuilder) WithTarget(target criterias.Criteria) AttachmentBuilder {
+	app.target = target
 	return app
 }
 
@@ -47,11 +47,11 @@ func (app *attachmentBuilder) WithApplication(application criterias.Criteria) At
 
 // Now builds a new Attachment instance
 func (app *attachmentBuilder) Now() (Attachment, error) {
-	if app.global == nil {
-		return nil, errors.New("the global criteria is mandatory in order to build an Attachment instance")
+	if app.current == nil {
+		return nil, errors.New("the current criteria is mandatory in order to build an Attachment instance")
 	}
 
-	if app.local == nil {
+	if app.target == nil {
 		return nil, errors.New("the local criteria is mandatory in order to build an Attachment instance")
 	}
 
@@ -59,5 +59,5 @@ func (app *attachmentBuilder) Now() (Attachment, error) {
 		return nil, errors.New("the application criteria is mandatory in order to build an Attachment instance")
 	}
 
-	return createAttachment(app.global, app.local, app.application), nil
+	return createAttachment(app.current, app.target, app.application), nil
 }

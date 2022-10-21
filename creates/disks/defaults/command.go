@@ -2,8 +2,8 @@ package defaults
 
 import (
 	creates_command "github.com/steve-care-software/syntax/applications/engines/creates/commands"
-	"github.com/steve-care-software/syntax/domain/syntax/criterias"
 	"github.com/steve-care-software/syntax/domain/syntax/commands"
+	"github.com/steve-care-software/syntax/domain/syntax/criterias"
 )
 
 type command struct {
@@ -131,12 +131,12 @@ func (app *command) executionApplicationName() (criterias.Criteria, error) {
 }
 
 func (app *command) attachment() (commands.Attachment, error) {
-	global, err := app.attachmentVariableName(0)
+	current, err := app.attachmentVariableName(0)
 	if err != nil {
 		return nil, err
 	}
 
-	local, err := app.attachmentVariableName(1)
+	target, err := app.attachmentVariableName(1)
 	if err != nil {
 		return nil, err
 	}
@@ -146,7 +146,7 @@ func (app *command) attachment() (commands.Attachment, error) {
 		return nil, err
 	}
 
-	return app.attachmentBuilder.Create().WithGlobal(global).WithLocal(local).WithApplication(application).Now()
+	return app.attachmentBuilder.Create().WithCurrent(current).WithTarget(target).WithApplication(application).Now()
 }
 
 func (app *command) attachmentVariableName(variableIndex uint) (criterias.Criteria, error) {
@@ -164,7 +164,7 @@ func (app *command) attachmentVariableName(variableIndex uint) (criterias.Criter
 }
 
 func (app *command) variableAssignment() (commands.VariableAssignment, error) {
-	value, err := app.variableAssignmentValue()
+	value, err := app.value()
 	if err != nil {
 		return nil, err
 	}
@@ -191,8 +191,8 @@ func (app *command) variableAssignmentAssignee() (criterias.Criteria, error) {
 	return app.criteriaBuilder.Create().WithName("root").WithIndex(0).WithChild(assignment).Now()
 }
 
-func (app *command) variableAssignmentValue() (criterias.Criteria, error) {
-	assignee, err := app.criteriaBuilder.Create().WithName("assignmentValue").WithIndex(0).Now()
+func (app *command) value() (commands.Value, error) {
+	/*assignee, err := app.criteriaBuilder.Create().WithName("assignmentValue").WithIndex(0).Now()
 	if err != nil {
 		return nil, err
 	}
@@ -202,7 +202,24 @@ func (app *command) variableAssignmentValue() (criterias.Criteria, error) {
 		return nil, err
 	}
 
-	return app.criteriaBuilder.Create().WithName("root").WithIndex(0).WithChild(assignment).Now()
+	return app.criteriaBuilder.Create().WithName("root").WithIndex(0).WithChild(assignment).Now()*/
+	return nil, nil
+}
+
+func (app *command) valueVariable() (criterias.Criteria, error) {
+	return nil, nil
+}
+
+func (app *command) valueConstant() (criterias.Criteria, error) {
+	return nil, nil
+}
+
+func (app *command) valueInstructions() (criterias.Criteria, error) {
+	return nil, nil
+}
+
+func (app *command) valueExecution() (criterias.Criteria, error) {
+	return nil, nil
 }
 
 func (app *command) parameterDeclaration() (commands.ParameterDeclaration, error) {

@@ -215,16 +215,6 @@ func (app *grammar) Execute() (grammars.Grammar, error) {
 		return nil, err
 	}
 
-	escapeChar, err := app.allCharacterToken("escapeChar", "\\")
-	if err != nil {
-		return nil, err
-	}
-
-	assignmentValue, err := app.assignmentValueToken(escapeChar, endOfInstruction)
-	if err != nil {
-		return nil, err
-	}
-
 	equalSuites, err := app.suites([][]byte{
 		[]byte("="),
 	}, nil)
@@ -234,29 +224,6 @@ func (app *grammar) Execute() (grammars.Grammar, error) {
 	}
 
 	equalChar, err := app.singleCharacterToken("singleEqualChar", "equalChar", []byte("=")[0], equalSuites)
-	if err != nil {
-		return nil, err
-	}
-
-	variableAssignmentSuites, err := app.suites([][]byte{
-		[]byte("$myVariable = ANY VALUE EXCEPT NON-ESCAPED SEMI-COLON;;"),
-	}, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	variableAssignment, err := app.assignmentToken("variableAssignment", variableName, equalChar, assignmentValue, endOfInstruction, variableAssignmentSuites)
-	if err != nil {
-		return nil, err
-	}
-
-	assignmentCode, err := app.assignmentCodeToken("root")
-	if err != nil {
-		return nil, err
-	}
-
-	codeAssignment, err := app.assignmentToken("codeAssignment", variableName, equalChar, assignmentCode, endOfInstruction, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -284,25 +251,7 @@ func (app *grammar) Execute() (grammars.Grammar, error) {
 		return nil, err
 	}
 
-	executeStr, err := app.allCharacterToken("executeStr", "execute")
-	if err != nil {
-		return nil, err
-	}
-
-	execute, err := app.executeToken(executeStr, variableName)
-	if err != nil {
-		return nil, err
-	}
-
-	executeAssignmentSuites, err := app.suites([][]byte{
-		[]byte("$myOutput = execute $myAppVariable;;"),
-	}, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	executeAssignment, err := app.assignmentToken("executeAssignment", variableName, equalChar, execute, endOfInstruction, executeAssignmentSuites)
+	assignableValue, err := app.valueToken(variableName, equalChar, endOfInstruction)
 	if err != nil {
 		return nil, err
 	}
@@ -313,9 +262,7 @@ func (app *grammar) Execute() (grammars.Grammar, error) {
 		inputParameter,
 		outputParameter,
 		attach,
-		codeAssignment,
-		executeAssignment,
-		variableAssignment, // variable assignment must be after execute and code assignment
+		assignableValue,
 	}
 
 	cardinality, err := app.cardinalityOneOccurence()
@@ -342,6 +289,7 @@ func (app *grammar) Execute() (grammars.Grammar, error) {
 		[]byte("attach $myDataVariable:$data $myAppVariable;;"),
 		[]byte("$myOutput = execute $myAppVariable;;"),
 		[]byte("$myCode = { $myVariable = ANY VALUE EXCEPT NON-ESCAPED SEMI-COLON;; };;"),
+		[]byte("$myValue = $myOtherVariable;;"),
 	}, nil)
 
 	if err != nil {
@@ -359,6 +307,157 @@ func (app *grammar) Execute() (grammars.Grammar, error) {
 	}
 
 	return app.builder.Create().WithRoot(root).WithChannels(channels).Now()
+}
+
+func (app *grammar) valueToken(
+	variableName grammars.Token,
+	equalChar grammars.Token,
+	endOfInstruction grammars.Token,
+) (grammars.Token, error) {
+	cardinality, err := app.cardinalityOneOccurence()
+	if err != nil {
+		return nil, err
+	}
+
+	constantToken, err := app.valueConstantToken(variableName, equalChar, endOfInstruction)
+	if err != nil {
+		return nil, err
+	}
+
+	constantElement, err := app.elementFromToken(constantToken, cardinality)
+	if err != nil {
+		return nil, err
+	}
+
+	variableToken, err := app.valueVariableToken(variableName, equalChar, endOfInstruction)
+	if err != nil {
+		return nil, err
+	}
+
+	variableElement, err := app.elementFromToken(variableToken, cardinality)
+	if err != nil {
+		return nil, err
+	}
+
+	instructionsToken, err := app.valueInstructionsToken(variableName, equalChar, endOfInstruction)
+	if err != nil {
+		return nil, err
+	}
+
+	instructionElement, err := app.elementFromToken(instructionsToken, cardinality)
+	if err != nil {
+		return nil, err
+	}
+
+	executionToken, err := app.valueExecutionToken(variableName, equalChar, endOfInstruction)
+	if err != nil {
+		return nil, err
+	}
+
+	executionElement, err := app.elementFromToken(executionToken, cardinality)
+	if err != nil {
+		return nil, err
+	}
+
+	valueSuites, err := app.suites([][]byte{
+		[]byte("$myVariable = ANY VALUE EXCEPT \\;; NON-ESCAPED SEMI-COLON;;"),
+		[]byte("$myOutput = execute $myAppVariable;;"),
+		[]byte("$myCode = { $myVariable = ANY VALUE EXCEPT NON-ESCAPED SEMI-COLON;; };;"),
+		[]byte("$myValue = $myOtherVariable;;"),
+	}, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return app.oneLinePerElement("assignableValue", []grammars.Element{
+		constantElement,
+		variableElement,
+		instructionElement,
+		executionElement,
+	}, valueSuites)
+}
+
+func (app *grammar) valueConstantToken(
+	variableName grammars.Token,
+	equalChar grammars.Token,
+	endOfInstruction grammars.Token,
+) (grammars.Token, error) {
+	escapeChar, err := app.allCharacterToken("escapeChar", "\\")
+	if err != nil {
+		return nil, err
+	}
+
+	assignmentValue, err := app.assignmentValueToken(escapeChar, endOfInstruction)
+	if err != nil {
+		return nil, err
+	}
+
+	variableAssignmentSuites, err := app.suites([][]byte{
+		[]byte("$myVariable = ANY VALUE EXCEPT NON-ESCAPED SEMI-COLON;;"),
+	}, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return app.assignmentToken("valueConstant", variableName, equalChar, assignmentValue, endOfInstruction, variableAssignmentSuites)
+}
+
+func (app *grammar) valueVariableToken(
+	variableName grammars.Token,
+	equalChar grammars.Token,
+	endOfInstruction grammars.Token,
+) (grammars.Token, error) {
+	variableAssignmentSuites, err := app.suites([][]byte{
+		[]byte("$myVariable = $other;;"),
+	}, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return app.assignmentToken("valueVariable", variableName, equalChar, variableName, endOfInstruction, variableAssignmentSuites)
+
+}
+
+func (app *grammar) valueInstructionsToken(
+	variableName grammars.Token,
+	equalChar grammars.Token,
+	endOfInstruction grammars.Token,
+) (grammars.Token, error) {
+	assignmentCode, err := app.assignmentCodeToken("root")
+	if err != nil {
+		return nil, err
+	}
+
+	return app.assignmentToken("codeAssignment", variableName, equalChar, assignmentCode, endOfInstruction, nil)
+}
+
+func (app *grammar) valueExecutionToken(
+	variableName grammars.Token,
+	equalChar grammars.Token,
+	endOfInstruction grammars.Token,
+) (grammars.Token, error) {
+	executeStr, err := app.allCharacterToken("executeStr", "execute")
+	if err != nil {
+		return nil, err
+	}
+
+	execute, err := app.executeToken(executeStr, variableName)
+	if err != nil {
+		return nil, err
+	}
+
+	executeAssignmentSuites, err := app.suites([][]byte{
+		[]byte("$myOutput = execute $myAppVariable;;"),
+	}, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return app.assignmentToken("valueExecution", variableName, equalChar, execute, endOfInstruction, executeAssignmentSuites)
 }
 
 func (app *grammar) channels() (grammars.Channels, error) {

@@ -30,3 +30,7 @@ func NewApplication(
 type Application interface {
 	Execute(compiler compilers.Compiler, script []byte) (outputs.Output, error)
 }
+
+/*
+	The output should contains instructions + remaining (optional)
+*/

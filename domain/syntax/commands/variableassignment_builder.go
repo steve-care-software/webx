@@ -8,7 +8,7 @@ import (
 
 type variableAssignmentBuilder struct {
 	assignee criterias.Criteria
-	value    criterias.Criteria
+	value    Value
 }
 
 func createVariableAssignmentBuilder() VariableAssignmentBuilder {
@@ -32,7 +32,7 @@ func (app *variableAssignmentBuilder) WithAssignee(assignee criterias.Criteria) 
 }
 
 // WithValue adds a value to the builder
-func (app *variableAssignmentBuilder) WithValue(value criterias.Criteria) VariableAssignmentBuilder {
+func (app *variableAssignmentBuilder) WithValue(value Value) VariableAssignmentBuilder {
 	app.value = value
 	return app
 }

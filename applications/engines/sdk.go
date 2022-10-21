@@ -15,22 +15,22 @@ func NewApplication(createApp creates.Application) Application {
 	grammarApp := grammars.NewApplication()
 	interpreterApp := interpreters.NewApplication()
 
-	modules, err := createApp.Modules().Execute()
+	/*modules, err := createApp.Modules().Execute()
 	if err != nil {
 		panic(err)
-	}
+	}*/
 
-	programApp, err := programs.NewBuilder().Create().WithModules(modules).Now()
+	/*programApp, err := programs.NewBuilder().Create().WithModules(modules).Now()
 	if err != nil {
 		panic(err)
-	}
+	}*/
 
 	return createApplication(
 		createApp,
 		criteriaApp,
 		grammarApp,
 		interpreterApp,
-		programApp,
+		nil,
 	)
 }
 

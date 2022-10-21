@@ -334,14 +334,14 @@ func (app *application) attachment(
 	inVariables map[string]applications.Assignment,
 	inApplications map[string]applications.Application,
 ) (map[string]applications.Application, error) {
-	globalCriteria := attachment.Global()
-	global, err := app.value(tree, globalCriteria, inParameters, inVariables, inApplications)
+	currentCriteria := attachment.Current()
+	current, err := app.value(tree, currentCriteria, inParameters, inVariables, inApplications)
 	if err != nil {
 		return nil, nil
 	}
 
-	localCriteria := attachment.Local()
-	local, err := app.criteriaApp.Execute(localCriteria, tree)
+	targetCriteria := attachment.Target()
+	target, err := app.criteriaApp.Execute(targetCriteria, tree)
 	if err != nil {
 		return nil, nil
 	}
@@ -354,8 +354,8 @@ func (app *application) attachment(
 
 	applicationName := string(application)
 	if appIns, ok := inApplications[applicationName]; ok {
-		localStr := string(local)
-		attachment, err := app.attachmentBuilder.Create().WithValue(global).WithLocal(localStr).Now()
+		targetStr := string(target)
+		attachment, err := app.attachmentBuilder.Create().WithValue(current).WithLocal(targetStr).Now()
 		if err != nil {
 			return nil, err
 		}
