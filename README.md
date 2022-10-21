@@ -1,5 +1,5 @@
-# Syntax
-The syntax application makes it easy to create a grammar, use that grammar to extract an AST from data, create criterias to extract data from an AST, combine AST's, create a compiler to compile a custom script to a program and/or execute a program and receive its output.
+# WebX
+The webX application makes it easy to create a grammar, use that grammar to extract an AST from data, create criterias to extract data from an AST, combine AST's, create a compiler to compile a custom script to a program and/or execute a program and receive its output.
 
 ## VM syntax
     // module declaration:
@@ -22,3 +22,6 @@ The syntax application makes it easy to create a grammar, use that grammar to ex
 
     // execute module application and return its output:
     $myOutput = execute $myAppVariable;;
+
+# Legit DAO
+The documentation of the Legit DAO is coming soon
