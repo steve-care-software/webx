@@ -1,10 +1,10 @@
 package defaults
 
 import (
-	creates "github.com/steve-care-software/syntax/applications/engines/creates/grammars"
-	"github.com/steve-care-software/syntax/domain/syntax/grammars"
-	"github.com/steve-care-software/syntax/domain/syntax/grammars/cardinalities"
-	grammar_values "github.com/steve-care-software/syntax/domain/syntax/grammars/values"
+	creates "github.com/steve-care-software/webx/applications/creates/grammars"
+	"github.com/steve-care-software/webx/domain/grammars"
+	"github.com/steve-care-software/webx/domain/grammars/cardinalities"
+	grammar_values "github.com/steve-care-software/webx/domain/grammars/values"
 )
 
 type grammar struct {

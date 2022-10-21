@@ -1,22 +1,22 @@
 package defaults
 
 import (
-	compiler_applications "github.com/steve-care-software/syntax/applications/engines/compilers"
-	"github.com/steve-care-software/syntax/applications/engines/creates"
-	identity_applications "github.com/steve-care-software/syntax/applications/engines/identities"
-	"github.com/steve-care-software/syntax/domain/syntax/commands"
-	"github.com/steve-care-software/syntax/domain/syntax/compilers"
-	"github.com/steve-care-software/syntax/domain/syntax/criterias"
-	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/encryptions/keys"
-	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/signatures"
-	"github.com/steve-care-software/syntax/domain/syntax/grammars"
-	"github.com/steve-care-software/syntax/domain/syntax/grammars/cardinalities"
-	"github.com/steve-care-software/syntax/domain/syntax/grammars/values"
-	grammar_values "github.com/steve-care-software/syntax/domain/syntax/grammars/values"
-	"github.com/steve-care-software/syntax/domain/syntax/identities"
-	"github.com/steve-care-software/syntax/domain/syntax/identities/modifications"
-	"github.com/steve-care-software/syntax/domain/syntax/programs/applications/modules"
-	"github.com/steve-care-software/syntax/infrastructure/disks"
+	compiler_applications "github.com/steve-care-software/webx/applications/compilers"
+	"github.com/steve-care-software/webx/applications/creates"
+	identity_applications "github.com/steve-care-software/webx/applications/identities"
+	"github.com/steve-care-software/webx/domain/commands"
+	"github.com/steve-care-software/webx/domain/compilers"
+	"github.com/steve-care-software/webx/domain/criterias"
+	"github.com/steve-care-software/webx/domain/cryptography/encryptions/keys"
+	"github.com/steve-care-software/webx/domain/cryptography/signatures"
+	"github.com/steve-care-software/webx/domain/grammars"
+	"github.com/steve-care-software/webx/domain/grammars/cardinalities"
+	"github.com/steve-care-software/webx/domain/grammars/values"
+	grammar_values "github.com/steve-care-software/webx/domain/grammars/values"
+	"github.com/steve-care-software/webx/domain/identities"
+	"github.com/steve-care-software/webx/domain/identities/modifications"
+	"github.com/steve-care-software/webx/domain/programs/applications/modules"
+	"github.com/steve-care-software/webx/infrastructure/disks"
 )
 
 // NewApplication creates a new create application

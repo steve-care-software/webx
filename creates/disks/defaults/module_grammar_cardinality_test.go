@@ -3,8 +3,8 @@ package defaults
 import (
 	"testing"
 
-	"github.com/steve-care-software/syntax/applications/engines"
-	"github.com/steve-care-software/syntax/domain/syntax/grammars/cardinalities"
+	"github.com/steve-care-software/webx/applications"
+	"github.com/steve-care-software/webx/domain/grammars/cardinalities"
 )
 
 func TestModule_newGrammarCardinality_withMin_withoutMax_Success(t *testing.T) {

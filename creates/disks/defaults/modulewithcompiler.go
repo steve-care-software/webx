@@ -4,13 +4,13 @@ import (
 	"errors"
 	"fmt"
 
-	compiler_applications "github.com/steve-care-software/syntax/applications/engines/compilers"
-	creates_module "github.com/steve-care-software/syntax/applications/engines/creates/modules"
-	"github.com/steve-care-software/syntax/domain/syntax/compilers"
-	"github.com/steve-care-software/syntax/domain/syntax/criterias"
-	"github.com/steve-care-software/syntax/domain/syntax/grammars"
-	"github.com/steve-care-software/syntax/domain/syntax/programs"
-	"github.com/steve-care-software/syntax/domain/syntax/programs/applications/modules"
+	compiler_applications "github.com/steve-care-software/webx/applications/compilers"
+	creates_module "github.com/steve-care-software/webx/applications/creates/modules"
+	"github.com/steve-care-software/webx/domain/compilers"
+	"github.com/steve-care-software/webx/domain/criterias"
+	"github.com/steve-care-software/webx/domain/grammars"
+	"github.com/steve-care-software/webx/domain/programs"
+	"github.com/steve-care-software/webx/domain/programs/applications/modules"
 )
 
 type moduleWithCompiler struct {

@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/steve-care-software/syntax/applications/engines"
-	"github.com/steve-care-software/syntax/domain/syntax/grammars/values"
+	"github.com/steve-care-software/webx/applications"
+	"github.com/steve-care-software/webx/domain/grammars/values"
 )
 
 func TestModule_newGrammarValue_Success(t *testing.T) {

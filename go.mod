@@ -1,4 +1,4 @@
-module github.com/steve-care-software/syntax
+module github.com/steve-care-software/webx
 
 go 1.16
 

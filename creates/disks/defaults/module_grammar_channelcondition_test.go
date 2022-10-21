@@ -3,8 +3,8 @@ package defaults
 import (
 	"testing"
 
-	"github.com/steve-care-software/syntax/applications/engines"
-	"github.com/steve-care-software/syntax/domain/syntax/grammars"
+	engines "github.com/steve-care-software/webx/applications"
+	"github.com/steve-care-software/webx/domain/grammars"
 )
 
 func TestModule_newGrammarChannelCondition_withPrevious_withNext_Success(t *testing.T) {

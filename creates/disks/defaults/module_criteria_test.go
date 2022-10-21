@@ -3,8 +3,8 @@ package defaults
 import (
 	"testing"
 
-	"github.com/steve-care-software/syntax/applications/engines"
-	"github.com/steve-care-software/syntax/domain/syntax/criterias"
+	engines "github.com/steve-care-software/webx/applications"
+	"github.com/steve-care-software/webx/domain/criterias"
 )
 
 func TestModule_newCriteria_Success(t *testing.T) {

@@ -1,23 +1,46 @@
-package applications
+package engines
 
 import (
-	"github.com/steve-care-software/syntax/applications/actions"
-	"github.com/steve-care-software/syntax/applications/languages"
-	"github.com/steve-care-software/syntax/applications/modules"
+	"github.com/steve-care-software/webx/applications/creates"
+	"github.com/steve-care-software/webx/applications/criterias"
+	"github.com/steve-care-software/webx/applications/grammars"
+	"github.com/steve-care-software/webx/applications/interpreters"
+	"github.com/steve-care-software/webx/applications/programs"
+	"github.com/steve-care-software/webx/domain/compilers"
 )
 
-// Builder represents an application builder
-type Builder interface {
-	Create() Builder
-	WithAction(action actions.Application) Builder
-	WithLanguage(language languages.Application) Builder
-	WithModule(module modules.Application) Builder
-	Now() (Application, error)
+// NewApplication creates a new application
+func NewApplication(createApp creates.Application) Application {
+	criteriaApp := criterias.NewApplication()
+	grammarApp := grammars.NewApplication()
+	interpreterApp := interpreters.NewApplication()
+
+	/*modules, err := createApp.Modules().Execute()
+	if err != nil {
+		panic(err)
+	}*/
+
+	/*programApp, err := programs.NewBuilder().Create().WithModules(modules).Now()
+	if err != nil {
+		panic(err)
+	}*/
+
+	return createApplication(
+		createApp,
+		criteriaApp,
+		grammarApp,
+		interpreterApp,
+		nil,
+	)
 }
 
-// Application represents the syntax application
+// Application represents an engine application
 type Application interface {
-	Action() actions.Application
-	Language() languages.Application
-	Module() modules.Application
+	Create() creates.Application
+	Criteria() criterias.Application
+	Grammar() grammars.Application
+	Interpreter() interpreters.Application
+	Program() programs.Application
+	ParseThenInterpret(input map[string]interface{}, script []byte) (map[string]interface{}, []byte, error)
+	CompileThenParseThenInterpret(input map[string]interface{}, compiler compilers.Compiler, script []byte) (map[string]interface{}, []byte, []byte, error)
 }

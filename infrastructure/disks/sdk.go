@@ -1,8 +1,8 @@
 package disks
 
 import (
-	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/encryptions/passwords"
-	"github.com/steve-care-software/syntax/domain/syntax/identities"
+	"github.com/steve-care-software/webx/domain/cryptography/encryptions/passwords"
+	"github.com/steve-care-software/webx/domain/identities"
 )
 
 // NewIdentityRepository creates a new identity repository

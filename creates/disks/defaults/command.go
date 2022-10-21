@@ -1,9 +1,9 @@
 package defaults
 
 import (
-	creates_command "github.com/steve-care-software/syntax/applications/engines/creates/commands"
-	"github.com/steve-care-software/syntax/domain/syntax/commands"
-	"github.com/steve-care-software/syntax/domain/syntax/criterias"
+	creates_command "github.com/steve-care-software/webx/applications/creates/commands"
+	"github.com/steve-care-software/webx/domain/commands"
+	"github.com/steve-care-software/webx/domain/criterias"
 )
 
 type command struct {

@@ -1,11 +1,11 @@
 package daemons
 
-import "github.com/steve-care-software/syntax/domain/identity"
+import "github.com/steve-care-software/webx/domain/identities"
 
 // Builder represents a daemon application
 type Builder interface {
 	Create() Builder
-	WithIdentity(identity identity.Identity) Builder
+	WithIdentity(identity identities.Identity) Builder
 	Now() (Daemon, error)
 }
 

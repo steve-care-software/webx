@@ -3,10 +3,10 @@ package jsons
 import (
 	"encoding/json"
 
-	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/encryptions/keys"
-	"github.com/steve-care-software/syntax/domain/syntax/databases/cryptography/signatures"
-	"github.com/steve-care-software/syntax/domain/syntax/identities"
-	"github.com/steve-care-software/syntax/domain/syntax/identities/modifications"
+	"github.com/steve-care-software/webx/domain/cryptography/encryptions/keys"
+	"github.com/steve-care-software/webx/domain/cryptography/signatures"
+	"github.com/steve-care-software/webx/domain/identities"
+	"github.com/steve-care-software/webx/domain/identities/modifications"
 )
 
 // ToIdentity creates a new identity instance from json

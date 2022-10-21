@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/steve-care-software/syntax/applications/engines/grammars"
+	"github.com/steve-care-software/webx/applications/grammars"
 )
 
 func TestGrammar_Success(t *testing.T) {
