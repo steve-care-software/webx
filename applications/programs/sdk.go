@@ -1,11 +1,30 @@
 package programs
 
 import (
-	"github.com/steve-care-software/webx/domain/commands"
-	"github.com/steve-care-software/webx/domain/grammars"
-	"github.com/steve-care-software/webx/domain/programs/applications/modules"
-	"github.com/steve-care-software/webx/domain/programs/outputs"
+	"github.com/steve-care-software/webx/domain/instructions"
+	"github.com/steve-care-software/webx/domain/programs"
+	"github.com/steve-care-software/webx/domain/programs/modules"
 )
+
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	builder := programs.NewBuilder()
+	instructionBuilder := programs.NewInstructionBuilder()
+	applicationBuilder := programs.NewApplicationBuilder()
+	attachmentsBuilder := programs.NewAttachmentsBuilder()
+	attachmentBuilder := programs.NewAttachmentBuilder()
+	assignmentBuilder := programs.NewAssignmentBuilder()
+	valueBuilder := programs.NewValueBuilder()
+	return createBuilder(
+		builder,
+		instructionBuilder,
+		applicationBuilder,
+		attachmentsBuilder,
+		attachmentBuilder,
+		assignmentBuilder,
+		valueBuilder,
+	)
+}
 
 // Builder represents an application builder
 type Builder interface {
@@ -16,10 +35,5 @@ type Builder interface {
 
 // Application represents a program application
 type Application interface {
-	Execute(grammar grammars.Grammar, command commands.Command, script []byte) (outputs.Output, error)
+	Execute(instructions instructions.Instructions) (programs.Program, error)
 }
-
-/*
-	Replace all inputs of the execute by instructions
-	The output is only a program instance (no remaining, therefore no need for output)
-*/

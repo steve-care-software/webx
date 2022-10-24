@@ -1,8 +1,8 @@
 package instructions
 
 import (
-	"github.com/steve-care-software/syntax/applications/engines/criterias"
-	grammar_application "github.com/steve-care-software/syntax/applications/engines/grammars"
+	"github.com/steve-care-software/webx/applications/criterias"
+	grammar_application "github.com/steve-care-software/webx/applications/grammars"
 	"github.com/steve-care-software/webx/domain/commands"
 	"github.com/steve-care-software/webx/domain/grammars"
 	"github.com/steve-care-software/webx/domain/instructions"

@@ -9,8 +9,7 @@ import (
 	"github.com/steve-care-software/webx/domain/compilers"
 	"github.com/steve-care-software/webx/domain/criterias"
 	"github.com/steve-care-software/webx/domain/grammars"
-	"github.com/steve-care-software/webx/domain/programs"
-	"github.com/steve-care-software/webx/domain/programs/applications/modules"
+	"github.com/steve-care-software/webx/domain/programs/modules"
 )
 
 type moduleWithCompiler struct {
@@ -193,9 +192,9 @@ func (app *moduleWithCompiler) newCompilerElement() (modules.Module, error) {
 			builder.WithGrammar(grammar)
 		}
 
-		if program, ok := input["program"].(programs.Program); ok {
+		/*if program, ok := input["program"].(programs.Program); ok {
 			builder.WithProgram(program)
-		}
+		}*/
 
 		if parameters, ok := input["parameters"].(compilers.Parameters); ok {
 			builder.WithParameters(parameters)
@@ -254,9 +253,9 @@ func (app *moduleWithCompiler) newCompilerValue() (modules.Module, error) {
 	name := "newCompilerValue"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.compilerValueBuilder.Create()
-		if constant, ok := input["constant"].(interface{}); ok {
+		/*if constant, ok := input["constant"].(interface{}); ok {
 			builder.WithConstant(constant)
-		}
+		}*/
 
 		if criteria, ok := input["criteria"].(criterias.Criteria); ok {
 			builder.WithCriteria(criteria)

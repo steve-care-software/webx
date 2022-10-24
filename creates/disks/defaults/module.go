@@ -17,7 +17,7 @@ import (
 	"github.com/steve-care-software/webx/domain/grammars/values"
 	"github.com/steve-care-software/webx/domain/identities"
 	"github.com/steve-care-software/webx/domain/identities/modifications"
-	"github.com/steve-care-software/webx/domain/programs/applications/modules"
+	"github.com/steve-care-software/webx/domain/programs/modules"
 )
 
 type module struct {

@@ -166,7 +166,7 @@ func (app *command) variableAssignmentAssignee() (criterias.Criteria, error) {
 		return nil, err
 	}
 
-	assignment, err := app.criteriaBuilder.Create().WithName("variableAssignment").WithIndex(0).WithChild(variableName).Now()
+	assignment, err := app.criteriaBuilder.Create().WithName("assignment").WithIndex(0).WithChild(variableName).Now()
 	if err != nil {
 		return nil, err
 	}
@@ -208,54 +208,69 @@ func (app *command) valueVariable() (criterias.Criteria, error) {
 		return nil, err
 	}
 
-	assignableValue, err := app.criteriaBuilder.Create().WithName("assignableValue").WithIndex(0).WithChild(value).Now()
+	assignment, err := app.criteriaBuilder.Create().WithName("assignment").WithIndex(0).WithChild(value).Now()
 	if err != nil {
 		return nil, err
 	}
 
-	return app.criteriaBuilder.Create().WithName("root").WithIndex(0).WithChild(assignableValue).Now()
+	return app.criteriaBuilder.Create().WithName("root").WithIndex(0).WithChild(assignment).Now()
 }
 
 func (app *command) valueConstant() (criterias.Criteria, error) {
+	value, err := app.criteriaBuilder.Create().WithName("assignmentValue").WithIndex(0).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	valueConstant, err := app.criteriaBuilder.Create().WithName("valueConstant").WithIndex(0).WithChild(value).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	assignment, err := app.criteriaBuilder.Create().WithName("assignment").WithIndex(0).WithChild(valueConstant).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	return app.criteriaBuilder.Create().WithName("root").WithIndex(0).WithChild(assignment).Now()
+}
+
+func (app *command) valueInstructions() (criterias.Criteria, error) {
 	value, err := app.criteriaBuilder.Create().WithName("codeAssignment").WithIndex(0).Now()
 	if err != nil {
 		return nil, err
 	}
 
-	assignableValue, err := app.criteriaBuilder.Create().WithName("assignableValue").WithIndex(0).WithChild(value).Now()
+	assignment, err := app.criteriaBuilder.Create().WithName("assignment").WithIndex(0).WithChild(value).Now()
 	if err != nil {
 		return nil, err
 	}
 
-	return app.criteriaBuilder.Create().WithName("root").WithIndex(0).WithChild(assignableValue).Now()
-}
-
-func (app *command) valueInstructions() (criterias.Criteria, error) {
-	value, err := app.criteriaBuilder.Create().WithName("valueConstant").WithIndex(0).Now()
-	if err != nil {
-		return nil, err
-	}
-
-	assignableValue, err := app.criteriaBuilder.Create().WithName("assignableValue").WithIndex(0).WithChild(value).Now()
-	if err != nil {
-		return nil, err
-	}
-
-	return app.criteriaBuilder.Create().WithName("root").WithIndex(0).WithChild(assignableValue).Now()
+	return app.criteriaBuilder.Create().WithName("root").WithIndex(0).WithChild(assignment).Now()
 }
 
 func (app *command) valueExecution() (criterias.Criteria, error) {
-	value, err := app.criteriaBuilder.Create().WithName("valueExecution").WithIndex(0).Now()
+	variableName, err := app.variableName(0)
 	if err != nil {
 		return nil, err
 	}
 
-	assignableValue, err := app.criteriaBuilder.Create().WithName("assignableValue").WithIndex(0).WithChild(value).Now()
+	execute, err := app.criteriaBuilder.Create().WithName("execute").WithIndex(0).WithChild(variableName).Now()
 	if err != nil {
 		return nil, err
 	}
 
-	return app.criteriaBuilder.Create().WithName("root").WithIndex(0).WithChild(assignableValue).Now()
+	value, err := app.criteriaBuilder.Create().WithName("valueExecution").WithIndex(0).WithChild(execute).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	assignment, err := app.criteriaBuilder.Create().WithName("assignment").WithIndex(0).WithChild(value).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	return app.criteriaBuilder.Create().WithName("root").WithIndex(0).WithChild(assignment).Now()
 }
 
 func (app *command) parameterDeclaration() (commands.ParameterDeclaration, error) {

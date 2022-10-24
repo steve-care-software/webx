@@ -1,38 +1,47 @@
-package applications
+package programs
 
 type value struct {
 	input     string
 	str       string
 	execution Application
+	program   Program
 }
 
 func createValueWithInput(
 	input string,
 ) Value {
-	return createValueInternally(input, "", nil)
+	return createValueInternally(input, "", nil, nil)
 }
 
 func createValueWithString(
 	str string,
 ) Value {
-	return createValueInternally("", str, nil)
+	return createValueInternally("", str, nil, nil)
 }
 
 func createValueWithExecution(
 	execution Application,
 ) Value {
-	return createValueInternally("", "", execution)
+	return createValueInternally("", "", execution, nil)
+}
+
+func createValueWithProgram(
+	program Program,
+) Value {
+	return createValueInternally("", "", nil, program)
 }
 
 func createValueInternally(
 	input string,
 	str string,
 	execution Application,
+	program Program,
 ) Value {
 	out := value{
 		input:     input,
 		str:       str,
 		execution: execution,
+		program:   program,
 	}
 
 	return &out
@@ -66,4 +75,14 @@ func (obj *value) IsExecution() bool {
 // Execution returns the execution, if any
 func (obj *value) Execution() Application {
 	return obj.execution
+}
+
+// IsProgram returns true if program, false otherwise
+func (obj *value) IsProgram() bool {
+	return obj.program != nil
+}
+
+// Program returns the program, if any
+func (obj *value) Program() Program {
+	return obj.program
 }

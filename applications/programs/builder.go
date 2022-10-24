@@ -1,43 +1,33 @@
 package programs
 
 import (
-	"github.com/steve-care-software/webx/applications/criterias"
-	"github.com/steve-care-software/webx/applications/grammars"
 	"github.com/steve-care-software/webx/domain/programs"
-	"github.com/steve-care-software/webx/domain/programs/applications"
-	"github.com/steve-care-software/webx/domain/programs/applications/modules"
-	"github.com/steve-care-software/webx/domain/programs/outputs"
+	"github.com/steve-care-software/webx/domain/programs/modules"
 )
 
 type builder struct {
-	grammarApp         grammars.Application
-	criteriaApp        criterias.Application
 	builder            programs.Builder
-	outputBuilder      outputs.Builder
-	applicationBuilder applications.Builder
-	attachmentsBuilder applications.AttachmentsBuilder
-	attachmentBuilder  applications.AttachmentBuilder
-	assignmentBuilder  applications.AssignmentBuilder
-	valueBuilder       applications.ValueBuilder
+	instructionBuilder programs.InstructionBuilder
+	applicationBuilder programs.ApplicationBuilder
+	attachmentsBuilder programs.AttachmentsBuilder
+	attachmentBuilder  programs.AttachmentBuilder
+	assignmentBuilder  programs.AssignmentBuilder
+	valueBuilder       programs.ValueBuilder
 	modules            modules.Modules
 }
 
 func createBuilder(
-	grammarApp grammars.Application,
-	criteriaApp criterias.Application,
 	builderIns programs.Builder,
-	outputBuilder outputs.Builder,
-	applicationBuilder applications.Builder,
-	attachmentsBuilder applications.AttachmentsBuilder,
-	attachmentBuilder applications.AttachmentBuilder,
-	assignmentBuilder applications.AssignmentBuilder,
-	valueBuilder applications.ValueBuilder,
+	instructionBuilder programs.InstructionBuilder,
+	applicationBuilder programs.ApplicationBuilder,
+	attachmentsBuilder programs.AttachmentsBuilder,
+	attachmentBuilder programs.AttachmentBuilder,
+	assignmentBuilder programs.AssignmentBuilder,
+	valueBuilder programs.ValueBuilder,
 ) Builder {
 	out := builder{
-		grammarApp:         grammarApp,
-		criteriaApp:        criteriaApp,
 		builder:            builderIns,
-		outputBuilder:      outputBuilder,
+		instructionBuilder: instructionBuilder,
 		applicationBuilder: applicationBuilder,
 		attachmentsBuilder: attachmentsBuilder,
 		attachmentBuilder:  attachmentBuilder,
@@ -52,10 +42,8 @@ func createBuilder(
 // Create initializes the builder
 func (app *builder) Create() Builder {
 	return createBuilder(
-		app.grammarApp,
-		app.criteriaApp,
 		app.builder,
-		app.outputBuilder,
+		app.instructionBuilder,
 		app.applicationBuilder,
 		app.attachmentsBuilder,
 		app.attachmentBuilder,
@@ -74,10 +62,8 @@ func (app *builder) WithModules(modules modules.Modules) Builder {
 func (app *builder) Now() (Application, error) {
 	if app.modules != nil {
 		return createApplicationWithModules(
-			app.grammarApp,
-			app.criteriaApp,
 			app.builder,
-			app.outputBuilder,
+			app.instructionBuilder,
 			app.applicationBuilder,
 			app.attachmentsBuilder,
 			app.attachmentBuilder,
@@ -88,10 +74,8 @@ func (app *builder) Now() (Application, error) {
 	}
 
 	return createApplication(
-		app.grammarApp,
-		app.criteriaApp,
 		app.builder,
-		app.outputBuilder,
+		app.instructionBuilder,
 		app.applicationBuilder,
 		app.attachmentsBuilder,
 		app.attachmentBuilder,

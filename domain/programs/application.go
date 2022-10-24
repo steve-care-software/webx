@@ -1,6 +1,6 @@
-package applications
+package programs
 
-import "github.com/steve-care-software/webx/domain/programs/applications/modules"
+import "github.com/steve-care-software/webx/domain/programs/modules"
 
 type application struct {
 	name        string

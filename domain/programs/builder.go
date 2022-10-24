@@ -2,19 +2,17 @@ package programs
 
 import (
 	"errors"
-
-	"github.com/steve-care-software/webx/domain/programs/applications"
 )
 
 type builder struct {
-	assignments []applications.Assignment
-	outputs     []string
+	instructions []Instruction
+	outputs      []string
 }
 
 func createBuilder() Builder {
 	out := builder{
-		assignments: nil,
-		outputs:     nil,
+		instructions: nil,
+		outputs:      nil,
 	}
 
 	return &out
@@ -25,9 +23,9 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithAssignments add assignments to the builder
-func (app *builder) WithAssignments(assignments []applications.Assignment) Builder {
-	app.assignments = assignments
+// WithInstructions add instructions to the builder
+func (app *builder) WithInstructions(instructions []Instruction) Builder {
+	app.instructions = instructions
 	return app
 }
 
@@ -39,12 +37,12 @@ func (app *builder) WithOutputs(outputs []string) Builder {
 
 // Now builds a new Program instance
 func (app *builder) Now() (Program, error) {
-	if app.assignments != nil && len(app.assignments) <= 0 {
-		app.assignments = nil
+	if app.instructions != nil && len(app.instructions) <= 0 {
+		app.instructions = nil
 	}
 
-	if app.assignments == nil {
-		return nil, errors.New("the assignments are mandatory in order to build a Program instance")
+	if app.instructions == nil {
+		return nil, errors.New("the instructions are mandatory in order to build a Program instance")
 	}
 
 	if app.outputs != nil && len(app.outputs) <= 0 {
@@ -52,8 +50,8 @@ func (app *builder) Now() (Program, error) {
 	}
 
 	if app.outputs != nil {
-		return createProgramWithOutputs(app.assignments, app.outputs), nil
+		return createProgramWithOutputs(app.instructions, app.outputs), nil
 	}
 
-	return createProgram(app.assignments), nil
+	return createProgram(app.instructions), nil
 }

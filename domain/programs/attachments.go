@@ -1,4 +1,4 @@
-package applications
+package programs
 
 type attachments struct {
 	list []Attachment

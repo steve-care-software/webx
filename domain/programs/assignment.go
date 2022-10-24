@@ -1,4 +1,4 @@
-package applications
+package programs
 
 type assignment struct {
 	index uint

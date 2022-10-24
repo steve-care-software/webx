@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	application_criteria "github.com/steve-care-software/syntax/applications/engines/criterias"
-	grammar_application "github.com/steve-care-software/syntax/applications/engines/grammars"
+	application_criteria "github.com/steve-care-software/webx/applications/criterias"
+	grammar_application "github.com/steve-care-software/webx/applications/grammars"
 	"github.com/steve-care-software/webx/domain/commands"
 	"github.com/steve-care-software/webx/domain/criterias"
 	"github.com/steve-care-software/webx/domain/grammars"
@@ -79,17 +79,16 @@ func (app *application) Execute(grammar grammars.Grammar, command commands.Comma
 		)
 
 		if err != nil {
-			return nil, err
-		}
-
-		if !tree.HasRemaining() {
 			break
 		}
 
 		remaining = tree.Remaining()
 		instructionsList = append(instructionsList, retInstruction)
 		index++
-		continue
+
+		if !tree.HasRemaining() {
+			break
+		}
 	}
 
 	instructions, err := app.builder.Create().WithList(instructionsList).Now()
@@ -148,7 +147,7 @@ func (app *application) instruction(
 		return builder.WithExecution(string(executionValue)).Now()
 	}
 
-	str := fmt.Sprintf("theinstruction (index: %d) is invalid", index)
+	str := fmt.Sprintf("the instruction (index: %d, value: %s) is invalid", index, string(tree.Bytes(true)))
 	return nil, errors.New(str)
 }
 
@@ -227,7 +226,6 @@ func (app *application) value(
 	valueCmd commands.Value,
 ) (instructions.Value, error) {
 	builder := app.valueBuilder.Create()
-
 	variableCriteria := valueCmd.Variable()
 	variableValue, err := app.criteriaApp.Execute(variableCriteria, tree)
 	if err == nil {
@@ -243,6 +241,9 @@ func (app *application) value(
 	instructionsCriteria := valueCmd.Instructions()
 	instructionsValue, err := app.criteriaApp.Execute(instructionsCriteria, tree)
 	if err == nil {
+
+		panic(errors.New(string(tree.Bytes(true))))
+
 		subOutput, err := app.Execute(grammar, command, instructionsValue)
 		if err != nil {
 			return nil, err
@@ -280,7 +281,7 @@ func (app *application) parameter(
 	outputCriteria := parameterDeclaration.Output()
 	outputName, err := app.criteriaApp.Execute(outputCriteria, tree)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
 	nameStr := string(outputName)
@@ -294,13 +295,13 @@ func (app *application) application(
 	moduleCriteria := applicationDeclaration.Module()
 	moduleName, err := app.criteriaApp.Execute(moduleCriteria, tree)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
 	nameCriteria := applicationDeclaration.Name()
 	name, err := app.criteriaApp.Execute(nameCriteria, tree)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
 	nameStr := string(name)

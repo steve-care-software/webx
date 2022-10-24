@@ -251,7 +251,7 @@ func (app *grammar) Execute() (grammars.Grammar, error) {
 		return nil, err
 	}
 
-	assignableValue, err := app.valueToken(variableName, equalChar, endOfInstruction)
+	assignment, err := app.valueToken(variableName, equalChar, endOfInstruction)
 	if err != nil {
 		return nil, err
 	}
@@ -262,7 +262,7 @@ func (app *grammar) Execute() (grammars.Grammar, error) {
 		inputParameter,
 		outputParameter,
 		attach,
-		assignableValue,
+		assignment,
 	}
 
 	cardinality, err := app.cardinalityOneOccurence()
@@ -362,7 +362,6 @@ func (app *grammar) valueToken(
 	valueSuites, err := app.suites([][]byte{
 		[]byte("$myVariable = ANY VALUE EXCEPT \\;; NON-ESCAPED SEMI-COLON;;"),
 		[]byte("$myOutput = execute $myAppVariable;;"),
-		[]byte("$myCode = { $myVariable = ANY VALUE EXCEPT NON-ESCAPED SEMI-COLON;; };;"),
 		[]byte("$myValue = $myOtherVariable;;"),
 	}, nil)
 
@@ -370,11 +369,11 @@ func (app *grammar) valueToken(
 		return nil, err
 	}
 
-	return app.oneLinePerElement("assignableValue", []grammars.Element{
-		constantElement,
-		variableElement,
+	return app.oneLinePerElement("assignment", []grammars.Element{
 		instructionElement,
 		executionElement,
+		variableElement,
+		constantElement,
 	}, valueSuites)
 }
 

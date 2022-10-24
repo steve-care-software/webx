@@ -1,4 +1,4 @@
-package applications
+package programs
 
 import "errors"
 
@@ -6,6 +6,7 @@ type valueBuilder struct {
 	input     string
 	str       string
 	execution Application
+	program   Program
 }
 
 func createValueBuilder() ValueBuilder {
@@ -13,6 +14,7 @@ func createValueBuilder() ValueBuilder {
 		input:     "",
 		str:       "",
 		execution: nil,
+		program:   nil,
 	}
 
 	return &out
@@ -41,6 +43,12 @@ func (app *valueBuilder) WithExecution(execution Application) ValueBuilder {
 	return app
 }
 
+// WithProgram adds a program to the builder
+func (app *valueBuilder) WithProgram(program Program) ValueBuilder {
+	app.program = program
+	return app
+}
+
 // Now builds a new Value instance
 func (app *valueBuilder) Now() (Value, error) {
 	if app.input != "" {
@@ -53,6 +61,10 @@ func (app *valueBuilder) Now() (Value, error) {
 
 	if app.execution != nil {
 		return createValueWithExecution(app.execution), nil
+	}
+
+	if app.program != nil {
+		return createValueWithProgram(app.program), nil
 	}
 
 	return nil, errors.New("the Value is invalid")

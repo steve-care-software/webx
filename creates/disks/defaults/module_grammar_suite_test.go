@@ -3,7 +3,7 @@ package defaults
 import (
 	"testing"
 
-	"github.com/steve-care-software/webx/applications"
+	engines "github.com/steve-care-software/webx/applications"
 	"github.com/steve-care-software/webx/domain/grammars"
 )
 
@@ -81,7 +81,7 @@ func TestModule_newGrammarSuite_withInvalid_withString_Success(t *testing.T) {
         module @newGrammarSuite;;
 		@newGrammarSuite $suiteApp;;
 		$invalid = 157;;
-		attach $valid:$invalid $suiteApp;;
+		attach $invalid:$invalid $suiteApp;;
         $suite = execute $suiteApp;;
 
 	`

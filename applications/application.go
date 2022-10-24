@@ -4,6 +4,7 @@ import (
 	"github.com/steve-care-software/webx/applications/creates"
 	"github.com/steve-care-software/webx/applications/criterias"
 	"github.com/steve-care-software/webx/applications/grammars"
+	"github.com/steve-care-software/webx/applications/instructions"
 	"github.com/steve-care-software/webx/applications/interpreters"
 	"github.com/steve-care-software/webx/applications/programs"
 	program_application "github.com/steve-care-software/webx/applications/programs"
@@ -16,6 +17,7 @@ type application struct {
 	grammarApp     grammars.Application
 	interpreterApp interpreters.Application
 	programApp     program_application.Application
+	instructionApp instructions.Application
 }
 
 func createApplication(
@@ -24,6 +26,7 @@ func createApplication(
 	grammarApp grammars.Application,
 	interpreterApp interpreters.Application,
 	programApp program_application.Application,
+	instructionApp instructions.Application,
 ) Application {
 	out := application{
 		createApp:      createApp,
@@ -31,6 +34,7 @@ func createApplication(
 		grammarApp:     grammarApp,
 		interpreterApp: interpreterApp,
 		programApp:     programApp,
+		instructionApp: instructionApp,
 	}
 
 	return &out
@@ -61,6 +65,11 @@ func (app *application) Program() programs.Application {
 	return app.programApp
 }
 
+// Instruction returns the instruction application
+func (app *application) Instruction() instructions.Application {
+	return app.instructionApp
+}
+
 // ParseThenInterpret parses the script then interpret its program
 func (app *application) ParseThenInterpret(input map[string]interface{}, script []byte) (map[string]interface{}, []byte, error) {
 	grammar, err := app.createApp.Grammar().Execute()
@@ -73,18 +82,23 @@ func (app *application) ParseThenInterpret(input map[string]interface{}, script 
 		return nil, nil, err
 	}
 
-	programOutput, err := app.programApp.Execute(grammar, command, script)
+	instructionsOutput, err := app.instructionApp.Execute(grammar, command, script)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	progIns := programOutput.Program()
-	output, err := app.interpreterApp.Execute(input, progIns)
+	instructions := instructionsOutput.Instructions()
+	program, err := app.programApp.Execute(instructions)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return output, programOutput.Remaining(), nil
+	output, err := app.interpreterApp.Execute(input, program)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return output, instructionsOutput.Remaining(), nil
 }
 
 // CompileThenParseThenInterpret compiles then parses then interpret

@@ -1,19 +1,19 @@
-package applications
+package programs
 
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/domain/programs/applications/modules"
+	"github.com/steve-care-software/webx/domain/programs/modules"
 )
 
-type builder struct {
+type applicationBuilder struct {
 	name        string
 	module      modules.Module
 	attachments Attachments
 }
 
-func createBuilder() Builder {
-	out := builder{
+func createApplicationBuilder() ApplicationBuilder {
+	out := applicationBuilder{
 		name:        "",
 		module:      nil,
 		attachments: nil,
@@ -23,30 +23,30 @@ func createBuilder() Builder {
 }
 
 // Create initializes the builder
-func (app *builder) Create() Builder {
-	return createBuilder()
+func (app *applicationBuilder) Create() ApplicationBuilder {
+	return createApplicationBuilder()
 }
 
 // WithName adds a name to the builder
-func (app *builder) WithName(name string) Builder {
+func (app *applicationBuilder) WithName(name string) ApplicationBuilder {
 	app.name = name
 	return app
 }
 
 // WithModule adds a module to the builder
-func (app *builder) WithModule(module modules.Module) Builder {
+func (app *applicationBuilder) WithModule(module modules.Module) ApplicationBuilder {
 	app.module = module
 	return app
 }
 
 // WithAttachments add attachments to the builder
-func (app *builder) WithAttachments(attachments Attachments) Builder {
+func (app *applicationBuilder) WithAttachments(attachments Attachments) ApplicationBuilder {
 	app.attachments = attachments
 	return app
 }
 
 // Now builds a new Application instance
-func (app *builder) Now() (Application, error) {
+func (app *applicationBuilder) Now() (Application, error) {
 	if app.name == "" {
 		return nil, errors.New("the name is mandatory in order to build an Application instance")
 	}

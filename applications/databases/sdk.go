@@ -3,11 +3,11 @@ package databases
 import (
 	"net/url"
 
-	"github.com/steve-care-software/webx/domain/databases/blockchains/transactions"
+	"github.com/steve-care-software/webx/domain/cryptography/signatures"
 	"github.com/steve-care-software/webx/domain/databases"
 	"github.com/steve-care-software/webx/domain/databases/blockchains/blocks"
+	"github.com/steve-care-software/webx/domain/databases/blockchains/transactions"
 	"github.com/steve-care-software/webx/domain/identities"
-	"github.com/steve-care-software/webx/domain/cryptography/signatures"
 )
 
 // Builder represents an application builder

@@ -1,40 +1,38 @@
 package programs
 
-import "github.com/steve-care-software/webx/domain/programs/applications"
-
 type program struct {
-	assignments []applications.Assignment
-	outputs     []string
+	instructions []Instruction
+	outputs      []string
 }
 
 func createProgram(
-	assignments []applications.Assignment,
+	instructions []Instruction,
 ) Program {
-	return createProgramInternally(assignments, nil)
+	return createProgramInternally(instructions, nil)
 }
 
 func createProgramWithOutputs(
-	assignments []applications.Assignment,
+	instructions []Instruction,
 	outputs []string,
 ) Program {
-	return createProgramInternally(assignments, outputs)
+	return createProgramInternally(instructions, outputs)
 }
 
 func createProgramInternally(
-	assignments []applications.Assignment,
+	instructions []Instruction,
 	outputs []string,
 ) Program {
 	out := program{
-		assignments: assignments,
-		outputs:     outputs,
+		instructions: instructions,
+		outputs:      outputs,
 	}
 
 	return &out
 }
 
-// Assignments returns the assignments
-func (obj *program) Assignments() []applications.Assignment {
-	return obj.assignments
+// Instructions returns the instructions
+func (obj *program) Instructions() []Instruction {
+	return obj.instructions
 }
 
 // HasOutputs returns true if there is outputs, false otherwise
