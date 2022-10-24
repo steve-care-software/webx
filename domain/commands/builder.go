@@ -1,14 +1,18 @@
 package commands
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/webx/domain/criterias"
+)
 
 type builder struct {
-	execution   Execution
+	execution   criterias.Criteria
 	attachment  Attachment
 	variable    VariableAssignment
 	parameter   ParameterDeclaration
 	application ApplicationDeclaration
-	module      ModuleDeclaration
+	module      criterias.Criteria
 }
 
 func createBuilder() Builder {
@@ -30,7 +34,7 @@ func (app *builder) Create() Builder {
 }
 
 // WithExecution adds an execution to the builder
-func (app *builder) WithExecution(execution Execution) Builder {
+func (app *builder) WithExecution(execution criterias.Criteria) Builder {
 	app.execution = execution
 	return app
 }
@@ -60,7 +64,7 @@ func (app *builder) WithApplicationDeclaration(application ApplicationDeclaratio
 }
 
 // WithModuleDeclaration adds a moduleDeclaration to the builder
-func (app *builder) WithModuleDeclaration(module ModuleDeclaration) Builder {
+func (app *builder) WithModuleDeclaration(module criterias.Criteria) Builder {
 	app.module = module
 	return app
 }
@@ -68,7 +72,7 @@ func (app *builder) WithModuleDeclaration(module ModuleDeclaration) Builder {
 // Now builds a new Command instance
 func (app *builder) Now() (Command, error) {
 	if app.execution == nil {
-		return nil, errors.New("the Execution is mandatory in order to build a Command instance")
+		return nil, errors.New("the Execution's criteria is mandatory in order to build a Command instance")
 	}
 
 	if app.attachment == nil {
@@ -88,7 +92,7 @@ func (app *builder) Now() (Command, error) {
 	}
 
 	if app.module == nil {
-		return nil, errors.New("the ModuleDeclaration is mandatory in order to build a Command instance")
+		return nil, errors.New("the criterias.Criteria is mandatory in order to build a Command instance")
 	}
 
 	return createCommand(

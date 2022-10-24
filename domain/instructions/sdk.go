@@ -50,6 +50,7 @@ type InstructionBuilder interface {
 	WithApplication(application applications.Application) InstructionBuilder
 	WithParameter(parameter parameters.Parameter) InstructionBuilder
 	WithAssignment(assignment Assignment) InstructionBuilder
+	WithAttachment(attachment attachments.Attachment) InstructionBuilder
 	WithExecution(execution string) InstructionBuilder
 	Now() (Instruction, error)
 }

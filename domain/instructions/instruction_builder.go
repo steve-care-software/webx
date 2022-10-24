@@ -59,6 +59,12 @@ func (app *instructionBuilder) WithAssignment(assignment Assignment) Instruction
 	return app
 }
 
+// WithAttachment adds an attachment to the builder
+func (app *instructionBuilder) WithAttachment(attachment attachments.Attachment) InstructionBuilder {
+	app.attachment = attachment
+	return app
+}
+
 // WithExecution adds an execution to the builder
 func (app *instructionBuilder) WithExecution(execution string) InstructionBuilder {
 	app.execution = execution
@@ -81,6 +87,10 @@ func (app *instructionBuilder) Now() (Instruction, error) {
 
 	if app.assignment != nil {
 		return createInstructionWithAssignment(app.assignment), nil
+	}
+
+	if app.attachment != nil {
+		return createInstructionWithAttachment(app.attachment), nil
 	}
 
 	if app.execution != "" {

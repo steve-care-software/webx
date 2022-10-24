@@ -52,12 +52,11 @@ func NewApplication(
 
 	commandApp := createCommand(
 		commands.NewBuilder(),
-		commands.NewExecutionBuilder(),
 		commands.NewAttachmentBuilder(),
 		commands.NewVariableAssignmentBuilder(),
 		commands.NewParameterDeclarationBuilder(),
 		commands.NewApplicationDeclarationBuilder(),
-		commands.NewModuleDeclarationBuilder(),
+		commands.NewValueBuilder(),
 		criterias.NewBuilder(),
 	)
 

@@ -1,8 +1,11 @@
 package instructions
 
 import (
-	application_criteria "github.com/steve-care-software/webx/applications/criterias"
-	grammar_application "github.com/steve-care-software/webx/applications/grammars"
+	"errors"
+	"fmt"
+
+	application_criteria "github.com/steve-care-software/syntax/applications/engines/criterias"
+	grammar_application "github.com/steve-care-software/syntax/applications/engines/grammars"
 	"github.com/steve-care-software/webx/domain/commands"
 	"github.com/steve-care-software/webx/domain/criterias"
 	"github.com/steve-care-software/webx/domain/grammars"
@@ -59,51 +62,208 @@ func createApplication(
 
 // Execute executes the application
 func (app *application) Execute(grammar grammars.Grammar, command commands.Command, script []byte) (instructions.Output, error) {
-	return nil, nil
+	index := uint(0)
+	remaining := script
+	instructionsList := []instructions.Instruction{}
+	for {
+		tree, err := app.grammarApp.Execute(grammar, remaining)
+		if err != nil {
+			break
+		}
+
+		retInstruction, err := app.instruction(
+			index,
+			grammar,
+			command,
+			tree,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if !tree.HasRemaining() {
+			break
+		}
+
+		remaining = tree.Remaining()
+		instructionsList = append(instructionsList, retInstruction)
+		index++
+		continue
+	}
+
+	instructions, err := app.builder.Create().WithList(instructionsList).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	outputBuilder := app.outputBuilder.Create().WithInstructions(instructions)
+	if len(remaining) > 0 {
+		outputBuilder.WithRemaining(remaining)
+	}
+
+	return outputBuilder.Now()
+}
+
+func (app *application) instruction(
+	index uint,
+	grammar grammars.Grammar,
+	command commands.Command,
+	tree trees.Tree,
+) (instructions.Instruction, error) {
+	builder := app.instructionBuilder.Create()
+	moduleCritria := command.ModuleDeclaration()
+	moduleValue, err := app.criteriaApp.Execute(moduleCritria, tree)
+	if err == nil {
+		return builder.WithModule(string(moduleValue)).Now()
+	}
+
+	applicationDeclaration := command.ApplicationDeclaration()
+	application, err := app.application(tree, applicationDeclaration)
+	if err == nil {
+		return builder.WithApplication(application).Now()
+	}
+
+	parameterDeclaration := command.ParameterDeclaration()
+	parameter, err := app.parameter(tree, parameterDeclaration)
+	if err == nil {
+		return builder.WithParameter(parameter).Now()
+	}
+
+	variableAssignment := command.VariableAssignment()
+	assignment, err := app.assignment(grammar, command, tree, variableAssignment)
+	if err == nil {
+		return builder.WithAssignment(assignment).Now()
+	}
+
+	attachment := command.Attachment()
+	retAttachment, err := app.attachment(tree, attachment)
+	if err == nil {
+		return builder.WithAttachment(retAttachment).Now()
+	}
+
+	executionCriteria := command.Execution()
+	executionValue, err := app.criteriaApp.Execute(executionCriteria, tree)
+	if err == nil {
+		return builder.WithExecution(string(executionValue)).Now()
+	}
+
+	str := fmt.Sprintf("theinstruction (index: %d) is invalid", index)
+	return nil, errors.New(str)
+}
+
+func (app *application) attachment(
+	tree trees.Tree,
+	attachmentCmd commands.Attachment,
+) (attachments.Attachment, error) {
+	applicationCriteria := attachmentCmd.Application()
+	applicationValue, err := app.criteriaApp.Execute(applicationCriteria, tree)
+	if err != nil {
+		return nil, err
+	}
+
+	currentCriteria := attachmentCmd.Current()
+	targetCriteria := attachmentCmd.Target()
+	variable, err := app.attachmentVariable(tree, currentCriteria, targetCriteria)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.attachmentBuilder.Create().
+		WithVariable(variable).
+		WithApplication(string(applicationValue)).
+		Now()
+}
+
+func (app *application) attachmentVariable(
+	tree trees.Tree,
+	current criterias.Criteria,
+	target criterias.Criteria,
+) (attachments.Variable, error) {
+	currentValue, err := app.criteriaApp.Execute(current, tree)
+	if err != nil {
+		return nil, err
+	}
+
+	targetValue, err := app.criteriaApp.Execute(target, tree)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.attachmentVariableBuilder.Create().
+		WithCurrent(string(currentValue)).
+		WithTarget(string(targetValue)).
+		Now()
+}
+
+func (app *application) assignment(
+	grammar grammars.Grammar,
+	command commands.Command,
+	tree trees.Tree,
+	assignmentCmd commands.VariableAssignment,
+) (instructions.Assignment, error) {
+	assigneeCriteria := assignmentCmd.Assignee()
+	assigneeValue, err := app.criteriaApp.Execute(assigneeCriteria, tree)
+	if err != nil {
+		return nil, err
+	}
+
+	valueCmd := assignmentCmd.Value()
+	value, err := app.value(grammar, command, tree, valueCmd)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.assignmentBuilder.Create().
+		WithVariable(string(assigneeValue)).
+		WithValue(value).
+		Now()
 }
 
 func (app *application) value(
+	grammar grammars.Grammar,
+	command commands.Command,
 	tree trees.Tree,
-	criteria criterias.Criteria,
+	valueCmd commands.Value,
 ) (instructions.Value, error) {
-	/*value, err := app.criteriaApp.Execute(criteria, tree)
-	if err != nil {
-		return nil, nil
+	builder := app.valueBuilder.Create()
+
+	variableCriteria := valueCmd.Variable()
+	variableValue, err := app.criteriaApp.Execute(variableCriteria, tree)
+	if err == nil {
+		builder.WithInput(string(variableValue))
 	}
 
-	valueStr := string(value)
-	valueBuilder := app.valueBuilder.Create()
-	if assignmentIns, ok := inVariables[valueStr]; ok {
-		variableIns := assignmentIns.Value()
-		if variableIns.IsInput() {
-			input := variableIns.Input()
-			valueBuilder.WithInput(input)
+	constantCriteria := valueCmd.Constant()
+	constantValue, err := app.criteriaApp.Execute(constantCriteria, tree)
+	if err == nil {
+		builder.WithString(string(constantValue))
+	}
+
+	instructionsCriteria := valueCmd.Instructions()
+	instructionsValue, err := app.criteriaApp.Execute(instructionsCriteria, tree)
+	if err == nil {
+		subOutput, err := app.Execute(grammar, command, instructionsValue)
+		if err != nil {
+			return nil, err
 		}
 
-		if variableIns.IsString() {
-			str := variableIns.String()
-			valueBuilder.WithString(str)
-		}
-
-		if variableIns.IsExecution() {
-			execution := variableIns.Execution()
-			valueBuilder.WithExecution(execution)
-		}
-	} else if isInput, ok := inParameters[valueStr]; ok {
-		if !isInput {
-			str := fmt.Sprintf("the output parameter (name: %s) cannot be used as a value in an assignment", valueStr)
+		if subOutput.HasRemaining() {
+			str := fmt.Sprintf("the instruction's value were NOT expected to contain remaining data")
 			return nil, errors.New(str)
 		}
 
-		valueBuilder.WithInput(valueStr)
-	} else if appIns, ok := inApplications[valueStr]; ok {
-		valueBuilder.WithExecution(appIns)
-	} else {
-		valueBuilder.WithString(valueStr)
+		subInstructions := subOutput.Instructions()
+		builder.WithInstructions(subInstructions)
 	}
 
-	return valueBuilder.Now()*/
-	return nil, nil
+	executionCriteria := valueCmd.Execution()
+	executionValue, err := app.criteriaApp.Execute(executionCriteria, tree)
+	if err == nil {
+		builder.WithExecution(string(executionValue))
+	}
+
+	return builder.Now()
 }
 
 func (app *application) parameter(

@@ -9,11 +9,6 @@ func NewBuilder() Builder {
 	return createBuilder()
 }
 
-// NewExecutionBuilder creates a new execution builder
-func NewExecutionBuilder() ExecutionBuilder {
-	return createExecutionBuilder()
-}
-
 // NewAttachmentBuilder creates a new attachment builder
 func NewAttachmentBuilder() AttachmentBuilder {
 	return createAttachmentBuilder()
@@ -39,45 +34,26 @@ func NewApplicationDeclarationBuilder() ApplicationDeclarationBuilder {
 	return createApplicationDeclarationBuilder()
 }
 
-// NewModuleDeclarationBuilder creates a new module declaration builder
-func NewModuleDeclarationBuilder() ModuleDeclarationBuilder {
-	return createModuleDeclarationBuilder()
-}
-
 // Builder represents a command builder
 type Builder interface {
 	Create() Builder
-	WithExecution(execution Execution) Builder
+	WithExecution(execution criterias.Criteria) Builder
 	WithAttachment(attachment Attachment) Builder
 	WithVariableAssignment(variableAssignment VariableAssignment) Builder
 	WithParameterDeclaration(parameterDeclaration ParameterDeclaration) Builder
 	WithApplicationDeclaration(applicationDeclaration ApplicationDeclaration) Builder
-	WithModuleDeclaration(moduleDeclaration ModuleDeclaration) Builder
+	WithModuleDeclaration(moduleDeclaration criterias.Criteria) Builder
 	Now() (Command, error)
 }
 
 // Command represents the possible commands
 type Command interface {
-	Execution() Execution
+	Execution() criterias.Criteria
 	Attachment() Attachment
 	VariableAssignment() VariableAssignment
 	ParameterDeclaration() ParameterDeclaration
 	ApplicationDeclaration() ApplicationDeclaration
-	ModuleDeclaration() ModuleDeclaration
-}
-
-// ExecutionBuilder represents an execution builder
-type ExecutionBuilder interface {
-	Create() ExecutionBuilder
-	WithApplication(application criterias.Criteria) ExecutionBuilder
-	WithAssignee(assignee criterias.Criteria) ExecutionBuilder
-	Now() (Execution, error)
-}
-
-// Execution represents an execution
-type Execution interface {
-	Application() criterias.Criteria
-	Assignee() criterias.Criteria
+	ModuleDeclaration() criterias.Criteria
 }
 
 // AttachmentBuilder represents an attachment builder

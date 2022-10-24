@@ -1,21 +1,23 @@
 package commands
 
+import "github.com/steve-care-software/webx/domain/criterias"
+
 type command struct {
-	execution   Execution
+	execution   criterias.Criteria
 	attachment  Attachment
 	variable    VariableAssignment
 	parameter   ParameterDeclaration
 	application ApplicationDeclaration
-	module      ModuleDeclaration
+	module      criterias.Criteria
 }
 
 func createCommand(
-	execution Execution,
+	execution criterias.Criteria,
 	attachment Attachment,
 	variable VariableAssignment,
 	parameter ParameterDeclaration,
 	application ApplicationDeclaration,
-	module ModuleDeclaration,
+	module criterias.Criteria,
 ) Command {
 	out := command{
 		execution:   execution,
@@ -29,8 +31,8 @@ func createCommand(
 	return &out
 }
 
-// Execution returns the execution
-func (obj *command) Execution() Execution {
+// Execution returns the execution's criteria
+func (obj *command) Execution() criterias.Criteria {
 	return obj.execution
 }
 
@@ -55,6 +57,6 @@ func (obj *command) ApplicationDeclaration() ApplicationDeclaration {
 }
 
 // ModuleDeclaration returns the module declaration
-func (obj *command) ModuleDeclaration() ModuleDeclaration {
+func (obj *command) ModuleDeclaration() criterias.Criteria {
 	return obj.module
 }
