@@ -3,7 +3,7 @@ package compilers
 import (
 	"github.com/steve-care-software/webx/domain/criterias"
 	"github.com/steve-care-software/webx/domain/grammars"
-	"github.com/steve-care-software/webx/domain/programs"
+	"github.com/steve-care-software/webx/domain/instructions"
 )
 
 // NewBuilder creates a new builder instance
@@ -19,6 +19,11 @@ func NewElementsBuilder() ElementsBuilder {
 // NewElementBuilder creates a new element builder
 func NewElementBuilder() ElementBuilder {
 	return createElementBuilder()
+}
+
+// NewExecutionBuilder creates a new execution builder
+func NewExecutionBuilder() ExecutionBuilder {
+	return createExecutionBuilder()
 }
 
 // NewParametersBuilder creates a new parameters builder
@@ -67,16 +72,30 @@ type Elements interface {
 type ElementBuilder interface {
 	Create() ElementBuilder
 	WithGrammar(grammar grammars.Grammar) ElementBuilder
-	WithProgram(program programs.Program) ElementBuilder
 	WithParameters(parameters Parameters) ElementBuilder
+	WithExecution(execution Execution) ElementBuilder
 	Now() (Element, error)
 }
 
 // Element represents an element
 type Element interface {
 	Grammar() grammars.Grammar
-	Program() programs.Program
 	Parameters() Parameters
+	Execution() Execution
+}
+
+// ExecutionBuilder represents an execution builder
+type ExecutionBuilder interface {
+	Create() ExecutionBuilder
+	WithParameter(parameter string) ExecutionBuilder
+	WithInstructions(instructions instructions.Instructions) ExecutionBuilder
+	Now() (Execution, error)
+}
+
+// Execution represents an instructions execution
+type Execution interface {
+	Parameter() string
+	Instructions() instructions.Instructions
 }
 
 // ParametersBuilder represents a parameters builder
@@ -108,7 +127,7 @@ type Parameter interface {
 // ValueBuilder represents a value builder
 type ValueBuilder interface {
 	Create() ValueBuilder
-	WithConstant(constant interface{}) ValueBuilder
+	WithConstant(constant string) ValueBuilder
 	WithCriteria(criteria criterias.Criteria) ValueBuilder
 	Now() (Value, error)
 }
@@ -116,7 +135,7 @@ type ValueBuilder interface {
 // Value represents a value
 type Value interface {
 	IsConstant() bool
-	Constant() interface{}
+	Constant() string
 	IsCriteria() bool
 	Criteria() criterias.Criteria
 }

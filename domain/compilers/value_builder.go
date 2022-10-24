@@ -3,13 +3,13 @@ package compilers
 import "github.com/steve-care-software/webx/domain/criterias"
 
 type valueBuilder struct {
-	constant interface{}
+	constant string
 	criteria criterias.Criteria
 }
 
 func createValueBuilder() ValueBuilder {
 	out := valueBuilder{
-		constant: nil,
+		constant: "",
 		criteria: nil,
 	}
 
@@ -22,7 +22,7 @@ func (app *valueBuilder) Create() ValueBuilder {
 }
 
 // WithConstant adds a constant to the builder
-func (app *valueBuilder) WithConstant(constant interface{}) ValueBuilder {
+func (app *valueBuilder) WithConstant(constant string) ValueBuilder {
 	app.constant = constant
 	return app
 }
@@ -39,7 +39,7 @@ func (app *valueBuilder) Now() (Value, error) {
 		return createValueWithCriteria(app.criteria), nil
 	}
 
-	if app.constant != nil {
+	if app.constant != "" {
 		return createValueWithConstant(app.constant), nil
 	}
 

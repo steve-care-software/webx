@@ -2,23 +2,22 @@ package compilers
 
 import (
 	"github.com/steve-care-software/webx/domain/grammars"
-	"github.com/steve-care-software/webx/domain/programs"
 )
 
 type element struct {
 	grammar    grammars.Grammar
-	program    programs.Program
+	execution  Execution
 	parameters Parameters
 }
 
 func createElement(
 	grammar grammars.Grammar,
-	program programs.Program,
+	execution Execution,
 	parameters Parameters,
 ) Element {
 	out := element{
 		grammar:    grammar,
-		program:    program,
+		execution:  execution,
 		parameters: parameters,
 	}
 
@@ -30,9 +29,9 @@ func (obj *element) Grammar() grammars.Grammar {
 	return obj.grammar
 }
 
-// Program returns the program
-func (obj *element) Program() programs.Program {
-	return obj.program
+// Execution returns the execution
+func (obj *element) Execution() Execution {
+	return obj.execution
 }
 
 // Parameters returns the parameters

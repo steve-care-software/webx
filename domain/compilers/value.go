@@ -3,16 +3,16 @@ package compilers
 import "github.com/steve-care-software/webx/domain/criterias"
 
 type value struct {
-	constant interface{}
+	constant string
 	criteria criterias.Criteria
 }
 
 func createValueWithNil() Value {
-	return createValueInternally(nil, nil)
+	return createValueInternally("", nil)
 }
 
 func createValueWithConstant(
-	constant interface{},
+	constant string,
 ) Value {
 	return createValueInternally(constant, nil)
 }
@@ -20,11 +20,11 @@ func createValueWithConstant(
 func createValueWithCriteria(
 	criteria criterias.Criteria,
 ) Value {
-	return createValueInternally(nil, criteria)
+	return createValueInternally("", criteria)
 }
 
 func createValueInternally(
-	constant interface{},
+	constant string,
 	criteria criterias.Criteria,
 ) Value {
 	out := value{
@@ -38,15 +38,15 @@ func createValueInternally(
 // IsConstant returns true if there is a constant, false otherwise
 func (obj *value) IsConstant() bool {
 	// if the value is nil:
-	if obj.criteria == nil && obj.constant == nil {
+	if obj.criteria == nil && obj.constant == "" {
 		return true
 	}
 
-	return obj.constant != nil
+	return obj.constant != ""
 }
 
 // Constant returns the constant, if any
-func (obj *value) Constant() interface{} {
+func (obj *value) Constant() string {
 	return obj.constant
 }
 
