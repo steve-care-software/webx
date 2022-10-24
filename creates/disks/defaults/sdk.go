@@ -3,6 +3,8 @@ package defaults
 import (
 	compiler_applications "github.com/steve-care-software/webx/applications/compilers"
 	"github.com/steve-care-software/webx/applications/creates"
+	criteria_applications "github.com/steve-care-software/webx/applications/criterias"
+	grammar_applications "github.com/steve-care-software/webx/applications/grammars"
 	identity_applications "github.com/steve-care-software/webx/applications/identities"
 	"github.com/steve-care-software/webx/domain/commands"
 	"github.com/steve-care-software/webx/domain/compilers"
@@ -62,6 +64,8 @@ func NewApplication(
 
 	moduleApp := createModule(
 		identityApplication,
+		grammar_applications.NewApplication(),
+		criteria_applications.NewApplication(),
 		modules.NewBuilder(),
 		modules.NewModuleBuilder(),
 		signatures.NewPrivateKeyFactory(),

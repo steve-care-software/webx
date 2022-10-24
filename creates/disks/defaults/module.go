@@ -8,6 +8,8 @@ import (
 	"time"
 
 	creates_module "github.com/steve-care-software/webx/applications/creates/modules"
+	criteria_applications "github.com/steve-care-software/webx/applications/criterias"
+	grammar_applications "github.com/steve-care-software/webx/applications/grammars"
 	identity_applications "github.com/steve-care-software/webx/applications/identities"
 	"github.com/steve-care-software/webx/domain/criterias"
 	"github.com/steve-care-software/webx/domain/cryptography/encryptions/keys"
@@ -18,10 +20,13 @@ import (
 	"github.com/steve-care-software/webx/domain/identities"
 	"github.com/steve-care-software/webx/domain/identities/modifications"
 	"github.com/steve-care-software/webx/domain/programs/modules"
+	"github.com/steve-care-software/webx/domain/trees"
 )
 
 type module struct {
 	identityApplication            identity_applications.Application
+	grammarApplication             grammar_applications.Application
+	criteriaApplication            criteria_applications.Application
 	builder                        modules.Builder
 	moduleBuilder                  modules.ModuleBuilder
 	signaturePrivateKeyFactory     signatures.PrivateKeyFactory
@@ -49,6 +54,8 @@ type module struct {
 
 func createModule(
 	identityApplication identity_applications.Application,
+	grammarApplication grammar_applications.Application,
+	criteriaApplication criteria_applications.Application,
 	builder modules.Builder,
 	moduleBuilder modules.ModuleBuilder,
 	signaturePrivateKeyFactory signatures.PrivateKeyFactory,
@@ -75,6 +82,8 @@ func createModule(
 ) creates_module.Application {
 	out := module{
 		identityApplication:            identityApplication,
+		grammarApplication:             grammarApplication,
+		criteriaApplication:            criteriaApplication,
 		builder:                        builder,
 		moduleBuilder:                  moduleBuilder,
 		signaturePrivateKeyFactory:     signaturePrivateKeyFactory,
@@ -350,6 +359,26 @@ func (app *module) newIdentityModification() (modules.Module, error) {
 	return app.module(name, fn)
 }
 
+func (app *module) executeCriteria() (modules.Module, error) {
+	name := "executeCriteria"
+	fn := func(input map[string]interface{}) (interface{}, error) {
+		if criteria, ok := input["criteria"].(criterias.Criteria); ok {
+			if tree, ok := input["tree"].(trees.Tree); ok {
+				return app.criteriaApplication.Execute(criteria, tree)
+			}
+
+			str := fmt.Sprintf("the tree (AST) was expected to be defined")
+			return nil, errors.New(str)
+
+		}
+
+		str := fmt.Sprintf("the criteria was expected to be defined")
+		return nil, errors.New(str)
+	}
+
+	return app.module(name, fn)
+}
+
 func (app *module) newCriteria() (modules.Module, error) {
 	name := "newCriteria"
 	fn := func(input map[string]interface{}) (interface{}, error) {
@@ -454,6 +483,11 @@ func (app *module) grammar() ([]modules.Module, error) {
 		return nil, err
 	}
 
+	executeGrammar, err := app.newGrammar()
+	if err != nil {
+		return nil, err
+	}
+
 	return []modules.Module{
 		value,
 		cardinality,
@@ -470,7 +504,27 @@ func (app *module) grammar() ([]modules.Module, error) {
 		channel,
 		channels,
 		grammar,
+		executeGrammar,
 	}, nil
+}
+
+func (app *module) executeGrammar() (modules.Module, error) {
+	name := "executeGrammar"
+	fn := func(input map[string]interface{}) (interface{}, error) {
+		if grammar, ok := input["grammar"].(grammars.Grammar); ok {
+			if data, ok := input["data"].([]byte); ok {
+				return app.grammarApplication.Execute(grammar, data)
+			}
+
+			str := fmt.Sprintf("the data was expected to be defined")
+			return nil, errors.New(str)
+		}
+
+		str := fmt.Sprintf("the grammar was expected to be defined")
+		return nil, errors.New(str)
+	}
+
+	return app.module(name, fn)
 }
 
 func (app *module) newGrammar() (modules.Module, error) {
