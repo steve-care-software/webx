@@ -49,7 +49,3 @@ func NewApplication(
 type Application interface {
 	Execute(compiler compilers.Compiler, script []byte) (instructions.Output, error)
 }
-
-/*
-	The output should contains instructions + remaining (optional)
-*/
