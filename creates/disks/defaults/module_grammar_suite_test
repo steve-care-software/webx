@@ -3,7 +3,7 @@ package defaults
 import (
 	"testing"
 
-	engines "github.com/steve-care-software/webx/applications"
+	"github.com/steve-care-software/webx/applications"
 	"github.com/steve-care-software/webx/domain/grammars"
 )
 
@@ -20,7 +20,7 @@ func TestModule_newGrammarSuite_withValid_withString_Success(t *testing.T) {
 
 	`
 
-	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{}, []byte(script))
+	output, _, err := applications.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{}, []byte(script))
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -52,7 +52,7 @@ func TestModule_newGrammarSuite_withValid_withByte_Success(t *testing.T) {
 
 	`
 
-	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
+	output, _, err := applications.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
 		"input": []byte("this is some data"),
 	}, []byte(script))
 	if err != nil {
@@ -86,7 +86,7 @@ func TestModule_newGrammarSuite_withInvalid_withString_Success(t *testing.T) {
 
 	`
 
-	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{}, []byte(script))
+	output, _, err := applications.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{}, []byte(script))
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -118,7 +118,7 @@ func TestModule_newGrammarSuite_withInvalid_withByte_Success(t *testing.T) {
 
 	`
 
-	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
+	output, _, err := applications.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
 		"input": []byte("this is some data"),
 	}, []byte(script))
 	if err != nil {

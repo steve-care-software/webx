@@ -154,8 +154,14 @@ func (app *module) container() ([]modules.Module, error) {
 		return nil, err
 	}
 
+	containerMapWithStringKeynames, err := app.containerMapWithStringKeynames()
+	if err != nil {
+		return nil, err
+	}
+
 	return []modules.Module{
 		list,
+		containerMapWithStringKeynames,
 	}, nil
 }
 
@@ -865,6 +871,28 @@ func (app *module) newGrammarValue() (modules.Module, error) {
 		}
 
 		return builder.Now()
+	}
+
+	return app.module(name, fn)
+}
+
+func (app *module) containerMapWithStringKeynames() (modules.Module, error) {
+	name := "containerMapWithStringKeynames"
+	fn := func(input map[string]interface{}) (interface{}, error) {
+		output := map[string]interface{}{}
+		if name, ok := input["name"].(string); ok {
+			if value, ok := input["value"]; ok {
+				name = strings.TrimSpace(name)
+				output[name] = value
+				return output, nil
+			}
+
+			str := fmt.Sprintf("the value was expected to be declared")
+			return nil, errors.New(str)
+		}
+
+		str := fmt.Sprintf("the name was expected to be declared and contain a string")
+		return nil, errors.New(str)
 	}
 
 	return app.module(name, fn)

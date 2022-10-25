@@ -3,7 +3,7 @@ package defaults
 import (
 	"testing"
 
-	engines "github.com/steve-care-software/webx/applications"
+	"github.com/steve-care-software/webx/applications"
 	"github.com/steve-care-software/webx/domain/criterias"
 )
 
@@ -26,7 +26,7 @@ func TestModule_newCriteria_Success(t *testing.T) {
 
 	name := "roger"
 	index := uint(0)
-	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
+	output, _, err := applications.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
 		"name":            name,
 		"index":           index,
 		"includeChannels": true,

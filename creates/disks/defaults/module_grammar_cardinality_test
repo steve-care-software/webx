@@ -28,7 +28,7 @@ func TestModule_newGrammarCardinality_withMin_withoutMax_Success(t *testing.T) {
 	`
 
 	name := "roger"
-	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
+	output, _, err := applications.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
 		"myName": name,
 	}, []byte(script))
 
@@ -84,7 +84,7 @@ func TestModule_newGrammarCardinality_withMin_withMax_Success(t *testing.T) {
 	`
 
 	name := "roger"
-	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
+	output, _, err := applications.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
 		"myName": name,
 	}, []byte(script))
 

@@ -9,6 +9,7 @@ import (
 	"github.com/steve-care-software/webx/domain/compilers"
 	"github.com/steve-care-software/webx/domain/criterias"
 	"github.com/steve-care-software/webx/domain/grammars"
+	"github.com/steve-care-software/webx/domain/instructions"
 	"github.com/steve-care-software/webx/domain/programs/modules"
 )
 
@@ -19,6 +20,7 @@ type moduleWithCompiler struct {
 	compilerBuilder           compilers.Builder
 	compilerElementsBuilder   compilers.ElementsBuilder
 	compilerElementBuilder    compilers.ElementBuilder
+	compilerExecutionBuilder  compilers.ExecutionBuilder
 	compilerParametersBuilder compilers.ParametersBuilder
 	compilerParameterBuilder  compilers.ParameterBuilder
 	compilerValueBuilder      compilers.ValueBuilder
@@ -32,6 +34,7 @@ func createModuleWithCompiler(
 	compilerBuilder compilers.Builder,
 	compilerElementsBuilder compilers.ElementsBuilder,
 	compilerElementBuilder compilers.ElementBuilder,
+	compilerExecutionBuilder compilers.ExecutionBuilder,
 	compilerParametersBuilder compilers.ParametersBuilder,
 	compilerParameterBuilder compilers.ParameterBuilder,
 	compilerValueBuilder compilers.ValueBuilder,
@@ -44,6 +47,7 @@ func createModuleWithCompiler(
 		compilerBuilder:           compilerBuilder,
 		compilerElementsBuilder:   compilerElementsBuilder,
 		compilerElementBuilder:    compilerElementBuilder,
+		compilerExecutionBuilder:  compilerExecutionBuilder,
 		compilerParametersBuilder: compilerParametersBuilder,
 		compilerParameterBuilder:  compilerParameterBuilder,
 		compilerValueBuilder:      compilerValueBuilder,
@@ -87,6 +91,11 @@ func (app *moduleWithCompiler) compiler() ([]modules.Module, error) {
 		return nil, err
 	}
 
+	newCompilerExecution, err := app.newCompilerExecution()
+	if err != nil {
+		return nil, err
+	}
+
 	newCompilerParameters, err := app.newCompilerParameters()
 	if err != nil {
 		return nil, err
@@ -107,6 +116,7 @@ func (app *moduleWithCompiler) compiler() ([]modules.Module, error) {
 		newCompiler,
 		newCompilerElements,
 		newCompilerElement,
+		newCompilerExecution,
 		newCompilerParameters,
 		newCompilerParameter,
 		newCompilerValue,
@@ -192,12 +202,30 @@ func (app *moduleWithCompiler) newCompilerElement() (modules.Module, error) {
 			builder.WithGrammar(grammar)
 		}
 
-		/*if program, ok := input["program"].(programs.Program); ok {
-			builder.WithProgram(program)
-		}*/
-
 		if parameters, ok := input["parameters"].(compilers.Parameters); ok {
 			builder.WithParameters(parameters)
+		}
+
+		if execution, ok := input["execution"].(compilers.Execution); ok {
+			builder.WithExecution(execution)
+		}
+
+		return builder.Now()
+	}
+
+	return app.module(name, fn)
+}
+
+func (app *moduleWithCompiler) newCompilerExecution() (modules.Module, error) {
+	name := "newCompilerExecution"
+	fn := func(input map[string]interface{}) (interface{}, error) {
+		builder := app.compilerExecutionBuilder.Create()
+		if parameter, ok := input["parameter"].(string); ok {
+			builder.WithParameter(parameter)
+		}
+
+		if instructions, ok := input["instructions"].(instructions.Instructions); ok {
+			builder.WithInstructions(instructions)
 		}
 
 		return builder.Now()
@@ -253,9 +281,9 @@ func (app *moduleWithCompiler) newCompilerValue() (modules.Module, error) {
 	name := "newCompilerValue"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.compilerValueBuilder.Create()
-		/*if constant, ok := input["constant"].(interface{}); ok {
+		if constant, ok := input["constant"].(string); ok {
 			builder.WithConstant(constant)
-		}*/
+		}
 
 		if criteria, ok := input["criteria"].(criterias.Criteria); ok {
 			builder.WithCriteria(criteria)

@@ -62,6 +62,13 @@ func createApplication(
 
 // Execute executes the application
 func (app *application) Execute(grammar grammars.Grammar, command commands.Command, script []byte) (instructions.Output, error) {
+	tree, err := app.grammarApp.Execute(grammar, script)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Printf("\n %s \n", tree.Bytes(true))
+
 	index := uint(0)
 	remaining := script
 	instructionsList := []instructions.Instruction{}
@@ -240,10 +247,10 @@ func (app *application) value(
 
 	instructionsCriteria := valueCmd.Instructions()
 	instructionsValue, err := app.criteriaApp.Execute(instructionsCriteria, tree)
+
+	fmt.Printf("-> %s\n", tree.Bytes(true))
+
 	if err == nil {
-
-		panic(errors.New(string(tree.Bytes(true))))
-
 		subOutput, err := app.Execute(grammar, command, instructionsValue)
 		if err != nil {
 			return nil, err

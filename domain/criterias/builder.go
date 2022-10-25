@@ -77,7 +77,6 @@ func (app *builder) Now() (Criteria, error) {
 
 	data := [][]byte{
 		[]byte(app.name),
-		[]byte(strconv.Itoa(int(*app.pIndex))),
 		[]byte(includeChannelsStr),
 	}
 
@@ -85,14 +84,26 @@ func (app *builder) Now() (Criteria, error) {
 		data = append(data, app.child.Hash().Bytes())
 	}
 
+	if app.pIndex != nil {
+		data = append(data, []byte(strconv.Itoa(int(*app.pIndex))))
+	}
+
 	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
 	}
 
-	if app.child != nil {
-		return createCriteriaWithChild(*pHash, app.name, *app.pIndex, app.includeChannels, app.child), nil
+	if app.pIndex != nil && app.child != nil {
+		return createCriteriaWithChildAndIndex(*pHash, app.name, app.includeChannels, app.child, app.pIndex), nil
 	}
 
-	return createCriteria(*pHash, app.name, *app.pIndex, app.includeChannels), nil
+	if app.pIndex != nil {
+		return createCriteriaWithIndex(*pHash, app.name, app.includeChannels, app.pIndex), nil
+	}
+
+	if app.child != nil {
+		return createCriteriaWithChild(*pHash, app.name, app.includeChannels, app.child), nil
+	}
+
+	return createCriteria(*pHash, app.name, app.includeChannels), nil
 }

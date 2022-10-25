@@ -551,6 +551,7 @@ func (app *application) block(tokenName string, stackMap map[string]*stack, bloc
 		if isReverse {
 			previousData := prevData
 			contentsList := []trees.Content{}
+
 			for {
 				if len(remaining) <= 0 {
 					break

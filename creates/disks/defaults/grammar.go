@@ -60,6 +60,474 @@ func createGrammar(
 	return &out
 }
 
+// LowerCaseLetter returns the lowerCase letter token
+func (app *grammar) LowerCaseLetter() grammars.Token {
+	token, err := app.anyCharacterToken("lowerCaseLetter", "abcdefghijklmnopqrstuvwxyz")
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// UpperCaseLetter returns the upperCase letter token
+func (app *grammar) UpperCaseLetter() grammars.Token {
+	token, err := app.anyCharacterToken("upperCaseLetter", "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// AnyCaseLetter returns the anyCase letter token
+func (app *grammar) AnyCaseLetter() grammars.Token {
+	token, err := app.anyCaseLetterToken(
+		app.LowerCaseLetter(),
+		app.UpperCaseLetter(),
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// AnyNumber returns the anyNumber token
+func (app *grammar) AnyNumber() grammars.Token {
+	token, err := app.anyCharacterToken("anyNumber", "0123456789")
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// Name returns the name token
+func (app *grammar) Name() grammars.Token {
+	token, err := app.nameToken(
+		app.LowerCaseLetter(),
+		app.AnyCaseLetter(),
+		app.AnyNumber(),
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// ModuleString returns the module string token
+func (app *grammar) ModuleString() grammars.Token {
+	token, err := app.allCharacterToken("moduleStr", "module")
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// EndOfLine returns the end of line token
+func (app *grammar) EndOfLine() grammars.Token {
+	token, err := app.allCharacterToken("endOfIns", ";;")
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// CommercialAChar returns the commercial a char (@) token
+func (app *grammar) CommercialAChar() grammars.Token {
+	commercialASuites, err := app.suites([][]byte{
+		[]byte("@"),
+	}, nil)
+
+	if err != nil {
+		panic(err)
+	}
+
+	token, err := app.singleCharacterToken("singleCommercialA", "commercialA", []byte("@")[0], commercialASuites)
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// ModuleName returns the moduleName token
+func (app *grammar) ModuleName() grammars.Token {
+	token, err := app.moduleNameToken(
+		app.CommercialAChar(),
+		app.Name(),
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// ModuleDeclaration returns the module declaration token
+func (app *grammar) ModuleDeclaration() grammars.Token {
+	token, err := app.moduleDeclarationToken(
+		app.ModuleString(),
+		app.ModuleName(),
+		app.EndOfLine(),
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// DollarSignChar returns the dollar sign char ($) token
+func (app *grammar) DollarSignChar() grammars.Token {
+	dollarSignSuites, err := app.suites([][]byte{
+		[]byte("$"),
+	}, nil)
+
+	if err != nil {
+		panic(err)
+	}
+
+	token, err := app.singleCharacterToken("singleDollarSign", "dollarSign", []byte("$")[0], dollarSignSuites)
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// VariableName returns the variable name token
+func (app *grammar) VariableName() grammars.Token {
+	token, err := app.variableNameToken(
+		app.DollarSignChar(),
+		app.Name(),
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// ApplicationDeclaration returns the application declaration token
+func (app *grammar) ApplicationDeclaration() grammars.Token {
+	token, err := app.applicationDeclarationToken(
+		app.ModuleName(),
+		app.VariableName(),
+		app.EndOfLine(),
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// InputDirection returns the input direction token
+func (app *grammar) InputDirection() grammars.Token {
+	token, err := app.allCharacterToken("inputDirection", "->")
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// OutputDirection returns the output direction token
+func (app *grammar) OutputDirection() grammars.Token {
+	token, err := app.allCharacterToken("outputDirection", "<-")
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// InputParameter returns the input parameter token
+func (app *grammar) InputParameter() grammars.Token {
+	inputParameterSuites, err := app.suites([][]byte{
+		[]byte("-> $myInput;;"),
+	}, nil)
+
+	if err != nil {
+		panic(err)
+	}
+
+	token, err := app.parameterToken(
+		"inputParameter",
+		app.InputDirection(),
+		app.VariableName(),
+		app.EndOfLine(),
+		inputParameterSuites,
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// OutputParameter returns the output parameter token
+func (app *grammar) OutputParameter() grammars.Token {
+	outputParameterSuites, err := app.suites([][]byte{
+		[]byte("<- $myInput;;"),
+	}, nil)
+
+	if err != nil {
+		panic(err)
+	}
+
+	token, err := app.parameterToken(
+		"outputParameter",
+		app.OutputDirection(),
+		app.VariableName(),
+		app.EndOfLine(),
+		outputParameterSuites,
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// EqualChar returns the equal char (=) token
+func (app *grammar) EqualChar() grammars.Token {
+	equalSuites, err := app.suites([][]byte{
+		[]byte("="),
+	}, nil)
+
+	if err != nil {
+		panic(err)
+	}
+
+	token, err := app.singleCharacterToken("singleEqualChar", "equalChar", []byte("=")[0], equalSuites)
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// AttachString returns the attach string token
+func (app *grammar) AttachString() grammars.Token {
+	token, err := app.allCharacterToken("attachStr", "attach")
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// SemiColonChar returns the semiColon char (:) token
+func (app *grammar) SemiColonChar() grammars.Token {
+	semiColonSuites, err := app.suites([][]byte{
+		[]byte(":"),
+	}, nil)
+
+	if err != nil {
+		panic(err)
+	}
+
+	token, err := app.singleCharacterToken("singleSemiColon", "semiColon", []byte(":")[0], semiColonSuites)
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// AttachInstruction returns the attach instruction token
+func (app *grammar) Attach() grammars.Token {
+	token, err := app.attachToken(
+		app.AttachString(),
+		app.VariableName(),
+		app.SemiColonChar(),
+		app.EndOfLine(),
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// Assignment returns the assignment instruction token
+func (app *grammar) Assignment() grammars.Token {
+	token, err := app.valueToken(
+		app.VariableName(),
+		app.EqualChar(),
+		app.EndOfLine(),
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// Instruction returns the instruction token
+func (app *grammar) Instruction() grammars.Token {
+	tokens := []grammars.Token{
+		app.ModuleDeclaration(),
+		app.ApplicationDeclaration(),
+		app.InputParameter(),
+		app.OutputParameter(),
+		app.Attach(),
+		app.Assignment(),
+	}
+
+	cardinality, err := app.cardinalityOneOccurence()
+	if err != nil {
+		panic(err)
+	}
+
+	elementsList := []grammars.Element{}
+	for _, oneToken := range tokens {
+		element, err := app.elementFromToken(oneToken, cardinality)
+		if err != nil {
+			panic(err)
+		}
+
+		elementsList = append(elementsList, element)
+	}
+
+	instructionSuites, err := app.suites([][]byte{
+		[]byte("module @myModule;;"),
+		[]byte("@myModule $myApplication;;"),
+		[]byte("-> $myInput;;"),
+		[]byte("<- $myOutput;;"),
+		[]byte("$myVariable = ANY VALUE EXCEPT \\;; NON-ESCAPED SEMI-COLON;;"),
+		[]byte("attach $myDataVariable:$data $myAppVariable;;"),
+		[]byte("$myOutput = execute $myAppVariable;;"),
+		[]byte("$myValue = $myOtherVariable;;"),
+	}, nil)
+
+	if err != nil {
+		panic(err)
+	}
+
+	token, err := app.oneLinePerElement("instruction", elementsList, instructionSuites)
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// Root returns the root token
+func (app *grammar) Root() grammars.Token {
+	instruction := app.Instruction()
+	multipleCardinality, err := app.cardinalityBuilder.Create().WithMin(1).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	instance, err := app.instanceBuilder.Create().WithToken(instruction).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	rootElement, err := app.elementBuilder.Create().WithCardinality(multipleCardinality).WithInstance(instance).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	line, err := app.lineBuilder.Create().WithElements([]grammars.Element{
+		rootElement,
+	}).Now()
+
+	if err != nil {
+		panic(err)
+	}
+
+	block, err := app.blockBuilder.Create().WithLines([]grammars.Line{
+		line,
+	}).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	rootSuites, err := app.suites([][]byte{
+		[]byte(`
+			-> $script;;
+			<- $output;;
+
+			$createGrammarValueCode = {
+				-> $name;;
+				-> $numberStr;;
+				<- $value;;
+
+				module @castToInt;;
+				@castToInt $castToIntApp;;
+				attach $numberStr:$value $castToIntApp;;
+				$number = execute $castToIntApp;;
+
+				module @newGrammarValue;;
+				@newGrammarValue $valueApp;;
+				attach $number:$number $valueApp;;
+				attach $name:$name $valueApp;;
+				$value = execute $valueApp;;
+			};;
+
+
+			module @containerMapWithStringKeynames;;
+			@containerMapWithStringKeynames $paramsApp;;
+			$nameStr = dollarSign;;
+			$valueStr = 36;
+			attach $nameStr:$name $paramsApp;;
+			attach $valueStr:$number $valueApp;;
+			$params = execute $paramsApp;;
+
+			module @parseThenInterpret;;
+			@parseThenInterpret $interpreterApp;;
+			attach $params:$params $interpreterApp;;
+			attach $createGrammarValueCode:$script $interpreterApp;;
+			$output = execute $interpreterApp;;
+		`),
+	}, nil)
+
+	if err != nil {
+		panic(err)
+	}
+
+	tokenBuilder := app.tokenBuilder.Create().WithName("root").WithBlock(block)
+	if rootSuites != nil {
+		tokenBuilder.WithSuites(rootSuites)
+	}
+
+	token, err := tokenBuilder.Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return token
+}
+
+// Execute executes the create grammar application
+func (app *grammar) Execute() (grammars.Grammar, error) {
+	rootToken := app.Root()
+	channels := app.Channels()
+	return app.builder.Create().
+		WithRoot(rootToken).
+		WithChannels(channels).
+		Now()
+}
+
 func (app *grammar) suite(isValid bool, data []byte) (grammars.Suite, error) {
 	builder := app.suiteBuilder.Create()
 	if isValid {
@@ -94,219 +562,6 @@ func (app *grammar) suites(valid [][]byte, invalid [][]byte) (grammars.Suites, e
 	}
 
 	return app.suitesBuilder.Create().WithList(suitesList).Now()
-}
-
-// Execute executes the create grammar application
-func (app *grammar) Execute() (grammars.Grammar, error) {
-	lowerCaseLetter, err := app.anyCharacterToken("lowerCaseLetter", "abcdefghijklmnopqrstuvwxyz")
-	if err != nil {
-		return nil, err
-	}
-
-	upperCaseLetter, err := app.anyCharacterToken("upperCaseLetter", "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	if err != nil {
-		return nil, err
-	}
-
-	anyNumber, err := app.anyCharacterToken("anyNumber", "0123456789")
-	if err != nil {
-		return nil, err
-	}
-
-	anyCaseLetter, err := app.anyCaseLetterToken(lowerCaseLetter, upperCaseLetter)
-	if err != nil {
-		return nil, err
-	}
-
-	name, err := app.nameToken(lowerCaseLetter, anyCaseLetter, anyNumber)
-	if err != nil {
-		return nil, err
-	}
-
-	moduleStr, err := app.allCharacterToken("moduleStr", "module")
-	if err != nil {
-		return nil, err
-	}
-
-	endOfInstruction, err := app.allCharacterToken("endOfIns", ";;")
-	if err != nil {
-		return nil, err
-	}
-
-	commercialASuites, err := app.suites([][]byte{
-		[]byte("@"),
-	}, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	commercialA, err := app.singleCharacterToken("singleCommercialA", "commercialA", []byte("@")[0], commercialASuites)
-	if err != nil {
-		return nil, err
-	}
-
-	moduleName, err := app.moduleNameToken(commercialA, name)
-	if err != nil {
-		return nil, err
-	}
-
-	moduleDeclaration, err := app.moduleDeclarationToken(moduleStr, moduleName, endOfInstruction)
-	if err != nil {
-		return nil, err
-	}
-
-	dollarSignSuites, err := app.suites([][]byte{
-		[]byte("$"),
-	}, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	dollarSign, err := app.singleCharacterToken("singleDollarSign", "dollarSign", []byte("$")[0], dollarSignSuites)
-	if err != nil {
-		return nil, err
-	}
-
-	variableName, err := app.variableNameToken(dollarSign, name)
-	if err != nil {
-		return nil, err
-	}
-
-	applicationDeclaration, err := app.applicationDeclarationToken(moduleName, variableName, endOfInstruction)
-	if err != nil {
-		return nil, err
-	}
-
-	inputDirection, err := app.allCharacterToken("inputDirection", "->")
-	if err != nil {
-		return nil, err
-	}
-
-	inputParameterSuites, err := app.suites([][]byte{
-		[]byte("-> $myInput;;"),
-	}, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	inputParameter, err := app.parameterToken("inputParameter", inputDirection, variableName, endOfInstruction, inputParameterSuites)
-	if err != nil {
-		return nil, err
-	}
-
-	outputDirection, err := app.allCharacterToken("outputDirection", "<-")
-	if err != nil {
-		return nil, err
-	}
-
-	outputParameterSuites, err := app.suites([][]byte{
-		[]byte("<- $myInput;;"),
-	}, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	outputParameter, err := app.parameterToken("outputParameter", outputDirection, variableName, endOfInstruction, outputParameterSuites)
-	if err != nil {
-		return nil, err
-	}
-
-	equalSuites, err := app.suites([][]byte{
-		[]byte("="),
-	}, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	equalChar, err := app.singleCharacterToken("singleEqualChar", "equalChar", []byte("=")[0], equalSuites)
-	if err != nil {
-		return nil, err
-	}
-
-	attachStr, err := app.allCharacterToken("attachStr", "attach")
-	if err != nil {
-		return nil, err
-	}
-
-	semiColonSuites, err := app.suites([][]byte{
-		[]byte(":"),
-	}, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	semiColon, err := app.singleCharacterToken("singleSemiColon", "semiColon", []byte(":")[0], semiColonSuites)
-	if err != nil {
-		return nil, err
-	}
-
-	attach, err := app.attachToken(attachStr, variableName, semiColon, endOfInstruction)
-	if err != nil {
-		return nil, err
-	}
-
-	assignment, err := app.valueToken(variableName, equalChar, endOfInstruction)
-	if err != nil {
-		return nil, err
-	}
-
-	tokens := []grammars.Token{
-		moduleDeclaration,
-		applicationDeclaration,
-		inputParameter,
-		outputParameter,
-		attach,
-		assignment,
-	}
-
-	cardinality, err := app.cardinalityOneOccurence()
-	if err != nil {
-		return nil, err
-	}
-
-	elementsList := []grammars.Element{}
-	for _, oneToken := range tokens {
-		element, err := app.elementFromToken(oneToken, cardinality)
-		if err != nil {
-			return nil, err
-		}
-
-		elementsList = append(elementsList, element)
-	}
-
-	rootSuites, err := app.suites([][]byte{
-		[]byte("module @myModule;;"),
-		[]byte("@myModule $myApplication;;"),
-		[]byte("-> $myInput;;"),
-		[]byte("<- $myOutput;;"),
-		[]byte("$myVariable = ANY VALUE EXCEPT \\;; NON-ESCAPED SEMI-COLON;;"),
-		[]byte("attach $myDataVariable:$data $myAppVariable;;"),
-		[]byte("$myOutput = execute $myAppVariable;;"),
-		[]byte("$myCode = { $myVariable = ANY VALUE EXCEPT NON-ESCAPED SEMI-COLON;; };;"),
-		[]byte("$myValue = $myOtherVariable;;"),
-	}, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	root, err := app.oneLinePerElement("root", elementsList, rootSuites)
-	if err != nil {
-		return nil, err
-	}
-
-	channels, err := app.channels()
-	if err != nil {
-		return nil, err
-	}
-
-	return app.builder.Create().WithRoot(root).WithChannels(channels).Now()
 }
 
 func (app *grammar) valueToken(
@@ -457,86 +712,6 @@ func (app *grammar) valueExecutionToken(
 	}
 
 	return app.assignmentToken("valueExecution", variableName, equalChar, execute, endOfInstruction, executeAssignmentSuites)
-}
-
-func (app *grammar) channels() (grammars.Channels, error) {
-	spaceSuites, err := app.suites([][]byte{
-		[]byte(" "),
-	}, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	space, err := app.singleCharacterToken("singleSpace", "space", []byte(" ")[0], spaceSuites)
-	if err != nil {
-		return nil, err
-	}
-
-	tabSuites, err := app.suites([][]byte{
-		[]byte("\t"),
-	}, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	tab, err := app.singleCharacterToken("singleTab", "tab", []byte("\t")[0], tabSuites)
-	if err != nil {
-		return nil, err
-	}
-
-	newLineSuites, err := app.suites([][]byte{
-		[]byte("\n"),
-	}, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	newLine, err := app.singleCharacterToken("singleNewLine", "newLine", []byte("\n")[0], newLineSuites)
-	if err != nil {
-		return nil, err
-	}
-
-	retCarSuites, err := app.suites([][]byte{
-		[]byte("\r"),
-	}, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	newRetCar, err := app.singleCharacterToken("singleRetCar", "retCar", []byte("\r")[0], retCarSuites)
-	if err != nil {
-		return nil, err
-	}
-
-	singleLineComment, err := app.singleLineComment(newLine)
-	if err != nil {
-		return nil, err
-	}
-
-	tokensList := []grammars.Token{
-		space,
-		tab,
-		newLine,
-		newRetCar,
-		singleLineComment,
-	}
-
-	channelsList := []grammars.Channel{}
-	for _, oneToken := range tokensList {
-		name := oneToken.Name()
-		channel, err := app.channelBuilder.Create().WithName(name).WithToken(oneToken).Now()
-		if err != nil {
-			return nil, err
-		}
-
-		channelsList = append(channelsList, channel)
-	}
-
-	return app.channelsBuilder.Create().WithList(channelsList).Now()
 }
 
 func (app *grammar) singleLineComment(
@@ -1253,4 +1428,90 @@ func (app *grammar) cardinalityOneOccurence() (cardinalities.Cardinality, error)
 		WithMin(1).
 		WithMax(1).
 		Now()
+}
+
+// Channels returns the channels
+func (app *grammar) Channels() grammars.Channels {
+	spaceSuites, err := app.suites([][]byte{
+		[]byte(" "),
+	}, nil)
+
+	if err != nil {
+		panic(err)
+	}
+
+	space, err := app.singleCharacterToken("singleSpace", "space", []byte(" ")[0], spaceSuites)
+	if err != nil {
+		panic(err)
+	}
+
+	tabSuites, err := app.suites([][]byte{
+		[]byte("\t"),
+	}, nil)
+
+	if err != nil {
+		panic(err)
+	}
+
+	tab, err := app.singleCharacterToken("singleTab", "tab", []byte("\t")[0], tabSuites)
+	if err != nil {
+		panic(err)
+	}
+
+	newLineSuites, err := app.suites([][]byte{
+		[]byte("\n"),
+	}, nil)
+
+	if err != nil {
+		panic(err)
+	}
+
+	newLine, err := app.singleCharacterToken("singleNewLine", "newLine", []byte("\n")[0], newLineSuites)
+	if err != nil {
+		panic(err)
+	}
+
+	retCarSuites, err := app.suites([][]byte{
+		[]byte("\r"),
+	}, nil)
+
+	if err != nil {
+		panic(err)
+	}
+
+	newRetCar, err := app.singleCharacterToken("singleRetCar", "retCar", []byte("\r")[0], retCarSuites)
+	if err != nil {
+		panic(err)
+	}
+
+	singleLineComment, err := app.singleLineComment(newLine)
+	if err != nil {
+		panic(err)
+	}
+
+	tokensList := []grammars.Token{
+		space,
+		tab,
+		newLine,
+		newRetCar,
+		singleLineComment,
+	}
+
+	channelsList := []grammars.Channel{}
+	for _, oneToken := range tokensList {
+		name := oneToken.Name()
+		channel, err := app.channelBuilder.Create().WithName(name).WithToken(oneToken).Now()
+		if err != nil {
+			panic(err)
+		}
+
+		channelsList = append(channelsList, channel)
+	}
+
+	ins, err := app.channelsBuilder.Create().WithList(channelsList).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
 }

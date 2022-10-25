@@ -7,10 +7,10 @@ import (
 	"github.com/steve-care-software/webx/domain/grammars"
 )
 
-func TestModule_newGrammarElement_withValue_Success(t *testing.T) {
+func TestModule_newGrammarLine_Success(t *testing.T) {
 	script := `
 		-> $name;;
-		<- $element;;
+		<- $line;;
 
 		// cast to uint app:
 		module @castToUint;;
@@ -47,10 +47,22 @@ func TestModule_newGrammarElement_withValue_Success(t *testing.T) {
         attach $value:$value $elementApp;;
         $element = execute $elementApp;;
 
+        // elements:
+        module @containerList;;
+        @containerList $listApp;;
+        attach $element:$0 $listApp;;
+        $elements = execute $listApp;;
+
+        // line:
+        module @newGrammarLine;;
+		@newGrammarLine $lineApp;;
+        attach $elements:$elements $lineApp;;
+        $line = execute $lineApp;;
+
 	`
 
 	name := "roger"
-	output, _, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
+	output, _, err := applications.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
 		"name": name,
 	}, []byte(script))
 
@@ -59,15 +71,16 @@ func TestModule_newGrammarElement_withValue_Success(t *testing.T) {
 		return
 	}
 
-	if ins, ok := output["element"].(grammars.Element); ok {
-		if !ins.Content().IsValue() {
-			t.Errorf("the element was expecting a value instance")
+	if ins, ok := output["line"].(grammars.Line); ok {
+		list := ins.Elements()
+		if len(list) != 1 {
+			t.Errorf("%d elements were expected, %d returned", 1, len(list))
 			return
 		}
 
 		return
 	}
 
-	t.Errorf("the element output was expected to contain an Element instance")
+	t.Errorf("the line output was expected to contain a Line instance")
 	return
 }

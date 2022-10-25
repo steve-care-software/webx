@@ -7,14 +7,57 @@ import (
 
 	"github.com/steve-care-software/webx/domain/criterias"
 	"github.com/steve-care-software/webx/domain/trees"
+	"github.com/steve-care-software/webx/domain/trees/selections"
 )
 
 type application struct {
+	builder          selections.Builder
+	selectionBuilder selections.SelectionBuilder
+	childrenBuilder  selections.ChildrenBuilder
+	childBuilder     selections.ChildBuilder
 }
 
-func createApplication() Application {
-	out := application{}
+func createApplication(
+	builder selections.Builder,
+	selectionBuilder selections.SelectionBuilder,
+	childrenBuilder selections.ChildrenBuilder,
+	childBuilder selections.ChildBuilder,
+) Application {
+	out := application{
+		builder:          builder,
+		selectionBuilder: selectionBuilder,
+		childrenBuilder:  childrenBuilder,
+		childBuilder:     childBuilder,
+	}
+
 	return &out
+}
+
+// Retrieve retrieve selections of a tree based on a given criteria
+func (app *application) Retrieve(criteria criterias.Criteria, tree trees.Tree) (selections.Selections, error) {
+	return nil, nil
+}
+
+func (app *application) retrieveByName(name string, tree trees.Tree) {
+	block := tree.Block()
+	if !block.HasSuccessful() {
+		//error
+	}
+
+	fetchedElementsList := []trees.Element{}
+	successful := block.Successful()
+	elementsList := successful.Elements().List()
+	for _, oneElement := range elementsList {
+		if !oneElement.HasGrammar() {
+			continue
+		}
+
+		elementName := oneElement.Grammar().Name()
+		if elementName == name {
+			fetchedElementsList = append(fetchedElementsList, oneElement)
+			continue
+		}
+	}
 }
 
 // Execute extracts data from a tree using the provided criteria
@@ -25,7 +68,7 @@ func (app *application) Execute(criteria criterias.Criteria, tree trees.Tree) ([
 func (app *application) extractWithPath(path []string, criteria criterias.Criteria, tree trees.Tree) ([]byte, error) {
 	name := criteria.Name()
 	index := criteria.Index()
-	subTree, element, err := tree.Fetch(name, index)
+	subTree, element, err := tree.Fetch(name, *index)
 	if err != nil {
 		return nil, err
 	}

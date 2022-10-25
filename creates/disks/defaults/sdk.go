@@ -1,6 +1,7 @@
 package defaults
 
 import (
+	"github.com/steve-care-software/webx/applications"
 	compiler_applications "github.com/steve-care-software/webx/applications/compilers"
 	"github.com/steve-care-software/webx/applications/creates"
 	criteria_applications "github.com/steve-care-software/webx/applications/criterias"
@@ -98,25 +99,47 @@ func NewApplication(
 			moduleApp,
 		))
 
-	additionalModules, err := moduleApp.Execute()
+	initialAdditionalModules, err := moduleApp.Execute()
 	if err != nil {
 		panic(err)
 	}
 
+	moduleWithCompilerApp := createModuleWithCompiler(
+		compilerApp,
+		modules.NewBuilder(),
+		modules.NewModuleBuilder(),
+		compilers.NewBuilder(),
+		compilers.NewElementsBuilder(),
+		compilers.NewElementBuilder(),
+		compilers.NewExecutionBuilder(),
+		compilers.NewParametersBuilder(),
+		compilers.NewParameterBuilder(),
+		compilers.NewValueBuilder(),
+		initialAdditionalModules,
+	)
+
+	createApp := creates.NewApplication(
+		grammarApp,
+		commandApp,
+		moduleWithCompilerApp,
+	)
+
+	additionalModulesWithCompiler, err := moduleWithCompilerApp.Execute()
+	if err != nil {
+		panic(err)
+	}
+
+	engineApp := applications.NewApplication(createApp)
+	moduleWithInterpreterApp := createModuleWithInterpreter(
+		engineApp,
+		modules.NewBuilder(),
+		modules.NewModuleBuilder(),
+		additionalModulesWithCompiler,
+	)
+
 	return creates.NewApplication(
 		grammarApp,
 		commandApp,
-		createModuleWithCompiler(
-			compilerApp,
-			modules.NewBuilder(),
-			modules.NewModuleBuilder(),
-			compilers.NewBuilder(),
-			compilers.NewElementsBuilder(),
-			compilers.NewElementBuilder(),
-			compilers.NewParametersBuilder(),
-			compilers.NewParameterBuilder(),
-			compilers.NewValueBuilder(),
-			additionalModules,
-		),
+		moduleWithInterpreterApp,
 	)
 }

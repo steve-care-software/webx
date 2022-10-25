@@ -22,8 +22,9 @@ type Builder interface {
 type Criteria interface {
 	Hash() hash.Hash
 	Name() string
-	Index() uint
 	IncludeChannels() bool
 	HasChild() bool
 	Child() Criteria
+	HasIndex() bool
+	Index() *uint
 }

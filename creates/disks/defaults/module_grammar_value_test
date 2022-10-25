@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	engines "github.com/steve-care-software/webx/applications"
+	"github.com/steve-care-software/webx/applications"
 	"github.com/steve-care-software/webx/domain/grammars/values"
 )
 
@@ -32,7 +32,7 @@ func TestModule_newGrammarValue_Success(t *testing.T) {
 	`
 
 	name := "roger"
-	output, remaining, err := engines.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
+	output, remaining, err := applications.NewApplication(NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
 		"myName": name,
 	}, []byte(script))
 
