@@ -27,6 +27,8 @@ const fullScriptForTests = `
     };;
 
 
+    $justAssignment = $script;;
+
     module @containerMapWithStringKeynames;;
     @containerMapWithStringKeynames $paramsApp;;
     $nameStr = dollarSign;;
@@ -40,4 +42,5 @@ const fullScriptForTests = `
     attach $params:$params $interpreterApp;;
     attach $createGrammarValueCode:$script $interpreterApp;;
     $output = execute $interpreterApp;;
+    execute $interpreterApp;;
 `

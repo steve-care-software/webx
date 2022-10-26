@@ -161,8 +161,32 @@ func (app *command) Instructions() criterias.Criteria {
 	return criteria
 }
 
-// Assignments returns the assignment criteria
-func (app *command) Assignment(index uint, pAmount *uint) criterias.Criteria {
+// AssignmentConstant returns the assignment constant criteria
+func (app *command) AssignmentConstant(index uint, pAmount *uint) criterias.Criteria {
+	return app.simpleCriteria("valueConstant", index, pAmount)
+}
+
+// AssignmentVariable returns the assignment variable criteria
+func (app *command) AssignmentVariable(index uint, pAmount *uint) criterias.Criteria {
+	return app.simpleCriteria("valueVariable", index, pAmount)
+}
+
+// AssignmentCode returns the assignment code criteria
+func (app *command) AssignmentCode(index uint, pAmount *uint) criterias.Criteria {
+	return app.simpleCriteria("codeAssignment", index, pAmount)
+}
+
+// AssignmentExecution returns the assignment execution criteria
+func (app *command) AssignmentExecution(index uint, pAmount *uint) criterias.Criteria {
+	return app.simpleCriteria("valueExecution", index, pAmount)
+}
+
+// Execution returns the execution criteria
+func (app *command) Execution(index uint, pAmount *uint) criterias.Criteria {
+	return app.simpleCriteria("execute", index, pAmount)
+}
+
+func (app *command) simpleCriteria(name string, index uint, pAmount *uint) criterias.Criteria {
 	builder := app.criteriaDelimiterBuilder.Create().WithIndex(index)
 	if pAmount != nil {
 		builder.WithAmount(*pAmount)
@@ -173,7 +197,7 @@ func (app *command) Assignment(index uint, pAmount *uint) criterias.Criteria {
 		panic(err)
 	}
 
-	tail, err := app.criteriaTailBuilder.Create().WithName("assignment").WithDelimiter(delimiter).Now()
+	tail, err := app.criteriaTailBuilder.Create().WithName(name).WithDelimiter(delimiter).Now()
 	if err != nil {
 		panic(err)
 	}
