@@ -191,23 +191,29 @@ func (app *application) searchTail(selectionIns selections.Selection, tail crite
 			Now()
 	}
 
+	childResults := []selections.Child{}
 	childList := selectionIns.List()
 	for _, oneChild := range childList {
 		if oneChild.IsContent() {
 			continue
 		}
 
-		childSelections := oneChild.Selections().List()
+		childSections := oneChild.Selections()
+		childSelections := childSections.List()
 		for _, oneSelection := range childSelections {
-			result, err := app.searchTail(oneSelection, tail)
+			res, err := app.searchTail(oneSelection, tail)
 			if err != nil {
 				continue
 			}
 
-			return result, nil
+			subChild := res.List()
+			childResults = append(childResults, subChild...)
 		}
 	}
 
-	return nil, errors.New("none found: single")
+	return app.selectionBuilder.Create().
+		WithElementName(elementName).
+		WithList(childResults).
+		Now()
 
 }

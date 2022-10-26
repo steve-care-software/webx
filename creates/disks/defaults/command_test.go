@@ -1,7 +1,6 @@
 package defaults
 
 import (
-	"fmt"
 	"testing"
 
 	grammar_applications "github.com/steve-care-software/webx/applications/grammars"
@@ -62,12 +61,17 @@ func TestCommand_Success(t *testing.T) {
 	}
 
 	// assignments:
-	assignmentsCriteria := createCommandApp.Assignment()
+	amount := uint(12)
+	assignmentsCriteria := createCommandApp.Assignment(0, &amount)
 	assignmentSelection, err := selectionApp.Search(instructionsSelection, assignmentsCriteria)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
 	}
 
-	fmt.Printf("\n%v\n", assignmentSelection.List())
+	assignmentList := assignmentSelection.List()
+	if len(assignmentList) != 5 {
+		t.Errorf("%d instructions were expected, %d returned", 5, len(assignmentList))
+		return
+	}
 }

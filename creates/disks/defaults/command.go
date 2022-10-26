@@ -161,25 +161,14 @@ func (app *command) Instructions() criterias.Criteria {
 	return criteria
 }
 
-// InstructionsNode returns the instructions node
-func (app *command) InstructionsNode(next criterias.Node) criterias.Node {
-	instructionsTail := app.InstructionsTail()
-	instructionCriteria, err := app.criteriaBuilder.Create().WithCurrent(instructionsTail).WithNext(next).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	instructionNode, err := app.criteriaNodeBuilder.Create().WithNext(instructionCriteria).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return instructionNode
-}
-
 // Assignments returns the assignment criteria
-func (app *command) Assignment() criterias.Criteria {
-	delimiter, err := app.criteriaDelimiterBuilder.Create().WithIndex(0).WithAmount(1).Now()
+func (app *command) Assignment(index uint, pAmount *uint) criterias.Criteria {
+	builder := app.criteriaDelimiterBuilder.Create().WithIndex(index)
+	if pAmount != nil {
+		builder.WithAmount(*pAmount)
+	}
+
+	delimiter, err := builder.Now()
 	if err != nil {
 		panic(err)
 	}
@@ -189,14 +178,7 @@ func (app *command) Assignment() criterias.Criteria {
 		panic(err)
 	}
 
-	assignmentNode, err := app.criteriaNodeBuilder.Create().WithTail(tail).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	instructionNode := app.InstructionsNode(assignmentNode)
-	rootTail := app.RootTail()
-	rootCriteria, err := app.criteriaBuilder.Create().WithCurrent(rootTail).WithNext(instructionNode).Now()
+	rootCriteria, err := app.criteriaBuilder.Create().WithCurrent(tail).Now()
 	if err != nil {
 		panic(err)
 	}
