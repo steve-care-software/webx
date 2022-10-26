@@ -2,7 +2,6 @@ package compilers
 
 import (
 	"github.com/steve-care-software/webx/applications/creates"
-	"github.com/steve-care-software/webx/applications/criterias"
 	"github.com/steve-care-software/webx/applications/grammars"
 	"github.com/steve-care-software/webx/applications/interpreters"
 	"github.com/steve-care-software/webx/domain/compilers"
@@ -19,7 +18,7 @@ func NewApplication(
 	createApp creates.Application,
 ) Application {
 	grammarApp := grammars.NewApplication()
-	criteriaApp := criterias.NewApplication()
+	//criteriaApp := criterias.NewApplication()
 	interpreterApp := interpreters.NewApplication()
 	instructionsBuilder := instructions.NewBuilder()
 	instructionBuilder := instructions.NewInstructionBuilder()
@@ -31,7 +30,7 @@ func NewApplication(
 	outputBuilder := instructions.NewOutputBuilder()
 	return createApplication(
 		grammarApp,
-		criteriaApp,
+		//criteriaApp,
 		interpreterApp,
 		createApp,
 		instructionsBuilder,

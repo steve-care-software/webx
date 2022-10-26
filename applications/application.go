@@ -2,7 +2,6 @@ package applications
 
 import (
 	"github.com/steve-care-software/webx/applications/creates"
-	"github.com/steve-care-software/webx/applications/criterias"
 	"github.com/steve-care-software/webx/applications/grammars"
 	"github.com/steve-care-software/webx/applications/instructions"
 	"github.com/steve-care-software/webx/applications/interpreters"
@@ -12,8 +11,8 @@ import (
 )
 
 type application struct {
-	createApp      creates.Application
-	criteriaApp    criterias.Application
+	createApp creates.Application
+	//criteriaApp    criterias.Application
 	grammarApp     grammars.Application
 	interpreterApp interpreters.Application
 	programApp     program_application.Application
@@ -22,15 +21,15 @@ type application struct {
 
 func createApplication(
 	createApp creates.Application,
-	criteriaApp criterias.Application,
+	//criteriaApp criterias.Application,
 	grammarApp grammars.Application,
 	interpreterApp interpreters.Application,
 	programApp program_application.Application,
 	instructionApp instructions.Application,
 ) Application {
 	out := application{
-		createApp:      createApp,
-		criteriaApp:    criteriaApp,
+		createApp: createApp,
+		//criteriaApp:    criteriaApp,
 		grammarApp:     grammarApp,
 		interpreterApp: interpreterApp,
 		programApp:     programApp,
@@ -46,9 +45,9 @@ func (app *application) Create() creates.Application {
 }
 
 // Criteria returns the criteria application
-func (app *application) Criteria() criterias.Application {
+/*func (app *application) Criteria() criterias.Application {
 	return app.criteriaApp
-}
+}*/
 
 // Grammar returns the grammar application
 func (app *application) Grammar() grammars.Application {
@@ -72,7 +71,7 @@ func (app *application) Instruction() instructions.Application {
 
 // ParseThenInterpret parses the script then interpret its program
 func (app *application) ParseThenInterpret(input map[string]interface{}, script []byte) (map[string]interface{}, []byte, error) {
-	grammar, err := app.createApp.Grammar().Execute()
+	/*grammar, err := app.createApp.Grammar().Execute()
 	if err != nil {
 		return nil, nil, err
 	}
@@ -98,7 +97,8 @@ func (app *application) ParseThenInterpret(input map[string]interface{}, script 
 		return nil, nil, err
 	}
 
-	return output, instructionsOutput.Remaining(), nil
+	return output, instructionsOutput.Remaining(), nil*/
+	return nil, nil, nil
 }
 
 // CompileThenParseThenInterpret compiles then parses then interpret

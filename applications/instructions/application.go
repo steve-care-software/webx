@@ -1,24 +1,18 @@
 package instructions
 
 import (
-	"errors"
-	"fmt"
-
-	application_criteria "github.com/steve-care-software/webx/applications/criterias"
 	grammar_application "github.com/steve-care-software/webx/applications/grammars"
 	"github.com/steve-care-software/webx/domain/commands"
-	"github.com/steve-care-software/webx/domain/criterias"
 	"github.com/steve-care-software/webx/domain/grammars"
 	"github.com/steve-care-software/webx/domain/instructions"
 	"github.com/steve-care-software/webx/domain/instructions/applications"
 	"github.com/steve-care-software/webx/domain/instructions/attachments"
 	"github.com/steve-care-software/webx/domain/instructions/parameters"
-	"github.com/steve-care-software/webx/domain/trees"
 )
 
 type application struct {
-	grammarApp                grammar_application.Application
-	criteriaApp               application_criteria.Application
+	grammarApp grammar_application.Application
+	//criteriaApp               application_criteria.Application
 	builder                   instructions.Builder
 	instructionBuilder        instructions.InstructionBuilder
 	assignmentBuilder         instructions.AssignmentBuilder
@@ -32,7 +26,7 @@ type application struct {
 
 func createApplication(
 	grammarApp grammar_application.Application,
-	criteriaApp application_criteria.Application,
+	//criteriaApp application_criteria.Application,
 	builder instructions.Builder,
 	instructionBuilder instructions.InstructionBuilder,
 	assignmentBuilder instructions.AssignmentBuilder,
@@ -44,8 +38,8 @@ func createApplication(
 	outputBuilder instructions.OutputBuilder,
 ) Application {
 	out := application{
-		grammarApp:                grammarApp,
-		criteriaApp:               criteriaApp,
+		grammarApp: grammarApp,
+		//criteriaApp:               criteriaApp,
 		builder:                   builder,
 		instructionBuilder:        instructionBuilder,
 		assignmentBuilder:         assignmentBuilder,
@@ -62,7 +56,7 @@ func createApplication(
 
 // Execute executes the application
 func (app *application) Execute(grammar grammars.Grammar, command commands.Command, script []byte) (instructions.Output, error) {
-	tree, err := app.grammarApp.Execute(grammar, script)
+	/*tree, err := app.grammarApp.Execute(grammar, script)
 	if err != nil {
 		return nil, err
 	}
@@ -108,9 +102,11 @@ func (app *application) Execute(grammar grammars.Grammar, command commands.Comma
 		outputBuilder.WithRemaining(remaining)
 	}
 
-	return outputBuilder.Now()
+	return outputBuilder.Now()*/
+	return nil, nil
 }
 
+/*
 func (app *application) instruction(
 	index uint,
 	grammar grammars.Grammar,
@@ -317,4 +313,4 @@ func (app *application) application(
 		WithModule(moduleNameStr).
 		WithName(nameStr).
 		Now()
-}
+}*/

@@ -3,98 +3,56 @@ package criterias
 import "github.com/steve-care-software/webx/domain/cryptography/hash"
 
 type criteria struct {
-	hash            hash.Hash
-	name            string
-	includeChannels bool
-	child           Criteria
-	pIndex          *uint
+	hash    hash.Hash
+	current Tail
+	next    Node
 }
 
 func createCriteria(
 	hash hash.Hash,
-	name string,
-	includeChannels bool,
+	current Tail,
 ) Criteria {
-	return createCriteriaInternally(hash, name, includeChannels, nil, nil)
+	return createCriteriaInternally(hash, current, nil)
 }
 
-func createCriteriaWithChild(
+func createCriteriaWithNext(
 	hash hash.Hash,
-	name string,
-	includeChannels bool,
-	child Criteria,
+	current Tail,
+	next Node,
 ) Criteria {
-	return createCriteriaInternally(hash, name, includeChannels, child, nil)
-}
-
-func createCriteriaWithIndex(
-	hash hash.Hash,
-	name string,
-	includeChannels bool,
-	pIndex *uint,
-) Criteria {
-	return createCriteriaInternally(hash, name, includeChannels, nil, pIndex)
-}
-
-func createCriteriaWithChildAndIndex(
-	hash hash.Hash,
-	name string,
-	includeChannels bool,
-	child Criteria,
-	pIndex *uint,
-) Criteria {
-	return createCriteriaInternally(hash, name, includeChannels, child, pIndex)
+	return createCriteriaInternally(hash, current, next)
 }
 
 func createCriteriaInternally(
 	hash hash.Hash,
-	name string,
-	includeChannels bool,
-	child Criteria,
-	pIndex *uint,
+	current Tail,
+	next Node,
 ) Criteria {
 	out := criteria{
-		hash:            hash,
-		name:            name,
-		includeChannels: includeChannels,
-		child:           child,
-		pIndex:          pIndex,
+		hash:    hash,
+		current: current,
+		next:    next,
 	}
 
 	return &out
 }
 
-// Hash returns the hash
+// Hash retruns the hash
 func (obj *criteria) Hash() hash.Hash {
 	return obj.hash
 }
 
-// Name returns the name
-func (obj *criteria) Name() string {
-	return obj.name
+// Current returns the current tail
+func (obj *criteria) Current() Tail {
+	return obj.current
 }
 
-// IncludeChannels returns true if channels are included, false otherwise
-func (obj *criteria) IncludeChannels() bool {
-	return obj.includeChannels
+// HasNext returns true if there is a next node, false otherwise
+func (obj *criteria) HasNext() bool {
+	return obj.next != nil
 }
 
-// HasChild returns true if there is a child, false otherwise
-func (obj *criteria) HasChild() bool {
-	return obj.child != nil
-}
-
-// Child returns the child, if any
-func (obj *criteria) Child() Criteria {
-	return obj.child
-}
-
-// HasIndex returns true if there is an index, false otherwise
-func (obj *criteria) HasIndex() bool {
-	return obj.pIndex != nil
-}
-
-// Index returns the index
-func (obj *criteria) Index() *uint {
-	return obj.pIndex
+// Next returns the next node, if any
+func (obj *criteria) Next() Node {
+	return obj.next
 }

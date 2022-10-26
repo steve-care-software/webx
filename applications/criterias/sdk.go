@@ -6,20 +6,6 @@ import (
 	"github.com/steve-care-software/webx/domain/trees/selections"
 )
 
-// NewApplication creates a new application
-func NewApplication() Application {
-	builder := selections.NewBuilder()
-	selectionBuilder := selections.NewSelectionBuilder()
-	childrenBuilder := selections.NewChildrenBuilder()
-	childBuilder := selections.NewChildBuilder()
-	return createApplication(
-		builder,
-		selectionBuilder,
-		childrenBuilder,
-		childBuilder,
-	)
-}
-
 // Application represents the criteria application
 type Application interface {
 	Retrieve(criteria criterias.Criteria, tree trees.Tree) (selections.Selections, error)

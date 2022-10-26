@@ -4,13 +4,13 @@ import "errors"
 
 type childBuilder struct {
 	selections Selections
-	bytes      []byte
+	content    []byte
 }
 
 func createChildBuilder() ChildBuilder {
 	out := childBuilder{
 		selections: nil,
-		bytes:      nil,
+		content:    nil,
 	}
 
 	return &out
@@ -27,9 +27,9 @@ func (app *childBuilder) WithSelections(selections Selections) ChildBuilder {
 	return app
 }
 
-// WithBytes adds bytes to the builder
-func (app *childBuilder) WithBytes(bytes []byte) ChildBuilder {
-	app.bytes = bytes
+// WithContent adds content to the builder
+func (app *childBuilder) WithContent(content []byte) ChildBuilder {
+	app.content = content
 	return app
 }
 
@@ -39,12 +39,12 @@ func (app *childBuilder) Now() (Child, error) {
 		return createChildWithSelections(app.selections), nil
 	}
 
-	if app.bytes != nil && len(app.bytes) <= 0 {
-		app.bytes = nil
+	if app.content != nil && len(app.content) <= 0 {
+		app.content = nil
 	}
 
-	if app.bytes != nil {
-		return createChildWithBytes(app.bytes), nil
+	if app.content != nil {
+		return createChildWithContent(app.content), nil
 	}
 
 	return nil, errors.New("the Child is invalid")

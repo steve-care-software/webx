@@ -2,7 +2,7 @@ package selections
 
 type child struct {
 	selections Selections
-	bytes      []byte
+	content    []byte
 }
 
 func createChildWithSelections(
@@ -11,22 +11,31 @@ func createChildWithSelections(
 	return createChildInternally(selections, nil)
 }
 
-func createChildWithBytes(
-	bytes []byte,
+func createChildWithContent(
+	content []byte,
 ) Child {
-	return createChildInternally(nil, bytes)
+	return createChildInternally(nil, content)
 }
 
 func createChildInternally(
 	selections Selections,
-	bytes []byte,
+	content []byte,
 ) Child {
 	out := child{
 		selections: selections,
-		bytes:      bytes,
+		content:    content,
 	}
 
 	return &out
+}
+
+// Bytes returns the bytes
+func (obj *child) Bytes() []byte {
+	if obj.IsContent() {
+		return obj.Content()
+	}
+
+	return obj.Selections().Bytes()
 }
 
 // IsSelections returns true if there is selections, false otherwise
@@ -39,12 +48,12 @@ func (obj *child) Selections() Selections {
 	return obj.selections
 }
 
-// IsBytes returns true if there is bytes, false otherwise
-func (obj *child) IsBytes() bool {
-	return obj.bytes != nil
+// IsContent returns true if there is content, false otherwise
+func (obj *child) IsContent() bool {
+	return obj.content != nil
 }
 
-// Bytes returns bytes, if any
-func (obj *child) Bytes() []byte {
-	return obj.bytes
+// Content returns content, if any
+func (obj *child) Content() []byte {
+	return obj.content
 }

@@ -1,18 +1,16 @@
 package selections
 
-import (
-	"errors"
-)
+import "errors"
 
 type selectionBuilder struct {
-	element  Element
-	children Children
+	elementName string
+	list        []Child
 }
 
 func createSelectionBuilder() SelectionBuilder {
 	out := selectionBuilder{
-		element:  nil,
-		children: nil,
+		elementName: "",
+		list:        nil,
 	}
 
 	return &out
@@ -23,34 +21,31 @@ func (app *selectionBuilder) Create() SelectionBuilder {
 	return createSelectionBuilder()
 }
 
-// WithElement adds an element to the builder
-func (app *selectionBuilder) WithElement(element Element) SelectionBuilder {
-	app.element = element
+// WithElementName adds an element name to the builder
+func (app *selectionBuilder) WithElementName(elementName string) SelectionBuilder {
+	app.elementName = elementName
 	return app
 }
 
-// WithChildren adds a children to the builder
-func (app *selectionBuilder) WithChildren(children Children) SelectionBuilder {
-	app.children = children
+// WithList adds a list to the builder
+func (app *selectionBuilder) WithList(list []Child) SelectionBuilder {
+	app.list = list
 	return app
 }
 
 // Now builds a new Selection instance
 func (app *selectionBuilder) Now() (Selection, error) {
-	if app.element != nil && app.children != nil {
-		content := createContentWithElementAndChildren(app.element, app.children)
-		return createSelection(content), nil
+	if app.elementName == "" {
+		return nil, errors.New("the element name is mandatory in order to build a Selection instance")
 	}
 
-	if app.element != nil {
-		content := createContentWithElement(app.element)
-		return createSelection(content), nil
+	if app.list != nil && len(app.list) <= 0 {
+		app.list = nil
 	}
 
-	if app.children != nil {
-		content := createContentWithChildren(app.children)
-		return createSelection(content), nil
+	if app.list == nil {
+		return nil, errors.New("there must be at least 1 Child in order to build a Selection instance")
 	}
 
-	return nil, errors.New("the Selection is invalid")
+	return createSelection(app.elementName, app.list), nil
 }

@@ -2,7 +2,6 @@ package applications
 
 import (
 	"github.com/steve-care-software/webx/applications/creates"
-	"github.com/steve-care-software/webx/applications/criterias"
 	"github.com/steve-care-software/webx/applications/grammars"
 	"github.com/steve-care-software/webx/applications/instructions"
 	"github.com/steve-care-software/webx/applications/interpreters"
@@ -12,7 +11,7 @@ import (
 
 // NewApplication creates a new application
 func NewApplication(createApp creates.Application) Application {
-	criteriaApp := criterias.NewApplication()
+	//criteriaApp := criterias.NewApplication()
 	grammarApp := grammars.NewApplication()
 	interpreterApp := interpreters.NewApplication()
 	instructionApp := instructions.NewApplication()
@@ -29,7 +28,7 @@ func NewApplication(createApp creates.Application) Application {
 
 	return createApplication(
 		createApp,
-		criteriaApp,
+		//criteriaApp,
 		grammarApp,
 		interpreterApp,
 		programApp,
@@ -40,7 +39,7 @@ func NewApplication(createApp creates.Application) Application {
 // Application represents an engine application
 type Application interface {
 	Create() creates.Application
-	Criteria() criterias.Application
+	//Criteria() criterias.Application
 	Grammar() grammars.Application
 	Interpreter() interpreters.Application
 	Instruction() instructions.Application

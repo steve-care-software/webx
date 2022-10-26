@@ -8,7 +8,6 @@ import (
 	"time"
 
 	creates_module "github.com/steve-care-software/webx/applications/creates/modules"
-	criteria_applications "github.com/steve-care-software/webx/applications/criterias"
 	grammar_applications "github.com/steve-care-software/webx/applications/grammars"
 	identity_applications "github.com/steve-care-software/webx/applications/identities"
 	"github.com/steve-care-software/webx/domain/criterias"
@@ -20,13 +19,12 @@ import (
 	"github.com/steve-care-software/webx/domain/identities"
 	"github.com/steve-care-software/webx/domain/identities/modifications"
 	"github.com/steve-care-software/webx/domain/programs/modules"
-	"github.com/steve-care-software/webx/domain/trees"
 )
 
 type module struct {
-	identityApplication            identity_applications.Application
-	grammarApplication             grammar_applications.Application
-	criteriaApplication            criteria_applications.Application
+	identityApplication identity_applications.Application
+	grammarApplication  grammar_applications.Application
+	//criteriaApplication            criteria_applications.Application
 	builder                        modules.Builder
 	moduleBuilder                  modules.ModuleBuilder
 	signaturePrivateKeyFactory     signatures.PrivateKeyFactory
@@ -55,7 +53,7 @@ type module struct {
 func createModule(
 	identityApplication identity_applications.Application,
 	grammarApplication grammar_applications.Application,
-	criteriaApplication criteria_applications.Application,
+	//criteriaApplication criteria_applications.Application,
 	builder modules.Builder,
 	moduleBuilder modules.ModuleBuilder,
 	signaturePrivateKeyFactory signatures.PrivateKeyFactory,
@@ -81,9 +79,9 @@ func createModule(
 	grammarValueBuilder values.Builder,
 ) creates_module.Application {
 	out := module{
-		identityApplication:            identityApplication,
-		grammarApplication:             grammarApplication,
-		criteriaApplication:            criteriaApplication,
+		identityApplication: identityApplication,
+		grammarApplication:  grammarApplication,
+		//criteriaApplication:            criteriaApplication,
 		builder:                        builder,
 		moduleBuilder:                  moduleBuilder,
 		signaturePrivateKeyFactory:     signaturePrivateKeyFactory,
@@ -125,10 +123,10 @@ func (app *module) Execute() (modules.Modules, error) {
 		return nil, err
 	}
 
-	criteria, err := app.newCriteria()
+	/*criteria, err := app.newCriteria()
 	if err != nil {
 		return nil, err
-	}
+	}*/
 
 	container, err := app.container()
 	if err != nil {
@@ -142,7 +140,7 @@ func (app *module) Execute() (modules.Modules, error) {
 
 	list = append(list, identity...)
 	list = append(list, grammar...)
-	list = append(list, criteria)
+	//list = append(list, criteria)
 	list = append(list, container...)
 	list = append(list, castTo...)
 	return app.builder.Create().WithList(list).Now()
@@ -365,7 +363,7 @@ func (app *module) newIdentityModification() (modules.Module, error) {
 	return app.module(name, fn)
 }
 
-func (app *module) executeCriteria() (modules.Module, error) {
+/*func (app *module) executeCriteria() (modules.Module, error) {
 	name := "executeCriteria"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		if criteria, ok := input["criteria"].(criterias.Criteria); ok {
@@ -383,8 +381,9 @@ func (app *module) executeCriteria() (modules.Module, error) {
 	}
 
 	return app.module(name, fn)
-}
+}*/
 
+/*
 func (app *module) newCriteria() (modules.Module, error) {
 	name := "newCriteria"
 	fn := func(input map[string]interface{}) (interface{}, error) {
@@ -411,7 +410,7 @@ func (app *module) newCriteria() (modules.Module, error) {
 	}
 
 	return app.module(name, fn)
-}
+}*/
 
 func (app *module) grammar() ([]modules.Module, error) {
 	value, err := app.newGrammarValue()

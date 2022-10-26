@@ -4,7 +4,6 @@ import (
 	"github.com/steve-care-software/webx/applications"
 	compiler_applications "github.com/steve-care-software/webx/applications/compilers"
 	"github.com/steve-care-software/webx/applications/creates"
-	criteria_applications "github.com/steve-care-software/webx/applications/criterias"
 	grammar_applications "github.com/steve-care-software/webx/applications/grammars"
 	identity_applications "github.com/steve-care-software/webx/applications/identities"
 	"github.com/steve-care-software/webx/domain/commands"
@@ -61,12 +60,15 @@ func NewApplication(
 		commands.NewApplicationDeclarationBuilder(),
 		commands.NewValueBuilder(),
 		criterias.NewBuilder(),
+		criterias.NewNodeBuilder(),
+		criterias.NewTailBuilder(),
+		criterias.NewDelimiterBuilder(),
 	)
 
 	moduleApp := createModule(
 		identityApplication,
 		grammar_applications.NewApplication(),
-		criteria_applications.NewApplication(),
+		//criteria_applications.NewApplication(),
 		modules.NewBuilder(),
 		modules.NewModuleBuilder(),
 		signatures.NewPrivateKeyFactory(),

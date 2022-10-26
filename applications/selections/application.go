@@ -12,23 +12,17 @@ import (
 type application struct {
 	builder          selections.Builder
 	selectionBuilder selections.SelectionBuilder
-	elementBuilder   selections.ElementBuilder
-	childrenBuilder  selections.ChildrenBuilder
 	childBuilder     selections.ChildBuilder
 }
 
 func createApplication(
 	builder selections.Builder,
 	selectionBuilder selections.SelectionBuilder,
-	elementBuilder selections.ElementBuilder,
-	childrenBuilder selections.ChildrenBuilder,
 	childBuilder selections.ChildBuilder,
 ) Application {
 	out := application{
 		builder:          builder,
 		selectionBuilder: selectionBuilder,
-		elementBuilder:   elementBuilder,
-		childrenBuilder:  childrenBuilder,
 		childBuilder:     childBuilder,
 	}
 
@@ -36,7 +30,24 @@ func createApplication(
 }
 
 // Convert converts a tree to a selections instance
-func (app *application) Convert(tree trees.Tree, includeChannelBytes bool) (selections.Selections, error) {
+func (app *application) Convert(tree trees.Tree, includeChannelBytes bool) (selections.Selection, error) {
+	selectionsIns, err := app.convert(tree, includeChannelBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	child, err := app.childBuilder.Create().WithSelections(selectionsIns).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	name := tree.Grammar().Name()
+	return app.selectionBuilder.Create().WithElementName(name).WithList([]selections.Child{
+		child,
+	}).Now()
+}
+
+func (app *application) convert(tree trees.Tree, includeChannelBytes bool) (selections.Selections, error) {
 	block := tree.Block()
 	treeName := tree.Grammar().Name()
 	if !block.HasSuccessful() {
@@ -62,7 +73,7 @@ func (app *application) Convert(tree trees.Tree, includeChannelBytes bool) (sele
 			}
 
 			if len(content) > 0 {
-				child, err := app.childBuilder.Create().WithBytes(content).Now()
+				child, err := app.childBuilder.Create().WithContent(content).Now()
 				if err != nil {
 					return nil, err
 				}
@@ -72,7 +83,7 @@ func (app *application) Convert(tree trees.Tree, includeChannelBytes bool) (sele
 			}
 
 			subTree := oneContent.Tree()
-			subSelections, err := app.Convert(subTree, includeChannelBytes)
+			subSelections, err := app.convert(subTree, includeChannelBytes)
 			if err != nil {
 				return nil, err
 			}
@@ -86,7 +97,7 @@ func (app *application) Convert(tree trees.Tree, includeChannelBytes bool) (sele
 		}
 
 		if len(content) > 0 {
-			child, err := app.childBuilder.Create().WithBytes(content).Now()
+			child, err := app.childBuilder.Create().WithContent(content).Now()
 			if err != nil {
 				return nil, err
 			}
@@ -94,37 +105,30 @@ func (app *application) Convert(tree trees.Tree, includeChannelBytes bool) (sele
 			childList = append(childList, child)
 		}
 
-		childrenBuilder := app.childrenBuilder.Create().WithElementName("reverse").WithList(childList)
+		selectionBuilder := app.selectionBuilder.Create().WithElementName("reverse").WithList(childList)
 		if oneElement.HasGrammar() {
 			elementName := oneElement.Grammar().Name()
-			childrenBuilder.WithElementName(elementName)
+			selectionBuilder.WithElementName(elementName)
 		}
 
-		children, err := childrenBuilder.Now()
-		if err != nil {
-			return nil, err
-		}
-
-		elementBuilder := app.elementBuilder.Create().WithValue(oneElement)
-		if includeChannelBytes {
-			elementBuilder.IncludeChannelBytes()
-		}
-
-		element, err := elementBuilder.Now()
-		if err != nil {
-			return nil, err
-		}
-
-		selection, err := app.selectionBuilder.Create().
-			WithElement(element).
-			WithChildren(children).
-			Now()
-
+		selection, err := selectionBuilder.Now()
 		if err != nil {
 			return nil, err
 		}
 
 		selectionsList = append(selectionsList, selection)
+	}
+
+	if includeChannelBytes && tree.HasSuffix() {
+		suffixes := tree.Suffix().List()
+		for _, oneSuffix := range suffixes {
+			suffixSelections, err := app.convert(oneSuffix, includeChannelBytes)
+			if err != nil {
+				return nil, err
+			}
+
+			selectionsList = append(selectionsList, suffixSelections.List()...)
+		}
 	}
 
 	return app.builder.Create().
@@ -134,82 +138,76 @@ func (app *application) Convert(tree trees.Tree, includeChannelBytes bool) (sele
 }
 
 // Search search in the selections using a criteria instance
-func (app *application) Search(selections selections.Selections, criteria criterias.Criteria) (selections.Selections, error) {
-	name := criteria.Name()
-	selected, err := app.refine(selections, name)
-	if err != nil {
-		return nil, err
+func (app *application) Search(selection selections.Selection, criteria criterias.Criteria) (selections.Selection, error) {
+	if !criteria.HasNext() {
+		current := criteria.Current()
+		return app.searchTail(selection, current)
 	}
 
-	if criteria.HasChild() {
-		childCriteria := criteria.Child()
-		return app.Search(selected, childCriteria)
-	}
-
-	return selected, nil
+	next := criteria.Next()
+	return app.searchNode(selection, next)
 }
 
-func (app *application) refine(ins selections.Selections, name string) (selections.Selections, error) {
-	list := ins.List()
-	selectedList := []selections.Selection{}
-	for _, oneSelection := range list {
-		if oneSelection.ElementName() == name {
-			selectedList = append(selectedList, oneSelection)
+func (app *application) searchNode(selectionIns selections.Selection, node criterias.Node) (selections.Selection, error) {
+	if node.IsNext() {
+		next := node.Next()
+		return app.Search(selectionIns, next)
+	}
+
+	tail := node.Tail()
+	return app.searchTail(selectionIns, tail)
+}
+
+func (app *application) searchTail(selectionIns selections.Selection, tail criterias.Tail) (selections.Selection, error) {
+	name := tail.Name()
+	elementName := selectionIns.ElementName()
+	if elementName == name {
+		childList := selectionIns.List()
+		if !tail.HasDelimiter() {
+			return app.selectionBuilder.Create().
+				WithElementName(elementName).
+				WithList(childList).
+				Now()
+		}
+
+		delimiter := tail.Delimiter()
+		index := delimiter.Index()
+		pAmount := delimiter.Amount()
+		if uint(len(childList)) <= index {
+			str := fmt.Sprintf("there is %d children in the element (name: %s), therefore the requested child (index: %d) cannot be selected", len(childList), elementName, index)
+			return nil, errors.New(str)
+		}
+
+		childList = childList[index:]
+		if pAmount != nil {
+			if uint(len(childList)) > *pAmount {
+				childList = childList[:*pAmount]
+			}
+		}
+
+		return app.selectionBuilder.Create().
+			WithElementName(elementName).
+			WithList(childList).
+			Now()
+	}
+
+	childList := selectionIns.List()
+	for _, oneChild := range childList {
+		if oneChild.IsContent() {
 			continue
 		}
 
-		content := oneSelection.Content()
-		if content.HasChildren() {
-			selectedChildList := []selections.Child{}
-			children := content.Children()
-			childList := children.List()
-			for _, oneChild := range childList {
-				if oneChild.IsBytes() {
-					fmt.Printf("\n%s\n", oneChild.Bytes())
-					continue
-				}
-
-				next := oneChild.Selections()
-				subSelections, err := app.refine(next, name)
-				if err != nil {
-					return nil, err
-				}
-
-				selectedChild, err := app.childBuilder.Create().WithSelections(subSelections).Now()
-				if err != nil {
-					return nil, err
-				}
-
-				selectedChildList = append(selectedChildList, selectedChild)
-			}
-
-			if len(selectedChildList) <= 0 {
+		childSelections := oneChild.Selections().List()
+		for _, oneSelection := range childSelections {
+			result, err := app.searchTail(oneSelection, tail)
+			if err != nil {
 				continue
 			}
 
-			elementName := children.ElementName()
-			selectedChildren, err := app.childrenBuilder.Create().
-				WithElementName(elementName).
-				WithList(selectedChildList).
-				Now()
-
-			if err != nil {
-				return nil, err
-			}
-
-			selectedSelection, err := app.selectionBuilder.Create().
-				WithChildren(selectedChildren).
-				Now()
-
-			if err != nil {
-				return nil, err
-			}
-
-			selectedList = append(selectedList, selectedSelection)
+			return result, nil
 		}
 	}
 
-	return app.builder.Create().
-		WithList(selectedList).
-		Now()
+	return nil, errors.New("none found: single")
+
 }

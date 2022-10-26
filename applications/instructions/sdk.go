@@ -1,7 +1,6 @@
 package instructions
 
 import (
-	"github.com/steve-care-software/webx/applications/criterias"
 	grammar_application "github.com/steve-care-software/webx/applications/grammars"
 	"github.com/steve-care-software/webx/domain/commands"
 	"github.com/steve-care-software/webx/domain/grammars"
@@ -14,7 +13,7 @@ import (
 // NewApplication creates a new application
 func NewApplication() Application {
 	grammarApp := grammar_application.NewApplication()
-	criteriaApp := criterias.NewApplication()
+	//criteriaApp := criterias.NewApplication()
 	builder := instructions.NewBuilder()
 	instructionBuilder := instructions.NewInstructionBuilder()
 	assignmentBuilder := instructions.NewAssignmentBuilder()
@@ -26,7 +25,7 @@ func NewApplication() Application {
 	outputBuilder := instructions.NewOutputBuilder()
 	return createApplication(
 		grammarApp,
-		criteriaApp,
+		//criteriaApp,
 		builder,
 		instructionBuilder,
 		assignmentBuilder,

@@ -1,14 +1,17 @@
 package selections
 
 type selection struct {
-	content Content
+	elementName string
+	list        []Child
 }
 
 func createSelection(
-	content Content,
+	elementName string,
+	list []Child,
 ) Selection {
 	out := selection{
-		content: content,
+		elementName: elementName,
+		list:        list,
 	}
 
 	return &out
@@ -16,23 +19,20 @@ func createSelection(
 
 // ElementName returns the element name
 func (obj *selection) ElementName() string {
-	if obj.content.HasElement() {
-		return obj.content.Element().Value().Grammar().Name()
-	}
-
-	return obj.content.Children().ElementName()
+	return obj.elementName
 }
 
 // Bytes returns the bytes
 func (obj *selection) Bytes() []byte {
-	if obj.content.HasElement() {
-		return obj.content.Element().Bytes()
+	content := []byte{}
+	for _, oneChild := range obj.list {
+		content = append(content, oneChild.Bytes()...)
 	}
 
-	return obj.content.Children().Bytes()
+	return content
 }
 
-// Content returns the content
-func (obj *selection) Content() Content {
-	return obj.content
+// List returns the list of child
+func (obj *selection) List() []Child {
+	return obj.list
 }

@@ -1,4 +1,4 @@
-package selections
+package criterias
 
 import (
 	"github.com/steve-care-software/webx/domain/criterias"
@@ -10,16 +10,18 @@ import (
 func NewApplication() Application {
 	builder := selections.NewBuilder()
 	selectionBuilder := selections.NewSelectionBuilder()
+	childrenBuilder := selections.NewChildrenBuilder()
 	childBuilder := selections.NewChildBuilder()
 	return createApplication(
 		builder,
 		selectionBuilder,
+		childrenBuilder,
 		childBuilder,
 	)
 }
 
-// Application represents a selection application
+// Application represents the criteria application
 type Application interface {
-	Convert(tree trees.Tree, includeChannelBytes bool) (selections.Selection, error)
-	Search(selection selections.Selection, criteria criterias.Criteria) (selections.Selection, error)
+	Retrieve(criteria criterias.Criteria, tree trees.Tree) (selections.Selections, error)
+	Execute(criteria criterias.Criteria, tree trees.Tree) ([]byte, error)
 }

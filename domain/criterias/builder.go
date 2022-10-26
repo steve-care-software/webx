@@ -2,28 +2,23 @@ package criterias
 
 import (
 	"errors"
-	"strconv"
 
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
 )
 
 type builder struct {
-	hashAdapter     hash.Adapter
-	name            string
-	pIndex          *uint
-	includeChannels bool
-	child           Criteria
+	hashAdapter hash.Adapter
+	current     Tail
+	next        Node
 }
 
 func createBuilder(
 	hashAdapter hash.Adapter,
 ) Builder {
 	out := builder{
-		hashAdapter:     hashAdapter,
-		name:            "",
-		pIndex:          nil,
-		includeChannels: false,
-		child:           nil,
+		hashAdapter: hashAdapter,
+		current:     nil,
+		next:        nil,
 	}
 
 	return &out
@@ -31,61 +26,33 @@ func createBuilder(
 
 // Create initializes the builder
 func (app *builder) Create() Builder {
-	return createBuilder(
-		app.hashAdapter,
-	)
+	return createBuilder(app.hashAdapter)
 }
 
-// WithName adds a name to the builder
-func (app *builder) WithName(name string) Builder {
-	app.name = name
+// WithCurrent adds a current tail to the builder
+func (app *builder) WithCurrent(current Tail) Builder {
+	app.current = current
 	return app
 }
 
-// WithIndex adds an index to the builder
-func (app *builder) WithIndex(index uint) Builder {
-	app.pIndex = &index
-	return app
-}
-
-// IncludeChannels flags the builder as include channels
-func (app *builder) IncludeChannels() Builder {
-	app.includeChannels = true
-	return app
-}
-
-// WithChild adds a child to the builder
-func (app *builder) WithChild(child Criteria) Builder {
-	app.child = child
+// WithNext adds a next node to the builder
+func (app *builder) WithNext(next Node) Builder {
+	app.next = next
 	return app
 }
 
 // Now builds a new Criteria instance
 func (app *builder) Now() (Criteria, error) {
-	if app.name == "" {
-		return nil, errors.New("the name is mandatory in order to build a Criteria instance")
-	}
-
-	if app.pIndex == nil {
-		return nil, errors.New("the index is mandatory in order to build a Criteria instance")
-	}
-
-	includeChannelsStr := "false"
-	if app.includeChannels {
-		includeChannelsStr = "true"
+	if app.current == nil {
+		return nil, errors.New("the current tail is mandatory in order to build a Criteria instance")
 	}
 
 	data := [][]byte{
-		[]byte(app.name),
-		[]byte(includeChannelsStr),
+		app.current.Hash().Bytes(),
 	}
 
-	if app.child != nil {
-		data = append(data, app.child.Hash().Bytes())
-	}
-
-	if app.pIndex != nil {
-		data = append(data, []byte(strconv.Itoa(int(*app.pIndex))))
+	if app.next != nil {
+		data = append(data, app.next.Hash().Bytes())
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes(data)
@@ -93,17 +60,9 @@ func (app *builder) Now() (Criteria, error) {
 		return nil, err
 	}
 
-	if app.pIndex != nil && app.child != nil {
-		return createCriteriaWithChildAndIndex(*pHash, app.name, app.includeChannels, app.child, app.pIndex), nil
+	if app.next != nil {
+		return createCriteriaWithNext(*pHash, app.current, app.next), nil
 	}
 
-	if app.pIndex != nil {
-		return createCriteriaWithIndex(*pHash, app.name, app.includeChannels, app.pIndex), nil
-	}
-
-	if app.child != nil {
-		return createCriteriaWithChild(*pHash, app.name, app.includeChannels, app.child), nil
-	}
-
-	return createCriteria(*pHash, app.name, app.includeChannels), nil
+	return createCriteria(*pHash, app.current), nil
 }

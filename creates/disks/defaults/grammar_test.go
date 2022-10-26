@@ -177,7 +177,7 @@ func TestGrammar_multipleCharacters_Success(t *testing.T) {
 				module @containerMapWithStringKeynames;;
 				@containerMapWithStringKeynames $paramsApp;;
 				$nameStr = dollarSign;;
-				$valueStr = 36;
+				$valueStr = 36;;
 				attach $nameStr:$name $paramsApp;;
 				attach $valueStr:$number $valueApp;;
 				$params = execute $paramsApp;;

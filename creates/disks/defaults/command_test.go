@@ -25,12 +25,9 @@ func TestCommand_Success(t *testing.T) {
 
 	createCommandApp := createApp.Command().(*command)
 
-	variableNameCriteria := createCommandApp.VariableName(0)
-
 	grammarApp := grammar_applications.NewApplication()
 	selectionApp := selection_applications.NewApplication()
-
-	tree, err := grammarApp.Execute(grammarIns, []byte("-> $myVariable;;"))
+	tree, err := grammarApp.Execute(grammarIns, []byte(fullScriptForTests))
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -42,12 +39,35 @@ func TestCommand_Success(t *testing.T) {
 		return
 	}
 
-	searched, err := selectionApp.Search(converted, variableNameCriteria)
+	// root
+	rootCriteria := createCommandApp.Root()
+	rootSelection, err := selectionApp.Search(converted, rootCriteria)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
 	}
 
-	fmt.Printf("\n%v\n", searched)
+	// instructions:
+	instructionsCriteria := createCommandApp.Instructions()
+	instructionsSelection, err := selectionApp.Search(rootSelection, instructionsCriteria)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
 
+	instructionsList := instructionsSelection.List()
+	if len(instructionsList) != 15 {
+		t.Errorf("%d instructions were expected, %d returned", 15, len(instructionsList))
+		return
+	}
+
+	// assignments:
+	assignmentsCriteria := createCommandApp.Assignment()
+	assignmentSelection, err := selectionApp.Search(instructionsSelection, assignmentsCriteria)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	fmt.Printf("\n%v\n", assignmentSelection.List())
 }

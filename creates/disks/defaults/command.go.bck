@@ -14,9 +14,6 @@ type command struct {
 	applicationDeclarationBuilder commands.ApplicationDeclarationBuilder
 	valueBuilder                  commands.ValueBuilder
 	criteriaBuilder               criterias.Builder
-	criteriaNodeBuilder           criterias.NodeBuilder
-	criteriaTailBuilder           criterias.TailBuilder
-	criteriaDelimiterBuilder      criterias.DelimiterBuilder
 }
 
 func createCommand(
@@ -27,9 +24,6 @@ func createCommand(
 	applicationDeclarationBuilder commands.ApplicationDeclarationBuilder,
 	valueBuilder commands.ValueBuilder,
 	criteriaBuilder criterias.Builder,
-	criteriaNodeBuilder criterias.NodeBuilder,
-	criteriaTailBuilder criterias.TailBuilder,
-	criteriaDelimiterBuilder criterias.DelimiterBuilder,
 ) creates_command.Application {
 	out := command{
 		builder:                       builder,
@@ -39,9 +33,6 @@ func createCommand(
 		applicationDeclarationBuilder: applicationDeclarationBuilder,
 		valueBuilder:                  valueBuilder,
 		criteriaBuilder:               criteriaBuilder,
-		criteriaNodeBuilder:           criteriaNodeBuilder,
-		criteriaTailBuilder:           criteriaTailBuilder,
-		criteriaDelimiterBuilder:      criteriaDelimiterBuilder,
 	}
 
 	return &out
@@ -49,162 +40,46 @@ func createCommand(
 
 // Execute executes the application
 func (app *command) Execute() (commands.Command, error) {
-	return nil, nil
-	/*execution, err := app.execution()
-		if err != nil {
-			return nil, err
-		}
+	execution, err := app.execution()
+	if err != nil {
+		return nil, err
+	}
 
-		attachment, err := app.attachment()
-		if err != nil {
-			return nil, err
-		}
+	attachment, err := app.attachment()
+	if err != nil {
+		return nil, err
+	}
 
-		variableAssignment, err := // VariableName returns the variable name criteria
-	func (app *command) VariableName(index uint) criterias.Criteria {
-		name, err := app.criteriaBuilder.Create().WithName("name").WithIndex(0).Now()
-		if err != nil {
-			panic(err)
-		}
+	variableAssignment, err := app.variableAssignment()
+	if err != nil {
+		return nil, err
+	}
 
-		ins, err := app.criteriaBuilder.Create().WithName("variableName").WithIndex(index).WithChild(name).Now()
-		if err != nil {
-			panic(err)
-		}
+	parameterDeclaration, err := app.parameterDeclaration()
+	if err != nil {
+		return nil, err
+	}
 
-		return ins
-	}app.variableAssignment()
-		if err != nil {
-			return nil, err
-		}
+	applicationDeclaration, err := app.applicationDeclaration()
+	if err != nil {
+		return nil, err
+	}
 
-		parameterDeclaration, err := app.parameterDeclaration()
-		if err != nil {
-			return nil, err
-		}
+	moduleDeclaration, err := app.moduleDeclaration()
+	if err != nil {
+		return nil, err
+	}
 
-		applicationDeclaration, err := app.applicationDeclaration()
-		if err != nil {
-			return nil, err
-		}
-
-		moduleDeclaration, err := app.moduleDeclaration()
-		if err != nil {
-			return nil, err
-		}
-
-		return app.builder.Create().
-			WithExecution(execution).
-			WithAttachment(attachment).
-			WithVariableAssignment(variableAssignment).
-			WithParameterDeclaration(parameterDeclaration).
-			WithApplicationDeclaration(applicationDeclaration).
-			WithModuleDeclaration(moduleDeclaration).
-			Now()*/
+	return app.builder.Create().
+		WithExecution(execution).
+		WithAttachment(attachment).
+		WithVariableAssignment(variableAssignment).
+		WithParameterDeclaration(parameterDeclaration).
+		WithApplicationDeclaration(applicationDeclaration).
+		WithModuleDeclaration(moduleDeclaration).
+		Now()
 }
 
-// RootTail returns the root tail
-func (app *command) RootTail() criterias.Tail {
-	delimiter, err := app.criteriaDelimiterBuilder.Create().WithIndex(0).WithAmount(1).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	tail, err := app.criteriaTailBuilder.Create().WithName("root").WithDelimiter(delimiter).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return tail
-}
-
-// Root returns the root criteria
-func (app *command) Root() criterias.Criteria {
-	tail := app.RootTail()
-	criteria, err := app.criteriaBuilder.Create().WithCurrent(tail).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return criteria
-}
-
-// InstructionsTail returns the instructions tail
-func (app *command) InstructionsTail() criterias.Tail {
-	delimiter, err := app.criteriaDelimiterBuilder.Create().WithIndex(0).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	tail, err := app.criteriaTailBuilder.Create().WithName("instruction").WithDelimiter(delimiter).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return tail
-}
-
-// Instructions returns the instructions criteria
-func (app *command) Instructions() criterias.Criteria {
-	tail := app.InstructionsTail()
-	next, err := app.criteriaNodeBuilder.Create().WithTail(tail).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	root := app.RootTail()
-	criteria, err := app.criteriaBuilder.Create().WithCurrent(root).WithNext(next).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return criteria
-}
-
-// InstructionsNode returns the instructions node
-func (app *command) InstructionsNode(next criterias.Node) criterias.Node {
-	instructionsTail := app.InstructionsTail()
-	instructionCriteria, err := app.criteriaBuilder.Create().WithCurrent(instructionsTail).WithNext(next).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	instructionNode, err := app.criteriaNodeBuilder.Create().WithNext(instructionCriteria).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return instructionNode
-}
-
-// Assignments returns the assignment criteria
-func (app *command) Assignment() criterias.Criteria {
-	delimiter, err := app.criteriaDelimiterBuilder.Create().WithIndex(0).WithAmount(1).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	tail, err := app.criteriaTailBuilder.Create().WithName("assignment").WithDelimiter(delimiter).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	assignmentNode, err := app.criteriaNodeBuilder.Create().WithTail(tail).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	instructionNode := app.InstructionsNode(assignmentNode)
-	rootTail := app.RootTail()
-	rootCriteria, err := app.criteriaBuilder.Create().WithCurrent(rootTail).WithNext(instructionNode).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return rootCriteria
-}
-
-/*
 func (app *command) execution() (criterias.Criteria, error) {
 	variableName := app.VariableName(0)
 	execute, err := app.criteriaBuilder.Create().WithName("execute").WithIndex(0).WithChild(variableName).Now()
@@ -482,4 +357,4 @@ func (app *command) VariableName(index uint) criterias.Criteria {
 	}
 
 	return ins
-}*/
+}

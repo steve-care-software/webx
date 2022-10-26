@@ -1,10 +1,7 @@
 package compilers
 
 import (
-	"fmt"
-
 	"github.com/steve-care-software/webx/applications/creates"
-	criteria_application "github.com/steve-care-software/webx/applications/criterias"
 	grammar_application "github.com/steve-care-software/webx/applications/grammars"
 	interpreter_application "github.com/steve-care-software/webx/applications/interpreters"
 	"github.com/steve-care-software/webx/domain/compilers"
@@ -14,8 +11,8 @@ import (
 )
 
 type application struct {
-	grammarApp                grammar_application.Application
-	criteriaApp               criteria_application.Application
+	grammarApp grammar_application.Application
+	//criteriaApp               criteria_application.Application
 	interpreterApp            interpreter_application.Application
 	createApp                 creates.Application
 	instructionsBuilder       instructions.Builder
@@ -30,7 +27,7 @@ type application struct {
 
 func createApplication(
 	grammarApp grammar_application.Application,
-	criteriaApp criteria_application.Application,
+	//criteriaApp criteria_application.Application,
 	interpreterApp interpreter_application.Application,
 	createApp creates.Application,
 	instructionsBuilder instructions.Builder,
@@ -43,8 +40,8 @@ func createApplication(
 	outputBuilder instructions.OutputBuilder,
 ) Application {
 	out := application{
-		grammarApp:                grammarApp,
-		criteriaApp:               criteriaApp,
+		grammarApp: grammarApp,
+		//criteriaApp:               criteriaApp,
 		interpreterApp:            interpreterApp,
 		createApp:                 createApp,
 		instructionsBuilder:       instructionsBuilder,
@@ -62,7 +59,7 @@ func createApplication(
 
 // Execute eecutes a compiler
 func (app *application) Execute(compiler compilers.Compiler, script []byte) (instructions.Output, error) {
-	remaining := script
+	/*remaining := script
 	elementsList := compiler.Elements().List()
 	application, err := app.applicationBuilder.Create().WithModule(ExecuteInstructionsModuleName).WithName("executeInstructionsApp").Now()
 	if err != nil {
@@ -193,5 +190,6 @@ func (app *application) Execute(compiler compilers.Compiler, script []byte) (ins
 		builder.WithRemaining(remaining)
 	}
 
-	return builder.Now()
+	return builder.Now()*/
+	return nil, nil
 }
