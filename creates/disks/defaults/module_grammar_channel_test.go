@@ -119,13 +119,7 @@ func TestModule_newGrammarChannel_Success(t *testing.T) {
 		return
 	}
 
-	if ins, ok := output["channel"].(grammars.Channel); ok {
-		name := ins.Name()
-		if name != "myChannel" {
-			t.Errorf("the name was expected to be '%s', '%s' returned", "myChannel", name)
-			return
-		}
-
+	if ins, ok := output[valueToHashStringForTests("channel")].(grammars.Channel); ok {
 		if ins.HasCondition() {
 			t.Errorf("the channel was expected to NOT contain a condition")
 			return
@@ -258,13 +252,7 @@ func TestModule_newGrammarChannel_withCondition_Success(t *testing.T) {
 		return
 	}
 
-	if ins, ok := output["channel"].(grammars.Channel); ok {
-		name := ins.Name()
-		if name != "myChannel" {
-			t.Errorf("the name was expected to be '%s', '%s' returned", "myChannel", name)
-			return
-		}
-
+	if ins, ok := output[valueToHashStringForTests("channel")].(grammars.Channel); ok {
 		if !ins.HasCondition() {
 			t.Errorf("the channel was expected to contain a condition")
 			return
