@@ -85,5 +85,5 @@ func (app *moduleWithInterpreter) parseThenInterpret() (modules.Module, error) {
 }
 
 func (app *moduleWithInterpreter) module(name string, fn modules.ExecuteFn) (modules.Module, error) {
-	return app.moduleBuilder.Create().WithName(name).WithFunc(fn).Now()
+	return app.moduleBuilder.Create().WithName([]byte(name)).WithFunc(fn).Now()
 }

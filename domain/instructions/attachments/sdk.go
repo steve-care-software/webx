@@ -14,26 +14,26 @@ func NewVariableBuilder() VariableBuilder {
 type Builder interface {
 	Create() Builder
 	WithVariable(variable Variable) Builder
-	WithApplication(application string) Builder
+	WithApplication(application []byte) Builder
 	Now() (Attachment, error)
 }
 
 // Attachment represents an attachment
 type Attachment interface {
 	Variable() Variable
-	Application() string
+	Application() []byte
 }
 
 // VariableBuilder represents a variable builder
 type VariableBuilder interface {
 	Create() VariableBuilder
-	WithCurrent(current string) VariableBuilder
-	WithTarget(target string) VariableBuilder
+	WithCurrent(current []byte) VariableBuilder
+	WithTarget(target []byte) VariableBuilder
 	Now() (Variable, error)
 }
 
 // Variable represents an attachment variable
 type Variable interface {
-	Current() string
-	Target() string
+	Current() []byte
+	Target() []byte
 }

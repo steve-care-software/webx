@@ -3,13 +3,13 @@ package modules
 import "errors"
 
 type moduleBuilder struct {
-	name string
+	name []byte
 	fn   ExecuteFn
 }
 
 func createModuleBuilder() ModuleBuilder {
 	out := moduleBuilder{
-		name: "",
+		name: nil,
 		fn:   nil,
 	}
 
@@ -22,7 +22,7 @@ func (app *moduleBuilder) Create() ModuleBuilder {
 }
 
 // WithName adds a name to the builder
-func (app *moduleBuilder) WithName(name string) ModuleBuilder {
+func (app *moduleBuilder) WithName(name []byte) ModuleBuilder {
 	app.name = name
 	return app
 }
@@ -35,7 +35,7 @@ func (app *moduleBuilder) WithFunc(fn ExecuteFn) ModuleBuilder {
 
 // Now builds a new Module instance
 func (app *moduleBuilder) Now() (Module, error) {
-	if app.name == "" {
+	if app.name == nil {
 		return nil, errors.New("the name is mandatory in order to build a Module instance")
 	}
 

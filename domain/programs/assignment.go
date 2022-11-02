@@ -2,13 +2,13 @@ package programs
 
 type assignment struct {
 	index uint
-	name  string
+	name  []byte
 	value Value
 }
 
 func createAssignment(
 	index uint,
-	name string,
+	name []byte,
 	value Value,
 ) Assignment {
 	out := assignment{
@@ -26,7 +26,7 @@ func (obj *assignment) Index() uint {
 }
 
 // Name returns the name
-func (obj *assignment) Name() string {
+func (obj *assignment) Name() []byte {
 	return obj.name
 }
 

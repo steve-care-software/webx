@@ -468,7 +468,7 @@ func (app *application) token(token grammars.Token, stackMap map[string]*stack, 
 	}
 
 	tokenBlock := token.Block()
-	block, remaining, retStackMap, err := app.block(tokenName, stackMap, tokenBlock, escape, channels, isReverse, prevData, currentData)
+	block, remaining, retStackMap, err := app.block(token, stackMap, tokenBlock, escape, channels, isReverse, prevData, currentData)
 	delete(stackMap, tokenName)
 	if err != nil {
 		return nil, nil, err
@@ -530,7 +530,8 @@ func (app *application) external(external grammars.External, isReverse bool, pre
 	return app.treeBuilder.Create().WithGrammar(grammarRoot).WithBlock(treeBlock).Now()
 }
 
-func (app *application) block(tokenName string, stackMap map[string]*stack, block grammars.Block, escape grammars.Token, channels grammars.Channels, isReverse bool, prevData []byte, currentData []byte) (trees.Block, []byte, map[string]*stack, error) {
+func (app *application) block(token grammars.Token, stackMap map[string]*stack, block grammars.Block, escape grammars.Token, channels grammars.Channels, isReverse bool, prevData []byte, currentData []byte) (trees.Block, []byte, map[string]*stack, error) {
+	tokenName := token.Name()
 	list := []trees.Line{}
 	lines := block.Lines()
 	remaining := currentData
@@ -538,11 +539,20 @@ func (app *application) block(tokenName string, stackMap map[string]*stack, bloc
 
 	for idx, oneLine := range lines {
 		// if we already went through this line, with the same data, in the stack, skip it to avoid infinite loops:
-		if data, ok := currentStack[tokenName].lines[idx]; ok {
-			if bytes.Compare(remaining, data) == 0 {
-				continue
-			}
+		if _, ok := currentStack[tokenName]; ok {
+			if data, ok := currentStack[tokenName].lines[idx]; ok {
+				if bytes.Compare(remaining, data) == 0 {
+					continue
+				}
 
+			}
+		}
+
+		if _, ok := currentStack[tokenName]; !ok {
+			currentStack[tokenName] = &stack{
+				token: token,
+				lines: map[int][]byte{},
+			}
 		}
 
 		currentStack[tokenName].lines[idx] = remaining

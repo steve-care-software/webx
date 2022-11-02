@@ -7,57 +7,57 @@ import (
 )
 
 type instruction struct {
-	module      string
+	module      []byte
 	application applications.Application
 	parameter   parameters.Parameter
 	assignment  Assignment
 	attachment  attachments.Attachment
-	execution   string
+	execution   []byte
 }
 
 func createInstructionWithModule(
-	module string,
+	module []byte,
 ) Instruction {
-	return createInstructionInternally(module, nil, nil, nil, nil, "")
+	return createInstructionInternally(module, nil, nil, nil, nil, nil)
 }
 
 func createInstructionWithApplication(
 	application applications.Application,
 ) Instruction {
-	return createInstructionInternally("", application, nil, nil, nil, "")
+	return createInstructionInternally(nil, application, nil, nil, nil, nil)
 }
 
 func createInstructionWithParameter(
 	parameter parameters.Parameter,
 ) Instruction {
-	return createInstructionInternally("", nil, parameter, nil, nil, "")
+	return createInstructionInternally(nil, nil, parameter, nil, nil, nil)
 }
 
 func createInstructionWithAssignment(
 	assignment Assignment,
 ) Instruction {
-	return createInstructionInternally("", nil, nil, assignment, nil, "")
+	return createInstructionInternally(nil, nil, nil, assignment, nil, nil)
 }
 
 func createInstructionWithAttachment(
 	attachment attachments.Attachment,
 ) Instruction {
-	return createInstructionInternally("", nil, nil, nil, attachment, "")
+	return createInstructionInternally(nil, nil, nil, nil, attachment, nil)
 }
 
 func createInstructionWithExecution(
-	execution string,
+	execution []byte,
 ) Instruction {
-	return createInstructionInternally("", nil, nil, nil, nil, execution)
+	return createInstructionInternally(nil, nil, nil, nil, nil, execution)
 }
 
 func createInstructionInternally(
-	module string,
+	module []byte,
 	application applications.Application,
 	parameter parameters.Parameter,
 	assignment Assignment,
 	attachment attachments.Attachment,
-	execution string,
+	execution []byte,
 ) Instruction {
 	out := instruction{
 		module:      module,
@@ -73,11 +73,11 @@ func createInstructionInternally(
 
 // IsModule returns true if there is a module, false otherwise
 func (obj *instruction) IsModule() bool {
-	return obj.module != ""
+	return obj.module != nil
 }
 
 // Module returns the module, if any
-func (obj *instruction) Module() string {
+func (obj *instruction) Module() []byte {
 	return obj.module
 }
 
@@ -123,10 +123,10 @@ func (obj *instruction) Attachment() attachments.Attachment {
 
 // IsExecution returns true if there is an execution, false otherwise
 func (obj *instruction) IsExecution() bool {
-	return obj.execution != ""
+	return obj.execution != nil
 }
 
 // Execution returns the execution, if any
-func (obj *instruction) Execution() string {
+func (obj *instruction) Execution() []byte {
 	return obj.execution
 }

@@ -1,47 +1,56 @@
 package programs
 
 type value struct {
-	input     string
-	str       string
-	execution Application
-	program   Program
+	input      []byte
+	assignment Assignment
+	constant   []byte
+	execution  Application
+	program    Program
 }
 
 func createValueWithInput(
-	input string,
+	input []byte,
 ) Value {
-	return createValueInternally(input, "", nil, nil)
+	return createValueInternally(input, nil, nil, nil, nil)
 }
 
-func createValueWithString(
-	str string,
+func createValueWithAssignment(
+	assignment Assignment,
 ) Value {
-	return createValueInternally("", str, nil, nil)
+	return createValueInternally(nil, assignment, nil, nil, nil)
+}
+
+func createValueWithConstant(
+	constant []byte,
+) Value {
+	return createValueInternally(nil, nil, constant, nil, nil)
 }
 
 func createValueWithExecution(
 	execution Application,
 ) Value {
-	return createValueInternally("", "", execution, nil)
+	return createValueInternally(nil, nil, nil, execution, nil)
 }
 
 func createValueWithProgram(
 	program Program,
 ) Value {
-	return createValueInternally("", "", nil, program)
+	return createValueInternally(nil, nil, nil, nil, program)
 }
 
 func createValueInternally(
-	input string,
-	str string,
+	input []byte,
+	assignment Assignment,
+	constant []byte,
 	execution Application,
 	program Program,
 ) Value {
 	out := value{
-		input:     input,
-		str:       str,
-		execution: execution,
-		program:   program,
+		input:      input,
+		assignment: assignment,
+		constant:   constant,
+		execution:  execution,
+		program:    program,
 	}
 
 	return &out
@@ -49,22 +58,32 @@ func createValueInternally(
 
 // IsInput returns true if input, false otherwise
 func (obj *value) IsInput() bool {
-	return obj.input != ""
+	return obj.input != nil
 }
 
 // Input returns the input, if any
-func (obj *value) Input() string {
+func (obj *value) Input() []byte {
 	return obj.input
 }
 
-// IsString returns true if string, false otherwise
-func (obj *value) IsString() bool {
-	return obj.str != ""
+// IsAssignment returns true if assignment, false otherwise
+func (obj *value) IsAssignment() bool {
+	return obj.assignment != nil
 }
 
-// String returns the string, if any
-func (obj *value) String() string {
-	return obj.str
+// Assignment returns the assignment, if any
+func (obj *value) Assignment() Assignment {
+	return obj.assignment
+}
+
+// IsConstant returns true if []byte, false otherwise
+func (obj *value) IsConstant() bool {
+	return obj.constant != nil
+}
+
+// Constant returns the []byte, if any
+func (obj *value) Constant() []byte {
+	return obj.constant
 }
 
 // IsExecution returns true if execution, false otherwise

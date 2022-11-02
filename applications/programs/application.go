@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/steve-care-software/webx/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/domain/instructions"
 	instruction_applications "github.com/steve-care-software/webx/domain/instructions/applications"
 	"github.com/steve-care-software/webx/domain/instructions/attachments"
@@ -13,6 +14,7 @@ import (
 )
 
 type application struct {
+	hashAdapter        hash.Adapter
 	builder            programs.Builder
 	instructionBuilder programs.InstructionBuilder
 	applicationBuilder programs.ApplicationBuilder
@@ -24,6 +26,7 @@ type application struct {
 }
 
 func createApplication(
+	hashAdapter hash.Adapter,
 	builder programs.Builder,
 	instructionBuilder programs.InstructionBuilder,
 	applicationBuilder programs.ApplicationBuilder,
@@ -33,6 +36,7 @@ func createApplication(
 	valueBuilder programs.ValueBuilder,
 ) Application {
 	return createApplicationInternally(
+		hashAdapter,
 		builder,
 		instructionBuilder,
 		applicationBuilder,
@@ -45,6 +49,7 @@ func createApplication(
 }
 
 func createApplicationWithModules(
+	hashAdapter hash.Adapter,
 	builder programs.Builder,
 	instructionBuilder programs.InstructionBuilder,
 	applicationBuilder programs.ApplicationBuilder,
@@ -55,6 +60,7 @@ func createApplicationWithModules(
 	modules modules.Modules,
 ) Application {
 	return createApplicationInternally(
+		hashAdapter,
 		builder,
 		instructionBuilder,
 		applicationBuilder,
@@ -67,6 +73,7 @@ func createApplicationWithModules(
 }
 
 func createApplicationInternally(
+	hashAdapter hash.Adapter,
 	builder programs.Builder,
 	instructionBuilder programs.InstructionBuilder,
 	applicationBuilder programs.ApplicationBuilder,
@@ -77,6 +84,7 @@ func createApplicationInternally(
 	modules modules.Modules,
 ) Application {
 	out := application{
+		hashAdapter:        hashAdapter,
 		builder:            builder,
 		instructionBuilder: instructionBuilder,
 		applicationBuilder: applicationBuilder,
@@ -95,7 +103,7 @@ func (app *application) Execute(instructions instructions.Instructions) (program
 	list := instructions.List()
 	inModules := map[string]modules.Module{}
 	inApplications := map[string]programs.Application{}
-	inParameters := map[string]bool{}
+	inParameters := map[string]parameters.Parameter{}
 	inAssignments := map[string]programs.Assignment{}
 	inInstructions := []programs.Instruction{}
 	for idx, oneInstruction := range list {
@@ -120,13 +128,13 @@ func (app *application) Execute(instructions instructions.Instructions) (program
 		inInstructions = outInstructions
 	}
 
-	outputs := []string{}
-	for name, isInput := range inParameters {
-		if isInput {
+	outputs := [][]byte{}
+	for _, parameter := range inParameters {
+		if parameter.IsInput() {
 			continue
 		}
 
-		outputs = append(outputs, name)
+		outputs = append(outputs, parameter.Name())
 	}
 
 	builder := app.builder.Create().WithInstructions(inInstructions)
@@ -142,10 +150,10 @@ func (app *application) instruction(
 	instruction instructions.Instruction,
 	inModules map[string]modules.Module,
 	inApplications map[string]programs.Application,
-	inParameters map[string]bool,
+	inParameters map[string]parameters.Parameter,
 	inAssignments map[string]programs.Assignment,
 	inInstructions []programs.Instruction,
-) (map[string]modules.Module, map[string]programs.Application, map[string]bool, map[string]programs.Assignment, []programs.Instruction, error) {
+) (map[string]modules.Module, map[string]programs.Application, map[string]parameters.Parameter, map[string]programs.Assignment, []programs.Instruction, error) {
 	if instruction.IsModule() {
 		name := instruction.Module()
 		outModules, err := app.module(name, inModules)
@@ -203,11 +211,17 @@ func (app *application) instruction(
 	}
 
 	execution := instruction.Execution()
+	executionHash, err := app.hashAdapter.FromBytes(execution)
+	if err != nil {
+		return nil, nil, nil, nil, nil, err
+	}
+
+	executionKeyname := executionHash.String()
 	instructionBuilder := app.instructionBuilder.Create()
-	if executedApp, ok := inApplications[execution]; ok {
+	if executedApp, ok := inApplications[executionKeyname]; ok {
 		instructionBuilder.WithExecution(executedApp)
 	} else {
-		str := fmt.Sprintf("the application's execution (index: %d, name: %s) is invalid because the application is undefined", index, execution)
+		str := fmt.Sprintf("the application's execution (index: %d, name: %v, hash: %s) is invalid because the application is undefined", index, execution, executionKeyname)
 		return nil, nil, nil, nil, nil, errors.New(str)
 	}
 
@@ -222,7 +236,7 @@ func (app *application) instruction(
 
 func (app *application) attachment(
 	attachment attachments.Attachment,
-	inParameters map[string]bool,
+	inParameters map[string]parameters.Parameter,
 	inAssignments map[string]programs.Assignment,
 	inApplications map[string]programs.Application,
 ) (map[string]programs.Application, error) {
@@ -233,7 +247,13 @@ func (app *application) attachment(
 	}
 
 	applicationName := attachment.Application()
-	if appIns, ok := inApplications[applicationName]; ok {
+	pApplicationNameHash, err := app.hashAdapter.FromBytes(applicationName)
+	if err != nil {
+		return nil, err
+	}
+
+	applicationNameKeyname := pApplicationNameHash.String()
+	if appIns, ok := inApplications[applicationNameKeyname]; ok {
 		target := variable.Target()
 		attachment, err := app.attachmentBuilder.Create().WithValue(currentValue).WithLocal(target).Now()
 		if err != nil {
@@ -258,7 +278,13 @@ func (app *application) attachment(
 			return nil, err
 		}
 
-		inApplications[name] = updatedAppIns
+		pNameHash, err := app.hashAdapter.FromBytes(name)
+		if err != nil {
+			return nil, err
+		}
+
+		nameKeyname := pNameHash.String()
+		inApplications[nameKeyname] = updatedAppIns
 		return inApplications, nil
 	}
 
@@ -268,31 +294,37 @@ func (app *application) attachment(
 
 func (app *application) attachmentValue(
 	variable attachments.Variable,
-	inParameters map[string]bool,
+	inParameters map[string]parameters.Parameter,
 	inAssignments map[string]programs.Assignment,
 ) (programs.Value, error) {
 	current := variable.Current()
-	if currentIns, ok := inAssignments[current]; ok {
+	pHash, err := app.hashAdapter.FromBytes(current)
+	if err != nil {
+		return nil, err
+	}
+
+	keyname := pHash.String()
+	if currentIns, ok := inAssignments[keyname]; ok {
 		return currentIns.Value(), nil
 	}
 
-	if isInput, ok := inParameters[current]; ok {
-		if !isInput {
-			str := fmt.Sprintf("the output variable (name: %s) cannot be used in attachment", current)
+	if parameter, ok := inParameters[keyname]; ok {
+		if !parameter.IsInput() {
+			str := fmt.Sprintf("the output variable (name: %v, hash: %s) cannot be used in attachment", current, keyname)
 			return nil, errors.New(str)
 		}
 
 		return app.valueBuilder.Create().WithInput(current).Now()
 	}
 
-	str := fmt.Sprintf("the current variable (name: %s) is undeclared and therefore cannot be used in an attachment", current)
+	str := fmt.Sprintf("the current variable (name: %v, hash: %s) is undeclared and therefore cannot be used in an attachment", current, keyname)
 	return nil, errors.New(str)
 }
 
 func (app *application) assignment(
 	index uint,
 	assignment instructions.Assignment,
-	inParameters map[string]bool,
+	inParameters map[string]parameters.Parameter,
 	inAssignments map[string]programs.Assignment,
 	inApplications map[string]programs.Application,
 ) (map[string]programs.Assignment, programs.Assignment, error) {
@@ -307,42 +339,58 @@ func (app *application) assignment(
 		return nil, nil, err
 	}
 
-	inAssignments[variable] = assignmentIns
+	pHash, err := app.hashAdapter.FromBytes(variable)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	keyname := pHash.String()
+	inAssignments[keyname] = assignmentIns
 	return inAssignments, assignmentIns, nil
 }
 
 func (app *application) value(
 	index uint,
 	assignment instructions.Assignment,
-	inParameters map[string]bool,
+	inParameters map[string]parameters.Parameter,
 	inAssignments map[string]programs.Assignment,
 	inApplications map[string]programs.Application,
 ) (programs.Value, error) {
 	variable := assignment.Variable()
+	pHash, err := app.hashAdapter.FromBytes(variable)
+	if err != nil {
+		return nil, err
+	}
+
+	keyname := pHash.String()
 	value := assignment.Value()
 	builder := app.valueBuilder.Create()
-	if value.IsInput() {
-		input := value.Input()
-		if isInput, ok := inParameters[input]; ok {
-			if !isInput {
-				str := fmt.Sprintf("the assignment (index: %d, variable: %s) is using an output variable (name: %s) as value", index, variable, input)
+	if value.IsVariable() {
+		assignedVariable := value.Variable()
+		pAssignedVariableHash, err := app.hashAdapter.FromBytes(assignedVariable)
+		if err != nil {
+			return nil, err
+		}
+
+		assignedVariableKeyname := pAssignedVariableHash.String()
+		if parameter, ok := inParameters[assignedVariableKeyname]; ok {
+			if !parameter.IsInput() {
+				str := fmt.Sprintf("the assignment (index: %d, variable: %v, hash: %s) is using an output variable (nme: %v, hash: %s) as value", index, variable, keyname, assignedVariable, assignedVariableKeyname)
 				return nil, errors.New(str)
 			}
 
-			builder.WithInput(input)
+			builder.WithInput(variable)
+		} else if assignment, ok := inAssignments[assignedVariableKeyname]; ok {
+			builder.WithAssignment(assignment)
 		} else {
-			str := fmt.Sprintf("the assignment (index: %d, variable: %s) is using an undefined input variable (name: %s) as value", index, variable, input)
+			str := fmt.Sprintf("the assignment (index: %d, variable: %v, hash: %s) is using an undefined variable (name: %v, hash: %s) as value", index, variable, keyname, assignedVariable, assignedVariableKeyname)
 			return nil, errors.New(str)
 		}
 	}
 
-	if value.IsString() {
-		str := value.String()
-		if variable, ok := inAssignments[str]; ok {
-			return variable.Value(), nil
-		}
-
-		builder.WithString(str)
+	if value.IsConstant() {
+		constant := value.Constant()
+		builder.WithConstant(constant)
 	}
 
 	if value.IsInstructions() {
@@ -357,10 +405,16 @@ func (app *application) value(
 
 	if value.IsExecution() {
 		execution := value.Execution()
-		if executedApp, ok := inApplications[execution]; ok {
+		pExecutionHash, err := app.hashAdapter.FromBytes(execution)
+		if err != nil {
+			return nil, err
+		}
+
+		executionKeyname := pExecutionHash.String()
+		if executedApp, ok := inApplications[executionKeyname]; ok {
 			builder.WithExecution(executedApp)
 		} else {
-			str := fmt.Sprintf("the assignment (index: %d, variable: %s) is using an undefined application execution (name: %s) as value", index, variable, execution)
+			str := fmt.Sprintf("the assignment (index: %d, variable: %v, hash: %s) is using an undefined application execution (name: %v, hash: %s) as value", index, variable, keyname, execution, executionKeyname)
 			return nil, errors.New(str)
 		}
 	}
@@ -370,15 +424,21 @@ func (app *application) value(
 
 func (app *application) parameter(
 	parameter parameters.Parameter,
-	inParameters map[string]bool,
-) (map[string]bool, error) {
+	inParameters map[string]parameters.Parameter,
+) (map[string]parameters.Parameter, error) {
 	name := parameter.Name()
-	if _, ok := inParameters[name]; ok {
-		str := fmt.Sprintf("the parameter (name: %s, isInput: %t) is already declared", name, parameter.IsInput())
+	pHash, err := app.hashAdapter.FromBytes(name)
+	if err != nil {
+		return nil, err
+	}
+
+	keyname := pHash.String()
+	if _, ok := inParameters[keyname]; ok {
+		str := fmt.Sprintf("the parameter (name: %s, hash: %s, isInput: %t) is already declared", name, keyname, parameter.IsInput())
 		return nil, errors.New(str)
 	}
 
-	inParameters[name] = parameter.IsInput()
+	inParameters[keyname] = parameter
 	return inParameters, nil
 }
 
@@ -388,32 +448,51 @@ func (app *application) application(
 	inApplications map[string]programs.Application,
 ) (map[string]programs.Application, error) {
 	name := application.Name()
-	if _, ok := inApplications[name]; ok {
-		str := fmt.Sprintf("the application (name: %s) is already declared", name)
-		return nil, errors.New(str)
-	}
-
-	module := application.Module()
-	if _, ok := inModules[module]; !ok {
-		str := fmt.Sprintf("the module (name: %s) is undefined but used in the application declaration (name: %s)", module, name)
-		return nil, errors.New(str)
-	}
-
-	ins, err := app.applicationBuilder.Create().WithName(name).WithModule(inModules[module]).Now()
+	pHash, err := app.hashAdapter.FromBytes(name)
 	if err != nil {
 		return nil, err
 	}
 
-	inApplications[name] = ins
+	keyname := pHash.String()
+	if _, ok := inApplications[keyname]; ok {
+		str := fmt.Sprintf("the application (name: %v, hash: %s) is already declared", name, keyname)
+		return nil, errors.New(str)
+	}
+
+	module := application.Module()
+	pModuleHash, err := app.hashAdapter.FromBytes(module)
+	if err != nil {
+		return nil, err
+	}
+
+	moduleKeyname := pModuleHash.String()
+	if _, ok := inModules[moduleKeyname]; !ok {
+		fmt.Printf("\n%s, %s, %s, %v\n", moduleKeyname, name, module, inModules)
+		str := fmt.Sprintf("the module (name: %v, keyname: %s) is undefined but used in the application declaration (name: %v, hash: %s)", module, moduleKeyname, name, keyname)
+		return nil, errors.New(str)
+	}
+
+	ins, err := app.applicationBuilder.Create().WithName(name).WithModule(inModules[moduleKeyname]).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	inApplications[keyname] = ins
 	return inApplications, nil
 }
 
 func (app *application) module(
-	name string,
+	name []byte,
 	modules map[string]modules.Module,
 ) (map[string]modules.Module, error) {
+	pHash, err := app.hashAdapter.FromBytes(name)
+	if err != nil {
+		return nil, err
+	}
+
+	keyname := pHash.String()
 	if app.modules == nil {
-		str := fmt.Sprintf("the module (name: %s) is undefined", name)
+		str := fmt.Sprintf("the module (name: %v, hash: %s) is undefined because there is zero (0) module loaded", name, keyname)
 		return nil, errors.New(str)
 	}
 
@@ -422,11 +501,11 @@ func (app *application) module(
 		return nil, err
 	}
 
-	if _, ok := modules[name]; ok {
-		str := fmt.Sprintf("the module (name: %s) is already loaded", name)
+	if _, ok := modules[keyname]; ok {
+		str := fmt.Sprintf("the module (name: %v, hash: %s) is already loaded", name, keyname)
 		return nil, errors.New(str)
 	}
 
-	modules[name] = module
+	modules[keyname] = module
 	return modules, nil
 }

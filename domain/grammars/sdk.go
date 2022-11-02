@@ -121,7 +121,6 @@ type Channels interface {
 // ChannelBuilder represents a channel builder
 type ChannelBuilder interface {
 	Create() ChannelBuilder
-	WithName(name string) ChannelBuilder
 	WithToken(token Token) ChannelBuilder
 	WithCondition(condition ChannelCondition) ChannelBuilder
 	Now() (Channel, error)
@@ -130,7 +129,6 @@ type ChannelBuilder interface {
 // Channel represents a channel
 type Channel interface {
 	Hash() hash.Hash
-	Name() string
 	Token() Token
 	HasCondition() bool
 	Condition() ChannelCondition

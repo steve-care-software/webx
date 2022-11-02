@@ -6,7 +6,7 @@ import (
 
 type builder struct {
 	instructions []Instruction
-	outputs      []string
+	outputs      [][]byte
 }
 
 func createBuilder() Builder {
@@ -30,7 +30,7 @@ func (app *builder) WithInstructions(instructions []Instruction) Builder {
 }
 
 // WithOutputs add outputs to the builder
-func (app *builder) WithOutputs(outputs []string) Builder {
+func (app *builder) WithOutputs(outputs [][]byte) Builder {
 	app.outputs = outputs
 	return app
 }

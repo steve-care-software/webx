@@ -12,6 +12,7 @@ import (
 	identity_applications "github.com/steve-care-software/webx/applications/identities"
 	"github.com/steve-care-software/webx/domain/criterias"
 	"github.com/steve-care-software/webx/domain/cryptography/encryptions/keys"
+	"github.com/steve-care-software/webx/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/domain/cryptography/signatures"
 	"github.com/steve-care-software/webx/domain/grammars"
 	"github.com/steve-care-software/webx/domain/grammars/cardinalities"
@@ -48,6 +49,7 @@ type module struct {
 	grammarElementBuilder          grammars.ElementBuilder
 	grammarCardinalityBuilder      cardinalities.Builder
 	grammarValueBuilder            values.Builder
+	hashAdapter                    hash.Adapter
 }
 
 func createModule(
@@ -77,6 +79,7 @@ func createModule(
 	grammarElementBuilder grammars.ElementBuilder,
 	grammarCardinalityBuilder cardinalities.Builder,
 	grammarValueBuilder values.Builder,
+	hashAdapter hash.Adapter,
 ) creates_module.Application {
 	out := module{
 		identityApplication: identityApplication,
@@ -105,6 +108,7 @@ func createModule(
 		grammarElementBuilder:          grammarElementBuilder,
 		grammarCardinalityBuilder:      grammarCardinalityBuilder,
 		grammarValueBuilder:            grammarValueBuilder,
+		hashAdapter:                    hashAdapter,
 	}
 
 	return &out
@@ -207,15 +211,15 @@ func (app *module) identity() ([]modules.Module, error) {
 func (app *module) modifyIdentity() (modules.Module, error) {
 	name := "modifyIdentity"
 	fn := func(input map[string]interface{}) (interface{}, error) {
-		if modification, ok := input["modification"].(modifications.Modification); ok {
-			if currentPassword, ok := input["currentPassword"].(string); ok {
+		if modification, ok := input[app.valueToHashString("modification")].(modifications.Modification); ok {
+			if currentPassword, ok := input[app.valueToHashString("currentPassword")].(string); ok {
 				selectedApp, err := app.identityApplication.Select(name)
 				if err != nil {
 					return nil, err
 				}
 
 				newPassword := currentPassword
-				if newPasswordStr, ok := input["newPassword"].(string); ok {
+				if newPasswordStr, ok := input[app.valueToHashString("newPassword")].(string); ok {
 					newPassword = newPasswordStr
 				}
 
@@ -239,8 +243,8 @@ func (app *module) modifyIdentity() (modules.Module, error) {
 func (app *module) retrieveIdentity() (modules.Module, error) {
 	name := "retrieveIdentity"
 	fn := func(input map[string]interface{}) (interface{}, error) {
-		if name, ok := input["name"].(string); ok {
-			if password, ok := input["password"].(string); ok {
+		if name, ok := input[app.valueToHashString("name")].(string); ok {
+			if password, ok := input[app.valueToHashString("password")].(string); ok {
 				selectedApp, err := app.identityApplication.Select(name)
 				if err != nil {
 					return nil, err
@@ -262,14 +266,14 @@ func (app *module) insertIdentity() (modules.Module, error) {
 	name := "insertIdentity"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		var identity identities.Identity
-		if identityIns, ok := input["identity"].(identities.Identity); ok {
+		if identityIns, ok := input[app.valueToHashString("identity")].(identities.Identity); ok {
 			identity = identityIns
 		} else {
 			return nil, errors.New("the identity is mandatory in order to save a new identity instance")
 		}
 
 		password := ""
-		if passwordStr, ok := input["password"].(string); ok {
+		if passwordStr, ok := input[app.valueToHashString("password")].(string); ok {
 			password = passwordStr
 		} else {
 			return nil, errors.New("the password is mandatory in order to save a new identity instance")
@@ -306,7 +310,7 @@ func (app *module) newIdentity() (modules.Module, error) {
 
 		createdOn := time.Now().UTC()
 		modificationBuilder := app.identityModificationBuilder.Create().WithSignature(sigPK).WithEncryption(encPK).CreatedOn(createdOn)
-		if name, ok := input["name"].(string); ok {
+		if name, ok := input[app.valueToHashString("name")].(string); ok {
 			modificationBuilder.WithName(name)
 		}
 
@@ -333,11 +337,11 @@ func (app *module) newIdentityModification() (modules.Module, error) {
 	name := "newIdentityModification"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.identityModificationBuilder.Create()
-		if name, ok := input["name"].(string); ok {
+		if name, ok := input[app.valueToHashString("name")].(string); ok {
 			builder.WithName(name)
 		}
 
-		if isGenPK, ok := input["genSigPK"].(bool); ok {
+		if isGenPK, ok := input[app.valueToHashString("genSigPK")].(bool); ok {
 			if isGenPK {
 				sigPK := app.signaturePrivateKeyFactory.Create()
 				builder.WithSignature(sigPK)
@@ -345,7 +349,7 @@ func (app *module) newIdentityModification() (modules.Module, error) {
 
 		}
 
-		if isGenPK, ok := input["genEncPK"].(bool); ok {
+		if isGenPK, ok := input[app.valueToHashString("genEncPK")].(bool); ok {
 			if isGenPK {
 				encPK, err := app.encryptionPrivateKeyFactory.Create()
 				if err != nil {
@@ -362,55 +366,6 @@ func (app *module) newIdentityModification() (modules.Module, error) {
 
 	return app.module(name, fn)
 }
-
-/*func (app *module) executeCriteria() (modules.Module, error) {
-	name := "executeCriteria"
-	fn := func(input map[string]interface{}) (interface{}, error) {
-		if criteria, ok := input["criteria"].(criterias.Criteria); ok {
-			if tree, ok := input["tree"].(trees.Tree); ok {
-				return app.criteriaApplication.Execute(criteria, tree)
-			}
-
-			str := fmt.Sprintf("the tree (AST) was expected to be defined")
-			return nil, errors.New(str)
-
-		}
-
-		str := fmt.Sprintf("the criteria was expected to be defined")
-		return nil, errors.New(str)
-	}
-
-	return app.module(name, fn)
-}*/
-
-/*
-func (app *module) newCriteria() (modules.Module, error) {
-	name := "newCriteria"
-	fn := func(input map[string]interface{}) (interface{}, error) {
-		builder := app.criteriaBuilder.Create()
-		if name, ok := input["name"].(string); ok {
-			builder.WithName(name)
-		}
-
-		if index, ok := input["index"].(uint); ok {
-			builder.WithIndex(index)
-		}
-
-		if includeChannels, ok := input["includeChannels"].(bool); ok {
-			if includeChannels {
-				builder.IncludeChannels()
-			}
-		}
-
-		if child, ok := input["child"].(criterias.Criteria); ok {
-			builder.WithChild(child)
-		}
-
-		return builder.Now()
-	}
-
-	return app.module(name, fn)
-}*/
 
 func (app *module) grammar() ([]modules.Module, error) {
 	value, err := app.newGrammarValue()
@@ -516,8 +471,8 @@ func (app *module) grammar() ([]modules.Module, error) {
 func (app *module) executeGrammar() (modules.Module, error) {
 	name := "executeGrammar"
 	fn := func(input map[string]interface{}) (interface{}, error) {
-		if grammar, ok := input["grammar"].(grammars.Grammar); ok {
-			if data, ok := input["data"].([]byte); ok {
+		if grammar, ok := input[app.valueToHashString("grammar")].(grammars.Grammar); ok {
+			if data, ok := input[app.valueToHashString("data")].([]byte); ok {
 				return app.grammarApplication.Execute(grammar, data)
 			}
 
@@ -536,11 +491,11 @@ func (app *module) newGrammar() (modules.Module, error) {
 	name := "newGrammar"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.grammarBuilder.Create()
-		if root, ok := input["root"].(grammars.Token); ok {
+		if root, ok := input[app.valueToHashString("root")].(grammars.Token); ok {
 			builder.WithRoot(root)
 		}
 
-		if channels, ok := input["channels"].(grammars.Channels); ok {
+		if channels, ok := input[app.valueToHashString("channels")].(grammars.Channels); ok {
 			builder.WithChannels(channels)
 		}
 
@@ -553,7 +508,7 @@ func (app *module) newGrammar() (modules.Module, error) {
 func (app *module) newGrammarChannels() (modules.Module, error) {
 	name := "newGrammarChannels"
 	fn := func(input map[string]interface{}) (interface{}, error) {
-		if channelsList, ok := input["channels"].([]interface{}); ok {
+		if channelsList, ok := input[app.valueToHashString("channels")].([]interface{}); ok {
 			list := []grammars.Channel{}
 			for index, oneChannel := range channelsList {
 				if casted, ok := oneChannel.(grammars.Channel); ok {
@@ -579,15 +534,11 @@ func (app *module) newGrammarChannel() (modules.Module, error) {
 	name := "newGrammarChannel"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.grammarChannelBuilder.Create()
-		if name, ok := input["name"].(string); ok {
-			builder.WithName(name)
-		}
-
-		if token, ok := input["token"].(grammars.Token); ok {
+		if token, ok := input[app.valueToHashString("token")].(grammars.Token); ok {
 			builder.WithToken(token)
 		}
 
-		if condition, ok := input["condition"].(grammars.ChannelCondition); ok {
+		if condition, ok := input[app.valueToHashString("condition")].(grammars.ChannelCondition); ok {
 			builder.WithCondition(condition)
 		}
 
@@ -601,11 +552,11 @@ func (app *module) newGrammarChannelCondition() (modules.Module, error) {
 	name := "newGrammarChannelCondition"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.grammarChannelConditionBuilder.Create()
-		if previous, ok := input["previous"].(grammars.Token); ok {
+		if previous, ok := input[app.valueToHashString("previous")].(grammars.Token); ok {
 			builder.WithPrevious(previous)
 		}
 
-		if next, ok := input["next"].(grammars.Token); ok {
+		if next, ok := input[app.valueToHashString("next")].(grammars.Token); ok {
 			builder.WithNext(next)
 		}
 
@@ -619,11 +570,11 @@ func (app *module) newGrammarExternal() (modules.Module, error) {
 	name := "newGrammarExternal"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.grammarExternalBuilder.Create()
-		if name, ok := input["name"].(string); ok {
-			builder.WithName(name)
+		if name, ok := input[app.valueToHashString("name")]; ok {
+			builder.WithName(fmt.Sprintf("%s", name))
 		}
 
-		if grammar, ok := input["grammar"].(grammars.Grammar); ok {
+		if grammar, ok := input[app.valueToHashString("grammar")].(grammars.Grammar); ok {
 			builder.WithGrammar(grammar)
 		}
 
@@ -637,11 +588,11 @@ func (app *module) newGrammarInstance() (modules.Module, error) {
 	name := "newGrammarInstance"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.grammarInstanceBuilder.Create()
-		if token, ok := input["token"].(grammars.Token); ok {
+		if token, ok := input[app.valueToHashString("token")].(grammars.Token); ok {
 			builder.WithToken(token)
 		}
 
-		if everything, ok := input["everything"].(grammars.Everything); ok {
+		if everything, ok := input[app.valueToHashString("everything")].(grammars.Everything); ok {
 			builder.WithEverything(everything)
 		}
 
@@ -655,15 +606,15 @@ func (app *module) newGrammarEverything() (modules.Module, error) {
 	name := "newGrammarEverything"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.grammarEverythingBuilder.Create()
-		if name, ok := input["name"].(string); ok {
-			builder.WithName(name)
+		if name, ok := input[app.valueToHashString("name")]; ok {
+			builder.WithName(fmt.Sprintf("%s", name))
 		}
 
-		if exception, ok := input["exception"].(grammars.Token); ok {
+		if exception, ok := input[app.valueToHashString("exception")].(grammars.Token); ok {
 			builder.WithException(exception)
 		}
 
-		if escape, ok := input["escape"].(grammars.Token); ok {
+		if escape, ok := input[app.valueToHashString("escape")].(grammars.Token); ok {
 			builder.WithEscape(escape)
 		}
 
@@ -677,15 +628,15 @@ func (app *module) newGrammarToken() (modules.Module, error) {
 	name := "newGrammarToken"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.grammarTokenBuilder.Create()
-		if name, ok := input["name"].(string); ok {
-			builder.WithName(name)
+		if name, ok := input[app.valueToHashString("name")]; ok {
+			builder.WithName(fmt.Sprintf("%s", name))
 		}
 
-		if block, ok := input["block"].(grammars.Block); ok {
+		if block, ok := input[app.valueToHashString("block")].(grammars.Block); ok {
 			builder.WithBlock(block)
 		}
 
-		if suites, ok := input["suites"].(grammars.Suites); ok {
+		if suites, ok := input[app.valueToHashString("suites")].(grammars.Suites); ok {
 			builder.WithSuites(suites)
 		}
 
@@ -698,7 +649,7 @@ func (app *module) newGrammarToken() (modules.Module, error) {
 func (app *module) newGrammarSuites() (modules.Module, error) {
 	name := "newGrammarSuites"
 	fn := func(input map[string]interface{}) (interface{}, error) {
-		if suitesList, ok := input["suites"].([]interface{}); ok {
+		if suitesList, ok := input[app.valueToHashString("suites")].([]interface{}); ok {
 			list := []grammars.Suite{}
 			for index, oneSuite := range suitesList {
 				if casted, ok := oneSuite.(grammars.Suite); ok {
@@ -724,7 +675,7 @@ func (app *module) newGrammarSuite() (modules.Module, error) {
 	name := "newGrammarSuite"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.grammarSuiteBuilder.Create()
-		if valid, ok := input["valid"]; ok {
+		if valid, ok := input[app.valueToHashString("valid")]; ok {
 			if casted, ok := valid.(string); ok {
 				builder.WithValid([]byte(casted))
 			}
@@ -734,7 +685,7 @@ func (app *module) newGrammarSuite() (modules.Module, error) {
 			}
 		}
 
-		if invalid, ok := input["invalid"]; ok {
+		if invalid, ok := input[app.valueToHashString("invalid")]; ok {
 			if casted, ok := invalid.(string); ok {
 				builder.WithInvalid([]byte(casted))
 			}
@@ -753,7 +704,7 @@ func (app *module) newGrammarSuite() (modules.Module, error) {
 func (app *module) newGrammarBlock() (modules.Module, error) {
 	name := "newGrammarBlock"
 	fn := func(input map[string]interface{}) (interface{}, error) {
-		if linesList, ok := input["lines"].([]interface{}); ok {
+		if linesList, ok := input[app.valueToHashString("lines")].([]interface{}); ok {
 			list := []grammars.Line{}
 			for index, oneLine := range linesList {
 				if casted, ok := oneLine.(grammars.Line); ok {
@@ -778,7 +729,7 @@ func (app *module) newGrammarBlock() (modules.Module, error) {
 func (app *module) newGrammarLine() (modules.Module, error) {
 	name := "newGrammarLine"
 	fn := func(input map[string]interface{}) (interface{}, error) {
-		if elementsList, ok := input["elements"].([]interface{}); ok {
+		if elementsList, ok := input[app.valueToHashString("elements")].([]interface{}); ok {
 			list := []grammars.Element{}
 			for index, oneElement := range elementsList {
 				if casted, ok := oneElement.(grammars.Element); ok {
@@ -804,19 +755,19 @@ func (app *module) newGrammarElement() (modules.Module, error) {
 	name := "newGrammarElement"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.grammarElementBuilder.Create()
-		if cardinality, ok := input["cardinality"].(cardinalities.Cardinality); ok {
+		if cardinality, ok := input[app.valueToHashString("cardinality")].(cardinalities.Cardinality); ok {
 			builder.WithCardinality(cardinality)
 		}
 
-		if value, ok := input["value"].(values.Value); ok {
+		if value, ok := input[app.valueToHashString("value")].(values.Value); ok {
 			builder.WithValue(value)
 		}
 
-		if external, ok := input["external"].(grammars.External); ok {
+		if external, ok := input[app.valueToHashString("external")].(grammars.External); ok {
 			builder.WithExternal(external)
 		}
 
-		if instance, ok := input["instance"].(grammars.Instance); ok {
+		if instance, ok := input[app.valueToHashString("instance")].(grammars.Instance); ok {
 			builder.WithInstance(instance)
 		}
 
@@ -829,13 +780,13 @@ func (app *module) newGrammarElement() (modules.Module, error) {
 func (app *module) newGrammarCardinality() (modules.Module, error) {
 	name := "newGrammarCardinality"
 	fn := func(input map[string]interface{}) (interface{}, error) {
-		if min, ok := input["min"].(uint); ok {
+		if min, ok := input[app.valueToHashString("min")].(uint); ok {
 			if min <= 0 {
 				return nil, errors.New("the minimum cannot be smaller or equal than 0")
 			}
 
 			builder := app.grammarCardinalityBuilder.Create().WithMin(min)
-			if max, ok := input["max"].(uint); ok {
+			if max, ok := input[app.valueToHashString("max")].(uint); ok {
 				if max < 0 {
 					return nil, errors.New("the maximum cannot be smaller or equal than 0")
 				}
@@ -857,11 +808,11 @@ func (app *module) newGrammarValue() (modules.Module, error) {
 	name := "newGrammarValue"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		builder := app.grammarValueBuilder.Create()
-		if name, ok := input["name"].(string); ok {
-			builder.WithName(name)
+		if name, ok := input[app.valueToHashString("name")]; ok {
+			builder.WithName(fmt.Sprintf("%s", name))
 		}
 
-		if number, ok := input["number"].(uint); ok {
+		if number, ok := input[app.valueToHashString("number")].(uint); ok {
 			if number > 255 {
 				return nil, errors.New("the number cannot be bigger than 255")
 			}
@@ -879,8 +830,8 @@ func (app *module) containerMapWithStringKeynames() (modules.Module, error) {
 	name := "containerMapWithStringKeynames"
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		output := map[string]interface{}{}
-		if name, ok := input["name"].(string); ok {
-			if value, ok := input["value"]; ok {
+		if name, ok := input[app.valueToHashString("name")].(string); ok {
+			if value, ok := input[app.valueToHashString("value")]; ok {
 				name = strings.TrimSpace(name)
 				output[name] = value
 				return output, nil
@@ -902,8 +853,8 @@ func (app *module) containerList() (modules.Module, error) {
 	fn := func(input map[string]interface{}) (interface{}, error) {
 		values := []interface{}{}
 		for keyname, element := range input {
-			index := fmt.Sprintf("%d", len(values))
-			if strings.TrimSpace(keyname) != index {
+			indexKeyname := app.valueToHashString(fmt.Sprintf("%d", len(values)))
+			if keyname != indexKeyname {
 				continue
 			}
 
@@ -954,7 +905,7 @@ func (app *module) castTo() ([]modules.Module, error) {
 func (app *module) castToInt() (modules.Module, error) {
 	name := "castToInt"
 	fn := func(input map[string]interface{}) (interface{}, error) {
-		if ins, ok := input["value"]; ok {
+		if ins, ok := input[app.valueToHashString("value")]; ok {
 			if casted, ok := ins.(string); ok {
 				return strconv.Atoi(casted)
 			}
@@ -977,22 +928,14 @@ func (app *module) castToInt() (modules.Module, error) {
 func (app *module) castToUint() (modules.Module, error) {
 	name := "castToUint"
 	fn := func(input map[string]interface{}) (interface{}, error) {
-		if ins, ok := input["value"]; ok {
-			if casted, ok := ins.(string); ok {
-				intValue, err := strconv.Atoi(casted)
-				if err != nil {
-					return nil, err
-				}
-
-				return uint(intValue), nil
+		if ins, ok := input[app.valueToHashString("value")]; ok {
+			str := strings.TrimSpace(fmt.Sprintf("%s", ins))
+			intValue, err := strconv.Atoi(str)
+			if err != nil {
+				return nil, err
 			}
 
-			if casted, ok := ins.(int); ok {
-				return uint(casted), nil
-			}
-
-			str := fmt.Sprintf("the value was expected to contain a string or int")
-			return nil, errors.New(str)
+			return uint(intValue), nil
 		}
 
 		str := fmt.Sprintf("the value was expected to be valid")
@@ -1005,7 +948,7 @@ func (app *module) castToUint() (modules.Module, error) {
 func (app *module) castToBool() (modules.Module, error) {
 	name := "castToBool"
 	fn := func(input map[string]interface{}) (interface{}, error) {
-		if ins, ok := input["value"]; ok {
+		if ins, ok := input[app.valueToHashString("value")]; ok {
 			if casted, ok := ins.(string); ok {
 				if strings.TrimSpace(casted) == "true" {
 					return true, nil
@@ -1049,7 +992,7 @@ func (app *module) castToBool() (modules.Module, error) {
 func (app *module) castToFloat32() (modules.Module, error) {
 	name := "castToFloat32"
 	fn := func(input map[string]interface{}) (interface{}, error) {
-		if ins, ok := input["value"]; ok {
+		if ins, ok := input[app.valueToHashString("value")]; ok {
 			if casted, ok := ins.(string); ok {
 				floatSixtyFour, err := strconv.ParseFloat(casted, 32)
 				if err != nil {
@@ -1081,7 +1024,7 @@ func (app *module) castToFloat32() (modules.Module, error) {
 func (app *module) castToFloat64() (modules.Module, error) {
 	name := "castToFloat64"
 	fn := func(input map[string]interface{}) (interface{}, error) {
-		if ins, ok := input["value"]; ok {
+		if ins, ok := input[app.valueToHashString("value")]; ok {
 			if casted, ok := ins.(string); ok {
 				return strconv.ParseFloat(casted, 64)
 			}
@@ -1105,6 +1048,15 @@ func (app *module) castToFloat64() (modules.Module, error) {
 	return app.module(name, fn)
 }
 
+func (app *module) valueToHashString(value string) string {
+	pHash, err := app.hashAdapter.FromBytes([]byte(value))
+	if err != nil {
+		panic(err)
+	}
+
+	return pHash.String()
+}
+
 func (app *module) module(name string, fn modules.ExecuteFn) (modules.Module, error) {
-	return app.moduleBuilder.Create().WithName(name).WithFunc(fn).Now()
+	return app.moduleBuilder.Create().WithName([]byte(name)).WithFunc(fn).Now()
 }

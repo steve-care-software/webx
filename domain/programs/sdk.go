@@ -41,7 +41,7 @@ func NewValueBuilder() ValueBuilder {
 type Builder interface {
 	Create() Builder
 	WithInstructions(instructions []Instruction) Builder
-	WithOutputs(outputs []string) Builder
+	WithOutputs(outputs [][]byte) Builder
 	Now() (Program, error)
 }
 
@@ -49,7 +49,7 @@ type Builder interface {
 type Program interface {
 	Instructions() []Instruction
 	HasOutputs() bool
-	Outputs() []string
+	Outputs() [][]byte
 }
 
 // InstructionBuilder represents an instruction builder
@@ -71,7 +71,7 @@ type Instruction interface {
 // ApplicationBuilder represents an application builder
 type ApplicationBuilder interface {
 	Create() ApplicationBuilder
-	WithName(name string) ApplicationBuilder
+	WithName(name []byte) ApplicationBuilder
 	WithModule(module modules.Module) ApplicationBuilder
 	WithAttachments(attachments Attachments) ApplicationBuilder
 	Now() (Application, error)
@@ -79,7 +79,7 @@ type ApplicationBuilder interface {
 
 // Application represents an application
 type Application interface {
-	Name() string
+	Name() []byte
 	Module() modules.Module
 	HasAttachments() bool
 	Attachments() Attachments
@@ -101,21 +101,21 @@ type Attachments interface {
 type AttachmentBuilder interface {
 	Create() AttachmentBuilder
 	WithValue(value Value) AttachmentBuilder
-	WithLocal(local string) AttachmentBuilder
+	WithLocal(local []byte) AttachmentBuilder
 	Now() (Attachment, error)
 }
 
 // Attachment represents an attachment
 type Attachment interface {
 	Value() Value
-	Local() string
+	Local() []byte
 }
 
 // AssignmentBuilder represents an assignment builder
 type AssignmentBuilder interface {
 	Create() AssignmentBuilder
 	WithIndex(index uint) AssignmentBuilder
-	WithName(name string) AssignmentBuilder
+	WithName(name []byte) AssignmentBuilder
 	WithValue(value Value) AssignmentBuilder
 	Now() (Assignment, error)
 }
@@ -123,15 +123,16 @@ type AssignmentBuilder interface {
 // Assignment repesents an assignment
 type Assignment interface {
 	Index() uint
-	Name() string
+	Name() []byte
 	Value() Value
 }
 
 // ValueBuilder represents a value builder
 type ValueBuilder interface {
 	Create() ValueBuilder
-	WithInput(input string) ValueBuilder
-	WithString(str string) ValueBuilder
+	WithInput(input []byte) ValueBuilder
+	WithAssignment(assignment Assignment) ValueBuilder
+	WithConstant(constant []byte) ValueBuilder
 	WithExecution(execution Application) ValueBuilder
 	WithProgram(program Program) ValueBuilder
 	Now() (Value, error)
@@ -140,9 +141,11 @@ type ValueBuilder interface {
 // Value represents a value
 type Value interface {
 	IsInput() bool
-	Input() string
-	IsString() bool
-	String() string
+	Input() []byte
+	IsAssignment() bool
+	Assignment() Assignment
+	IsConstant() bool
+	Constant() []byte
 	IsExecution() bool
 	Execution() Application
 	IsProgram() bool

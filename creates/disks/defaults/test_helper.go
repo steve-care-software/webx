@@ -1,5 +1,7 @@
 package defaults
 
+import "github.com/steve-care-software/webx/domain/cryptography/hash"
+
 const bitrateForTests = 1024
 const basePathForTests = "./test_files"
 const delimiterForTests = "."
@@ -44,3 +46,12 @@ const fullScriptForTests = `
     $output = execute $interpreterApp;;
     execute $interpreterApp;;
 `
+
+func valueToHashStringForTests(value string) string {
+	pHash, err := hash.NewAdapter().FromBytes([]byte(value))
+	if err != nil {
+		panic(err)
+	}
+
+	return pHash.String()
+}

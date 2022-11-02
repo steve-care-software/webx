@@ -23,19 +23,19 @@ type Builder interface {
 // Modules represents modules
 type Modules interface {
 	List() []Module
-	Fetch(name string) (Module, error)
+	Fetch(name []byte) (Module, error)
 }
 
 // ModuleBuilder creates a new module builder
 type ModuleBuilder interface {
 	Create() ModuleBuilder
-	WithName(name string) ModuleBuilder
+	WithName(name []byte) ModuleBuilder
 	WithFunc(fn ExecuteFn) ModuleBuilder
 	Now() (Module, error)
 }
 
 // Module represents a module
 type Module interface {
-	Name() string
+	Name() []byte
 	Func() ExecuteFn
 }

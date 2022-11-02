@@ -29,6 +29,17 @@ func createContentInternally(
 	return &out
 }
 
+// Bytes returns the content's bytes
+func (obj *content) Bytes(includeChannels bool) []byte {
+	if obj.IsValue() {
+		return []byte{
+			obj.Value().Content(),
+		}
+	}
+
+	return obj.Tree().Bytes(includeChannels)
+}
+
 // IsValue returns true if there is a value, false otherwise
 func (obj *content) IsValue() bool {
 	return obj.value != nil

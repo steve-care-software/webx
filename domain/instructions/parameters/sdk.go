@@ -8,13 +8,13 @@ func NewBuilder() Builder {
 // Builder represents a parameter builder
 type Builder interface {
 	Create() Builder
-	WithName(name string) Builder
+	WithName(name []byte) Builder
 	IsInput() Builder
 	Now() (Parameter, error)
 }
 
 // Parameter represents a parameter
 type Parameter interface {
-	Name() string
+	Name() []byte
 	IsInput() bool
 }

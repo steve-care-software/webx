@@ -1,13 +1,13 @@
 package attachments
 
 type variable struct {
-	current string
-	target  string
+	current []byte
+	target  []byte
 }
 
 func createVariable(
-	current string,
-	target string,
+	current []byte,
+	target []byte,
 ) Variable {
 	out := variable{
 		current: current,
@@ -18,11 +18,11 @@ func createVariable(
 }
 
 // Current returns the current variable
-func (obj *variable) Current() string {
+func (obj *variable) Current() []byte {
 	return obj.current
 }
 
 // Target returns the target variable
-func (obj *variable) Target() string {
+func (obj *variable) Target() []byte {
 	return obj.target
 }

@@ -1,4 +1,4 @@
-package defaults
+package main
 
 import (
 	"fmt"
@@ -26,7 +26,7 @@ func TestRodan_Success(t *testing.T) {
 	}
 
 	output, _, err := engines.NewApplication(defaults.NewApplication(bitrateForTests, basePathForTests, delimiterForTests, extensionForTests)).ParseThenInterpret(map[string]interface{}{
-		"script": script,
+		valueToHashStringForTests("script"): script,
 	}, []byte(svmInstructions))
 
 	if err != nil {

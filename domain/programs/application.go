@@ -3,20 +3,20 @@ package programs
 import "github.com/steve-care-software/webx/domain/programs/modules"
 
 type application struct {
-	name        string
+	name        []byte
 	module      modules.Module
 	attachments Attachments
 }
 
 func createApplication(
-	name string,
+	name []byte,
 	module modules.Module,
 ) Application {
 	return createApplicationInternally(name, module, nil)
 }
 
 func createApplicationWithAttachments(
-	name string,
+	name []byte,
 	module modules.Module,
 	attachments Attachments,
 ) Application {
@@ -24,7 +24,7 @@ func createApplicationWithAttachments(
 }
 
 func createApplicationInternally(
-	name string,
+	name []byte,
 	module modules.Module,
 	attachments Attachments,
 ) Application {
@@ -38,7 +38,7 @@ func createApplicationInternally(
 }
 
 // Name returns the name
-func (obj *application) Name() string {
+func (obj *application) Name() []byte {
 	return obj.name
 }
 

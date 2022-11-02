@@ -2,7 +2,7 @@ package programs
 
 type program struct {
 	instructions []Instruction
-	outputs      []string
+	outputs      [][]byte
 }
 
 func createProgram(
@@ -13,14 +13,14 @@ func createProgram(
 
 func createProgramWithOutputs(
 	instructions []Instruction,
-	outputs []string,
+	outputs [][]byte,
 ) Program {
 	return createProgramInternally(instructions, outputs)
 }
 
 func createProgramInternally(
 	instructions []Instruction,
-	outputs []string,
+	outputs [][]byte,
 ) Program {
 	out := program{
 		instructions: instructions,
@@ -41,6 +41,6 @@ func (obj *program) HasOutputs() bool {
 }
 
 // Outputs returns the outputs, if any
-func (obj *program) Outputs() []string {
+func (obj *program) Outputs() [][]byte {
 	return obj.outputs
 }

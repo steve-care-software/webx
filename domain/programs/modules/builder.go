@@ -1,6 +1,10 @@
 package modules
 
-import "errors"
+import (
+	"crypto/sha512"
+	b64 "encoding/base64"
+	"errors"
+)
 
 type builder struct {
 	list []Module
@@ -38,7 +42,9 @@ func (app *builder) Now() (Modules, error) {
 	mp := map[string]Module{}
 	for _, oneModule := range app.list {
 		name := oneModule.Name()
-		mp[name] = oneModule
+		hashedData := sha512.New().Sum(name)
+		keyname := b64.StdEncoding.EncodeToString(hashedData)
+		mp[keyname] = oneModule
 	}
 
 	return createModules(app.list, mp), nil

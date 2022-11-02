@@ -4,37 +4,32 @@ import "github.com/steve-care-software/webx/domain/cryptography/hash"
 
 type channel struct {
 	hash      hash.Hash
-	name      string
 	token     Token
 	condition ChannelCondition
 }
 
 func createChannel(
 	hash hash.Hash,
-	name string,
 	token Token,
 ) Channel {
-	return createChannelInternally(hash, name, token, nil)
+	return createChannelInternally(hash, token, nil)
 }
 
 func createChannelWithCondition(
 	hash hash.Hash,
-	name string,
 	token Token,
 	condition ChannelCondition,
 ) Channel {
-	return createChannelInternally(hash, name, token, condition)
+	return createChannelInternally(hash, token, condition)
 }
 
 func createChannelInternally(
 	hash hash.Hash,
-	name string,
 	token Token,
 	condition ChannelCondition,
 ) Channel {
 	out := channel{
 		hash:      hash,
-		name:      name,
 		token:     token,
 		condition: condition,
 	}
@@ -45,11 +40,6 @@ func createChannelInternally(
 // Hash returns the hash
 func (obj *channel) Hash() hash.Hash {
 	return obj.hash
-}
-
-// Name returns the name
-func (obj *channel) Name() string {
-	return obj.name
 }
 
 // Token returns the token

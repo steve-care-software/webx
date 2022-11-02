@@ -1,6 +1,7 @@
 package programs
 
 import (
+	"github.com/steve-care-software/webx/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/domain/instructions"
 	"github.com/steve-care-software/webx/domain/programs"
 	"github.com/steve-care-software/webx/domain/programs/modules"
@@ -8,6 +9,7 @@ import (
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
 	builder := programs.NewBuilder()
 	instructionBuilder := programs.NewInstructionBuilder()
 	applicationBuilder := programs.NewApplicationBuilder()
@@ -16,6 +18,7 @@ func NewBuilder() Builder {
 	assignmentBuilder := programs.NewAssignmentBuilder()
 	valueBuilder := programs.NewValueBuilder()
 	return createBuilder(
+		hashAdapter,
 		builder,
 		instructionBuilder,
 		applicationBuilder,

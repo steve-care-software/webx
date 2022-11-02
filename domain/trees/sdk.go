@@ -171,6 +171,7 @@ type ContentBuilder interface {
 
 // Content represents an element token
 type Content interface {
+	Bytes(includeChannels bool) []byte
 	IsValue() bool
 	Value() Value
 	IsTree() bool

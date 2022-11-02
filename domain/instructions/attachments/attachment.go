@@ -2,12 +2,12 @@ package attachments
 
 type attachment struct {
 	variable    Variable
-	application string
+	application []byte
 }
 
 func createAttachment(
 	variable Variable,
-	application string,
+	application []byte,
 ) Attachment {
 	out := attachment{
 		variable:    variable,
@@ -23,6 +23,6 @@ func (obj *attachment) Variable() Variable {
 }
 
 // Application returns the application
-func (obj *attachment) Application() string {
+func (obj *attachment) Application() []byte {
 	return obj.application
 }

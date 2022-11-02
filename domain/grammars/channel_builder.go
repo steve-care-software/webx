@@ -8,7 +8,6 @@ import (
 
 type channelBuilder struct {
 	hashAdapter hash.Adapter
-	name        string
 	token       Token
 	condition   ChannelCondition
 }
@@ -18,7 +17,6 @@ func createChannelBuilder(
 ) ChannelBuilder {
 	out := channelBuilder{
 		hashAdapter: hashAdapter,
-		name:        "",
 		token:       nil,
 		condition:   nil,
 	}
@@ -31,12 +29,6 @@ func (app *channelBuilder) Create() ChannelBuilder {
 	return createChannelBuilder(
 		app.hashAdapter,
 	)
-}
-
-// WithName adds a name to the builder
-func (app *channelBuilder) WithName(name string) ChannelBuilder {
-	app.name = name
-	return app
 }
 
 // WithToken adds a token to the builder
@@ -53,16 +45,11 @@ func (app *channelBuilder) WithCondition(condition ChannelCondition) ChannelBuil
 
 // Now builds a new Channel instance
 func (app *channelBuilder) Now() (Channel, error) {
-	if app.name == "" {
-		return nil, errors.New("the name is mandatory in order to build a Channel instance")
-	}
-
 	if app.token == nil {
 		return nil, errors.New("the token is mandatory in order to build a Channel instance")
 	}
 
 	data := [][]byte{
-		[]byte(app.name),
 		app.token.Hash().Bytes(),
 	}
 
@@ -76,8 +63,8 @@ func (app *channelBuilder) Now() (Channel, error) {
 	}
 
 	if app.condition != nil {
-		return createChannelWithCondition(*pHash, app.name, app.token, app.condition), nil
+		return createChannelWithCondition(*pHash, app.token, app.condition), nil
 	}
 
-	return createChannel(*pHash, app.name, app.token), nil
+	return createChannel(*pHash, app.token), nil
 }

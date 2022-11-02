@@ -1,24 +1,24 @@
 package parameters
 
 type parameter struct {
-	name    string
+	name    []byte
 	isInput bool
 }
 
 func createParameterWithInput(
-	name string,
+	name []byte,
 ) Parameter {
 	return createParameterInternally(name, true)
 }
 
 func createParameterWithOutput(
-	name string,
+	name []byte,
 ) Parameter {
 	return createParameterInternally(name, false)
 }
 
 func createParameterInternally(
-	name string,
+	name []byte,
 	isInput bool,
 ) Parameter {
 	out := parameter{
@@ -30,7 +30,7 @@ func createParameterInternally(
 }
 
 // Name returns the name
-func (obj *parameter) Name() string {
+func (obj *parameter) Name() []byte {
 	return obj.name
 }
 

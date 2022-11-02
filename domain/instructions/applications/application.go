@@ -1,13 +1,13 @@
 package applications
 
 type application struct {
-	module string
-	name   string
+	module []byte
+	name   []byte
 }
 
 func createApplication(
-	module string,
-	name string,
+	module []byte,
+	name []byte,
 ) Application {
 	out := application{
 		module: module,
@@ -18,11 +18,11 @@ func createApplication(
 }
 
 // Module returns the module
-func (obj *application) Module() string {
+func (obj *application) Module() []byte {
 	return obj.module
 }
 
 // Name returns the name
-func (obj *application) Name() string {
+func (obj *application) Name() []byte {
 	return obj.name
 }

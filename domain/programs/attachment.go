@@ -2,12 +2,12 @@ package programs
 
 type attachment struct {
 	value Value
-	local string
+	local []byte
 }
 
 func createAttachment(
 	value Value,
-	local string,
+	local []byte,
 ) Attachment {
 	out := attachment{
 		value: value,
@@ -23,6 +23,6 @@ func (obj *attachment) Value() Value {
 }
 
 // Local returns the local
-func (obj *attachment) Local() string {
+func (obj *attachment) Local() []byte {
 	return obj.local
 }

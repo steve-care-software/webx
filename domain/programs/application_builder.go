@@ -7,14 +7,14 @@ import (
 )
 
 type applicationBuilder struct {
-	name        string
+	name        []byte
 	module      modules.Module
 	attachments Attachments
 }
 
 func createApplicationBuilder() ApplicationBuilder {
 	out := applicationBuilder{
-		name:        "",
+		name:        nil,
 		module:      nil,
 		attachments: nil,
 	}
@@ -28,7 +28,7 @@ func (app *applicationBuilder) Create() ApplicationBuilder {
 }
 
 // WithName adds a name to the builder
-func (app *applicationBuilder) WithName(name string) ApplicationBuilder {
+func (app *applicationBuilder) WithName(name []byte) ApplicationBuilder {
 	app.name = name
 	return app
 }
@@ -47,7 +47,7 @@ func (app *applicationBuilder) WithAttachments(attachments Attachments) Applicat
 
 // Now builds a new Application instance
 func (app *applicationBuilder) Now() (Application, error) {
-	if app.name == "" {
+	if app.name == nil {
 		return nil, errors.New("the name is mandatory in order to build an Application instance")
 	}
 

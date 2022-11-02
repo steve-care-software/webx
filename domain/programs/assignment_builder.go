@@ -4,14 +4,14 @@ import "errors"
 
 type assignmentBuilder struct {
 	pIndex *uint
-	name   string
+	name   []byte
 	value  Value
 }
 
 func createAssignmentBuilder() AssignmentBuilder {
 	out := assignmentBuilder{
 		pIndex: nil,
-		name:   "",
+		name:   nil,
 		value:  nil,
 	}
 
@@ -30,7 +30,7 @@ func (app *assignmentBuilder) WithIndex(index uint) AssignmentBuilder {
 }
 
 // WithName adds a name to the builder
-func (app *assignmentBuilder) WithName(name string) AssignmentBuilder {
+func (app *assignmentBuilder) WithName(name []byte) AssignmentBuilder {
 	app.name = name
 	return app
 }
@@ -43,7 +43,7 @@ func (app *assignmentBuilder) WithValue(value Value) AssignmentBuilder {
 
 // Now builds a new Assignment instance
 func (app *assignmentBuilder) Now() (Assignment, error) {
-	if app.name == "" {
+	if app.name == nil {
 		return nil, errors.New("the name is mandatory in order to build an Assignment instance")
 	}
 

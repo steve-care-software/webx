@@ -26,39 +26,37 @@ func NewValueBuilder() ValueBuilder {
 	return createValueBuilder()
 }
 
-// NewOutputBuilder creates a new output builder
-func NewOutputBuilder() OutputBuilder {
-	return createOutputBuilder()
-}
-
 // Builder represents instructions builder
 type Builder interface {
 	Create() Builder
 	WithList(instructions []Instruction) Builder
+	WithRemaining(remaining []byte) Builder
 	Now() (Instructions, error)
 }
 
 // Instructions represents instructions
 type Instructions interface {
 	List() []Instruction
+	HasRemaining() bool
+	Remaining() []byte
 }
 
 // InstructionBuilder represents an instruction builder
 type InstructionBuilder interface {
 	Create() InstructionBuilder
-	WithModule(module string) InstructionBuilder
+	WithModule(module []byte) InstructionBuilder
 	WithApplication(application applications.Application) InstructionBuilder
 	WithParameter(parameter parameters.Parameter) InstructionBuilder
 	WithAssignment(assignment Assignment) InstructionBuilder
 	WithAttachment(attachment attachments.Attachment) InstructionBuilder
-	WithExecution(execution string) InstructionBuilder
+	WithExecution(execution []byte) InstructionBuilder
 	Now() (Instruction, error)
 }
 
 // Instruction represents an instruction
 type Instruction interface {
 	IsModule() bool
-	Module() string
+	Module() []byte
 	IsApplication() bool
 	Application() applications.Application
 	IsParameter() bool
@@ -68,56 +66,41 @@ type Instruction interface {
 	IsAttachment() bool
 	Attachment() attachments.Attachment
 	IsExecution() bool
-	Execution() string
+	Execution() []byte
 }
 
 // AssignmentBuilder represents an assignment builder
 type AssignmentBuilder interface {
 	Create() AssignmentBuilder
-	WithVariable(variable string) AssignmentBuilder
+	WithVariable(variable []byte) AssignmentBuilder
 	WithValue(value Value) AssignmentBuilder
 	Now() (Assignment, error)
 }
 
 // Assignment represents an assignment
 type Assignment interface {
-	Variable() string
+	Variable() []byte
 	Value() Value
 }
 
 // ValueBuilder represents a value builder
 type ValueBuilder interface {
 	Create() ValueBuilder
-	WithInput(input string) ValueBuilder
-	WithString(str string) ValueBuilder
+	WithVariable(variable []byte) ValueBuilder
+	WithConstant(constant []byte) ValueBuilder
 	WithInstructions(instructions Instructions) ValueBuilder
-	WithExecution(execution string) ValueBuilder
+	WithExecution(execution []byte) ValueBuilder
 	Now() (Value, error)
 }
 
 // Value represents a value
 type Value interface {
-	IsInput() bool
-	Input() string
-	IsString() bool
-	String() string
+	IsVariable() bool
+	Variable() []byte
+	IsConstant() bool
+	Constant() []byte
 	IsInstructions() bool
 	Instructions() Instructions
 	IsExecution() bool
-	Execution() string
-}
-
-// OutputBuilder represents an output builder
-type OutputBuilder interface {
-	Create() OutputBuilder
-	WithInstructions(instructions Instructions) OutputBuilder
-	WithRemaining(remaining []byte) OutputBuilder
-	Now() (Output, error)
-}
-
-// Output represents an output
-type Output interface {
-	Instructions() Instructions
-	HasRemaining() bool
-	Remaining() []byte
+	Execution() []byte
 }

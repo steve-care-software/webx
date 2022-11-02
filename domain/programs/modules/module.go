@@ -1,12 +1,12 @@
 package modules
 
 type module struct {
-	name string
+	name []byte
 	fn   ExecuteFn
 }
 
 func createModule(
-	name string,
+	name []byte,
 	fn ExecuteFn,
 ) Module {
 	out := module{
@@ -18,7 +18,7 @@ func createModule(
 }
 
 // Name returns the name
-func (obj *module) Name() string {
+func (obj *module) Name() []byte {
 	return obj.name
 }
 

@@ -4,13 +4,13 @@ import "errors"
 
 type builder struct {
 	variable    Variable
-	application string
+	application []byte
 }
 
 func createBuilder() Builder {
 	out := builder{
 		variable:    nil,
-		application: "",
+		application: nil,
 	}
 
 	return &out
@@ -28,7 +28,7 @@ func (app *builder) WithVariable(variable Variable) Builder {
 }
 
 // WithApplication adds an application to the builder
-func (app *builder) WithApplication(application string) Builder {
+func (app *builder) WithApplication(application []byte) Builder {
 	app.application = application
 	return app
 }
@@ -39,7 +39,7 @@ func (app *builder) Now() (Attachment, error) {
 		return nil, errors.New("the variable is mandatory in order to build an Attachment instance")
 	}
 
-	if app.application == "" {
+	if app.application == nil {
 		return nil, errors.New("the application is mandatory in order to build an Attachment instance")
 	}
 

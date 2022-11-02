@@ -9,22 +9,22 @@ import (
 )
 
 type instructionBuilder struct {
-	module      string
+	module      []byte
 	application applications.Application
 	parameter   parameters.Parameter
 	assignment  Assignment
 	attachment  attachments.Attachment
-	execution   string
+	execution   []byte
 }
 
 func createInstructionBuilder() InstructionBuilder {
 	out := instructionBuilder{
-		module:      "",
+		module:      nil,
 		application: nil,
 		parameter:   nil,
 		assignment:  nil,
 		attachment:  nil,
-		execution:   "",
+		execution:   nil,
 	}
 
 	return &out
@@ -36,7 +36,7 @@ func (app *instructionBuilder) Create() InstructionBuilder {
 }
 
 // WithModule adds a module to the builder
-func (app *instructionBuilder) WithModule(module string) InstructionBuilder {
+func (app *instructionBuilder) WithModule(module []byte) InstructionBuilder {
 	app.module = module
 	return app
 }
@@ -66,14 +66,14 @@ func (app *instructionBuilder) WithAttachment(attachment attachments.Attachment)
 }
 
 // WithExecution adds an execution to the builder
-func (app *instructionBuilder) WithExecution(execution string) InstructionBuilder {
+func (app *instructionBuilder) WithExecution(execution []byte) InstructionBuilder {
 	app.execution = execution
 	return app
 }
 
 // Now builds a new Instruction instance
 func (app *instructionBuilder) Now() (Instruction, error) {
-	if app.module != "" {
+	if app.module != nil {
 		return createInstructionWithModule(app.module), nil
 	}
 
@@ -93,7 +93,7 @@ func (app *instructionBuilder) Now() (Instruction, error) {
 		return createInstructionWithAttachment(app.attachment), nil
 	}
 
-	if app.execution != "" {
+	if app.execution != nil {
 		return createInstructionWithExecution(app.execution), nil
 	}
 

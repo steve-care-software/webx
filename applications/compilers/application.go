@@ -8,57 +8,55 @@ import (
 	"github.com/steve-care-software/webx/domain/instructions"
 	"github.com/steve-care-software/webx/domain/instructions/applications"
 	"github.com/steve-care-software/webx/domain/instructions/attachments"
+	"github.com/steve-care-software/webx/domain/instructions/parameters"
 )
 
 type application struct {
-	grammarApp grammar_application.Application
-	//criteriaApp               criteria_application.Application
+	grammarApp                grammar_application.Application
 	interpreterApp            interpreter_application.Application
 	createApp                 creates.Application
-	instructionsBuilder       instructions.Builder
+	builder                   instructions.Builder
 	instructionBuilder        instructions.InstructionBuilder
+	assignmentBuilder         instructions.AssignmentBuilder
+	valueBuilder              instructions.ValueBuilder
 	applicationBuilder        applications.Builder
 	attachmentBuilder         attachments.Builder
 	attachmentVariableBuilder attachments.VariableBuilder
-	assignmentBuilder         instructions.AssignmentBuilder
-	valueBuilder              instructions.ValueBuilder
-	outputBuilder             instructions.OutputBuilder
+	parameterBuilder          parameters.Builder
 }
 
 func createApplication(
 	grammarApp grammar_application.Application,
-	//criteriaApp criteria_application.Application,
 	interpreterApp interpreter_application.Application,
 	createApp creates.Application,
-	instructionsBuilder instructions.Builder,
+	builder instructions.Builder,
 	instructionBuilder instructions.InstructionBuilder,
+	assignmentBuilder instructions.AssignmentBuilder,
+	valueBuilder instructions.ValueBuilder,
 	applicationBuilder applications.Builder,
 	attachmentBuilder attachments.Builder,
 	attachmentVariableBuilder attachments.VariableBuilder,
-	assignmentBuilder instructions.AssignmentBuilder,
-	valueBuilder instructions.ValueBuilder,
-	outputBuilder instructions.OutputBuilder,
+	parameterBuilder parameters.Builder,
 ) Application {
 	out := application{
-		grammarApp: grammarApp,
-		//criteriaApp:               criteriaApp,
+		grammarApp:                grammarApp,
 		interpreterApp:            interpreterApp,
 		createApp:                 createApp,
-		instructionsBuilder:       instructionsBuilder,
+		builder:                   builder,
 		instructionBuilder:        instructionBuilder,
+		assignmentBuilder:         assignmentBuilder,
+		valueBuilder:              valueBuilder,
 		applicationBuilder:        applicationBuilder,
 		attachmentBuilder:         attachmentBuilder,
 		attachmentVariableBuilder: attachmentVariableBuilder,
-		assignmentBuilder:         assignmentBuilder,
-		valueBuilder:              valueBuilder,
-		outputBuilder:             outputBuilder,
+		parameterBuilder:          parameterBuilder,
 	}
 
 	return &out
 }
 
 // Execute eecutes a compiler
-func (app *application) Execute(compiler compilers.Compiler, script []byte) (instructions.Output, error) {
+func (app *application) Execute(compiler compilers.Compiler, script []byte) (instructions.Instructions, error) {
 	/*remaining := script
 	elementsList := compiler.Elements().List()
 	application, err := app.applicationBuilder.Create().WithModule(ExecuteInstructionsModuleName).WithName("executeInstructionsApp").Now()

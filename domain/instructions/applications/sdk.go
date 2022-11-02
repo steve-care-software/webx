@@ -8,13 +8,13 @@ func NewBuilder() Builder {
 // Builder represents an application builder
 type Builder interface {
 	Create() Builder
-	WithModule(module string) Builder
-	WithName(name string) Builder
+	WithModule(module []byte) Builder
+	WithName(name []byte) Builder
 	Now() (Application, error)
 }
 
 // Application represents an application declaration
 type Application interface {
-	Module() string
-	Name() string
+	Module() []byte
+	Name() []byte
 }

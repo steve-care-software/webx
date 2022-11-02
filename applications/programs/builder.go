@@ -1,11 +1,13 @@
 package programs
 
 import (
+	"github.com/steve-care-software/webx/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/domain/programs"
 	"github.com/steve-care-software/webx/domain/programs/modules"
 )
 
 type builder struct {
+	hashAdapter        hash.Adapter
 	builder            programs.Builder
 	instructionBuilder programs.InstructionBuilder
 	applicationBuilder programs.ApplicationBuilder
@@ -17,6 +19,7 @@ type builder struct {
 }
 
 func createBuilder(
+	hashAdapter hash.Adapter,
 	builderIns programs.Builder,
 	instructionBuilder programs.InstructionBuilder,
 	applicationBuilder programs.ApplicationBuilder,
@@ -26,6 +29,7 @@ func createBuilder(
 	valueBuilder programs.ValueBuilder,
 ) Builder {
 	out := builder{
+		hashAdapter:        hashAdapter,
 		builder:            builderIns,
 		instructionBuilder: instructionBuilder,
 		applicationBuilder: applicationBuilder,
@@ -42,6 +46,7 @@ func createBuilder(
 // Create initializes the builder
 func (app *builder) Create() Builder {
 	return createBuilder(
+		app.hashAdapter,
 		app.builder,
 		app.instructionBuilder,
 		app.applicationBuilder,
@@ -62,6 +67,7 @@ func (app *builder) WithModules(modules modules.Modules) Builder {
 func (app *builder) Now() (Application, error) {
 	if app.modules != nil {
 		return createApplicationWithModules(
+			app.hashAdapter,
 			app.builder,
 			app.instructionBuilder,
 			app.applicationBuilder,
@@ -74,6 +80,7 @@ func (app *builder) Now() (Application, error) {
 	}
 
 	return createApplication(
+		app.hashAdapter,
 		app.builder,
 		app.instructionBuilder,
 		app.applicationBuilder,

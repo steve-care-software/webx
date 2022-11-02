@@ -1,45 +1,45 @@
 package instructions
 
 type value struct {
-	input        string
-	str          string
+	variable     []byte
+	constant     []byte
 	instructions Instructions
-	execution    string
+	execution    []byte
 }
 
-func createValueWithInput(
-	input string,
+func createValueWithVariable(
+	variable []byte,
 ) Value {
-	return createValueInternally(input, "", nil, "")
+	return createValueInternally(variable, nil, nil, nil)
 }
 
-func createValueWithString(
-	str string,
+func createValueWithConstant(
+	constant []byte,
 ) Value {
-	return createValueInternally("", str, nil, "")
+	return createValueInternally(nil, constant, nil, nil)
 }
 
 func createValueWithInstructions(
 	instructions Instructions,
 ) Value {
-	return createValueInternally("", "", instructions, "")
+	return createValueInternally(nil, nil, instructions, nil)
 }
 
 func createValueWithExecution(
-	execution string,
+	execution []byte,
 ) Value {
-	return createValueInternally("", "", nil, execution)
+	return createValueInternally(nil, nil, nil, execution)
 }
 
 func createValueInternally(
-	input string,
-	str string,
+	variable []byte,
+	constant []byte,
 	instructions Instructions,
-	execution string,
+	execution []byte,
 ) Value {
 	out := value{
-		input:        input,
-		str:          str,
+		variable:     variable,
+		constant:     constant,
 		instructions: instructions,
 		execution:    execution,
 	}
@@ -47,24 +47,24 @@ func createValueInternally(
 	return &out
 }
 
-// IsInput returns true if there is an input, false otherwise
-func (obj *value) IsInput() bool {
-	return obj.input != ""
+// IsVariable returns true if there is a variable, false otherwise
+func (obj *value) IsVariable() bool {
+	return obj.variable != nil
 }
 
-// Input returns the input, if any
-func (obj *value) Input() string {
-	return obj.input
+// Variable returns the variable, if any
+func (obj *value) Variable() []byte {
+	return obj.variable
 }
 
-// IsString returns true if there is a string, false otherwise
-func (obj *value) IsString() bool {
-	return obj.str != ""
+// IsConstant returns true if there is a constant, false otherwise
+func (obj *value) IsConstant() bool {
+	return obj.constant != nil
 }
 
-// String returns the string, if any
-func (obj *value) String() string {
-	return obj.str
+// Constant returns the constant, if any
+func (obj *value) Constant() []byte {
+	return obj.constant
 }
 
 // IsInstructions returns true if there is instructions, false otherwise
@@ -79,10 +79,10 @@ func (obj *value) Instructions() Instructions {
 
 // IsExecution returns true if there is an execution, false otherwise
 func (obj *value) IsExecution() bool {
-	return obj.execution != ""
+	return obj.execution != nil
 }
 
 // Execution returns the execution, if any
-func (obj *value) Execution() string {
+func (obj *value) Execution() []byte {
 	return obj.execution
 }

@@ -4,14 +4,21 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/steve-care-software/webx/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/domain/programs"
 )
 
 type application struct {
+	hashAdapter hash.Adapter
 }
 
-func createApplication() Application {
-	out := application{}
+func createApplication(
+	hashAdapter hash.Adapter,
+) Application {
+	out := application{
+		hashAdapter: hashAdapter,
+	}
+
 	return &out
 }
 
@@ -31,7 +38,12 @@ func (app *application) Execute(input map[string]interface{}, program programs.P
 				return nil, errors.New(str)
 			}
 
-			values[name] = ins
+			pHash, err := app.hashAdapter.FromBytes(name)
+			if err != nil {
+				return nil, err
+			}
+
+			values[pHash.String()] = ins
 			continue
 		}
 
@@ -48,12 +60,18 @@ func (app *application) Execute(input map[string]interface{}, program programs.P
 	if program.HasOutputs() {
 		outputs := program.Outputs()
 		for _, oneOutput := range outputs {
-			if ins, ok := values[oneOutput]; ok {
-				filtered[oneOutput] = ins
+			pHash, err := app.hashAdapter.FromBytes(oneOutput)
+			if err != nil {
+				return nil, err
+			}
+
+			keyname := pHash.String()
+			if ins, ok := values[keyname]; ok {
+				filtered[keyname] = ins
 				continue
 			}
 
-			str := fmt.Sprintf("the program has an output parameter (name: %s), but the executed program does not contain that value", oneOutput)
+			str := fmt.Sprintf("the program has an output parameter (name: %v, hash: %s), but the executed program does not contain that value", oneOutput, pHash.String())
 			return nil, errors.New(str)
 		}
 	}
@@ -64,17 +82,39 @@ func (app *application) Execute(input map[string]interface{}, program programs.P
 func (app *application) value(input map[string]interface{}, values map[string]interface{}, value programs.Value) (interface{}, error) {
 	if value.IsInput() {
 		inputName := value.Input()
-		if ins, ok := input[inputName]; ok {
+		pHash, err := app.hashAdapter.FromBytes(inputName)
+		if err != nil {
+			return nil, err
+		}
+
+		keyname := pHash.String()
+		if ins, ok := input[keyname]; ok {
 			return ins, nil
 		}
 
-		str := fmt.Sprintf("the requested input (name: %s) is undefined", inputName)
+		str := fmt.Sprintf("the requested input variable (name: %s, hash: %s) is undefined", inputName, keyname)
 		return nil, errors.New(str)
 	}
 
-	if value.IsString() {
-		str := value.String()
-		return str, nil
+	if value.IsAssignment() {
+		assignment := value.Assignment()
+		assignmentName := assignment.Name()
+		pHash, err := app.hashAdapter.FromBytes(assignmentName)
+		if err != nil {
+			return nil, err
+		}
+
+		keyname := pHash.String()
+		if ins, ok := values[keyname]; ok {
+			return ins, nil
+		}
+
+		str := fmt.Sprintf("the requested variable (name: %v, hash: %s) is undefined", assignmentName, keyname)
+		return nil, errors.New(str)
+	}
+
+	if value.IsConstant() {
+		return value.Constant(), nil
 	}
 
 	if value.IsProgram() {
@@ -104,7 +144,12 @@ func (app *application) execute(input map[string]interface{}, values map[string]
 			}
 
 			local := oneAttachment.Local()
-			parameters[local] = ins
+			pHash, err := app.hashAdapter.FromBytes(local)
+			if err != nil {
+				return nil, err
+			}
+
+			parameters[pHash.String()] = ins
 		}
 	}
 

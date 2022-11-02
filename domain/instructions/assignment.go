@@ -1,12 +1,12 @@
 package instructions
 
 type assignment struct {
-	variable string
+	variable []byte
 	value    Value
 }
 
 func createAssignment(
-	variable string,
+	variable []byte,
 	value Value,
 ) Assignment {
 	out := assignment{
@@ -18,7 +18,7 @@ func createAssignment(
 }
 
 // Variable returns the variable
-func (obj *assignment) Variable() string {
+func (obj *assignment) Variable() []byte {
 	return obj.variable
 }
 

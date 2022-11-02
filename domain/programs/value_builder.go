@@ -3,18 +3,20 @@ package programs
 import "errors"
 
 type valueBuilder struct {
-	input     string
-	str       string
-	execution Application
-	program   Program
+	input      []byte
+	assignment Assignment
+	constant   []byte
+	execution  Application
+	program    Program
 }
 
 func createValueBuilder() ValueBuilder {
 	out := valueBuilder{
-		input:     "",
-		str:       "",
-		execution: nil,
-		program:   nil,
+		input:      nil,
+		assignment: nil,
+		constant:   nil,
+		execution:  nil,
+		program:    nil,
 	}
 
 	return &out
@@ -26,14 +28,20 @@ func (app *valueBuilder) Create() ValueBuilder {
 }
 
 // WithInput adds an input to the builder
-func (app *valueBuilder) WithInput(input string) ValueBuilder {
+func (app *valueBuilder) WithInput(input []byte) ValueBuilder {
 	app.input = input
 	return app
 }
 
-// WithString adds a string to the builder
-func (app *valueBuilder) WithString(str string) ValueBuilder {
-	app.str = str
+// WithAssignment adds an assignment to the builder
+func (app *valueBuilder) WithAssignment(assignment Assignment) ValueBuilder {
+	app.assignment = assignment
+	return app
+}
+
+// WithConstant adds a constant to the builder
+func (app *valueBuilder) WithConstant(constant []byte) ValueBuilder {
+	app.constant = constant
 	return app
 }
 
@@ -51,12 +59,16 @@ func (app *valueBuilder) WithProgram(program Program) ValueBuilder {
 
 // Now builds a new Value instance
 func (app *valueBuilder) Now() (Value, error) {
-	if app.input != "" {
+	if app.input != nil {
 		return createValueWithInput(app.input), nil
 	}
 
-	if app.str != "" {
-		return createValueWithString(app.str), nil
+	if app.assignment != nil {
+		return createValueWithAssignment(app.assignment), nil
+	}
+
+	if app.constant != nil {
+		return createValueWithConstant(app.constant), nil
 	}
 
 	if app.execution != nil {

@@ -296,5 +296,5 @@ func (app *moduleWithCompiler) newCompilerValue() (modules.Module, error) {
 }
 
 func (app *moduleWithCompiler) module(name string, fn modules.ExecuteFn) (modules.Module, error) {
-	return app.moduleBuilder.Create().WithName(name).WithFunc(fn).Now()
+	return app.moduleBuilder.Create().WithName([]byte(name)).WithFunc(fn).Now()
 }

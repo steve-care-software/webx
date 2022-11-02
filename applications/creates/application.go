@@ -1,26 +1,26 @@
 package creates
 
 import (
-	"github.com/steve-care-software/webx/applications/creates/commands"
 	"github.com/steve-care-software/webx/applications/creates/grammars"
 	"github.com/steve-care-software/webx/applications/creates/modules"
+	"github.com/steve-care-software/webx/applications/creates/selectors"
 )
 
 type application struct {
-	grammar grammars.Application
-	command commands.Application
-	modules modules.Application
+	grammar  grammars.Application
+	selector selectors.Application
+	modules  modules.Application
 }
 
 func createApplication(
 	grammar grammars.Application,
-	command commands.Application,
+	selector selectors.Application,
 	modules modules.Application,
 ) Application {
 	out := application{
-		grammar: grammar,
-		command: command,
-		modules: modules,
+		grammar:  grammar,
+		selector: selector,
+		modules:  modules,
 	}
 
 	return &out
@@ -31,9 +31,9 @@ func (app *application) Grammar() grammars.Application {
 	return app.grammar
 }
 
-// Command returns the command application
-func (app *application) Command() commands.Application {
-	return app.command
+// Command returns the selector application
+func (app *application) Selector() selectors.Application {
+	return app.selector
 }
 
 // Modules returns the modules application

@@ -3,13 +3,13 @@ package parameters
 import "errors"
 
 type builder struct {
-	name    string
+	name    []byte
 	isInput bool
 }
 
 func createBuilder() Builder {
 	out := builder{
-		name:    "",
+		name:    nil,
 		isInput: false,
 	}
 
@@ -22,7 +22,7 @@ func (app *builder) Create() Builder {
 }
 
 // WithName adds a name to the builder
-func (app *builder) WithName(name string) Builder {
+func (app *builder) WithName(name []byte) Builder {
 	app.name = name
 	return app
 }
@@ -35,7 +35,7 @@ func (app *builder) IsInput() Builder {
 
 // Now builds a new Parameter instance
 func (app *builder) Now() (Parameter, error) {
-	if app.name == "" {
+	if app.name == nil {
 		return nil, errors.New("the name is mandatory in order to build a Parameter instance")
 	}
 

@@ -3,13 +3,13 @@ package instructions
 import "errors"
 
 type assignmentBuilder struct {
-	variable string
+	variable []byte
 	value    Value
 }
 
 func createAssignmentBuilder() AssignmentBuilder {
 	out := assignmentBuilder{
-		variable: "",
+		variable: nil,
 		value:    nil,
 	}
 
@@ -22,7 +22,7 @@ func (app *assignmentBuilder) Create() AssignmentBuilder {
 }
 
 // WithVariable adds a variable to the builder
-func (app *assignmentBuilder) WithVariable(variable string) AssignmentBuilder {
+func (app *assignmentBuilder) WithVariable(variable []byte) AssignmentBuilder {
 	app.variable = variable
 	return app
 }
@@ -35,7 +35,7 @@ func (app *assignmentBuilder) WithValue(value Value) AssignmentBuilder {
 
 // Now builds a new Assignment instance
 func (app *assignmentBuilder) Now() (Assignment, error) {
-	if app.variable == "" {
+	if app.variable == nil {
 		return nil, errors.New("the variable is mandatory in order to build an Assignment instance")
 	}
 

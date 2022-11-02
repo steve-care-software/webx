@@ -3,18 +3,18 @@ package instructions
 import "errors"
 
 type valueBuilder struct {
-	input        string
-	str          string
+	variable     []byte
+	constant     []byte
 	instructions Instructions
-	execution    string
+	execution    []byte
 }
 
 func createValueBuilder() ValueBuilder {
 	out := valueBuilder{
-		input:        "",
-		str:          "",
+		variable:     nil,
+		constant:     nil,
 		instructions: nil,
-		execution:    "",
+		execution:    nil,
 	}
 
 	return &out
@@ -25,15 +25,15 @@ func (app *valueBuilder) Create() ValueBuilder {
 	return createValueBuilder()
 }
 
-// WithInput adds an input to the builder
-func (app *valueBuilder) WithInput(input string) ValueBuilder {
-	app.input = input
+// WithVariable adds a variable to the builder
+func (app *valueBuilder) WithVariable(variable []byte) ValueBuilder {
+	app.variable = variable
 	return app
 }
 
-// WithString adds a string to the builder
-func (app *valueBuilder) WithString(str string) ValueBuilder {
-	app.str = str
+// WithConstant adds a constant to the builder
+func (app *valueBuilder) WithConstant(constant []byte) ValueBuilder {
+	app.constant = constant
 	return app
 }
 
@@ -44,26 +44,26 @@ func (app *valueBuilder) WithInstructions(instructions Instructions) ValueBuilde
 }
 
 // WithExecution add execution to the builder
-func (app *valueBuilder) WithExecution(execution string) ValueBuilder {
+func (app *valueBuilder) WithExecution(execution []byte) ValueBuilder {
 	app.execution = execution
 	return app
 }
 
 // Now builds a new Value instance
 func (app *valueBuilder) Now() (Value, error) {
-	if app.input != "" {
-		return createValueWithInput(app.input), nil
+	if app.variable != nil {
+		return createValueWithVariable(app.variable), nil
 	}
 
-	if app.str != "" {
-		return createValueWithString(app.str), nil
+	if app.constant != nil {
+		return createValueWithConstant(app.constant), nil
 	}
 
 	if app.instructions != nil {
 		return createValueWithInstructions(app.instructions), nil
 	}
 
-	if app.execution != "" {
+	if app.execution != nil {
 		return createValueWithExecution(app.execution), nil
 	}
 

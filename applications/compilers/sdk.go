@@ -8,6 +8,7 @@ import (
 	"github.com/steve-care-software/webx/domain/instructions"
 	"github.com/steve-care-software/webx/domain/instructions/applications"
 	"github.com/steve-care-software/webx/domain/instructions/attachments"
+	"github.com/steve-care-software/webx/domain/instructions/parameters"
 )
 
 // ExecuteInstructionsModuleName represents the execute instructions module name
@@ -18,33 +19,31 @@ func NewApplication(
 	createApp creates.Application,
 ) Application {
 	grammarApp := grammars.NewApplication()
-	//criteriaApp := criterias.NewApplication()
 	interpreterApp := interpreters.NewApplication()
-	instructionsBuilder := instructions.NewBuilder()
+	builder := instructions.NewBuilder()
 	instructionBuilder := instructions.NewInstructionBuilder()
+	assignmentBuilder := instructions.NewAssignmentBuilder()
+	valueBuilder := instructions.NewValueBuilder()
 	applicationBuilder := applications.NewBuilder()
 	attachmentBuilder := attachments.NewBuilder()
 	attachmentVariableBuilder := attachments.NewVariableBuilder()
-	assignmmentBuilder := instructions.NewAssignmentBuilder()
-	valueBuilder := instructions.NewValueBuilder()
-	outputBuilder := instructions.NewOutputBuilder()
+	parameterBuilder := parameters.NewBuilder()
 	return createApplication(
 		grammarApp,
-		//criteriaApp,
 		interpreterApp,
 		createApp,
-		instructionsBuilder,
+		builder,
 		instructionBuilder,
+		assignmentBuilder,
+		valueBuilder,
 		applicationBuilder,
 		attachmentBuilder,
 		attachmentVariableBuilder,
-		assignmmentBuilder,
-		valueBuilder,
-		outputBuilder,
+		parameterBuilder,
 	)
 }
 
 // Application represents the compiler application
 type Application interface {
-	Execute(compiler compilers.Compiler, script []byte) (instructions.Output, error)
+	Execute(compiler compilers.Compiler, script []byte) (instructions.Instructions, error)
 }

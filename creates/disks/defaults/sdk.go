@@ -6,10 +6,10 @@ import (
 	"github.com/steve-care-software/webx/applications/creates"
 	grammar_applications "github.com/steve-care-software/webx/applications/grammars"
 	identity_applications "github.com/steve-care-software/webx/applications/identities"
-	"github.com/steve-care-software/webx/domain/commands"
 	"github.com/steve-care-software/webx/domain/compilers"
 	"github.com/steve-care-software/webx/domain/criterias"
 	"github.com/steve-care-software/webx/domain/cryptography/encryptions/keys"
+	"github.com/steve-care-software/webx/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/domain/cryptography/signatures"
 	"github.com/steve-care-software/webx/domain/grammars"
 	"github.com/steve-care-software/webx/domain/grammars/cardinalities"
@@ -17,7 +17,12 @@ import (
 	grammar_values "github.com/steve-care-software/webx/domain/grammars/values"
 	"github.com/steve-care-software/webx/domain/identities"
 	"github.com/steve-care-software/webx/domain/identities/modifications"
+	"github.com/steve-care-software/webx/domain/instructions"
+	instruction_applications "github.com/steve-care-software/webx/domain/instructions/applications"
+	"github.com/steve-care-software/webx/domain/instructions/attachments"
+	"github.com/steve-care-software/webx/domain/instructions/parameters"
 	"github.com/steve-care-software/webx/domain/programs/modules"
+	"github.com/steve-care-software/webx/domain/selectors"
 	"github.com/steve-care-software/webx/infrastructure/disks"
 )
 
@@ -52,23 +57,9 @@ func NewApplication(
 		cardinalities.NewBuilder(),
 	)
 
-	commandApp := createCommand(
-		commands.NewBuilder(),
-		commands.NewAttachmentBuilder(),
-		commands.NewVariableAssignmentBuilder(),
-		commands.NewParameterDeclarationBuilder(),
-		commands.NewApplicationDeclarationBuilder(),
-		commands.NewValueBuilder(),
-		criterias.NewBuilder(),
-		criterias.NewNodeBuilder(),
-		criterias.NewTailBuilder(),
-		criterias.NewDelimiterBuilder(),
-	)
-
 	moduleApp := createModule(
 		identityApplication,
 		grammar_applications.NewApplication(),
-		//criteria_applications.NewApplication(),
 		modules.NewBuilder(),
 		modules.NewModuleBuilder(),
 		signatures.NewPrivateKeyFactory(),
@@ -92,12 +83,32 @@ func NewApplication(
 		grammars.NewElementBuilder(),
 		cardinalities.NewBuilder(),
 		values.NewBuilder(),
+		hash.NewAdapter(),
+	)
+
+	selectorApp := createSelector(
+		selectors.NewBuilder(),
+		selectors.NewSelectorFnBuilder(),
+		selectors.NewTokenBuilder(),
+		selectors.NewElementBuilder(),
+		selectors.NewInsideBuilder(),
+		selectors.NewFetchersBuilder(),
+		selectors.NewFetcherBuilder(),
+		selectors.NewContentFnBuilder(),
+		instructions.NewBuilder(),
+		instructions.NewInstructionBuilder(),
+		instruction_applications.NewBuilder(),
+		parameters.NewBuilder(),
+		attachments.NewBuilder(),
+		attachments.NewVariableBuilder(),
+		instructions.NewAssignmentBuilder(),
+		instructions.NewValueBuilder(),
 	)
 
 	compilerApp := compiler_applications.NewApplication(
 		creates.NewApplication(
 			grammarApp,
-			commandApp,
+			selectorApp,
 			moduleApp,
 		))
 
@@ -122,7 +133,7 @@ func NewApplication(
 
 	createApp := creates.NewApplication(
 		grammarApp,
-		commandApp,
+		selectorApp,
 		moduleWithCompilerApp,
 	)
 
@@ -141,7 +152,7 @@ func NewApplication(
 
 	return creates.NewApplication(
 		grammarApp,
-		commandApp,
+		selectorApp,
 		moduleWithInterpreterApp,
 	)
 }

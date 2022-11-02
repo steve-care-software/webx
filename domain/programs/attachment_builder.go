@@ -4,13 +4,13 @@ import "errors"
 
 type attachmentBuilder struct {
 	value Value
-	local string
+	local []byte
 }
 
 func createAttachmentBuilder() AttachmentBuilder {
 	out := attachmentBuilder{
 		value: nil,
-		local: "",
+		local: nil,
 	}
 
 	return &out
@@ -28,7 +28,7 @@ func (app *attachmentBuilder) WithValue(value Value) AttachmentBuilder {
 }
 
 // WithLocal adds a local to the builder
-func (app *attachmentBuilder) WithLocal(local string) AttachmentBuilder {
+func (app *attachmentBuilder) WithLocal(local []byte) AttachmentBuilder {
 	app.local = local
 	return app
 }
@@ -39,7 +39,7 @@ func (app *attachmentBuilder) Now() (Attachment, error) {
 		return nil, errors.New("the value is mandatory in order to build an Attachment instance")
 	}
 
-	if app.local == "" {
+	if app.local == nil {
 		return nil, errors.New("the local is mandatory in order to build an Attachment instance")
 	}
 
