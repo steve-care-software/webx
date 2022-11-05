@@ -22,6 +22,7 @@ type Content interface {
 	Name() []byte
 	Sections() Sections
 	Reference() blockchains.Blockchain
+	HasEncryptTo() bool
 	EncryptoTo() keys.PublicKey
 	HasMigration() bool
 	Migration() Migration
