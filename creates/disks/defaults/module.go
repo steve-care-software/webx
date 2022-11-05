@@ -10,7 +10,6 @@ import (
 	creates_module "github.com/steve-care-software/webx/applications/creates/modules"
 	grammar_applications "github.com/steve-care-software/webx/applications/grammars"
 	identity_applications "github.com/steve-care-software/webx/applications/identities"
-	"github.com/steve-care-software/webx/domain/criterias"
 	"github.com/steve-care-software/webx/domain/cryptography/encryptions/keys"
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/domain/cryptography/signatures"
@@ -23,9 +22,8 @@ import (
 )
 
 type module struct {
-	identityApplication identity_applications.Application
-	grammarApplication  grammar_applications.Application
-	//criteriaApplication            criteria_applications.Application
+	identityApplication            identity_applications.Application
+	grammarApplication             grammar_applications.Application
 	builder                        modules.Builder
 	moduleBuilder                  modules.ModuleBuilder
 	signaturePrivateKeyFactory     signatures.PrivateKeyFactory
@@ -33,7 +31,6 @@ type module struct {
 	identityBuilder                identities.Builder
 	identityModificationsBuilder   modifications.Builder
 	identityModificationBuilder    modifications.ModificationBuilder
-	criteriaBuilder                criterias.Builder
 	grammarBuilder                 grammars.Builder
 	grammarChannelsBuilder         grammars.ChannelsBuilder
 	grammarChannelBuilder          grammars.ChannelBuilder
@@ -63,7 +60,6 @@ func createModule(
 	identityBuilder identities.Builder,
 	identityModificationsBuilder modifications.Builder,
 	identityModificationBuilder modifications.ModificationBuilder,
-	criteriaBuilder criterias.Builder,
 	grammarBuilder grammars.Builder,
 	grammarChannelsBuilder grammars.ChannelsBuilder,
 	grammarChannelBuilder grammars.ChannelBuilder,
@@ -82,9 +78,8 @@ func createModule(
 	hashAdapter hash.Adapter,
 ) creates_module.Application {
 	out := module{
-		identityApplication: identityApplication,
-		grammarApplication:  grammarApplication,
-		//criteriaApplication:            criteriaApplication,
+		identityApplication:            identityApplication,
+		grammarApplication:             grammarApplication,
 		builder:                        builder,
 		moduleBuilder:                  moduleBuilder,
 		signaturePrivateKeyFactory:     signaturePrivateKeyFactory,
@@ -92,7 +87,6 @@ func createModule(
 		identityBuilder:                identityBuilder,
 		identityModificationsBuilder:   identityModificationsBuilder,
 		identityModificationBuilder:    identityModificationBuilder,
-		criteriaBuilder:                criteriaBuilder,
 		grammarBuilder:                 grammarBuilder,
 		grammarChannelsBuilder:         grammarChannelsBuilder,
 		grammarChannelBuilder:          grammarChannelBuilder,

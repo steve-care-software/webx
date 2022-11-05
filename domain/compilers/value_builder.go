@@ -1,16 +1,14 @@
 package compilers
 
-import "github.com/steve-care-software/webx/domain/criterias"
-
 type valueBuilder struct {
 	constant string
-	criteria criterias.Criteria
+	//criteria criterias.Criteria
 }
 
 func createValueBuilder() ValueBuilder {
 	out := valueBuilder{
 		constant: "",
-		criteria: nil,
+		//criteria: nil,
 	}
 
 	return &out
@@ -28,16 +26,16 @@ func (app *valueBuilder) WithConstant(constant string) ValueBuilder {
 }
 
 // WithCriteria adds a criteria to the builder
-func (app *valueBuilder) WithCriteria(criteria criterias.Criteria) ValueBuilder {
+/*func (app *valueBuilder) WithCriteria(criteria criterias.Criteria) ValueBuilder {
 	app.criteria = criteria
 	return app
-}
+}*/
 
 // Now builds a new Value instance
 func (app *valueBuilder) Now() (Value, error) {
-	if app.criteria != nil {
+	/*if app.criteria != nil {
 		return createValueWithCriteria(app.criteria), nil
-	}
+	}*/
 
 	if app.constant != "" {
 		return createValueWithConstant(app.constant), nil

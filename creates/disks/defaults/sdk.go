@@ -7,7 +7,6 @@ import (
 	grammar_applications "github.com/steve-care-software/webx/applications/grammars"
 	identity_applications "github.com/steve-care-software/webx/applications/identities"
 	"github.com/steve-care-software/webx/domain/compilers"
-	"github.com/steve-care-software/webx/domain/criterias"
 	"github.com/steve-care-software/webx/domain/cryptography/encryptions/keys"
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/domain/cryptography/signatures"
@@ -67,7 +66,6 @@ func NewApplication(
 		identities.NewBuilder(),
 		modifications.NewBuilder(),
 		modifications.NewModificationBuilder(),
-		criterias.NewBuilder(),
 		grammars.NewBuilder(),
 		grammars.NewChannelsBuilder(),
 		grammars.NewChannelBuilder(),

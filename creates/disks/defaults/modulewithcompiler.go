@@ -7,7 +7,6 @@ import (
 	compiler_applications "github.com/steve-care-software/webx/applications/compilers"
 	creates_module "github.com/steve-care-software/webx/applications/creates/modules"
 	"github.com/steve-care-software/webx/domain/compilers"
-	"github.com/steve-care-software/webx/domain/criterias"
 	"github.com/steve-care-software/webx/domain/grammars"
 	"github.com/steve-care-software/webx/domain/instructions"
 	"github.com/steve-care-software/webx/domain/programs/modules"
@@ -285,9 +284,9 @@ func (app *moduleWithCompiler) newCompilerValue() (modules.Module, error) {
 			builder.WithConstant(constant)
 		}
 
-		if criteria, ok := input["criteria"].(criterias.Criteria); ok {
+		/*if criteria, ok := input["criteria"].(criterias.Criteria); ok {
 			builder.WithCriteria(criteria)
-		}
+		}*/
 
 		return builder.Now()
 	}

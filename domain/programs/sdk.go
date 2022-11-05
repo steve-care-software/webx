@@ -122,7 +122,7 @@ type AssignmentBuilder interface {
 
 // Assignment repesents an assignment
 type Assignment interface {
-	Index() uint
+	//Index() uint
 	Name() []byte
 	Value() Value
 }

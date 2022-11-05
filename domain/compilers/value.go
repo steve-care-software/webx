@@ -1,35 +1,33 @@
 package compilers
 
-import "github.com/steve-care-software/webx/domain/criterias"
-
 type value struct {
 	constant string
-	criteria criterias.Criteria
+	//criteria criterias.Criteria
 }
 
 func createValueWithNil() Value {
-	return createValueInternally("", nil)
+	return createValueInternally("")
 }
 
 func createValueWithConstant(
 	constant string,
 ) Value {
-	return createValueInternally(constant, nil)
+	return createValueInternally(constant)
 }
 
 func createValueWithCriteria(
-	criteria criterias.Criteria,
+//criteria criterias.Criteria,
 ) Value {
-	return createValueInternally("", criteria)
+	return createValueInternally("")
 }
 
 func createValueInternally(
 	constant string,
-	criteria criterias.Criteria,
+	//criteria criterias.Criteria,
 ) Value {
 	out := value{
 		constant: constant,
-		criteria: criteria,
+		//criteria: criteria,
 	}
 
 	return &out
@@ -38,9 +36,9 @@ func createValueInternally(
 // IsConstant returns true if there is a constant, false otherwise
 func (obj *value) IsConstant() bool {
 	// if the value is nil:
-	if obj.criteria == nil && obj.constant == "" {
+	/*if obj.criteria == nil && obj.constant == "" {
 		return true
-	}
+	}*/
 
 	return obj.constant != ""
 }
@@ -51,11 +49,11 @@ func (obj *value) Constant() string {
 }
 
 // IsCriteria returns true if there is a criteria, false otherwise
-func (obj *value) IsCriteria() bool {
+/*func (obj *value) IsCriteria() bool {
 	return obj.criteria != nil
 }
 
 // Criteria returns the criteria, if any
 func (obj *value) Criteria() criterias.Criteria {
 	return obj.criteria
-}
+}*/

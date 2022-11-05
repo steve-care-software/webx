@@ -1,7 +1,6 @@
 package compilers
 
 import (
-	"github.com/steve-care-software/webx/domain/criterias"
 	"github.com/steve-care-software/webx/domain/grammars"
 	"github.com/steve-care-software/webx/domain/instructions"
 )
@@ -128,7 +127,7 @@ type Parameter interface {
 type ValueBuilder interface {
 	Create() ValueBuilder
 	WithConstant(constant string) ValueBuilder
-	WithCriteria(criteria criterias.Criteria) ValueBuilder
+	//WithCriteria(criteria criterias.Criteria) ValueBuilder
 	Now() (Value, error)
 }
 
@@ -136,6 +135,6 @@ type ValueBuilder interface {
 type Value interface {
 	IsConstant() bool
 	Constant() string
-	IsCriteria() bool
-	Criteria() criterias.Criteria
+	/*IsCriteria() bool
+	Criteria() criterias.Criteria*/
 }
