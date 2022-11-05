@@ -9,6 +9,7 @@ import (
 type Builder interface {
 	Create() Builder
 	WithIdentifier(identifier Identifier) Builder
+	WithReference(reference Reference) Builder
 	WithSignature(signature Signature) Builder
 	Now() (Entity, error)
 }
@@ -16,7 +17,26 @@ type Builder interface {
 // Entity represents an entity
 type Entity interface {
 	Identifier() Identifier
+	Reference() Reference
 	Signature() Signature
+}
+
+// ReferenceBuilder represents the reference builder
+type ReferenceBuilder interface {
+	Create() ReferenceBuilder
+	WithIdentifier(identifier Identifier) ReferenceBuilder
+	WithTransaction(trx hash.Hash) ReferenceBuilder
+	WithBlock(block hash.Hash) ReferenceBuilder
+	WithChain(chain hash.Hash) ReferenceBuilder
+	Now() (Reference, error)
+}
+
+// Reference represents the reference
+type Reference interface {
+	Identifier() Identifier
+	Transaction() hash.Hash
+	Block() hash.Hash
+	Chain() hash.Hash
 }
 
 // IdentifierBuilder represents an identifier builder
