@@ -4,6 +4,11 @@ import (
 	"github.com/steve-care-software/webx/domain/databases/entities"
 )
 
+// NewBuilder initializes the builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represents a func builder
 type Builder interface {
 	Create() Builder
