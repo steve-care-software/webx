@@ -5,6 +5,31 @@ import (
 	"go.dedis.ch/kyber/v3"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewReferenceBuilder creates a new reference builder
+func NewReferenceBuilder() ReferenceBuilder {
+	return createReferenceBuilder()
+}
+
+// NewIdentifiersBuilder creates a new identifiers builder
+func NewIdentifiersBuilder() IdentifiersBuilder {
+	return createIdentifiersBuilder()
+}
+
+// NewIdentifierBuilder creates a new identifier builder
+func NewIdentifierBuilder() IdentifierBuilder {
+	return createIdentifierBuilder()
+}
+
+// NewSignatureBuilder creates a new signature builder
+func NewSignatureBuilder() SignatureBuilder {
+	return createSignatureBuilder()
+}
+
 // Builder represents an entity builder
 type Builder interface {
 	Create() Builder
