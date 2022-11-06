@@ -39,6 +39,18 @@ type Reference interface {
 	Chain() hash.Hash
 }
 
+// IdentifiersBuilder represents identifiers builder
+type IdentifiersBuilder interface {
+	Create() IdentifiersBuilder
+	WithList(list []Identifier) IdentifiersBuilder
+	Now() (Identifiers, error)
+}
+
+// Identifiers represents identifiers
+type Identifiers interface {
+	List() []Identifier
+}
+
 // IdentifierBuilder represents an identifier builder
 type IdentifierBuilder interface {
 	Create() IdentifierBuilder

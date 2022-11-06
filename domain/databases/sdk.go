@@ -24,6 +24,8 @@ type Content interface {
 	Reference() blockchains.Blockchain
 	HasEncryptTo() bool
 	EncryptoTo() keys.PublicKey
+	HasPrograms() bool
+	Programs() Programs
 	HasMigration() bool
 	Migration() Migration
 }
@@ -33,8 +35,28 @@ type Migration interface {
 	Previous() Content
 	Height() uint
 	Description() string
-	HasProgram() bool
-	Program() entities.Identifier
+}
+
+// ProgramsBuilder represents the programs builder
+type ProgramsBuilder interface {
+	Create() ProgramsBuilder
+	WithInit(init entities.Identifiers) ProgramsBuilder
+	WithStop(stop entities.Identifiers) ProgramsBuilder
+	WithStart(start entities.Identifiers) ProgramsBuilder
+	WithDaemon(daemon entities.Identifiers) ProgramsBuilder
+	Now() (Programs, error)
+}
+
+// Programs represents database programs
+type Programs interface {
+	HasInit() bool
+	Init() entities.Identifiers
+	HasStop() bool
+	Stop() entities.Identifiers
+	HasStart() bool
+	Start() entities.Identifiers
+	HasDaemon() bool
+	Daemon() entities.Identifiers
 }
 
 // Sections represents sections
