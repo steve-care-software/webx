@@ -5,7 +5,7 @@ import "github.com/steve-care-software/webx/domain/databases/entities"
 type content struct {
 	entity entities.Entity
 	value  Value
-	prefix entities.Identifier
+	prefix entities.Identifiers
 }
 
 func createContent(
@@ -18,7 +18,7 @@ func createContent(
 func createContentWithPrefix(
 	entity entities.Entity,
 	value Value,
-	prefix entities.Identifier,
+	prefix entities.Identifiers,
 ) Content {
 	return createContentInternally(entity, value, prefix)
 }
@@ -26,7 +26,7 @@ func createContentWithPrefix(
 func createContentInternally(
 	entity entities.Entity,
 	value Value,
-	prefix entities.Identifier,
+	prefix entities.Identifiers,
 ) Content {
 	out := content{
 		entity: entity,
@@ -53,6 +53,6 @@ func (obj *content) HasPrefix() bool {
 }
 
 // Prefix returns the prefix, if any
-func (obj *content) Prefix() entities.Identifier {
+func (obj *content) Prefix() entities.Identifiers {
 	return obj.prefix
 }

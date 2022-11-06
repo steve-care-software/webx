@@ -2,26 +2,12 @@ package elements
 
 import "github.com/steve-care-software/webx/domain/databases/entities"
 
-// Builder represents an elements builder
+// Builder represents an element builder
 type Builder interface {
 	Create() Builder
 	WithEntity(entity entities.Entity) Builder
-	WithList(list []Element) Builder
-	Now() (Elements, error)
-}
-
-// Elements represents elements
-type Elements interface {
-	Entity() entities.Entity
-	List() []Element
-}
-
-// ElementBuilder represents an element builder
-type ElementBuilder interface {
-	Create() ElementBuilder
-	WithEntity(entity entities.Entity) ElementBuilder
-	WithGrammar(grammar entities.Identifier) ElementBuilder
-	WithContents(contents entities.Identifiers) ElementBuilder
+	WithGrammar(grammar entities.Identifier) Builder
+	WithContents(contents entities.Identifiers) Builder
 	Now() (Element, error)
 }
 

@@ -12,7 +12,7 @@ type Builder interface {
 	Create() Builder
 	WithEntity(entity entities.Entity) Builder
 	WithValue(value Value) Builder
-	WithPrefix(prefix entities.Identifier) Builder
+	WithPrefix(prefix entities.Identifiers) Builder
 	Now() (Content, error)
 }
 
@@ -21,7 +21,7 @@ type Content interface {
 	Entity() entities.Entity
 	Value() Value
 	HasPrefix() bool
-	Prefix() entities.Identifier
+	Prefix() entities.Identifiers
 }
 
 // ValueBuilder represents a value builder

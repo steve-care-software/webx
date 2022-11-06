@@ -2,27 +2,13 @@ package trees
 
 import "github.com/steve-care-software/webx/domain/databases/entities"
 
-// Builder represents a trees builder
+// Builder represents a tree builder
 type Builder interface {
-	Create() Trees
-	WithEntity(entity entities.Entity) Trees
-	WithList(list []Tree) Trees
-	Now() (Trees, error)
-}
-
-// Trees represents trees
-type Trees interface {
-	Entity() entities.Entity
-	List() []Tree
-}
-
-// TreeBuilder represents a tree builder
-type TreeBuilder interface {
-	Create() TreeBuilder
-	WithEntity(entity entities.Entity) TreeBuilder
-	WithGrammar(grammar entities.Identifier) TreeBuilder
-	WithLine(line entities.Identifier) TreeBuilder
-	WithSuffix(suffix entities.Identifier) TreeBuilder
+	Create() Builder
+	WithEntity(entity entities.Entity) Builder
+	WithGrammar(grammar entities.Identifier) Builder
+	WithLine(line entities.Identifier) Builder
+	WithSuffix(suffix entities.Identifiers) Builder
 	Now() (Tree, error)
 }
 
@@ -32,5 +18,5 @@ type Tree interface {
 	Grammar() entities.Identifier
 	Line() entities.Identifier
 	HasSuffix() bool
-	Suffix() entities.Identifier
+	Suffix() entities.Identifiers
 }

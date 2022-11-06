@@ -9,7 +9,7 @@ import (
 type builder struct {
 	entity entities.Entity
 	value  Value
-	prefix entities.Identifier
+	prefix entities.Identifiers
 }
 
 func createBuilder() Builder {
@@ -40,7 +40,7 @@ func (app *builder) WithValue(value Value) Builder {
 }
 
 // WithPrefix adds a prefix to the builder
-func (app *builder) WithPrefix(prefix entities.Identifier) Builder {
+func (app *builder) WithPrefix(prefix entities.Identifiers) Builder {
 	app.prefix = prefix
 	return app
 }
