@@ -25,7 +25,7 @@ type Value interface {
 // Content represents a value content
 type Content interface {
 	IsInput() bool
-	Input() uint
+	Input() *uint
 	IsAssignment() bool
 	Assignment() assignments.Assignment
 	IsExecution() bool
