@@ -2,26 +2,17 @@ package contents
 
 import "github.com/steve-care-software/webx/domain/databases/entities"
 
-// Builder represents contents builder
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// Builder represents a content builder
 type Builder interface {
 	Create() Builder
 	WithEntity(entity entities.Entity) Builder
-	WithList(list []Content) Builder
-	Now() (Contents, error)
-}
-
-// Contents represents contents
-type Contents interface {
-	Entity() entities.Entity
-	List() []Content
-}
-
-// ContentBuilder represents a content builder
-type ContentBuilder interface {
-	Create() ContentBuilder
-	WithEntity(entity entities.Entity) ContentBuilder
-	WithValue(value Value) ContentBuilder
-	WithPrefix(prefix entities.Identifier) ContentBuilder
+	WithValue(value Value) Builder
+	WithPrefix(prefix entities.Identifier) Builder
 	Now() (Content, error)
 }
 

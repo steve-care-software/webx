@@ -21,7 +21,7 @@ type ElementBuilder interface {
 	Create() ElementBuilder
 	WithEntity(entity entities.Entity) ElementBuilder
 	WithGrammar(grammar entities.Identifier) ElementBuilder
-	WithContents(contents entities.Identifier) ElementBuilder
+	WithContents(contents entities.Identifiers) ElementBuilder
 	Now() (Element, error)
 }
 
@@ -29,5 +29,5 @@ type ElementBuilder interface {
 type Element interface {
 	Entity() entities.Entity
 	Grammar() entities.Identifier
-	Contents() entities.Identifier
+	Contents() entities.Identifiers
 }
