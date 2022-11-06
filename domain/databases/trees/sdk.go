@@ -2,6 +2,11 @@ package trees
 
 import "github.com/steve-care-software/webx/domain/databases/entities"
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represents a tree builder
 type Builder interface {
 	Create() Builder
