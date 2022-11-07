@@ -99,6 +99,7 @@ const (
 type Builder interface {
 	Create() Builder
 	WithContent(content Content) Builder
+	WithPendings(pendings Entries) Builder
 	WithConnections(connections []url.URL) Builder
 	Now() (Database, error)
 }
@@ -106,6 +107,8 @@ type Builder interface {
 // Database represents a database
 type Database interface {
 	Content() Content
+	HasPendings() bool
+	Pendings() Entries
 	HasConnections() bool
 	Connections() []url.URL
 }
@@ -248,6 +251,18 @@ type SizeInBytesBuilder interface {
 type SizeInBytes interface {
 	MaxAmount() uint
 	Amount() uint
+}
+
+// EntriesBuilder represents an entries builder
+type EntriesBuilder interface {
+	Create() EntriesBuilder
+	WithList(list []Pointer) EntriesBuilder
+	Now() (Entries, error)
+}
+
+// Entries represents entries
+type Entries interface {
+	List() []Entry
 }
 
 // EntryBuilder represents an entry builder
