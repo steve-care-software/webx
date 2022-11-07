@@ -199,7 +199,6 @@ type Sections interface {
 type SectionBuilder interface {
 	Create() SectionBuilder
 	WithIndex(index uint) SectionBuilder
-	WithLength(length uint) SectionBuilder
 	WithKind(kind uint8) SectionBuilder
 	WithPointers(pointers Pointers) SectionBuilder
 	Now() (Section, error)
@@ -208,7 +207,6 @@ type SectionBuilder interface {
 // Section represents a section
 type Section interface {
 	Index() uint
-	Length() uint
 	Kind() uint8
 	HasPointers() bool
 	Pointers() Pointers
@@ -232,6 +230,7 @@ type PointerBuilder interface {
 	WithLength(length SizeInBytes) PointerBuilder
 	WithReferences(references Pointers) PointerBuilder
 	BeginsOn(beginsOn SizeInBytes) PointerBuilder
+	CreatedOn(createdOn time.Time) PointerBuilder
 	Now() (Pointer, error)
 }
 
@@ -239,6 +238,7 @@ type PointerBuilder interface {
 type Pointer interface {
 	BeginsOn() SizeInBytes
 	Length() SizeInBytes
+	CreatedOn() time.Time
 	HasReferences() bool
 	References() Pointers
 }
@@ -255,12 +255,13 @@ type SizeInBytesBuilder interface {
 type SizeInBytes interface {
 	MaxAmount() uint
 	Amount() uint
+	IsZero() bool
 }
 
 // EntriesBuilder represents an entries builder
 type EntriesBuilder interface {
 	Create() EntriesBuilder
-	WithList(list []Pointer) EntriesBuilder
+	WithList(list []Entry) EntriesBuilder
 	Now() (Entries, error)
 }
 
@@ -277,7 +278,6 @@ type EntryBuilder interface {
 	WithPointer(pointer Pointer) EntryBuilder
 	WithContent(content []byte) EntryBuilder
 	WithKind(kind uint8) EntryBuilder
-	CreatedOn(createdOn time.Time) EntryBuilder
 	Now() (Entry, error)
 }
 
@@ -288,5 +288,4 @@ type Entry interface {
 	Pointer() Pointer
 	Content() []byte
 	Kind() uint8
-	CreatedOn() time.Time
 }
