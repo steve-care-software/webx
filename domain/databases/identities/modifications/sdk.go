@@ -1,10 +1,13 @@
 package modifications
 
 import (
-	"time"
-
 	"github.com/steve-care-software/webx/domain/databases/entities"
 )
+
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
 
 // Builder represents a modification builder
 type Builder interface {
@@ -13,7 +16,6 @@ type Builder interface {
 	WithName(name string) Builder
 	WithSignature(sig []byte) Builder
 	WithEncryption(enc []byte) Builder
-	CreatedOn(createdOn time.Time) Builder
 	Now() (Modification, error)
 }
 
@@ -21,7 +23,6 @@ type Builder interface {
 type Modification interface {
 	Entity() entities.Entity
 	Content() Content
-	CreatedOn() time.Time
 }
 
 // Content represents a modification content
