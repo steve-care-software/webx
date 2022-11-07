@@ -186,7 +186,7 @@ type Programs interface {
 // SectionsBuilder represents a sections builder
 type SectionsBuilder interface {
 	Create() SectionsBuilder
-	WithList(list []Pointer) SectionsBuilder
+	WithList(list []Section) SectionsBuilder
 	Now() (Sections, error)
 }
 
