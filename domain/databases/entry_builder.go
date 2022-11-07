@@ -85,11 +85,20 @@ func (app *entryBuilder) Now() (Entry, error) {
 		return nil, errors.New("the kind is mandatory in order to build an Entry instance")
 	}
 
-	if *app.pKind <= KindEntry {
-		str := fmt.Sprintf("the kind flag must be a uint8 with a value between %d and %d, %d provided", KindBlockchain, KindEntry, *app.pKind)
+	kind := *app.pKind
+	if kind <= KindEntry {
+		str := fmt.Sprintf("the kind must be a uint8 with a value between %d and %d, %d provided", KindBlockchain, KindEntry, kind)
 		return nil, errors.New(str)
 	}
 
-	return createEntry(app.entity, app.trx, app.pointer, app.content, *app.pKind), nil
+	if app.trx != nil {
+		return createEntryWithTransaction(app.entity, app.pointer, app.content, *app.pKind, app.trx), nil
+	}
+
+	if kind != KindBlockchain && kind != KindBlockchainBlock && kind != KindBlockchainTransaction {
+		return nil, errors.New("the entry must have a transaction when the kind is NOT blockchain related")
+	}
+
+	return createEntry(app.entity, app.pointer, app.content, *app.pKind), nil
 
 }

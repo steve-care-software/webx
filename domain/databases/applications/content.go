@@ -1,118 +1,118 @@
-package databases
+package applications
 
 import "github.com/steve-care-software/webx/domain/databases/entities"
 
-type programs struct {
+type content struct {
 	init   entities.Identifiers
 	stop   entities.Identifiers
 	start  entities.Identifiers
 	daemon entities.Identifiers
 }
 
-func createProgramsWithInit(
+func createContentWithInit(
 	init entities.Identifiers,
-) Programs {
+) Content {
 	return createProgramInternally(init, nil, nil, nil)
 }
 
-func createProgramsWithStop(
+func createContentWithStop(
 	stop entities.Identifiers,
-) Programs {
+) Content {
 	return createProgramInternally(nil, stop, nil, nil)
 }
 
-func createProgramsWithStart(
+func createContentWithStart(
 	start entities.Identifiers,
-) Programs {
+) Content {
 	return createProgramInternally(nil, nil, start, nil)
 }
 
-func createProgramsWithDaemon(
+func createContentWithDaemon(
 	daemon entities.Identifiers,
-) Programs {
+) Content {
 	return createProgramInternally(nil, nil, nil, daemon)
 }
 
-func createProgramsWithInitAndStop(
+func createContentWithInitAndStop(
 	init entities.Identifiers,
 	stop entities.Identifiers,
-) Programs {
+) Content {
 	return createProgramInternally(init, stop, nil, nil)
 }
 
-func createProgramsWithInitAndStart(
+func createContentWithInitAndStart(
 	init entities.Identifiers,
 	start entities.Identifiers,
-) Programs {
+) Content {
 	return createProgramInternally(init, nil, start, nil)
 }
 
-func createProgramsWithInitAndDaemon(
+func createContentWithInitAndDaemon(
 	init entities.Identifiers,
 	daemon entities.Identifiers,
-) Programs {
+) Content {
 	return createProgramInternally(init, nil, nil, daemon)
 }
 
-func createProgramsWithStopAndStart(
+func createContentWithStopAndStart(
 	stop entities.Identifiers,
 	start entities.Identifiers,
-) Programs {
+) Content {
 	return createProgramInternally(nil, stop, start, nil)
 }
 
-func createProgramsWithStopAndDaemon(
+func createContentWithStopAndDaemon(
 	stop entities.Identifiers,
 	daemon entities.Identifiers,
-) Programs {
+) Content {
 	return createProgramInternally(nil, stop, nil, daemon)
 }
 
-func createProgramsWithStartAndDaemon(
+func createContentWithStartAndDaemon(
 	start entities.Identifiers,
 	daemon entities.Identifiers,
-) Programs {
+) Content {
 	return createProgramInternally(nil, nil, start, daemon)
 }
 
-func createProgramsWithInitAndStopAndStart(
+func createContentWithInitAndStopAndStart(
 	init entities.Identifiers,
 	stop entities.Identifiers,
 	start entities.Identifiers,
-) Programs {
+) Content {
 	return createProgramInternally(init, stop, start, nil)
 }
 
-func createProgramsWithInitAndStopAndDaemon(
+func createContentWithInitAndStopAndDaemon(
 	init entities.Identifiers,
 	stop entities.Identifiers,
 	daemon entities.Identifiers,
-) Programs {
+) Content {
 	return createProgramInternally(init, stop, nil, daemon)
 }
 
-func createProgramsWithInitAndStartAndDaemon(
+func createContentWithInitAndStartAndDaemon(
 	init entities.Identifiers,
 	start entities.Identifiers,
 	daemon entities.Identifiers,
-) Programs {
+) Content {
 	return createProgramInternally(init, nil, start, daemon)
 }
 
-func createProgramsWithStopAndStartAndDaemon(
+func createContentWithStopAndStartAndDaemon(
 	stop entities.Identifiers,
 	start entities.Identifiers,
 	daemon entities.Identifiers,
-) Programs {
+) Content {
 	return createProgramInternally(nil, stop, start, daemon)
 }
 
-func createProgramsWithInitAndStopAndStartAndDaemon(
+func createContentWithInitAndStopAndStartAndDaemon(
 	init entities.Identifiers,
 	stop entities.Identifiers,
 	start entities.Identifiers,
 	daemon entities.Identifiers,
-) Programs {
+) Content {
 	return createProgramInternally(init, stop, start, daemon)
 }
 
@@ -121,8 +121,8 @@ func createProgramInternally(
 	stop entities.Identifiers,
 	start entities.Identifiers,
 	daemon entities.Identifiers,
-) Programs {
-	out := programs{
+) Content {
+	out := content{
 		init:   init,
 		stop:   stop,
 		start:  start,
@@ -133,41 +133,41 @@ func createProgramInternally(
 }
 
 // HasInit returns true if there is an init program, false otherwise
-func (obj *programs) HasInit() bool {
+func (obj *content) HasInit() bool {
 	return obj.init != nil
 }
 
 // Init returns the init, if any
-func (obj *programs) Init() entities.Identifiers {
+func (obj *content) Init() entities.Identifiers {
 	return obj.init
 }
 
 // HasStop returns true if there is a stop program, false otherwise
-func (obj *programs) HasStop() bool {
+func (obj *content) HasStop() bool {
 	return obj.stop != nil
 }
 
 // Stop returns the stop, if any
-func (obj *programs) Stop() entities.Identifiers {
+func (obj *content) Stop() entities.Identifiers {
 	return obj.stop
 }
 
 // HasStart returns true if there is a start program, false otherwise
-func (obj *programs) HasStart() bool {
+func (obj *content) HasStart() bool {
 	return obj.start != nil
 }
 
 // Start returns the start, if any
-func (obj *programs) Start() entities.Identifiers {
+func (obj *content) Start() entities.Identifiers {
 	return obj.start
 }
 
 // HasDaemon returns true if there is a daemon program, false otherwise
-func (obj *programs) HasDaemon() bool {
+func (obj *content) HasDaemon() bool {
 	return obj.daemon != nil
 }
 
 // Daemon returns the daemon, if any
-func (obj *programs) Daemon() entities.Identifiers {
+func (obj *content) Daemon() entities.Identifiers {
 	return obj.daemon
 }

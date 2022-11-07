@@ -4,7 +4,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/steve-care-software/webx/domain/cryptography/encryptions/keys"
 	"github.com/steve-care-software/webx/domain/databases/blockchains/transactions"
 	"github.com/steve-care-software/webx/domain/databases/entities"
 )
@@ -91,14 +90,67 @@ const (
 	// KindRoute represents a route kind
 	KindRoute
 
+	// KindApplication represents an application kind
+	KindApplication
+
 	// KindEntry represents an entry kind
 	KindEntry
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewHeadBuilder creates a new head builder
+func NewHeadBuilder() HeadBuilder {
+	return createHeadBuilder()
+}
+
+// NewMigrationBuilder creates a new migration builder
+func NewMigrationBuilder() MigrationBuilder {
+	return createMigrationBuilder()
+}
+
+// NewSectionsBuilder creates a new sections builder
+func NewSectionsBuilder() SectionsBuilder {
+	return createSectionsBuilder()
+}
+
+// NewSectionBuilder creates a new section builder
+func NewSectionBuilder() SectionBuilder {
+	return createSectionBuilder()
+}
+
+// NewPointersBuilder creates a new pointers builder
+func NewPointersBuilder() PointersBuilder {
+	return createPointersBuilder()
+}
+
+// NewPointerBulder creates a new pointer builder
+func NewPointerBulder() PointerBuilder {
+	return createPointerBuilder()
+}
+
+// NewSizeInBytesBuilder creates a new size in bytes builder
+func NewSizeInBytesBuilder() SizeInBytesBuilder {
+	return createSizeInBytesBuilder()
+}
+
+// NewEntriesBuilder creates a new entries builder
+func NewEntriesBuilder() EntriesBuilder {
+	return createEntriesBuilder()
+}
+
+// NewEntryBuilder creates a new entry builder
+func NewEntryBuilder() EntryBuilder {
+	return createEntryBuilder()
+}
+
 // Builder represents a database builder
 type Builder interface {
 	Create() Builder
-	WithContent(content Content) Builder
+	WithHead(head Head) Builder
 	WithPendings(pendings Entries) Builder
 	WithConnections(connections []url.URL) Builder
 	Now() (Database, error)
@@ -106,41 +158,30 @@ type Builder interface {
 
 // Database represents a database
 type Database interface {
-	Content() Content
+	Head() Head
 	HasPendings() bool
 	Pendings() Entries
 	HasConnections() bool
 	Connections() []url.URL
 }
 
-// ContentBuilder represents a content builder
-type ContentBuilder interface {
-	Create() ContentBuilder
-	WithName(name string) ContentBuilder
-	WithSections(sections Section) ContentBuilder
-	WithEncrypTo(encryptTo keys.PublicKey) ContentBuilder
-	WithBlockInterval(blockInterval time.Duration) ContentBuilder
-	WithSyncInterval(syncInterval time.Duration) ContentBuilder
-	WithBlockchain(blockchain entities.Identifier) ContentBuilder
-	WithRoutes(routes entities.Identifiers) ContentBuilder
-	WithPrograms(programs Programs) ContentBuilder
-	WithMigration(migration Migration) ContentBuilder
-	Now() (Content, error)
+// HeadBuilder represents a head builder
+type HeadBuilder interface {
+	Create() HeadBuilder
+	WithName(name string) HeadBuilder
+	WithSections(sections Sections) HeadBuilder
+	WithBlockInterval(blockInterval time.Duration) HeadBuilder
+	WithSyncInterval(syncInterval time.Duration) HeadBuilder
+	WithMigration(migration Migration) HeadBuilder
+	Now() (Head, error)
 }
 
-// Content represents the database content
-type Content interface {
+// Head represents the database head
+type Head interface {
 	Name() string
 	Sections() Sections
-	EncryptoTo() keys.PublicKey
 	BlockInterval() time.Duration
 	SyncInterval() time.Duration
-	HasBlockchain() bool
-	Blockchain() entities.Identifier
-	HasRoutes() bool
-	Routes() entities.Identifiers
-	HasPrograms() bool
-	Programs() Programs
 	HasMigration() bool
 	Migration() Migration
 }
@@ -148,7 +189,7 @@ type Content interface {
 // MigrationBuilder represents a migration builder
 type MigrationBuilder interface {
 	Create() MigrationBuilder
-	WithPrevious(previous Content) MigrationBuilder
+	WithPrevious(previous Head) MigrationBuilder
 	WithHeight(height uint) MigrationBuilder
 	WithDescrition(description string) MigrationBuilder
 	Now() (Migration, error)
@@ -156,31 +197,9 @@ type MigrationBuilder interface {
 
 // Migration represents a migration
 type Migration interface {
-	Previous() Content
+	Previous() Head
 	Height() uint
 	Description() string
-}
-
-// ProgramsBuilder represents the programs builder
-type ProgramsBuilder interface {
-	Create() ProgramsBuilder
-	WithInit(init entities.Identifiers) ProgramsBuilder
-	WithStop(stop entities.Identifiers) ProgramsBuilder
-	WithStart(start entities.Identifiers) ProgramsBuilder
-	WithDaemon(daemon entities.Identifiers) ProgramsBuilder
-	Now() (Programs, error)
-}
-
-// Programs represents database programs
-type Programs interface {
-	HasInit() bool
-	Init() entities.Identifiers
-	HasStop() bool
-	Stop() entities.Identifiers
-	HasStart() bool
-	Start() entities.Identifiers
-	HasDaemon() bool
-	Daemon() entities.Identifiers
 }
 
 // SectionsBuilder represents a sections builder
@@ -284,8 +303,9 @@ type EntryBuilder interface {
 // Entry represents a database entry
 type Entry interface {
 	Entity() entities.Entity
-	Transaction() transactions.Transaction
 	Pointer() Pointer
 	Content() []byte
 	Kind() uint8
+	HasTransaction() bool
+	Transaction() transactions.Transaction
 }
