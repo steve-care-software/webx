@@ -23,6 +23,7 @@ type RouteBuilder interface {
 	Create() RouteBuilder
 	WithEntity(entity entities.Entity) RouteBuilder
 	WithGrammar(grammar entities.Identifier) RouteBuilder
+	WithSelectors(selectors entities.Identifiers) RouteBuilder
 	WithProgram(program entities.Identifier) RouteBuilder
 	Now() (Route, error)
 }
@@ -31,5 +32,6 @@ type RouteBuilder interface {
 type Route interface {
 	Entity() entities.Entity
 	Grammar() entities.Identifier
+	Selectors() entities.Identifiers
 	Program() entities.Identifier
 }
