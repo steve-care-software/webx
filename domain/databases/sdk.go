@@ -10,7 +10,6 @@ import (
 
 // Database represents a database
 type Database interface {
-	Name() string
 	Content() Content
 	HasConnections() bool
 	Connections() []url.URL
@@ -18,9 +17,10 @@ type Database interface {
 
 // Content represents the database content
 type Content interface {
-	Name() []byte
-	Sections() Sections
+	Name() string
 	Blockchain() entities.Identifier
+	Router() entities.Identifiers
+	Sections() Sections
 	HasEncryptTo() bool
 	EncryptoTo() keys.PublicKey
 	HasPrograms() bool
