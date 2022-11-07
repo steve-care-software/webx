@@ -1,0 +1,19 @@
+package selects
+
+import (
+	"github.com/steve-care-software/webx/domain/identities"
+	"github.com/steve-care-software/webx/domain/identities/modifications"
+)
+
+// Builder represents the application builder
+type Builder interface {
+	Create() Builder
+	WithName(name string) Builder
+	Now() (Application, error)
+}
+
+// Application represents the selected identity application
+type Application interface {
+	Retrieve(password string) (identities.Identity, error)
+	Modify(modification modifications.Modification, currentPassword string, newPassword string) error
+}

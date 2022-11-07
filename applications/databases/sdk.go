@@ -1,29 +1,19 @@
 package databases
 
 import (
-	"net/url"
-
-	"github.com/steve-care-software/webx/domain/blockchains/blocks"
-	"github.com/steve-care-software/webx/domain/blockchains/transactions"
-	"github.com/steve-care-software/webx/domain/cryptography/signatures"
-	"github.com/steve-care-software/webx/domain/databases"
-	"github.com/steve-care-software/webx/domain/identities"
+	"github.com/steve-care-software/webx/applications/databases/blockchains"
+	"github.com/steve-care-software/webx/applications/databases/connections"
+	"github.com/steve-care-software/webx/applications/databases/heads"
+	"github.com/steve-care-software/webx/applications/databases/identities"
+	"github.com/steve-care-software/webx/applications/databases/pendings"
 )
-
-// Builder represents an application builder
-type Builder interface {
-	Create() Builder
-	WithIdentity(identity identities.Identity) Builder
-	Now() (Application, error)
-}
 
 // Application represents a database application
 type Application interface {
 	List() ([]string, error)
-	Retrieve(name string) (databases.Database, error)
-	SearchBlock(database databases.Database, trx transactions.Transaction) (blocks.Block, error)
-	Execute(database databases.Database, value []byte, signature signatures.RingSignature) ([]byte, error)
-	Propose(database databases.Database, trx transactions.Transaction) error
-	Connect(database databases.Database, url url.URL) error
-	Migrate(migration databases.Migration) error
+	Head(name string) heads.Application
+	Pendings(name string) pendings.Application
+	Connection(name string) connections.Application
+	Blockchain(name string) blockchains.Application
+	Identity(name string) identities.Application
 }
