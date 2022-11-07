@@ -1,10 +1,7 @@
 package blockchains
 
 import (
-	"time"
-
 	"github.com/steve-care-software/webx/domain/blockchains/blocks"
-	"github.com/steve-care-software/webx/domain/blockchains/transactions"
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
 )
 
@@ -18,8 +15,6 @@ type Builder interface {
 	Create() Builder
 	WithReference(reference hash.Hash) Builder
 	WithHead(head blocks.Block) Builder
-	WithPendings(pendings transactions.Transactions) Builder
-	CreatedOn(createdOn time.Time) Builder
 	Now() (Blockchain, error)
 }
 
@@ -27,9 +22,6 @@ type Builder interface {
 type Blockchain interface {
 	Reference() hash.Hash
 	Head() blocks.Block
-	CreatedOn() time.Time
-	HasPendings() bool
-	Pendings() transactions.Transactions
 }
 
 // Repository represents a blockchain repository
