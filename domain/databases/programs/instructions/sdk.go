@@ -5,6 +5,11 @@ import (
 	"github.com/steve-care-software/webx/domain/databases/programs/assignments"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represents an instruction builder
 type Builder interface {
 	Create() Builder
