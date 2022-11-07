@@ -3,7 +3,6 @@ package databases
 import (
 	"net/url"
 
-	"github.com/steve-care-software/webx/domain/blockchains"
 	"github.com/steve-care-software/webx/domain/cryptography/encryptions/keys"
 	"github.com/steve-care-software/webx/domain/databases/entities"
 	"github.com/steve-care-software/webx/domain/databases/entries"
@@ -21,7 +20,7 @@ type Database interface {
 type Content interface {
 	Name() []byte
 	Sections() Sections
-	Reference() blockchains.Blockchain
+	Blockchain() entities.Identifier
 	HasEncryptTo() bool
 	EncryptoTo() keys.PublicKey
 	HasPrograms() bool
