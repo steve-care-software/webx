@@ -119,6 +119,8 @@ type ContentBuilder interface {
 	WithName(name string) ContentBuilder
 	WithSections(sections Section) ContentBuilder
 	WithEncrypTo(encryptTo keys.PublicKey) ContentBuilder
+	WithBlockInterval(blockInterval time.Duration) ContentBuilder
+	WithSyncInterval(syncInterval time.Duration) ContentBuilder
 	WithBlockchain(blockchain entities.Identifier) ContentBuilder
 	WithRoutes(routes entities.Identifiers) ContentBuilder
 	WithPrograms(programs Programs) ContentBuilder
@@ -131,6 +133,8 @@ type Content interface {
 	Name() string
 	Sections() Sections
 	EncryptoTo() keys.PublicKey
+	BlockInterval() time.Duration
+	SyncInterval() time.Duration
 	HasBlockchain() bool
 	Blockchain() entities.Identifier
 	HasRoutes() bool
