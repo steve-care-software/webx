@@ -4,20 +4,20 @@ import "github.com/steve-care-software/webx/domain/databases/entities"
 
 type application struct {
 	entity      entities.Entity
-	module      entities.Identifier
+	module      uint
 	attachments Attachments
 }
 
 func createApplication(
 	entity entities.Entity,
-	module entities.Identifier,
+	module uint,
 ) Application {
 	return createApplicationInternally(entity, module, nil)
 }
 
 func createApplicationWithAttachments(
 	entity entities.Entity,
-	module entities.Identifier,
+	module uint,
 	attachments Attachments,
 ) Application {
 	return createApplicationInternally(entity, module, attachments)
@@ -25,7 +25,7 @@ func createApplicationWithAttachments(
 
 func createApplicationInternally(
 	entity entities.Entity,
-	module entities.Identifier,
+	module uint,
 	attachments Attachments,
 ) Application {
 	out := application{
@@ -43,7 +43,7 @@ func (obj *application) Entity() entities.Entity {
 }
 
 // Module returns the module
-func (obj *application) Module() entities.Identifier {
+func (obj *application) Module() uint {
 	return obj.module
 }
 

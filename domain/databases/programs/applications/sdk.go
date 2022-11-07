@@ -23,7 +23,7 @@ func NewAttachmentBuilder() AttachmentBuilder {
 type Builder interface {
 	Create() Builder
 	WithEntity(entity entities.Entity) Builder
-	WithModule(module entities.Identifier) Builder
+	WithModule(module uint) Builder
 	WithAttachments(attachments Attachments) Builder
 	Now() (Application, error)
 }
@@ -31,7 +31,7 @@ type Builder interface {
 // Application represents an application
 type Application interface {
 	Entity() entities.Entity
-	Module() entities.Identifier
+	Module() uint
 	HasAttachments() bool
 	Attachments() Attachments
 }

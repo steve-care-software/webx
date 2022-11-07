@@ -8,14 +8,14 @@ import (
 
 type builder struct {
 	entity      entities.Entity
-	module      entities.Identifier
+	pModule     *uint
 	attachments Attachments
 }
 
 func createBuilder() Builder {
 	out := builder{
 		entity:      nil,
-		module:      nil,
+		pModule:     nil,
 		attachments: nil,
 	}
 
@@ -34,8 +34,8 @@ func (app *builder) WithEntity(entity entities.Entity) Builder {
 }
 
 // WithModule adds a module to the builder
-func (app *builder) WithModule(module entities.Identifier) Builder {
-	app.module = module
+func (app *builder) WithModule(module uint) Builder {
+	app.pModule = &module
 	return app
 }
 
@@ -51,13 +51,13 @@ func (app *builder) Now() (Application, error) {
 		return nil, errors.New("the entity is mandatory in order to build an Application instance")
 	}
 
-	if app.module == nil {
+	if app.pModule == nil {
 		return nil, errors.New("the module is mandatory in order to build an Application instance")
 	}
 
 	if app.attachments != nil {
-		return createApplicationWithAttachments(app.entity, app.module, app.attachments), nil
+		return createApplicationWithAttachments(app.entity, *app.pModule, app.attachments), nil
 	}
 
-	return createApplication(app.entity, app.module), nil
+	return createApplication(app.entity, *app.pModule), nil
 }
