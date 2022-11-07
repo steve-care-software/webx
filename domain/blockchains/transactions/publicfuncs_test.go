@@ -31,16 +31,15 @@ func TestCalculateScore_Success(t *testing.T) {
 func TestDiscoverMiningProof_Success(t *testing.T) {
 	hashAdapter := hash.NewAdapter()
 	difficulty := uint8(3)
-	pOrigin, _ := hashAdapter.FromBytes([]byte("this is an origin"))
 	pAsset, _ := hashAdapter.FromBytes([]byte("this is an asset"))
 	timeOut := time.Duration(20 * time.Second)
-	pProof, err := DiscoverMiningProof(hashAdapter, difficulty, *pOrigin, *pAsset, timeOut)
+	pProof, err := DiscoverMiningProof(hashAdapter, difficulty, *pAsset, timeOut)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
 	}
 
-	mine, _ := ExecuteMiner(hashAdapter, *pOrigin, *pAsset, *pProof)
+	mine, _ := ExecuteMiner(hashAdapter, *pAsset, *pProof)
 	retAmount := FetchMinedAmount(*mine)
 	if retAmount < difficulty {
 		t.Errorf("the returned amount was expected to be at least of the required difficulty (%d), %d returned", difficulty, retAmount)
@@ -50,10 +49,9 @@ func TestDiscoverMiningProof_Success(t *testing.T) {
 
 func TestDiscoverMiningProof_timeOut_returnsError(t *testing.T) {
 	hashAdapter := hash.NewAdapter()
-	pOrigin, _ := hashAdapter.FromBytes([]byte("this is an origin"))
 	pAsset, _ := hashAdapter.FromBytes([]byte("this is an asset"))
 	timeOut := time.Duration(1)
-	_, err := DiscoverMiningProof(hashAdapter, MaxAmount, *pOrigin, *pAsset, timeOut)
+	_, err := DiscoverMiningProof(hashAdapter, MaxAmount, *pAsset, timeOut)
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

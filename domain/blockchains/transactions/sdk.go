@@ -58,12 +58,12 @@ func CalculateScore(amount uint8) *big.Int {
 }
 
 // DiscoverMiningProof discovers a mining proof that matches the required difficulty
-func DiscoverMiningProof(hashAdapter hash.Adapter, difficulty uint8, origin hash.Hash, asset hash.Hash, timeOut time.Duration) (*big.Int, error) {
+func DiscoverMiningProof(hashAdapter hash.Adapter, difficulty uint8, asset hash.Hash, timeOut time.Duration) (*big.Int, error) {
 	increment := big.NewInt(1)
 	pProof := big.NewInt(0)
 	beginsOn := time.Now().UTC()
 	for {
-		mine, err := ExecuteMiner(hashAdapter, origin, asset, *pProof)
+		mine, err := ExecuteMiner(hashAdapter, asset, *pProof)
 		if err != nil {
 			return nil, err
 		}
@@ -102,9 +102,8 @@ func FetchMinedAmount(mine hash.Hash) uint8 {
 }
 
 // ExecuteMiner executes the miner
-func ExecuteMiner(hashAdapter hash.Adapter, origin hash.Hash, asset hash.Hash, proof big.Int) (*hash.Hash, error) {
+func ExecuteMiner(hashAdapter hash.Adapter, asset hash.Hash, proof big.Int) (*hash.Hash, error) {
 	return hashAdapter.FromMultiBytes([][]byte{
-		origin.Bytes(),
 		asset.Bytes(),
 		proof.Bytes(),
 	})
@@ -128,7 +127,6 @@ type Transactions interface {
 // TransactionBuilder represents a transaction builder
 type TransactionBuilder interface {
 	Create() TransactionBuilder
-	WithOrigin(origin hash.Hash) TransactionBuilder
 	WithAssset(asset hash.Hash) TransactionBuilder
 	WithProof(proof big.Int) TransactionBuilder
 	Now() (Transaction, error)
@@ -137,7 +135,6 @@ type TransactionBuilder interface {
 // Transaction represents a transaction
 type Transaction interface {
 	Hash() hash.Hash
-	Origin() hash.Hash
 	Asset() hash.Hash
 	Proof() big.Int
 	Mine() hash.Hash
