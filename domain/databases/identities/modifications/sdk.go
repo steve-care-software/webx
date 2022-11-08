@@ -12,7 +12,7 @@ func NewBuilder() Builder {
 // Builder represents a modification builder
 type Builder interface {
 	Create() Builder
-	WithEntity(entity entities.Entity) Builder
+	WithIdentifier(identifier entities.Identifier) Builder
 	WithName(name string) Builder
 	WithSignature(sig []byte) Builder
 	WithEncryption(enc []byte) Builder
@@ -21,7 +21,7 @@ type Builder interface {
 
 // Modification represents a modifucation
 type Modification interface {
-	Entity() entities.Entity
+	Identifier() entities.Identifier
 	Content() Content
 }
 

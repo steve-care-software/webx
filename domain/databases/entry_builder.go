@@ -5,22 +5,17 @@ import (
 	"fmt"
 
 	"github.com/steve-care-software/webx/domain/databases/blockchains/transactions"
-	"github.com/steve-care-software/webx/domain/databases/entities"
 )
 
 type entryBuilder struct {
-	entity  entities.Entity
 	trx     transactions.Transaction
-	pointer Pointer
 	content []byte
 	pKind   *uint8
 }
 
 func createEntryBuilder() EntryBuilder {
 	out := entryBuilder{
-		entity:  nil,
 		trx:     nil,
-		pointer: nil,
 		content: nil,
 		pKind:   nil,
 	}
@@ -33,21 +28,9 @@ func (app *entryBuilder) Create() EntryBuilder {
 	return createEntryBuilder()
 }
 
-// WithEntity adds an entity to the builder
-func (app *entryBuilder) WithEntity(entity entities.Entity) EntryBuilder {
-	app.entity = entity
-	return app
-}
-
 // WithTransaction adds a transaction to the builder
 func (app *entryBuilder) WithTransaction(transaction transactions.Transaction) EntryBuilder {
 	app.trx = transaction
-	return app
-}
-
-// WithPointer adds a pointer to the builder
-func (app *entryBuilder) WithPointer(pointer Pointer) EntryBuilder {
-	app.pointer = pointer
 	return app
 }
 
@@ -65,16 +48,8 @@ func (app *entryBuilder) WithKind(kind uint8) EntryBuilder {
 
 // Now builds a new Entry instance
 func (app *entryBuilder) Now() (Entry, error) {
-	if app.entity == nil {
-		return nil, errors.New("the entity is mandatory in order to build an Entry instance")
-	}
-
 	if app.trx == nil {
 		return nil, errors.New("the transaction is mandatory in order to build an Entry instance")
-	}
-
-	if app.pointer == nil {
-		return nil, errors.New("the pointer is mandatory in order to build an Entry instance")
 	}
 
 	if app.content == nil {
@@ -92,13 +67,13 @@ func (app *entryBuilder) Now() (Entry, error) {
 	}
 
 	if app.trx != nil {
-		return createEntryWithTransaction(app.entity, app.pointer, app.content, *app.pKind, app.trx), nil
+		return createEntryWithTransaction(app.content, *app.pKind, app.trx), nil
 	}
 
 	if kind != KindBlockchain && kind != KindBlockchainBlock && kind != KindBlockchainTransaction {
 		return nil, errors.New("the entry must have a transaction when the kind is NOT blockchain related")
 	}
 
-	return createEntry(app.entity, app.pointer, app.content, *app.pKind), nil
+	return createEntry(app.content, *app.pKind), nil
 
 }

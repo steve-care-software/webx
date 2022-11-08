@@ -5,12 +5,18 @@ import (
 
 	"github.com/steve-care-software/webx/domain/cryptography/encryptions/keys"
 	"github.com/steve-care-software/webx/domain/cryptography/signatures"
+	database_identities "github.com/steve-care-software/webx/domain/databases/identities"
 	"github.com/steve-care-software/webx/domain/identities/modifications"
 )
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
 	return createBuilder()
+}
+
+// Adapter represents an identity adapter
+type Adapter interface {
+	ToDatabase(ins Identity) (database_identities.Identity, error)
 }
 
 // Builder represents an identity builder

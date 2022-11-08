@@ -3,25 +3,25 @@ package identities
 import "github.com/steve-care-software/webx/domain/databases/entities"
 
 type identity struct {
-	entity        entities.Entity
+	identifier    entities.Identifier
 	modifications entities.Identifiers
 }
 
 func createIdentity(
-	entity entities.Entity,
+	identifier entities.Identifier,
 	modifications entities.Identifiers,
 ) Identity {
 	out := identity{
-		entity:        entity,
+		identifier:    identifier,
 		modifications: modifications,
 	}
 
 	return &out
 }
 
-// Entity retruns the entity
-func (obj *identity) Entity() entities.Entity {
-	return obj.entity
+// Identifier returns the identifier
+func (obj *identity) Identifier() entities.Identifier {
+	return obj.identifier
 }
 
 // Modifications retruns the modifications

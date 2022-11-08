@@ -3,25 +3,25 @@ package modifications
 import "github.com/steve-care-software/webx/domain/databases/entities"
 
 type modification struct {
-	entity  entities.Entity
-	content Content
+	identifier entities.Identifier
+	content    Content
 }
 
 func createModification(
-	entity entities.Entity,
+	identifier entities.Identifier,
 	content Content,
 ) Modification {
 	out := modification{
-		entity:  entity,
-		content: content,
+		identifier: identifier,
+		content:    content,
 	}
 
 	return &out
 }
 
-// Entity returns the entity
-func (obj *modification) Entity() entities.Entity {
-	return obj.entity
+// Identifier returns the identifier
+func (obj *modification) Identifier() entities.Identifier {
+	return obj.identifier
 }
 
 // Content returns the content

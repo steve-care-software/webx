@@ -7,16 +7,21 @@ func NewBuilder() Builder {
 	return createBuilder()
 }
 
+// Adapter represents an identity adapter
+type Adapter interface {
+	ToContent(ins Identity) ([]byte, error)
+}
+
 // Builder represents an identity builder
 type Builder interface {
 	Create() Builder
-	WithEntity(entity entities.Entity) Builder
+	WithIdentifier(identifier entities.Identifier) Builder
 	WithModifications(modifications entities.Identifiers) Builder
 	Now() (Identity, error)
 }
 
 // Identity represents an identity
 type Identity interface {
-	Entity() entities.Entity
+	Identifier() entities.Identifier
 	Modifications() entities.Identifiers
 }

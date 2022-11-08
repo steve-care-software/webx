@@ -7,13 +7,13 @@ import (
 )
 
 type builder struct {
-	entity        entities.Entity
+	identifier    entities.Identifier
 	modifications entities.Identifiers
 }
 
 func createBuilder() Builder {
 	out := builder{
-		entity:        nil,
+		identifier:    nil,
 		modifications: nil,
 	}
 
@@ -25,9 +25,9 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithEntity adds an entity to the builder
-func (app *builder) WithEntity(entity entities.Entity) Builder {
-	app.entity = entity
+// WithIdentifier adds an identifier to the builder
+func (app *builder) WithIdentifier(identifier entities.Identifier) Builder {
+	app.identifier = identifier
 	return app
 }
 
@@ -39,13 +39,13 @@ func (app *builder) WithModifications(modifications entities.Identifiers) Builde
 
 // Now builds a new Identity instance
 func (app *builder) Now() (Identity, error) {
-	if app.entity == nil {
-		return nil, errors.New("the entity is mandatory in order to build an Identity instance")
+	if app.identifier == nil {
+		return nil, errors.New("the identifier is mandatory in order to build an Identity instance")
 	}
 
 	if app.modifications == nil {
 		return nil, errors.New("the modifications is mandatory in order to build an Identity instance")
 	}
 
-	return createIdentity(app.entity, app.modifications), nil
+	return createIdentity(app.identifier, app.modifications), nil
 }

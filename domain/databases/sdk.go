@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/steve-care-software/webx/domain/databases/blockchains/transactions"
-	"github.com/steve-care-software/webx/domain/databases/entities"
 )
 
 const (
@@ -20,6 +19,9 @@ const (
 
 	// KindIdentity represents an identity kind
 	KindIdentity
+
+	// KindIdentityName represents an identity name kind
+	KindIdentityName
 
 	// KindIdentityModification represents the identity's modification kind
 	KindIdentityModification
@@ -292,9 +294,7 @@ type Entries interface {
 // EntryBuilder represents an entry builder
 type EntryBuilder interface {
 	Create() EntryBuilder
-	WithEntity(entity entities.Entity) EntryBuilder
 	WithTransaction(transaction transactions.Transaction) EntryBuilder
-	WithPointer(pointer Pointer) EntryBuilder
 	WithContent(content []byte) EntryBuilder
 	WithKind(kind uint8) EntryBuilder
 	Now() (Entry, error)
@@ -302,8 +302,6 @@ type EntryBuilder interface {
 
 // Entry represents a database entry
 type Entry interface {
-	Entity() entities.Entity
-	Pointer() Pointer
 	Content() []byte
 	Kind() uint8
 	HasTransaction() bool
