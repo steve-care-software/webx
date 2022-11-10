@@ -136,7 +136,7 @@ type WeightedRelationBuilder interface {
 	Create() WeightedRelationBuilder
 	From(from uint) WeightedRelationBuilder
 	To(to WeightedElements) WeightedRelationBuilder
-	Now() (WeightedElement, error)
+	Now() (WeightedRelation, error)
 }
 
 // WeightedRelation represents a weighted relation
