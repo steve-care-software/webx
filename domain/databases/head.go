@@ -1,10 +1,14 @@
 package databases
 
-import "time"
+import (
+	"time"
+
+	"github.com/steve-care-software/webx/domain/databases/references"
+)
 
 type head struct {
 	name          string
-	sections      Sections
+	reference     references.Reference
 	blockInterval time.Duration
 	syncInterval  time.Duration
 	migration     Migration
@@ -12,33 +16,33 @@ type head struct {
 
 func createHead(
 	name string,
-	sections Sections,
+	reference references.Reference,
 	blockInterval time.Duration,
 	syncInterval time.Duration,
 ) Head {
-	return createHeadInternally(name, sections, blockInterval, syncInterval, nil)
+	return createHeadInternally(name, reference, blockInterval, syncInterval, nil)
 }
 
 func createHeadWithMigration(
 	name string,
-	sections Sections,
+	reference references.Reference,
 	blockInterval time.Duration,
 	syncInterval time.Duration,
 	migration Migration,
 ) Head {
-	return createHeadInternally(name, sections, blockInterval, syncInterval, migration)
+	return createHeadInternally(name, reference, blockInterval, syncInterval, migration)
 }
 
 func createHeadInternally(
 	name string,
-	sections Sections,
+	reference references.Reference,
 	blockInterval time.Duration,
 	syncInterval time.Duration,
 	migration Migration,
 ) Head {
 	out := head{
 		name:          name,
-		sections:      sections,
+		reference:     reference,
 		blockInterval: blockInterval,
 		syncInterval:  syncInterval,
 		migration:     migration,
@@ -52,9 +56,9 @@ func (obj *head) Name() string {
 	return obj.name
 }
 
-// Sections returns the sections
-func (obj *head) Sections() Sections {
-	return obj.sections
+// Reference returns the reference
+func (obj *head) Reference() references.Reference {
+	return obj.reference
 }
 
 // BlockInterval returns the block interval

@@ -3,11 +3,13 @@ package databases
 import (
 	"errors"
 	"time"
+
+	"github.com/steve-care-software/webx/domain/databases/references"
 )
 
 type headBuilder struct {
 	name           string
-	sections       Sections
+	reference      references.Reference
 	pBlockInterval *time.Duration
 	pSyncInterval  *time.Duration
 	migration      Migration
@@ -16,7 +18,7 @@ type headBuilder struct {
 func createHeadBuilder() HeadBuilder {
 	out := headBuilder{
 		name:           "",
-		sections:       nil,
+		reference:      nil,
 		pBlockInterval: nil,
 		pSyncInterval:  nil,
 		migration:      nil,
@@ -36,9 +38,9 @@ func (app *headBuilder) WithName(name string) HeadBuilder {
 	return app
 }
 
-// WithSections adds a sections to the builder
-func (app *headBuilder) WithSections(sections Sections) HeadBuilder {
-	app.sections = sections
+// WithReference adds a reference to the builder
+func (app *headBuilder) WithReference(reference references.Reference) HeadBuilder {
+	app.reference = reference
 	return app
 }
 
@@ -66,10 +68,6 @@ func (app *headBuilder) Now() (Head, error) {
 		return nil, errors.New("the name is mandatory in order to build a Head instance")
 	}
 
-	if app.sections == nil {
-		return nil, errors.New("the sections is mandatory in order to build a Head instance")
-	}
-
 	if app.pBlockInterval == nil {
 		return nil, errors.New("the blockInterval is mandatory in order to build a Head instance")
 	}
@@ -78,9 +76,13 @@ func (app *headBuilder) Now() (Head, error) {
 		return nil, errors.New("the syncInterval is mandatory in order to build a Head instance")
 	}
 
-	if app.migration != nil {
-		return createHeadWithMigration(app.name, app.sections, *app.pBlockInterval, *app.pSyncInterval, app.migration), nil
+	if app.reference == nil {
+		return nil, errors.New("the reference is mandatory in order to build a Database instance")
 	}
 
-	return createHead(app.name, app.sections, *app.pBlockInterval, *app.pSyncInterval), nil
+	if app.migration != nil {
+		return createHeadWithMigration(app.name, app.reference, *app.pBlockInterval, *app.pSyncInterval, app.migration), nil
+	}
+
+	return createHead(app.name, app.reference, *app.pBlockInterval, *app.pSyncInterval), nil
 }

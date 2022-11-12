@@ -7,14 +7,12 @@ import (
 
 type builder struct {
 	head        Head
-	pendings    Entries
 	connections []url.URL
 }
 
 func createBuilder() Builder {
 	out := builder{
 		head:        nil,
-		pendings:    nil,
 		connections: nil,
 	}
 
@@ -32,12 +30,6 @@ func (app *builder) WithHead(head Head) Builder {
 	return app
 }
 
-// WithPendings add pendings to the builder
-func (app *builder) WithPendings(pendings Entries) Builder {
-	app.pendings = pendings
-	return app
-}
-
 // WithConnections add connections to the builder
 func (app *builder) WithConnections(connections []url.URL) Builder {
 	app.connections = connections
@@ -52,14 +44,6 @@ func (app *builder) Now() (Database, error) {
 
 	if app.connections != nil && len(app.connections) <= 0 {
 		app.connections = nil
-	}
-
-	if app.pendings != nil && app.connections != nil {
-		return createDatabaseWithPendingsAndConnections(app.head, app.pendings, app.connections), nil
-	}
-
-	if app.pendings != nil {
-		return createDatabaseWithPendings(app.head, app.pendings), nil
 	}
 
 	if app.connections != nil {
