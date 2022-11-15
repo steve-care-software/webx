@@ -1,11 +1,13 @@
 package entries
 
 import (
-	"github.com/steve-care-software/webx/domain/databases"
+	"github.com/steve-care-software/webx/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/domain/databases/entries"
 )
 
 // Application represents the pendings application
 type Application interface {
-	Retrieve(pointer databases.Pointer) (databases.Entry, error)
-	Insert(entry databases.Entry) (databases.Pointer, error)
+	List(kind uint8) ([]byte, error)
+	Retrieve(kind uint8, hash hash.Hash) ([]byte, error)
+	Insert(entry entries.Entry) error
 }

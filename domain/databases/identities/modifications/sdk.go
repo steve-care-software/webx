@@ -9,6 +9,12 @@ func NewBuilder() Builder {
 	return createBuilder()
 }
 
+// Adapter represents a modification adapter
+type Adapter interface {
+	ToContents(list []Modification) ([][]byte, error)
+	ToContent(ins Modification) ([]byte, error)
+}
+
 // Builder represents a modification builder
 type Builder interface {
 	Create() Builder

@@ -5,6 +5,7 @@ import (
 
 	"github.com/steve-care-software/webx/domain/cryptography/encryptions/keys"
 	"github.com/steve-care-software/webx/domain/cryptography/signatures"
+	database_identity_modifications "github.com/steve-care-software/webx/domain/databases/identities/modifications"
 )
 
 // NewBuilder creates a new builder
@@ -15,6 +16,11 @@ func NewBuilder() Builder {
 // NewModificationBuilder creates a new modification builder
 func NewModificationBuilder() ModificationBuilder {
 	return createModificationBuilder()
+}
+
+// Adapter represents a modifications adapter
+type Adapter interface {
+	ToDatabase(ins Modifications) ([]database_identity_modifications.Modification, error)
 }
 
 // Builder represents a modification builder
