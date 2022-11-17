@@ -11,5 +11,5 @@ type Application interface {
 	ListByLink(masterKind uint8, masterHash hash.Hash, slaveKind uint8) ([][]byte, error)
 	Retrieve(kind uint8, hash hash.Hash) ([]byte, error)
 	Insert(entry entries.Entry) error
-	Add(addition entries.AdditionEntry) error
+	Add(addition entries.Addition) error
 }

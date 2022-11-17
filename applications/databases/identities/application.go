@@ -18,6 +18,8 @@ type application struct {
 	entryApplication      entry_applications.Application
 	entriesBuilder        entries.Builder
 	entryBuilder          entries.EntryBuilder
+	relationsBuilder      entries.RelationsBuilder
+	relationBuilder       entries.RelationBuilder
 	selectAppBuilder      selects.Builder
 }
 
@@ -28,6 +30,8 @@ func createApplication(
 	entryApplication entry_applications.Application,
 	entriesBuilder entries.Builder,
 	entryBuilder entries.EntryBuilder,
+	relationsBuilder entries.RelationsBuilder,
+	relationBuilder entries.RelationBuilder,
 	selectAppBuilder selects.Builder,
 ) Application {
 	out := application{
@@ -37,6 +41,8 @@ func createApplication(
 		entryApplication:      entryApplication,
 		entriesBuilder:        entriesBuilder,
 		entryBuilder:          entryBuilder,
+		relationsBuilder:      relationsBuilder,
+		relationBuilder:       relationBuilder,
 		selectAppBuilder:      selectAppBuilder,
 	}
 
@@ -108,13 +114,23 @@ func (app *application) New(identity identities.Identity, password []byte) error
 		return err
 	}
 
+	relation, err := app.relationBuilder.Create().WithNew(modificationEntries).Now()
+	if err != nil {
+		return err
+	}
+
+	relations, err := app.relationsBuilder.Create().WithList([]entries.Relation{
+		relation,
+	}).Now()
+	if err != nil {
+		return err
+	}
+
 	identityName := identity.Name()
 	ins, err := app.entryBuilder.Create().
 		WithKind(references.KindIdentity).
 		WithContent([]byte(identityName)).
-		WithRelations([]entries.Entries{
-			modificationEntries,
-		}).
+		WithRelations(relations).
 		Now()
 
 	if err != nil {

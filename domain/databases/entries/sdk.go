@@ -19,8 +19,8 @@ type EntryBuilder interface {
 	Create() EntryBuilder
 	WithKind(kind uint8) EntryBuilder
 	WithContent(content []byte) EntryBuilder
-	WithLinks(links []Entry) EntryBuilder
-	WithRelations(relations []Entries) EntryBuilder
+	WithLinks(links Links) EntryBuilder
+	WithRelations(relations Relations) EntryBuilder
 	Now() (Entry, error)
 }
 
@@ -29,22 +29,78 @@ type Entry interface {
 	Kind() uint8
 	Content() []byte
 	HasLinks() bool
-	Links() []Entry
+	Links() Links
 	HasRelations() bool
-	Relations() []Entries
+	Relations() Relations
 }
 
-// AdditionEntryBuilder represents an addition entry builder
-type AdditionEntryBuilder interface {
-	Create() AdditionEntryBuilder
-	WithEntry(entry Entry) AdditionEntryBuilder
-	WithLinks(links []hash.Hash) AdditionEntryBuilder
-	WithRelations(relations [][]hash.Hash) AdditionEntryBuilder
-	Now() (AdditionEntry, error)
+// RelationsBuilder represents a relations builder
+type RelationsBuilder interface {
+	Create() RelationsBuilder
+	WithList(list []Relation) RelationsBuilder
+	Now() (Relations, error)
 }
 
-// AdditionEntry represents an addition entry
-type AdditionEntry interface {
+// Relations represents relations
+type Relations interface {
+	List() []Relation
+}
+
+// RelationBuilder represents a relation builder
+type RelationBuilder interface {
+	Create() RelationBuilder
+	WithNew(new Entries) RelationBuilder
+	WithExisting(existing []hash.Hash) RelationBuilder
+	Now() (Relation, error)
+}
+
+// Relation represents a relation
+type Relation interface {
+	IsNew() bool
+	New() Entries
+	IsExisting() bool
+	Existing() []hash.Hash
+}
+
+// LinksBuilder represents a links builder
+type LinksBuilder interface {
+	Create() LinksBuilder
+	WithList(list []Link) LinksBuilder
+	Now() (Links, error)
+}
+
+// Links represents links
+type Links interface {
+	List() []Link
+}
+
+// LinkBuilder represents a link builder
+type LinkBuilder interface {
+	Create() LinkBuilder
+	WithNew(new Entry) LinkBuilder
+	WithExisting(existing hash.Hash) LinkBuilder
+	Now() (Link, error)
+}
+
+// Link represents a link
+type Link interface {
+	IsNew() bool
+	New() Entry
+	IsExisting() bool
+	Existing() *hash.Hash
+}
+
+// AdditionBuilder represents an addition entry builder
+type AdditionBuilder interface {
+	Create() AdditionBuilder
+	WithEntry(entry Entry) AdditionBuilder
+	WithLinks(links []hash.Hash) AdditionBuilder
+	WithRelations(relations [][]hash.Hash) AdditionBuilder
+	Now() (Addition, error)
+}
+
+// Addition represents an addition entry
+type Addition interface {
 	Entry() Entry
 	HasLinks() bool
 	Links() []hash.Hash

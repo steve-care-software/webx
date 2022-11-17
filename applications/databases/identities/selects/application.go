@@ -20,7 +20,7 @@ type application struct {
 	modificationAdapter   modifications.ModificationAdapter
 	entryApplication      entry_applications.Application
 	entryBuilder          entries.EntryBuilder
-	additionEntryBuilder  entries.AdditionEntryBuilder
+	additionEntryBuilder  entries.AdditionBuilder
 	name                  string
 }
 
@@ -33,7 +33,7 @@ func createApplication(
 	modificationAdapter modifications.ModificationAdapter,
 	entryApplication entry_applications.Application,
 	entryBuilder entries.EntryBuilder,
-	additionEntryBuilder entries.AdditionEntryBuilder,
+	additionEntryBuilder entries.AdditionBuilder,
 	name string,
 ) Application {
 	out := application{
