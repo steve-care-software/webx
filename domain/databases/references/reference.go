@@ -1,12 +1,11 @@
 package references
 
 type reference struct {
-	active            Keys
-	pendings          Keys
-	deleted           Keys
-	links             Links
-	relations         Relations
-	weightedRelations WeightedRelations
+	active    Keys
+	pendings  Keys
+	deleted   Keys
+	links     Links
+	relations Relations
 }
 
 func createReference(
@@ -15,15 +14,13 @@ func createReference(
 	deleted Keys,
 	links Links,
 	relations Relations,
-	weightedRelations WeightedRelations,
 ) Reference {
 	out := reference{
-		active:            active,
-		pendings:          pendings,
-		deleted:           deleted,
-		links:             links,
-		relations:         relations,
-		weightedRelations: weightedRelations,
+		active:    active,
+		pendings:  pendings,
+		deleted:   deleted,
+		links:     links,
+		relations: relations,
 	}
 
 	return &out
@@ -77,14 +74,4 @@ func (obj *reference) HasRelations() bool {
 // Relations returns the relations, if any
 func (obj *reference) Relations() Relations {
 	return obj.relations
-}
-
-// HasWeightedRelations returns true if weightedRelations, false otherwise
-func (obj *reference) HasWeightedRelations() bool {
-	return obj.weightedRelations != nil
-}
-
-// WeightedRelations returns the weightedRelations, if any
-func (obj *reference) WeightedRelations() WeightedRelations {
-	return obj.weightedRelations
 }

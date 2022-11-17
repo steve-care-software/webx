@@ -1,22 +1,20 @@
 package references
 
 type builder struct {
-	active            Keys
-	pendings          Keys
-	deleted           Keys
-	links             Links
-	relations         Relations
-	weightedRelations WeightedRelations
+	active    Keys
+	pendings  Keys
+	deleted   Keys
+	links     Links
+	relations Relations
 }
 
 func createBuilder() Builder {
 	out := builder{
-		active:            nil,
-		pendings:          nil,
-		deleted:           nil,
-		links:             nil,
-		relations:         nil,
-		weightedRelations: nil,
+		active:    nil,
+		pendings:  nil,
+		deleted:   nil,
+		links:     nil,
+		relations: nil,
 	}
 
 	return &out
@@ -57,12 +55,6 @@ func (app *builder) WithRelations(relations Relations) Builder {
 	return app
 }
 
-// WithWeightedRelations add the weighted relations to the builder
-func (app *builder) WithWeightedRelations(weightedRelations WeightedRelations) Builder {
-	app.weightedRelations = weightedRelations
-	return app
-}
-
 // Now builds a new Reference instance
 func (app *builder) Now() (Reference, error) {
 	return createReference(
@@ -71,6 +63,5 @@ func (app *builder) Now() (Reference, error) {
 		app.deleted,
 		app.links,
 		app.relations,
-		app.weightedRelations,
 	), nil
 }

@@ -127,26 +127,6 @@ func NewRelationBuilder() RelationBuilder {
 	return createRelationBuilder()
 }
 
-// NewWeightedRelationsBuilder creates a new weightedRelations builder
-func NewWeightedRelationsBuilder() WeightedRelationsBuilder {
-	return createWeightedRelationsBuilder()
-}
-
-// NewWeightedRelationBuilder creates a new weightedRelation builder
-func NewWeightedRelationBuilder() WeightedRelationBuilder {
-	return createWeightedRelationBuilder()
-}
-
-// NewWeightedElementsBuiler creates a new weighted elements builder
-func NewWeightedElementsBuiler() WeightedElementsBuilder {
-	return createWeightedElementsBuilder()
-}
-
-// NewWeightedElementBuiler creates a new weighted element builder
-func NewWeightedElementBuiler() WeightedElementBuilder {
-	return createWeightedElementBuilder()
-}
-
 // NewPointerBuilder creates a new pointer builder
 func NewPointerBuilder() PointerBuilder {
 	return createPointerBuilder()
@@ -160,7 +140,6 @@ type Builder interface {
 	WithDeleted(deleted Keys) Builder
 	WithLinks(links Links) Builder
 	WithRelations(relations Relations) Builder
-	WithWeightedRelations(weightedRelations WeightedRelations) Builder
 	Now() (Reference, error)
 }
 
@@ -176,8 +155,6 @@ type Reference interface {
 	Links() Links
 	HasRelations() bool
 	Relations() Relations
-	HasWeightedRelations() bool
-	WeightedRelations() WeightedRelations
 }
 
 // KeysBuilder represents a keys builder
@@ -268,58 +245,6 @@ type RelationBuilder interface {
 type Relation interface {
 	From() uint
 	To() []uint
-}
-
-// WeightedRelationsBuilder represents weighted relations builder
-type WeightedRelationsBuilder interface {
-	Create() WeightedRelationsBuilder
-	WithList(list []WeightedRelation) WeightedRelationsBuilder
-	Now() (WeightedRelations, error)
-}
-
-// WeightedRelations represents weighted relations
-type WeightedRelations interface {
-	List() []WeightedRelation
-}
-
-// WeightedRelationBuilder represents a weighted relation builder
-type WeightedRelationBuilder interface {
-	Create() WeightedRelationBuilder
-	From(from uint) WeightedRelationBuilder
-	To(to WeightedElements) WeightedRelationBuilder
-	Now() (WeightedRelation, error)
-}
-
-// WeightedRelation represents a weighted relation
-type WeightedRelation interface {
-	From() uint
-	To() WeightedElements
-}
-
-// WeightedElementsBuilder represents weighted elements builder
-type WeightedElementsBuilder interface {
-	Create() WeightedElementsBuilder
-	WithList(list []WeightedElement) WeightedElementsBuilder
-	Now() (WeightedElements, error)
-}
-
-// WeightedElements represents weighted elements
-type WeightedElements interface {
-	List() []WeightedElement
-}
-
-// WeightedElementBuilder represents a weighted element builder
-type WeightedElementBuilder interface {
-	Create() WeightedElementBuilder
-	WithIndex(index uint) WeightedElementBuilder
-	WithWeight(weight uint) WeightedElementBuilder
-	Now() (WeightedElement, error)
-}
-
-// WeightedElement represents a weighted element
-type WeightedElement interface {
-	Index() uint
-	Weight() uint
 }
 
 // PointerBuilder represents a pointer builder

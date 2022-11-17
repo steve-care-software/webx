@@ -21,7 +21,6 @@ type EntryBuilder interface {
 	WithContent(content []byte) EntryBuilder
 	WithLinks(links []Entry) EntryBuilder
 	WithRelations(relations []Entries) EntryBuilder
-	WithWeightedRelations(weightedRelations []WeightedEntries) EntryBuilder
 	Now() (Entry, error)
 }
 
@@ -33,46 +32,22 @@ type Entry interface {
 	Links() []Entry
 	HasRelations() bool
 	Relations() []Entries
-	HasWeightedRelations() bool
-	WeightedRelations() []WeightedEntries
-}
-
-// WeightedEntriesBuilder represents a weighted entries builder
-type WeightedEntriesBuilder interface {
-	Create() WeightedEntriesBuilder
-	WithList(list []WeightedEntry) WeightedEntriesBuilder
-	Now() (WeightedEntries, error)
-}
-
-// WeightedEntries represents weighted entries
-type WeightedEntries interface {
-	List() []WeightedEntry
-}
-
-// WeightedEntryBuilder represents a weighted entry builder
-type WeightedEntryBuilder interface {
-	Create() WeightedEntryBuilder
-	WithEntry(entry Entry) WeightedEntryBuilder
-	WithWeight(weight uint) WeightedEntryBuilder
-	Now() (WeightedEntry, error)
-}
-
-// WeightedEntry represents a weighted entry
-type WeightedEntry interface {
-	Entry() Entry
-	Weight() uint
 }
 
 // AdditionEntryBuilder represents an addition entry builder
 type AdditionEntryBuilder interface {
 	Create() AdditionEntryBuilder
-	WithEntity(entity hash.Hash) AdditionEntryBuilder
 	WithEntry(entry Entry) AdditionEntryBuilder
+	WithLinks(links []hash.Hash) AdditionEntryBuilder
+	WithRelations(relations [][]hash.Hash) AdditionEntryBuilder
 	Now() (AdditionEntry, error)
 }
 
 // AdditionEntry represents an addition entry
 type AdditionEntry interface {
-	Entity() hash.Hash
 	Entry() Entry
+	HasLinks() bool
+	Links() []hash.Hash
+	HasRelations() bool
+	Relations() [][]hash.Hash
 }

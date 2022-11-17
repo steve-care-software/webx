@@ -148,7 +148,9 @@ func (app *application) Modify(modification modifications.Modification, currentP
 	}
 
 	addition, err := app.additionEntryBuilder.Create().
-		WithEntity(*pHash).
+		WithLinks([]hash.Hash{
+			*pHash,
+		}).
 		WithEntry(modificationEntry).
 		Now()
 
