@@ -1,5 +1,7 @@
 package entries
 
+import "github.com/steve-care-software/webx/domain/cryptography/hash"
+
 // Builder represents an entries builder
 type Builder interface {
 	Create() Builder
@@ -59,4 +61,18 @@ type WeightedEntryBuilder interface {
 type WeightedEntry interface {
 	Entry() Entry
 	Weight() uint
+}
+
+// AdditionEntryBuilder represents an addition entry builder
+type AdditionEntryBuilder interface {
+	Create() AdditionEntryBuilder
+	WithEntity(entity hash.Hash) AdditionEntryBuilder
+	WithEntry(entry Entry) AdditionEntryBuilder
+	Now() (AdditionEntry, error)
+}
+
+// AdditionEntry represents an addition entry
+type AdditionEntry interface {
+	Entity() hash.Hash
+	Entry() Entry
 }

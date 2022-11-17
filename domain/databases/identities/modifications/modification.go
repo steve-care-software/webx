@@ -1,27 +1,27 @@
 package modifications
 
-import "github.com/steve-care-software/webx/domain/databases/entities"
+import "github.com/steve-care-software/webx/domain/cryptography/hash"
 
 type modification struct {
-	identifier entities.Identifier
-	content    Content
+	hash    hash.Hash
+	content Content
 }
 
 func createModification(
-	identifier entities.Identifier,
+	hash hash.Hash,
 	content Content,
 ) Modification {
 	out := modification{
-		identifier: identifier,
-		content:    content,
+		hash:    hash,
+		content: content,
 	}
 
 	return &out
 }
 
-// Identifier returns the identifier
-func (obj *modification) Identifier() entities.Identifier {
-	return obj.identifier
+// Hash returns the hash
+func (obj *modification) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Content returns the content

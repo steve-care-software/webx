@@ -19,9 +19,6 @@ const (
 	// KindIdentity represents an identity kind
 	KindIdentity
 
-	// KindIdentityName represents an identity name kind
-	KindIdentityName
-
 	// KindIdentityModification represents the identity's modification kind
 	KindIdentityModification
 

@@ -7,7 +7,9 @@ import (
 
 // Application represents the pendings application
 type Application interface {
-	List(kind uint8) ([]byte, error)
+	List(kind uint8) ([][]byte, error)
+	ListByLink(masterKind uint8, masterHash hash.Hash, slaveKind uint8) ([][]byte, error)
 	Retrieve(kind uint8, hash hash.Hash) ([]byte, error)
 	Insert(entry entries.Entry) error
+	Add(addition entries.AdditionEntry) error
 }

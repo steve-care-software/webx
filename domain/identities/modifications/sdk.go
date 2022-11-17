@@ -21,6 +21,7 @@ func NewModificationBuilder() ModificationBuilder {
 // Adapter represents a modifications adapter
 type Adapter interface {
 	ToDatabase(ins Modifications) ([]database_identity_modifications.Modification, error)
+	ToModification(list []database_identity_modifications.Modification) (Modifications, error)
 }
 
 // Builder represents a modification builder
@@ -34,6 +35,12 @@ type Builder interface {
 type Modifications interface {
 	List() []Modification
 	First() Modification
+}
+
+// ModificationAdapter represents a modification adapter
+type ModificationAdapter interface {
+	ToDatabase(ins Modification) (database_identity_modifications.Modification, error)
+	ToModification(dbIns database_identity_modifications.Modification) (Modification, error)
 }
 
 // ModificationBuilder represents a modification builder

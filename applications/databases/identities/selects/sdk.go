@@ -14,6 +14,6 @@ type Builder interface {
 
 // Application represents the selected identity application
 type Application interface {
-	Retrieve(password string) (identities.Identity, error)
-	Modify(modification modifications.Modification, currentPassword string, newPassword string) error
+	Retrieve(password []byte) (identities.Identity, error)
+	Modify(modification modifications.Modification, currentPassword []byte, newPassword []byte) error
 }

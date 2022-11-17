@@ -4,19 +4,16 @@ import (
 	entry_applications "github.com/steve-care-software/webx/applications/databases/entries"
 	"github.com/steve-care-software/webx/applications/databases/identities/selects"
 	"github.com/steve-care-software/webx/domain/cryptography/encryptions/passwords"
-	"github.com/steve-care-software/webx/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/domain/databases/entries"
-	database_identities "github.com/steve-care-software/webx/domain/databases/identities"
 	database_identity_modifications "github.com/steve-care-software/webx/domain/databases/identities/modifications"
 	"github.com/steve-care-software/webx/domain/databases/references"
 	"github.com/steve-care-software/webx/domain/identities"
+	"github.com/steve-care-software/webx/domain/identities/modifications"
 )
 
 type application struct {
-	hashAdapter           hash.Adapter
 	encPasswordBuilder    passwords.Builder
-	adapter               identities.Adapter
-	dbAdapter             database_identities.Adapter
+	modificationAdapter   modifications.Adapter
 	modificationDbAdapter database_identity_modifications.Adapter
 	entryApplication      entry_applications.Application
 	entriesBuilder        entries.Builder
@@ -25,10 +22,8 @@ type application struct {
 }
 
 func createApplication(
-	hashAdapter hash.Adapter,
 	encPasswordBuilder passwords.Builder,
-	adapter identities.Adapter,
-	dbAdapter database_identities.Adapter,
+	modificationAdapter modifications.Adapter,
 	modificationDbAdapter database_identity_modifications.Adapter,
 	entryApplication entry_applications.Application,
 	entriesBuilder entries.Builder,
@@ -36,10 +31,8 @@ func createApplication(
 	selectAppBuilder selects.Builder,
 ) Application {
 	out := application{
-		hashAdapter:           hashAdapter,
 		encPasswordBuilder:    encPasswordBuilder,
-		adapter:               adapter,
-		dbAdapter:             dbAdapter,
+		modificationAdapter:   modificationAdapter,
 		modificationDbAdapter: modificationDbAdapter,
 		entryApplication:      entryApplication,
 		entriesBuilder:        entriesBuilder,
@@ -52,8 +45,8 @@ func createApplication(
 
 // List lists the identities
 func (app *application) List() ([]string, error) {
-	// retrieve the identity names:
-	names, err := app.entryApplication.List(references.KindIdentityName)
+	// retrieve the identities:
+	names, err := app.entryApplication.List(references.KindIdentity)
 	if err != nil {
 		return nil, err
 	}
@@ -68,14 +61,9 @@ func (app *application) List() ([]string, error) {
 
 // New creates then save the new identity
 func (app *application) New(identity identities.Identity, password []byte) error {
-	// convert the identity instance to a database identity and modifications:
-	dbIdentity, dbModifications, err := app.adapter.ToDatabase(identity)
-	if err != nil {
-		return err
-	}
-
-	// convert the database identity instance to data:
-	dbIdentityContent, err := app.dbAdapter.ToContent(dbIdentity)
+	// convert the identity modifications to database identity modifications:
+	modifications := identity.Modifications()
+	dbModifications, err := app.modificationAdapter.ToDatabase(modifications)
 	if err != nil {
 		return err
 	}
@@ -86,7 +74,7 @@ func (app *application) New(identity identities.Identity, password []byte) error
 		return err
 	}
 
-	// encrypt the content using the password:
+	// build the encryption instance:
 	encryption, err := app.encPasswordBuilder.Create().WithPassword(password).Now()
 	if err != nil {
 		return err
@@ -94,6 +82,7 @@ func (app *application) New(identity identities.Identity, password []byte) error
 
 	modificationEntriesList := []entries.Entry{}
 	for _, oneDbModification := range dbModificationContents {
+		// encrypt the modification:
 		modifCipher, err := encryption.Encrypt(oneDbModification)
 		if err != nil {
 			return err
@@ -119,29 +108,12 @@ func (app *application) New(identity identities.Identity, password []byte) error
 		return err
 	}
 
-	identityCipher, err := encryption.Encrypt(dbIdentityContent)
-	if err != nil {
-		return err
-	}
-
 	identityName := identity.Name()
-	nameEntry, err := app.entryBuilder.Create().
-		WithKind(references.KindIdentityName).
-		WithContent([]byte(identityName)).
-		Now()
-
-	if err != nil {
-		return err
-	}
-
 	ins, err := app.entryBuilder.Create().
 		WithKind(references.KindIdentity).
-		WithContent(identityCipher).
+		WithContent([]byte(identityName)).
 		WithRelations([]entries.Entries{
 			modificationEntries,
-		}).
-		WithLinks([]entries.Entry{
-			nameEntry,
 		}).
 		Now()
 

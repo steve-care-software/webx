@@ -1,24 +1,26 @@
 package modifications
 
-import (
-	"github.com/steve-care-software/webx/domain/databases/entities"
-)
+import "github.com/steve-care-software/webx/domain/cryptography/hash"
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
-	return createBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
 }
 
 // Adapter represents a modification adapter
 type Adapter interface {
 	ToContents(list []Modification) ([][]byte, error)
 	ToContent(ins Modification) ([]byte, error)
+	ToModifications(contents [][]byte) ([]Modification, error)
+	ToModification(content []byte) (Modification, error)
 }
 
 // Builder represents a modification builder
 type Builder interface {
 	Create() Builder
-	WithIdentifier(identifier entities.Identifier) Builder
 	WithName(name string) Builder
 	WithSignature(sig []byte) Builder
 	WithEncryption(enc []byte) Builder
@@ -27,7 +29,7 @@ type Builder interface {
 
 // Modification represents a modifucation
 type Modification interface {
-	Identifier() entities.Identifier
+	Hash() hash.Hash
 	Content() Content
 }
 
