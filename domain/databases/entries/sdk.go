@@ -2,6 +2,41 @@ package entries
 
 import "github.com/steve-care-software/webx/domain/cryptography/hash"
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewEntryBuilder creates a new entry builder
+func NewEntryBuilder() EntryBuilder {
+	return createEntryBuilder()
+}
+
+// NewRelationsBuilder creates a new relations builder
+func NewRelationsBuilder() RelationsBuilder {
+	return createRelationsBuilder()
+}
+
+// NewRelationBuilder creates a new relation builder
+func NewRelationBuilder() RelationBuilder {
+	return createRelationBuilder()
+}
+
+// NewLinksBuilder creates a new links builder
+func NewLinksBuilder() LinksBuilder {
+	return createLinksBuilder()
+}
+
+// NewLinkBuilder creates a new link builder
+func NewLinkBuilder() LinkBuilder {
+	return createLinkBuilder()
+}
+
+// NewAdditionBuilder creates a new addition builder
+func NewAdditionBuilder() AdditionBuilder {
+	return createAdditionBuilder()
+}
+
 // Builder represents an entries builder
 type Builder interface {
 	Create() Builder
