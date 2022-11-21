@@ -132,6 +132,12 @@ func NewPointerBuilder() PointerBuilder {
 	return createPointerBuilder()
 }
 
+// Adapter represents a reference adapter
+type Adapter interface {
+	ToContent(ins Reference) ([]byte, error)
+	ToReference(content []byte) (Reference, error)
+}
+
 // Builder represents a reference builder
 type Builder interface {
 	Create() Builder
