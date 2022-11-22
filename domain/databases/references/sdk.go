@@ -92,6 +92,12 @@ const (
 	KindApplication
 )
 
+// NewFactory creates a new factory instance
+func NewFactory() Factory {
+	builder := NewBuilder()
+	return createFactory(builder)
+}
+
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
 	return createBuilder()
@@ -127,6 +133,12 @@ func NewRelationBuilder() RelationBuilder {
 	return createRelationBuilder()
 }
 
+// NewPointerAdapter creates a new pointer adapter
+func NewPointerAdapter() PointerAdapter {
+	builder := NewPointerBuilder()
+	return createPointerAdapter(builder)
+}
+
 // NewPointerBuilder creates a new pointer builder
 func NewPointerBuilder() PointerBuilder {
 	return createPointerBuilder()
@@ -136,6 +148,11 @@ func NewPointerBuilder() PointerBuilder {
 type Adapter interface {
 	ToContent(ins Reference) ([]byte, error)
 	ToReference(content []byte) (Reference, error)
+}
+
+// Factory represents a reference factory
+type Factory interface {
+	Create() (Reference, error)
 }
 
 // Builder represents a reference builder
@@ -163,6 +180,12 @@ type Reference interface {
 	Relations() Relations
 }
 
+// KeysAdapter represents the keys adapter
+type KeysAdapter interface {
+	ToContent(ins Keys) ([]byte, error)
+	ToKeys(content []byte) (Keys, error)
+}
+
 // KeysBuilder represents a keys builder
 type KeysBuilder interface {
 	Create() KeysBuilder
@@ -174,6 +197,12 @@ type KeysBuilder interface {
 type Keys interface {
 	List() []Key
 	Fetch(hash hash.Hash) (Key, error)
+}
+
+// KeyAdapter represents the key adapter
+type KeyAdapter interface {
+	ToContent(ins Key) ([]byte, error)
+	ToKey(content []byte) (Key, error)
 }
 
 // KeyBuilder represents a key builder
@@ -201,6 +230,12 @@ type Key interface {
 	Transaction() *uint
 }
 
+// LinksAdapter represents the links adapter
+type LinksAdapter interface {
+	ToContent(ins Links) ([]byte, error)
+	ToLinks(content []byte) (Links, error)
+}
+
 // LinksBuilder represents a links builder
 type LinksBuilder interface {
 	Create() LinksBuilder
@@ -211,6 +246,12 @@ type LinksBuilder interface {
 // Links represents links
 type Links interface {
 	List() []Link
+}
+
+// LinkAdapter represents the link adapter
+type LinkAdapter interface {
+	ToContent(ins Link) ([]byte, error)
+	ToLink(content []byte) (Link, error)
 }
 
 // LinkBuilder represents a link builder
@@ -234,9 +275,21 @@ type RelationsBuilder interface {
 	Now() (Relations, error)
 }
 
+// RelationsAdapter represents the relations adapter
+type RelationsAdapter interface {
+	ToContent(ins Relations) ([]byte, error)
+	ToRelations(content []byte) (Relations, error)
+}
+
 // Relations represents relations
 type Relations interface {
 	List() []Relation
+}
+
+// RelationAdapter represents the relation adapter
+type RelationAdapter interface {
+	ToContent(ins Relation) ([]byte, error)
+	ToRelation(content []byte) (Relation, error)
 }
 
 // RelationBuilder represents a relation builder
@@ -251,6 +304,12 @@ type RelationBuilder interface {
 type Relation interface {
 	From() uint
 	To() []uint
+}
+
+// PointerAdapter represents the pointer adapter
+type PointerAdapter interface {
+	ToContent(ins Pointer) ([]byte, error)
+	ToPointer(content []byte) (Pointer, error)
 }
 
 // PointerBuilder represents a pointer builder
