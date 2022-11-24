@@ -2,22 +2,18 @@ package blockchains
 
 import (
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/domain/databases/entities"
 )
 
 type blockchain struct {
-	entity    entities.Entity
 	reference hash.Hash
-	head      entities.Identifier
+	head      hash.Hash
 }
 
 func createBlockchain(
-	entity entities.Entity,
 	reference hash.Hash,
-	head entities.Identifier,
+	head hash.Hash,
 ) Blockchain {
 	out := blockchain{
-		entity:    entity,
 		reference: reference,
 		head:      head,
 	}
@@ -25,17 +21,12 @@ func createBlockchain(
 	return &out
 }
 
-// Entity returns the entity
-func (obj *blockchain) Entity() entities.Entity {
-	return obj.entity
-}
-
 // Reference returns the reference
 func (obj *blockchain) Reference() hash.Hash {
 	return obj.reference
 }
 
-// Head returns the head block
-func (obj *blockchain) Head() entities.Identifier {
+// Head returns the head block hash
+func (obj *blockchain) Head() hash.Hash {
 	return obj.head
 }
