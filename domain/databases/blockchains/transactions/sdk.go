@@ -8,8 +8,7 @@ import (
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
-	hashAdapter := hash.NewAdapter()
-	return createBuilder(hashAdapter)
+	return createBuilder()
 }
 
 // Adapter represents the transaction adapter
@@ -21,6 +20,7 @@ type Adapter interface {
 // Builder represents a transaction builder
 type Builder interface {
 	Create() Builder
+	WithHash(hash hash.Hash) Builder
 	WithAsset(asset hash.Hash) Builder
 	WithProof(proof big.Int) Builder
 	Now() (Transaction, error)

@@ -8,18 +8,16 @@ import (
 )
 
 type builder struct {
-	hashAdapter hash.Adapter
-	pAsset      *hash.Hash
-	pProof      *big.Int
+	pHash  *hash.Hash
+	pAsset *hash.Hash
+	pProof *big.Int
 }
 
-func createBuilder(
-	hashAdapter hash.Adapter,
-) Builder {
+func createBuilder() Builder {
 	out := builder{
-		hashAdapter: hashAdapter,
-		pAsset:      nil,
-		pProof:      nil,
+		pHash:  nil,
+		pAsset: nil,
+		pProof: nil,
 	}
 
 	return &out
@@ -27,9 +25,13 @@ func createBuilder(
 
 // Create initializes the builder
 func (app *builder) Create() Builder {
-	return createBuilder(
-		app.hashAdapter,
-	)
+	return createBuilder()
+}
+
+// WithHash adds an hash to the builder
+func (app *builder) WithHash(hash hash.Hash) Builder {
+	app.pHash = &hash
+	return app
 }
 
 // WithAsset adds an asset to the builder
@@ -46,6 +48,10 @@ func (app *builder) WithProof(proof big.Int) Builder {
 
 // Now builds a new Transaction instance
 func (app *builder) Now() (Transaction, error) {
+	if app.pHash == nil {
+		return nil, errors.New("the hash is mandatory in order to build a Transaction instance")
+	}
+
 	if app.pAsset == nil {
 		return nil, errors.New("the asset is mandatory in order to build a Transaction instance")
 	}
@@ -54,14 +60,5 @@ func (app *builder) Now() (Transaction, error) {
 		return nil, errors.New("the proof is mandatory in order to build a Transaction instance")
 	}
 
-	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
-		app.pAsset.Bytes(),
-		app.pProof.Bytes(),
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return createTransaction(*pHash, *app.pAsset, *app.pProof), nil
+	return createTransaction(*app.pHash, *app.pAsset, *app.pProof), nil
 }

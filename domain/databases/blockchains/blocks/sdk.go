@@ -9,8 +9,7 @@ import (
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
-	hashAdapter := hash.NewAdapter()
-	return createBuilder(hashAdapter)
+	return createBuilder()
 }
 
 // Adapter represents the block adapter
@@ -22,6 +21,7 @@ type Adapter interface {
 // Builder represents  block builder
 type Builder interface {
 	Create() Builder
+	WithHash(hash hash.Hash) Builder
 	WithHeight(height uint) Builder
 	WithNextScore(nextScore big.Int) Builder
 	WithPendingScope(pendingScore big.Int) Builder
