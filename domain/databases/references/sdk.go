@@ -6,18 +6,13 @@ import (
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
 )
 
+const pointerSize = 8 * 2
+const blockchainKeySize = hash.Size + pointerSize + 8
+const contentKeySize = blockchainKeySize + 1 + hash.Size
+
 const (
-	// KindBlockchain represents a blockchain kind
-	KindBlockchain uint8 = iota
-
-	// KindBlockchainBlock represents the blockchain's block kind
-	KindBlockchainBlock
-
-	// KindBlockchainTransaction represents the blockchain's transaction kind
-	KindBlockchainTransaction
-
 	// KindIdentity represents an identity kind
-	KindIdentity
+	KindIdentity = iota
 
 	// KindIdentityModification represents the identity's modification kind
 	KindIdentityModification
@@ -92,6 +87,14 @@ const (
 	KindApplication
 )
 
+// NewAdapter creates a new adapter instance
+func NewAdapter() Adapter {
+	contentAdapter := NewContentAdapter()
+	blockchainAdapter := NewBlockchainAdapter()
+	builder := NewBuilder()
+	return createAdapter(contentAdapter, blockchainAdapter, builder)
+}
+
 // NewFactory creates a new factory instance
 func NewFactory() Factory {
 	builder := NewBuilder()
@@ -100,37 +103,89 @@ func NewFactory() Factory {
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
-	return createBuilder()
+	contentFactory := NewContentFactory()
+	return createBuilder(contentFactory)
 }
 
-// NewKeysBuilder creates a new keys builder
-func NewKeysBuilder() KeysBuilder {
-	return createKeysBuilder()
+// NewContentAdapter creates a new content adapter
+func NewContentAdapter() ContentAdapter {
+	contentKeysAdapter := NewContentKeysAdapter()
+	builder := NewContentBuilder()
+	return createContentAdapter(contentKeysAdapter, builder)
 }
 
-// NewKeyBuilder creates a new key builder
-func NewKeyBuilder() KeyBuilder {
-	return createKeyBuilder()
+// NewContentFactory creates a new content factory
+func NewContentFactory() ContentFactory {
+	builder := NewContentBuilder()
+	return createContentFactory(builder)
 }
 
-// NewLinksBuilder creates a new links builder
-func NewLinksBuilder() LinksBuilder {
-	return createLinksBuilder()
+// NewContentBuilder creates a new content builder
+func NewContentBuilder() ContentBuilder {
+	return createContentBuilder()
 }
 
-// NewLinkBuilder creates a new link builder
-func NewLinkBuilder() LinkBuilder {
-	return createLinkBuilder()
+// NewBlockchainAdapter creates a new blockchain adapter
+func NewBlockchainAdapter() BlockchainAdapter {
+	blockchainKeyAdapter := NewBlockchainKeyAdapter()
+	blockchainKeysAdapter := NewBlockchainKeysAdapter()
+	builder := NewBlockchainBuilder()
+	return createBlockchainAdapter(blockchainKeyAdapter, blockchainKeysAdapter, builder)
 }
 
-// NewRelationsBuilder creates a new relations builder
-func NewRelationsBuilder() RelationsBuilder {
-	return createRelationsBuilder()
+// NewBlockchainBuilder creates a new blockchain builder
+func NewBlockchainBuilder() BlockchainBuilder {
+	return createBlockchainBuilder()
 }
 
-// NewRelationBuilder creates a new relation builder
-func NewRelationBuilder() RelationBuilder {
-	return createRelationBuilder()
+// NewContentKeysAdapter creates a new content keys adapter
+func NewContentKeysAdapter() ContentKeysAdapter {
+	adapter := NewContentKeyAdapter()
+	builder := NewContentKeysBuilder()
+	return createContentKeysAdapter(adapter, builder)
+}
+
+// NewContentKeysBuilder creates a new content keys builder
+func NewContentKeysBuilder() ContentKeysBuilder {
+	return createContentKeysBuilder()
+}
+
+// NewContentKeyAdapter creates a new content key adapter
+func NewContentKeyAdapter() ContentKeyAdapter {
+	hashAdapter := hash.NewAdapter()
+	pointerAdapter := NewPointerAdapter()
+	builder := NewContentKeyBuilder()
+	return createContentKeyAdapter(hashAdapter, pointerAdapter, builder)
+}
+
+// NewContentKeyBuilder createsa new content key builder
+func NewContentKeyBuilder() ContentKeyBuilder {
+	return createContentKeyBuilder()
+}
+
+// NewBlockchainKeysAdapter creates a new blockchain keys adapter
+func NewBlockchainKeysAdapter() BlockchainKeysAdapter {
+	adapter := NewBlockchainKeyAdapter()
+	builder := NewBlockchainKeysBuilder()
+	return createBlockchainKeysAdapter(adapter, builder)
+}
+
+// NewBlockchainKeysBuilder creates a new blockchain keys builder
+func NewBlockchainKeysBuilder() BlockchainKeysBuilder {
+	return createBlockchainKeysBuilder()
+}
+
+// NewBlockchainKeyAdapter creates a new blockchain key adapter
+func NewBlockchainKeyAdapter() BlockchainKeyAdapter {
+	hashAdapter := hash.NewAdapter()
+	pointerAdapter := NewPointerAdapter()
+	builder := NewBlockchainKeyBuilder()
+	return createBlockchainKeyAdapter(hashAdapter, pointerAdapter, builder)
+}
+
+// NewBlockchainKeyBuilder creates a new blockchain key builder
+func NewBlockchainKeyBuilder() BlockchainKeyBuilder {
+	return createBlockchainKeyBuilder()
 }
 
 // NewPointerAdapter creates a new pointer adapter
@@ -158,152 +213,152 @@ type Factory interface {
 // Builder represents a reference builder
 type Builder interface {
 	Create() Builder
-	WithActive(active Keys) Builder
-	WithPendings(pendings Keys) Builder
-	WithDeleted(deleted Keys) Builder
-	WithLinks(links Links) Builder
-	WithRelations(relations Relations) Builder
+	WithContent(content Content) Builder
+	WithBlockchain(blockchain Blockchain) Builder
 	Now() (Reference, error)
 }
 
 // Reference represents the reference
 type Reference interface {
+	Content() Content
+	HasBlockchain() bool
+	Blockchain() Blockchain
+}
+
+// ContentFactory represents a content factory
+type ContentFactory interface {
+	Create() (Content, error)
+}
+
+// ContentAdapter represents a content adapter
+type ContentAdapter interface {
+	ToContent(ins Content) ([]byte, error)
+	ToInstance(content []byte) (Content, error)
+}
+
+// ContentBuilder represents a content builder
+type ContentBuilder interface {
+	Create() ContentBuilder
+	WithActive(active ContentKeys) ContentBuilder
+	WithPendings(pendings ContentKeys) ContentBuilder
+	WithDeleted(deleted ContentKeys) ContentBuilder
+	Now() (Content, error)
+}
+
+// Content represents the content reference
+type Content interface {
 	HasActive() bool
-	Active() Keys
+	Active() ContentKeys
 	HasPendings() bool
-	Pendings() Keys
+	Pendings() ContentKeys
 	HasDeleted() bool
-	Deleted() Keys
-	HasLinks() bool
-	Links() Links
-	HasRelations() bool
-	Relations() Relations
+	Deleted() ContentKeys
 }
 
-// KeysAdapter represents the keys adapter
-type KeysAdapter interface {
-	ToContent(ins Keys) ([]byte, error)
-	ToKeys(content []byte) (Keys, error)
+// BlockchainAdapter represents a blockchain adapter
+type BlockchainAdapter interface {
+	ToContent(ins Blockchain) ([]byte, error)
+	ToBlockchain(content []byte) (Blockchain, error)
 }
 
-// KeysBuilder represents a keys builder
-type KeysBuilder interface {
-	Create() KeysBuilder
-	WithList(list []Key) KeysBuilder
-	Now() (Keys, error)
+// BlockchainBuilder represents a blockchain builder
+type BlockchainBuilder interface {
+	Create() BlockchainBuilder
+	WithChain(chain BlockchainKey) BlockchainBuilder
+	WithBlocks(blocks BlockchainKeys) BlockchainBuilder
+	WithTransactions(trx BlockchainKeys) BlockchainBuilder
+	Now() (Blockchain, error)
 }
 
-// Keys represents keys
-type Keys interface {
-	List() []Key
-	Fetch(hash hash.Hash) (Key, error)
+// Blockchain represents a blockchain reference
+type Blockchain interface {
+	Chain() BlockchainKey
+	Blocks() BlockchainKeys
+	Transactions() BlockchainKeys
 }
 
-// KeyAdapter represents the key adapter
-type KeyAdapter interface {
-	ToContent(ins Key) ([]byte, error)
-	ToKey(content []byte) (Key, error)
+// ContentKeysAdapter represents the content keys adapter
+type ContentKeysAdapter interface {
+	ToContent(ins ContentKeys) ([]byte, error)
+	ToContentKeys(content []byte) (ContentKeys, error)
 }
 
-// KeyBuilder represents a key builder
-type KeyBuilder interface {
-	Create() KeyBuilder
-	WithHash(hash hash.Hash) KeyBuilder
-	WithIndex(index uint) KeyBuilder
-	WithKind(kind uint8) KeyBuilder
-	WithContent(content Pointer) KeyBuilder
-	WithTransaction(trx uint) KeyBuilder
-	CreatedOn(createdOn time.Time) KeyBuilder
-	IsEntity() KeyBuilder
-	Now() (Key, error)
+// ContentKeysBuilder represents a content keys builder
+type ContentKeysBuilder interface {
+	Create() ContentKeysBuilder
+	WithList(list []ContentKey) ContentKeysBuilder
+	Now() (ContentKeys, error)
 }
 
-// Key represents a key
-type Key interface {
-	Hash() hash.Hash
-	Index() uint
+// ContentKeys represents content keys
+type ContentKeys interface {
+	List() []ContentKey
+	Fetch(hash hash.Hash) (ContentKey, error)
+}
+
+// ContentKeyAdapter represents the content key adapter
+type ContentKeyAdapter interface {
+	ToContent(ins ContentKey) ([]byte, error)
+	ToContentKey(content []byte) (ContentKey, error)
+}
+
+// ContentKeyBuilder represents a content key builder
+type ContentKeyBuilder interface {
+	Create() ContentKeyBuilder
+	WithHash(hash hash.Hash) ContentKeyBuilder
+	WithKind(kind uint8) ContentKeyBuilder
+	WithContent(content Pointer) ContentKeyBuilder
+	WithTransaction(trx hash.Hash) ContentKeyBuilder
+	CreatedOn(createdOn time.Time) ContentKeyBuilder
+	Now() (ContentKey, error)
+}
+
+// ContentKey represents a content key
+type ContentKey interface {
+	BlockchainKey
 	Kind() uint8
+	Transaction() hash.Hash
+}
+
+// BlockchainKeysAdapter represents the blockchain keys adapter
+type BlockchainKeysAdapter interface {
+	ToContent(ins BlockchainKeys) ([]byte, error)
+	ToBlockchainKeys(content []byte) (BlockchainKeys, error)
+}
+
+// BlockchainKeysBuilder represents a blockchain keys builder
+type BlockchainKeysBuilder interface {
+	Create() BlockchainKeysBuilder
+	WithList(list []BlockchainKey) BlockchainKeysBuilder
+	Now() (BlockchainKeys, error)
+}
+
+// BlockchainKeys represents blockchain keys
+type BlockchainKeys interface {
+	List() []BlockchainKey
+	Fetch(hash hash.Hash) (BlockchainKey, error)
+}
+
+// BlockchainKeyAdapter represents the blockchain key adapter
+type BlockchainKeyAdapter interface {
+	ToContent(ins BlockchainKey) ([]byte, error)
+	ToBlockchainKey(content []byte) (BlockchainKey, error)
+}
+
+// BlockchainKeyBuilder represents a blockchain key builder
+type BlockchainKeyBuilder interface {
+	Create() BlockchainKeyBuilder
+	WithHash(hash hash.Hash) BlockchainKeyBuilder
+	WithContent(content Pointer) BlockchainKeyBuilder
+	CreatedOn(createdOn time.Time) BlockchainKeyBuilder
+	Now() (BlockchainKey, error)
+}
+
+// BlockchainKey represents a blockchain key
+type BlockchainKey interface {
+	Hash() hash.Hash
 	Content() Pointer
-	IsEntity() bool
 	CreatedOn() time.Time
-	HasTransaction() bool
-	Transaction() *uint
-}
-
-// LinksAdapter represents the links adapter
-type LinksAdapter interface {
-	ToContent(ins Links) ([]byte, error)
-	ToLinks(content []byte) (Links, error)
-}
-
-// LinksBuilder represents a links builder
-type LinksBuilder interface {
-	Create() LinksBuilder
-	WithList(list []Link) LinksBuilder
-	Now() (Links, error)
-}
-
-// Links represents links
-type Links interface {
-	List() []Link
-}
-
-// LinkAdapter represents the link adapter
-type LinkAdapter interface {
-	ToContent(ins Link) ([]byte, error)
-	ToLink(content []byte) (Link, error)
-}
-
-// LinkBuilder represents a link builder
-type LinkBuilder interface {
-	Create() LinkBuilder
-	From(from uint) LinkBuilder
-	To(to uint) LinkBuilder
-	Now() (Link, error)
-}
-
-// Link represents a link
-type Link interface {
-	From() uint
-	To() uint
-}
-
-// RelationsBuilder represents relations builder
-type RelationsBuilder interface {
-	Create() RelationsBuilder
-	WithList(list []Relation) RelationsBuilder
-	Now() (Relations, error)
-}
-
-// RelationsAdapter represents the relations adapter
-type RelationsAdapter interface {
-	ToContent(ins Relations) ([]byte, error)
-	ToRelations(content []byte) (Relations, error)
-}
-
-// Relations represents relations
-type Relations interface {
-	List() []Relation
-}
-
-// RelationAdapter represents the relation adapter
-type RelationAdapter interface {
-	ToContent(ins Relation) ([]byte, error)
-	ToRelation(content []byte) (Relation, error)
-}
-
-// RelationBuilder represents a relation builder
-type RelationBuilder interface {
-	Create() RelationBuilder
-	From(from uint) RelationBuilder
-	To(to []uint) RelationBuilder
-	Now() (Relation, error)
-}
-
-// Relation represents a relation
-type Relation interface {
-	From() uint
-	To() []uint
 }
 
 // PointerAdapter represents the pointer adapter

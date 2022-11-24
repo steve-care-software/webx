@@ -36,8 +36,8 @@ func (app *pointerAdapter) ToContent(ins Pointer) ([]byte, error) {
 
 // ToPointer converts bytes to pointer
 func (app *pointerAdapter) ToPointer(content []byte) (Pointer, error) {
-	if len(content) != 16 {
-		str := fmt.Sprintf("the content was expected to contain 16 bytes in order to convert to a Pointer instance, %d provided", len(content))
+	if len(content) != pointerSize {
+		str := fmt.Sprintf("the content was expected to contain %d bytes in order to convert to a Pointer instance, %d provided", pointerSize, len(content))
 		return nil, errors.New(str)
 	}
 

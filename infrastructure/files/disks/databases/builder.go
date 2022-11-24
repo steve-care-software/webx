@@ -6,21 +6,28 @@ import (
 	"github.com/steve-care-software/webx/applications/databases"
 	"github.com/steve-care-software/webx/applications/databases/contents"
 	"github.com/steve-care-software/webx/applications/databases/transactions"
+	"github.com/steve-care-software/webx/domain/databases/references"
 )
 
 type builder struct {
 	contentAppBuilder contents.Builder
 	trxAppBuilder     transactions.Builder
+	referenceAdapter  references.Adapter
+	referenceFactory  references.Factory
 	dirPath           string
 }
 
 func createBuilder(
 	contentAppBuilder contents.Builder,
 	trxAppBuilder transactions.Builder,
+	referenceAdapter references.Adapter,
+	referenceFactory references.Factory,
 ) Builder {
 	out := builder{
 		contentAppBuilder: contentAppBuilder,
 		trxAppBuilder:     trxAppBuilder,
+		referenceAdapter:  referenceAdapter,
+		referenceFactory:  referenceFactory,
 		dirPath:           "",
 	}
 
@@ -32,6 +39,8 @@ func (app *builder) Create() Builder {
 	return createBuilder(
 		app.contentAppBuilder,
 		app.trxAppBuilder,
+		app.referenceAdapter,
+		app.referenceFactory,
 	)
 }
 
@@ -50,6 +59,8 @@ func (app *builder) Now() (databases.Application, error) {
 	return createApplication(
 		app.contentAppBuilder,
 		app.trxAppBuilder,
+		app.referenceAdapter,
+		app.referenceFactory,
 		app.dirPath,
 	), nil
 }

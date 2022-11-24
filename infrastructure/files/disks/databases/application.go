@@ -25,11 +25,15 @@ type application struct {
 func createApplication(
 	contentAppBuilder contents.Builder,
 	trxAppBuilder transactions.Builder,
+	referenceAdapter references.Adapter,
+	referenceFactory references.Factory,
 	dirPath string,
 ) databases.Application {
 	out := application{
 		contentAppBuilder: contentAppBuilder,
 		trxAppBuilder:     trxAppBuilder,
+		referenceAdapter:  referenceAdapter,
+		referenceFactory:  referenceFactory,
 		dirPath:           dirPath,
 	}
 
@@ -40,7 +44,7 @@ func createApplication(
 func (app *application) List() ([]string, error) {
 	files, err := ioutil.ReadDir(app.dirPath)
 	if err != nil {
-		return nil, err
+		return []string{}, nil
 	}
 
 	output := []string{}
@@ -57,11 +61,19 @@ func (app *application) List() ([]string, error) {
 
 // New creates a new database by name
 func (app *application) New(name string) error {
+	// if the directory path does not exists, create it:
+	if _, err := os.Stat(app.dirPath); os.IsNotExist(err) {
+		err := os.MkdirAll(app.dirPath, os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
+
 	// create the path:
 	path := filepath.Join(app.dirPath, name)
 
 	// make sure the file doesn't already exists:
-	if _, err := os.Stat(path); err != nil {
+	if _, err := os.Stat(path); os.IsExist(err) {
 		str := fmt.Sprintf("the name (%s) already exists", name)
 		return errors.New(str)
 	}

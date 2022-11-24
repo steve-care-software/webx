@@ -4,15 +4,20 @@ import (
 	"github.com/steve-care-software/webx/applications/databases"
 	"github.com/steve-care-software/webx/applications/databases/contents"
 	"github.com/steve-care-software/webx/applications/databases/transactions"
+	"github.com/steve-care-software/webx/domain/databases/references"
 )
 
 // NewBuilder creates a new database application
 func NewBuilder() Builder {
 	contentAppBuilder := NewContentApplicationBuilder()
 	trxAppBuilder := NewTransactionApplicationBuilder()
+	referenceAdapter := references.NewAdapter()
+	referenceFactory := references.NewFactory()
 	return createBuilder(
 		contentAppBuilder,
 		trxAppBuilder,
+		referenceAdapter,
+		referenceFactory,
 	)
 }
 

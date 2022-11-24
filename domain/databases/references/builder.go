@@ -1,20 +1,18 @@
 package references
 
 type builder struct {
-	active    Keys
-	pendings  Keys
-	deleted   Keys
-	links     Links
-	relations Relations
+	contentFactory ContentFactory
+	content        Content
+	blockchain     Blockchain
 }
 
-func createBuilder() Builder {
+func createBuilder(
+	contentFactory ContentFactory,
+) Builder {
 	out := builder{
-		active:    nil,
-		pendings:  nil,
-		deleted:   nil,
-		links:     nil,
-		relations: nil,
+		contentFactory: contentFactory,
+		content:        nil,
+		blockchain:     nil,
 	}
 
 	return &out
@@ -22,46 +20,37 @@ func createBuilder() Builder {
 
 // Create initializes the builder
 func (app *builder) Create() Builder {
-	return createBuilder()
+	return createBuilder(
+		app.contentFactory,
+	)
 }
 
-// WithActive add the active keys to the builder
-func (app *builder) WithActive(active Keys) Builder {
-	app.active = active
+// WithContent adds a content to the builder
+func (app *builder) WithContent(content Content) Builder {
+	app.content = content
 	return app
 }
 
-// WithPendings add pendings to the builder
-func (app *builder) WithPendings(pendings Keys) Builder {
-	app.pendings = pendings
-	return app
-}
-
-// WithDeleted add the deleted keys to the builder
-func (app *builder) WithDeleted(deleted Keys) Builder {
-	app.deleted = deleted
-	return app
-}
-
-// WithLinks add the links to the builder
-func (app *builder) WithLinks(links Links) Builder {
-	app.links = links
-	return app
-}
-
-// WithRelations add the relations to the builder
-func (app *builder) WithRelations(relations Relations) Builder {
-	app.relations = relations
+// WithBlockchain adds a blockchain to the builder
+func (app *builder) WithBlockchain(blockchain Blockchain) Builder {
+	app.blockchain = blockchain
 	return app
 }
 
 // Now builds a new Reference instance
 func (app *builder) Now() (Reference, error) {
-	return createReference(
-		app.active,
-		app.pendings,
-		app.deleted,
-		app.links,
-		app.relations,
-	), nil
+	if app.content == nil {
+		content, err := app.contentFactory.Create()
+		if err != nil {
+			return nil, err
+		}
+
+		app.content = content
+	}
+
+	if app.blockchain != nil {
+		return createReferenceWithBlockchain(app.content, app.blockchain), nil
+	}
+
+	return createReference(app.content), nil
 }

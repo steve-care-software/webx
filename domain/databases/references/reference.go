@@ -1,77 +1,46 @@
 package references
 
 type reference struct {
-	active    Keys
-	pendings  Keys
-	deleted   Keys
-	links     Links
-	relations Relations
+	content    Content
+	blockchain Blockchain
 }
 
 func createReference(
-	active Keys,
-	pendings Keys,
-	deleted Keys,
-	links Links,
-	relations Relations,
+	content Content,
+) Reference {
+	return createReferenceInternally(content, nil)
+}
+
+func createReferenceWithBlockchain(
+	content Content,
+	blockchain Blockchain,
+) Reference {
+	return createReferenceInternally(content, blockchain)
+}
+
+func createReferenceInternally(
+	content Content,
+	blockchain Blockchain,
 ) Reference {
 	out := reference{
-		active:    active,
-		pendings:  pendings,
-		deleted:   deleted,
-		links:     links,
-		relations: relations,
+		content:    content,
+		blockchain: blockchain,
 	}
 
 	return &out
 }
 
-// HasActive returns true if active, false otherwise
-func (obj *reference) HasActive() bool {
-	return obj.active != nil
+// Content returns the content
+func (obj *reference) Content() Content {
+	return obj.content
 }
 
-// Active returns the active keys, if any
-func (obj *reference) Active() Keys {
-	return obj.active
+// HasBlockchain returns true if there is a blockchain, false otherwise
+func (obj *reference) HasBlockchain() bool {
+	return obj.blockchain != nil
 }
 
-// HasPendings returns true if pendings, false otherwise
-func (obj *reference) HasPendings() bool {
-	return obj.pendings != nil
-}
-
-// Pendings returns the pendings, if any
-func (obj *reference) Pendings() Keys {
-	return obj.pendings
-}
-
-// HasDeleted returns true if deleted, false otherwise
-func (obj *reference) HasDeleted() bool {
-	return obj.deleted != nil
-}
-
-// Deleted returns the deleted keys, if any
-func (obj *reference) Deleted() Keys {
-	return obj.deleted
-}
-
-// HasLinks returns true if links, false otherwise
-func (obj *reference) HasLinks() bool {
-	return obj.links != nil
-}
-
-// Links returns the links, if any
-func (obj *reference) Links() Links {
-	return obj.links
-}
-
-// HasRelations returns true if relations, false otherwise
-func (obj *reference) HasRelations() bool {
-	return obj.relations != nil
-}
-
-// Relations returns the relations, if any
-func (obj *reference) Relations() Relations {
-	return obj.relations
+// Blockchain returns the blockchain, if any
+func (obj *reference) Blockchain() Blockchain {
+	return obj.blockchain
 }
