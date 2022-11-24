@@ -4,18 +4,23 @@ import (
 	"math/big"
 
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/domain/databases/entities"
 )
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
-	return createBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(hashAdapter)
+}
+
+// Adapter represents the transaction adapter
+type Adapter interface {
+	ToContent(ins Transaction) ([]byte, error)
+	ToTransaction(content []byte) (Transaction, error)
 }
 
 // Builder represents a transaction builder
 type Builder interface {
 	Create() Builder
-	WithEntity(entity entities.Entity) Builder
 	WithAsset(asset hash.Hash) Builder
 	WithProof(proof big.Int) Builder
 	Now() (Transaction, error)
@@ -23,7 +28,7 @@ type Builder interface {
 
 // Transaction represents a transaction
 type Transaction interface {
-	Entity() entities.Entity
+	Hash() hash.Hash
 	Asset() hash.Hash
 	Proof() big.Int
 }

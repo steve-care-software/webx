@@ -4,32 +4,31 @@ import (
 	"math/big"
 
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/domain/databases/entities"
 )
 
 type transaction struct {
-	entity entities.Entity
-	asset  hash.Hash
-	proof  big.Int
+	hash  hash.Hash
+	asset hash.Hash
+	proof big.Int
 }
 
 func createTransaction(
-	entity entities.Entity,
+	hash hash.Hash,
 	asset hash.Hash,
 	proof big.Int,
 ) Transaction {
 	out := transaction{
-		entity: entity,
-		asset:  asset,
-		proof:  proof,
+		hash:  hash,
+		asset: asset,
+		proof: proof,
 	}
 
 	return &out
 }
 
-// Entity returns the entity
-func (obj *transaction) Entity() entities.Entity {
-	return obj.entity
+// Hash returns the hash
+func (obj *transaction) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Asset returns the asset

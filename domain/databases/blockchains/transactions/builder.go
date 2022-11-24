@@ -5,20 +5,21 @@ import (
 	"math/big"
 
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/domain/databases/entities"
 )
 
 type builder struct {
-	entity entities.Entity
-	pAsset *hash.Hash
-	pProof *big.Int
+	hashAdapter hash.Adapter
+	pAsset      *hash.Hash
+	pProof      *big.Int
 }
 
-func createBuilder() Builder {
+func createBuilder(
+	hashAdapter hash.Adapter,
+) Builder {
 	out := builder{
-		entity: nil,
-		pAsset: nil,
-		pProof: nil,
+		hashAdapter: hashAdapter,
+		pAsset:      nil,
+		pProof:      nil,
 	}
 
 	return &out
@@ -26,13 +27,9 @@ func createBuilder() Builder {
 
 // Create initializes the builder
 func (app *builder) Create() Builder {
-	return createBuilder()
-}
-
-// WithEntity adds an entity to the builder
-func (app *builder) WithEntity(entity entities.Entity) Builder {
-	app.entity = entity
-	return app
+	return createBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithAsset adds an asset to the builder
@@ -49,10 +46,6 @@ func (app *builder) WithProof(proof big.Int) Builder {
 
 // Now builds a new Transaction instance
 func (app *builder) Now() (Transaction, error) {
-	if app.entity == nil {
-		return nil, errors.New("the entity is mandatory in order to build a Transaction instance")
-	}
-
 	if app.pAsset == nil {
 		return nil, errors.New("the asset is mandatory in order to build a Transaction instance")
 	}
@@ -61,5 +54,14 @@ func (app *builder) Now() (Transaction, error) {
 		return nil, errors.New("the proof is mandatory in order to build a Transaction instance")
 	}
 
-	return createTransaction(app.entity, *app.pAsset, *app.pProof), nil
+	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+		app.pAsset.Bytes(),
+		app.pProof.Bytes(),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return createTransaction(*pHash, *app.pAsset, *app.pProof), nil
 }
