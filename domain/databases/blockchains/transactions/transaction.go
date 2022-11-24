@@ -9,13 +9,13 @@ import (
 type transaction struct {
 	hash  hash.Hash
 	asset hash.Hash
-	proof big.Int
+	proof *big.Int
 }
 
 func createTransaction(
 	hash hash.Hash,
 	asset hash.Hash,
-	proof big.Int,
+	proof *big.Int,
 ) Transaction {
 	out := transaction{
 		hash:  hash,
@@ -37,6 +37,6 @@ func (obj *transaction) Asset() hash.Hash {
 }
 
 // Proof returns the proof
-func (obj *transaction) Proof() big.Int {
+func (obj *transaction) Proof() *big.Int {
 	return obj.proof
 }

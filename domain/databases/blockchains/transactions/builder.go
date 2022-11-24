@@ -60,5 +60,5 @@ func (app *builder) Now() (Transaction, error) {
 		return nil, errors.New("the proof is mandatory in order to build a Transaction instance")
 	}
 
-	return createTransaction(*app.pHash, *app.pAsset, *app.pProof), nil
+	return createTransaction(*app.pHash, *app.pAsset, app.pProof), nil
 }

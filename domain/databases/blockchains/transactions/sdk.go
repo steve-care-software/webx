@@ -6,6 +6,15 @@ import (
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
 )
 
+const minTransactionSize = hash.Size*2 + 1
+
+// NewAdapter creates a new adapter
+func NewAdapter() Adapter {
+	hashAdapter := hash.NewAdapter()
+	builder := NewBuilder()
+	return createAdapter(hashAdapter, builder)
+}
+
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
 	return createBuilder()
@@ -30,5 +39,5 @@ type Builder interface {
 type Transaction interface {
 	Hash() hash.Hash
 	Asset() hash.Hash
-	Proof() big.Int
+	Proof() *big.Int
 }
