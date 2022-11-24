@@ -2,24 +2,27 @@ package blocks
 
 import (
 	"errors"
+	"fmt"
 	"math/big"
 
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/domain/cryptography/hashtrees"
 )
 
 type builder struct {
-	entity        entities.Entity
+	hashAdapter   hash.Adapter
 	pHeight       *uint
 	pNextScore    *big.Int
 	pPendingScore *big.Int
-	trx           entities.Identifiers
+	trx           hashtrees.HashTree
 	pPrevious     *hash.Hash
 }
 
-func createBuilder() Builder {
+func createBuilder(
+	hashAdapter hash.Adapter,
+) Builder {
 	out := builder{
-		entity:        nil,
+		hashAdapter:   hashAdapter,
 		pHeight:       nil,
 		pNextScore:    nil,
 		pPendingScore: nil,
@@ -32,13 +35,9 @@ func createBuilder() Builder {
 
 // Create initializes the builder
 func (app *builder) Create() Builder {
-	return createBuilder()
-}
-
-// WithEntity adds an entity to the builder
-func (app *builder) WithEntity(entity entities.Entity) Builder {
-	app.entity = entity
-	return app
+	return createBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithHeight adds an height to the builder
@@ -60,7 +59,7 @@ func (app *builder) WithPendingScope(pendingScore big.Int) Builder {
 }
 
 // WithTransactions add transactions to the builder
-func (app *builder) WithTransactions(transactions entities.Identifiers) Builder {
+func (app *builder) WithTransactions(transactions hashtrees.HashTree) Builder {
 	app.trx = transactions
 	return app
 }
@@ -73,10 +72,6 @@ func (app *builder) WithPrevious(previous hash.Hash) Builder {
 
 // Now builds a new Block instance
 func (app *builder) Now() (Block, error) {
-	if app.entity == nil {
-		return nil, errors.New("the entity is mandatory in order to build a Block instance")
-	}
-
 	if app.pHeight == nil {
 		return nil, errors.New("the height is mandatory in order to build a Block instance")
 	}
@@ -93,9 +88,25 @@ func (app *builder) Now() (Block, error) {
 		return nil, errors.New("the transactions is mandatory in order to build a Block instance")
 	}
 
-	if app.pPrevious != nil {
-		return createBlockWithPrevious(app.entity, *app.pHeight, *app.pNextScore, *app.pPendingScore, app.trx, app.pPrevious), nil
+	data := [][]byte{
+		[]byte(fmt.Sprintf("%d", *app.pHeight)),
+		app.pNextScore.Bytes(),
+		app.pPendingScore.Bytes(),
+		app.trx.Head().Bytes(),
 	}
 
-	return createBlock(app.entity, *app.pHeight, *app.pNextScore, *app.pPendingScore, app.trx), nil
+	if app.pPrevious != nil {
+		data = append(data, app.pPrevious.Bytes())
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	if app.pPrevious != nil {
+		return createBlockWithPrevious(*pHash, *app.pHeight, *app.pNextScore, *app.pPendingScore, app.trx, app.pPrevious), nil
+	}
+
+	return createBlock(*pHash, *app.pHeight, *app.pNextScore, *app.pPendingScore, app.trx), nil
 }

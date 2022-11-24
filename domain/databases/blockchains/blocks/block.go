@@ -4,49 +4,49 @@ import (
 	"math/big"
 
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/domain/cryptography/hashtrees"
 )
 
 type block struct {
-	entity       entities.Entity
+	hash         hash.Hash
 	height       uint
 	nextScore    big.Int
 	pendingScore big.Int
-	trx          entities.Identifiers
+	trx          hashtrees.HashTree
 	previous     *hash.Hash
 }
 
 func createBlock(
-	entity entities.Entity,
+	hash hash.Hash,
 	height uint,
 	nextScore big.Int,
 	pendingScore big.Int,
-	trx entities.Identifiers,
+	trx hashtrees.HashTree,
 ) Block {
-	return createBlockInternally(entity, height, nextScore, pendingScore, trx, nil)
+	return createBlockInternally(hash, height, nextScore, pendingScore, trx, nil)
 }
 
 func createBlockWithPrevious(
-	entity entities.Entity,
+	hash hash.Hash,
 	height uint,
 	nextScore big.Int,
 	pendingScore big.Int,
-	trx entities.Identifiers,
+	trx hashtrees.HashTree,
 	previous *hash.Hash,
 ) Block {
-	return createBlockInternally(entity, height, nextScore, pendingScore, trx, previous)
+	return createBlockInternally(hash, height, nextScore, pendingScore, trx, previous)
 }
 
 func createBlockInternally(
-	entity entities.Entity,
+	hash hash.Hash,
 	height uint,
 	nextScore big.Int,
 	pendingScore big.Int,
-	trx entities.Identifiers,
+	trx hashtrees.HashTree,
 	previous *hash.Hash,
 ) Block {
 	out := block{
-		entity:       entity,
+		hash:         hash,
 		height:       height,
 		nextScore:    nextScore,
 		pendingScore: pendingScore,
@@ -57,9 +57,9 @@ func createBlockInternally(
 	return &out
 }
 
-// Entity returns the entity
-func (obj *block) Entity() entities.Entity {
-	return obj.entity
+// Hash returns the hash
+func (obj *block) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Height returns the height
@@ -78,7 +78,7 @@ func (obj *block) PendingScore() big.Int {
 }
 
 // Transactions returns the transactions
-func (obj *block) Transactions() entities.Identifiers {
+func (obj *block) Transactions() hashtrees.HashTree {
 	return obj.trx
 }
 
