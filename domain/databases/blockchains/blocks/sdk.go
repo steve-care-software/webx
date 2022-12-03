@@ -8,6 +8,7 @@ import (
 )
 
 const minBlockSize = hash.Size + 8*2
+const errorStr = "the content was expected to contain at least %d bytes in order to convert data to a Transaction instance, %d provided"
 
 // NewAdapter creates a new adapter instance
 func NewAdapter() Adapter {

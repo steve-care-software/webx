@@ -75,7 +75,7 @@ func (app *adapter) ToContent(ins Block) ([]byte, error) {
 func (app *adapter) ToBlock(content []byte) (Block, error) {
 	contentLength := len(content)
 	if contentLength < minBlockSize {
-		str := fmt.Sprintf("the content was expected to contain at least %d bytes in order to retrieve the chain size of the Blockchain instance, %d provided", minBlockSize, contentLength)
+		str := fmt.Sprintf(errorStr, minBlockSize, contentLength)
 		return nil, errors.New(str)
 	}
 
@@ -91,7 +91,7 @@ func (app *adapter) ToBlock(content []byte) (Block, error) {
 	nextScoreLength := binary.LittleEndian.Uint64(content[heightDelimiter:nextScoreLengthDelimiter])
 	nextScoreDelimiter := nextScoreLengthDelimiter + int(nextScoreLength)
 	if contentLength < nextScoreDelimiter {
-		str := fmt.Sprintf("the content was expected to contain at least %d bytes in order to retrieve the content size of the Reference instance, %d provided", nextScoreDelimiter, contentLength)
+		str := fmt.Sprintf(errorStr, nextScoreDelimiter, contentLength)
 		return nil, errors.New(str)
 	}
 
@@ -101,7 +101,7 @@ func (app *adapter) ToBlock(content []byte) (Block, error) {
 	pendingScoreLength := binary.LittleEndian.Uint64(content[nextScoreDelimiter:pendingScoreLengthDelimiter])
 	pendingScoreDelimiter := pendingScoreLengthDelimiter + int(pendingScoreLength)
 	if contentLength < pendingScoreDelimiter {
-		str := fmt.Sprintf("the content was expected to contain at least %d bytes in order to retrieve the content size of the Reference instance, %d provided", pendingScoreDelimiter, contentLength)
+		str := fmt.Sprintf(errorStr, pendingScoreDelimiter, contentLength)
 		return nil, errors.New(str)
 	}
 
@@ -111,7 +111,7 @@ func (app *adapter) ToBlock(content []byte) (Block, error) {
 	trxLength := binary.LittleEndian.Uint64(content[pendingScoreDelimiter:trxLengthDelimiter])
 	trxDelimiter := trxLengthDelimiter + int(trxLength)
 	if contentLength < trxDelimiter {
-		str := fmt.Sprintf("the content was expected to contain at least %d bytes in order to retrieve the content size of the Reference instance, %d provided", trxDelimiter, contentLength)
+		str := fmt.Sprintf(errorStr, trxDelimiter, contentLength)
 		return nil, errors.New(str)
 	}
 

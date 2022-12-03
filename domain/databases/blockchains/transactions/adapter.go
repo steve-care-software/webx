@@ -42,7 +42,7 @@ func (app *adapter) ToContent(ins Transaction) ([]byte, error) {
 func (app *adapter) ToTransaction(content []byte) (Transaction, error) {
 	contentLength := len(content)
 	if contentLength < minTransactionSize {
-		str := fmt.Sprintf("the content was expected to contain at least %d bytes in order to retrieve the chain size of the Blockchain instance, %d provided", minTransactionSize, contentLength)
+		str := fmt.Sprintf("the content was expected to contain at least %d bytes in order to convert data to a Transaction instance, %d provided", minTransactionSize, contentLength)
 		return nil, errors.New(str)
 	}
 

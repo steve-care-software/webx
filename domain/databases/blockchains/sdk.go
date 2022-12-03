@@ -4,9 +4,24 @@ import (
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
 )
 
+const blockchainSize = hash.Size * 2
+
+// NewAdapter creates a new adapter instance
+func NewAdapter() Adapter {
+	hashAdapter := hash.NewAdapter()
+	builder := NewBuilder()
+	return createAdapter(hashAdapter, builder)
+}
+
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
 	return createBuilder()
+}
+
+// Adapter represents the blockchain adapter
+type Adapter interface {
+	ToContent(ins Blockchain) ([]byte, error)
+	ToBlockchain(content []byte) (Blockchain, error)
 }
 
 // Builder represents a blockchain builder
