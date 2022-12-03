@@ -7,6 +7,16 @@ import (
 	"github.com/steve-care-software/webx/domain/cryptography/hashtrees"
 )
 
+const minBlockSize = hash.Size + 8*2
+
+// NewAdapter creates a new adapter instance
+func NewAdapter() Adapter {
+	hashAdapter := hash.NewAdapter()
+	hashTreeAdapter := hashtrees.NewAdapter()
+	builder := NewBuilder()
+	return createAdapter(hashAdapter, hashTreeAdapter, builder)
+}
+
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
 	return createBuilder()
@@ -15,7 +25,7 @@ func NewBuilder() Builder {
 // Adapter represents the block adapter
 type Adapter interface {
 	ToContent(ins Block) ([]byte, error)
-	ToTransaction(content []byte) (Block, error)
+	ToBlock(content []byte) (Block, error)
 }
 
 // Builder represents  block builder
@@ -34,8 +44,8 @@ type Builder interface {
 type Block interface {
 	Hash() hash.Hash
 	Height() uint
-	NextScore() big.Int
-	PendingScore() big.Int
+	NextScore() *big.Int
+	PendingScore() *big.Int
 	Transactions() hashtrees.HashTree
 	HasPrevious() bool
 	Previous() *hash.Hash

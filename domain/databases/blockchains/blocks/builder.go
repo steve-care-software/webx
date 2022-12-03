@@ -90,8 +90,8 @@ func (app *builder) Now() (Block, error) {
 	}
 
 	if app.pPrevious != nil {
-		return createBlockWithPrevious(*app.pHash, *app.pHeight, *app.pNextScore, *app.pPendingScore, app.trx, app.pPrevious), nil
+		return createBlockWithPrevious(*app.pHash, *app.pHeight, app.pNextScore, app.pPendingScore, app.trx, app.pPrevious), nil
 	}
 
-	return createBlock(*app.pHash, *app.pHeight, *app.pNextScore, *app.pPendingScore, app.trx), nil
+	return createBlock(*app.pHash, *app.pHeight, app.pNextScore, app.pPendingScore, app.trx), nil
 }

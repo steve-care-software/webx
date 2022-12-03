@@ -48,8 +48,8 @@ func (app *adapter) ToContent(ins HashTree) ([]byte, error) {
 // ToHashTree converts bytes to hashtree
 func (app *adapter) ToHashTree(content []byte) (HashTree, error) {
 	contentLength := len(content)
-	if contentLength < minHashtreeSize {
-		str := fmt.Sprintf("the content was expected to contain at least %d bytes in order to convert to an HashTree instance, %d provided", minHashtreeSize, contentLength)
+	if contentLength < MinHashtreeSize {
+		str := fmt.Sprintf("the content was expected to contain at least %d bytes in order to convert to an HashTree instance, %d provided", MinHashtreeSize, contentLength)
 		return nil, errors.New(str)
 	}
 

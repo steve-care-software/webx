@@ -8,50 +8,50 @@ import (
 )
 
 type block struct {
-	hash         hash.Hash
-	height       uint
-	nextScore    big.Int
-	pendingScore big.Int
-	trx          hashtrees.HashTree
-	previous     *hash.Hash
+	hash          hash.Hash
+	height        uint
+	pNextScore    *big.Int
+	pPendingScore *big.Int
+	trx           hashtrees.HashTree
+	previous      *hash.Hash
 }
 
 func createBlock(
 	hash hash.Hash,
 	height uint,
-	nextScore big.Int,
-	pendingScore big.Int,
+	pNextScore *big.Int,
+	pPendingScore *big.Int,
 	trx hashtrees.HashTree,
 ) Block {
-	return createBlockInternally(hash, height, nextScore, pendingScore, trx, nil)
+	return createBlockInternally(hash, height, pNextScore, pPendingScore, trx, nil)
 }
 
 func createBlockWithPrevious(
 	hash hash.Hash,
 	height uint,
-	nextScore big.Int,
-	pendingScore big.Int,
+	pNextScore *big.Int,
+	pPendingScore *big.Int,
 	trx hashtrees.HashTree,
 	previous *hash.Hash,
 ) Block {
-	return createBlockInternally(hash, height, nextScore, pendingScore, trx, previous)
+	return createBlockInternally(hash, height, pNextScore, pPendingScore, trx, previous)
 }
 
 func createBlockInternally(
 	hash hash.Hash,
 	height uint,
-	nextScore big.Int,
-	pendingScore big.Int,
+	pNextScore *big.Int,
+	pPendingScore *big.Int,
 	trx hashtrees.HashTree,
 	previous *hash.Hash,
 ) Block {
 	out := block{
-		hash:         hash,
-		height:       height,
-		nextScore:    nextScore,
-		pendingScore: pendingScore,
-		trx:          trx,
-		previous:     previous,
+		hash:          hash,
+		height:        height,
+		pNextScore:    pNextScore,
+		pPendingScore: pPendingScore,
+		trx:           trx,
+		previous:      previous,
 	}
 
 	return &out
@@ -68,13 +68,13 @@ func (obj *block) Height() uint {
 }
 
 // NextScore returns the nextScore
-func (obj *block) NextScore() big.Int {
-	return obj.nextScore
+func (obj *block) NextScore() *big.Int {
+	return obj.pNextScore
 }
 
 // PendingScore returns the pendingScore
-func (obj *block) PendingScore() big.Int {
-	return obj.pendingScore
+func (obj *block) PendingScore() *big.Int {
+	return obj.pPendingScore
 }
 
 // Transactions returns the transactions

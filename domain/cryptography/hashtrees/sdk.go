@@ -4,11 +4,13 @@ import (
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
 )
 
+// MinHashtreeSize represents the minimum hashtree size
+const MinHashtreeSize = hash.Size + minParentLeaf
+
 const minLeafSize = hash.Size
 const minParentLeaf = minLeafSize * 2
 const minLeavesSize = minLeafSize + 8 + 8
 const minCompactSize = hash.Size + minLeafSize
-const minHashtreeSize = hash.Size + minParentLeaf
 
 var leafAdapterIns LeafAdapter
 
