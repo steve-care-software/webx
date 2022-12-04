@@ -1,13 +1,13 @@
 package elements
 
-import "github.com/steve-care-software/webx/domain/databases/entities"
+import "github.com/steve-care-software/webx/domain/cryptography/hash"
 
 type content struct {
-	pValue     *uint8
-	external   entities.Identifier
-	token      entities.Identifier
-	everything entities.Identifier
-	recursive  entities.Identifier
+	pValue      *uint8
+	pExternal   *hash.Hash
+	pToken      *hash.Hash
+	pEverything *hash.Hash
+	pRecursive  *hash.Hash
 }
 
 func createContentWithValue(
@@ -17,42 +17,42 @@ func createContentWithValue(
 }
 
 func createContentWithExternal(
-	external entities.Identifier,
+	pExternal *hash.Hash,
 ) Content {
-	return createContentInternally(nil, external, nil, nil, nil)
+	return createContentInternally(nil, pExternal, nil, nil, nil)
 }
 
 func createContentWithToken(
-	token entities.Identifier,
+	pToken *hash.Hash,
 ) Content {
-	return createContentInternally(nil, nil, token, nil, nil)
+	return createContentInternally(nil, nil, pToken, nil, nil)
 }
 
 func createContentWithEverything(
-	everything entities.Identifier,
+	pEverything *hash.Hash,
 ) Content {
-	return createContentInternally(nil, nil, nil, everything, nil)
+	return createContentInternally(nil, nil, nil, pEverything, nil)
 }
 
 func createContentWithRecursive(
-	recursive entities.Identifier,
+	pRecursive *hash.Hash,
 ) Content {
-	return createContentInternally(nil, nil, nil, nil, recursive)
+	return createContentInternally(nil, nil, nil, nil, pRecursive)
 }
 
 func createContentInternally(
 	pValue *uint8,
-	external entities.Identifier,
-	token entities.Identifier,
-	everything entities.Identifier,
-	recursive entities.Identifier,
+	pExternal *hash.Hash,
+	pToken *hash.Hash,
+	pEverything *hash.Hash,
+	pRecursive *hash.Hash,
 ) Content {
 	out := content{
-		pValue:     pValue,
-		external:   external,
-		token:      token,
-		everything: everything,
-		recursive:  recursive,
+		pValue:      pValue,
+		pExternal:   pExternal,
+		pToken:      pToken,
+		pEverything: pEverything,
+		pRecursive:  pRecursive,
 	}
 
 	return &out
@@ -68,42 +68,42 @@ func (obj *content) Value() *uint8 {
 	return obj.pValue
 }
 
-// IsExternal returns true if there is an external, false otherwise
+// IsExternal returns true if there is an pExternal, false otherwise
 func (obj *content) IsExternal() bool {
-	return obj.external != nil
+	return obj.pExternal != nil
 }
 
-// External returns the external, if any
-func (obj *content) External() entities.Identifier {
-	return obj.external
+// External returns the pExternal, if any
+func (obj *content) External() *hash.Hash {
+	return obj.pExternal
 }
 
-// IsToken returns true if there is a token, false otherwise
+// IsToken returns true if there is a pToken, false otherwise
 func (obj *content) IsToken() bool {
-	return obj.token != nil
+	return obj.pToken != nil
 }
 
-// Token returns the token, if any
-func (obj *content) Token() entities.Identifier {
-	return obj.token
+// Token returns the pToken, if any
+func (obj *content) Token() *hash.Hash {
+	return obj.pToken
 }
 
-// IsEverything returns true if there is an everything, false otherwise
+// IsEverything returns true if there is an pEverything, false otherwise
 func (obj *content) IsEverything() bool {
-	return obj.everything != nil
+	return obj.pEverything != nil
 }
 
-// Everything returns the everything, if any
-func (obj *content) Everything() entities.Identifier {
-	return obj.everything
+// Everything returns the pEverything, if any
+func (obj *content) Everything() *hash.Hash {
+	return obj.pEverything
 }
 
-// IsRecursive returns true if there is a recursive, false otherwise
+// IsRecursive returns true if there is a pRecursive, false otherwise
 func (obj *content) IsRecursive() bool {
-	return obj.recursive != nil
+	return obj.pRecursive != nil
 }
 
-// Recursive returns the recursive, if any
-func (obj *content) Recursive() entities.Identifier {
-	return obj.recursive
+// Recursive returns the pRecursive, if any
+func (obj *content) Recursive() *hash.Hash {
+	return obj.pRecursive
 }

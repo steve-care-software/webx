@@ -1,20 +1,25 @@
 package elements
 
-import "github.com/steve-care-software/webx/domain/databases/entities"
+import (
+	"github.com/steve-care-software/webx/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/domain/databases/grammars/cardinalities"
+)
 
 type element struct {
+	hash        hash.Hash
 	entity      entities.Entity
-	cardinality entities.Identifier
+	cardinality cardinalities.Cardinality
 	content     Content
 }
 
 func createElement(
-	entity entities.Entity,
-	cardinality entities.Identifier,
+	hash hash.Hash,
+	cardinality cardinalities.Cardinality,
 	content Content,
 ) Element {
 	out := element{
-		entity:      entity,
+		hash:        hash,
 		cardinality: cardinality,
 		content:     content,
 	}
@@ -22,13 +27,13 @@ func createElement(
 	return &out
 }
 
-// Entity returns the entity
-func (obj *element) Entity() entities.Entity {
-	return obj.entity
+// Hash returns the hash
+func (obj *element) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Cardinality returns the cardinality
-func (obj *element) Cardinality() entities.Identifier {
+func (obj *element) Cardinality() cardinalities.Cardinality {
 	return obj.cardinality
 }
 

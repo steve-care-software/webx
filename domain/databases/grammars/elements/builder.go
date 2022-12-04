@@ -3,28 +3,29 @@ package elements
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/domain/databases/grammars/cardinalities"
 )
 
 type builder struct {
-	entity      entities.Entity
-	cardinality entities.Identifier
+	pHash       *hash.Hash
+	cardinality cardinalities.Cardinality
 	pValue      *uint8
-	external    entities.Identifier
-	token       entities.Identifier
-	everything  entities.Identifier
-	recursive   entities.Identifier
+	pExternal   *hash.Hash
+	pToken      *hash.Hash
+	pEverything *hash.Hash
+	pRecursive  *hash.Hash
 }
 
 func createBuilder() Builder {
 	out := builder{
-		entity:      nil,
+		pHash:       nil,
 		cardinality: nil,
 		pValue:      nil,
-		external:    nil,
-		token:       nil,
-		everything:  nil,
-		recursive:   nil,
+		pExternal:   nil,
+		pToken:      nil,
+		pEverything: nil,
+		pRecursive:  nil,
 	}
 
 	return &out
@@ -35,14 +36,14 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithEntity adds an entity to the builder
-func (app *builder) WithEntity(entity entities.Entity) Builder {
-	app.entity = entity
+// WithHash adds an hash to the builder
+func (app *builder) WithHash(hash hash.Hash) Builder {
+	app.pHash = &hash
 	return app
 }
 
 // WithCardinality adds a cardinality to the builder
-func (app *builder) WithCardinality(cardinality entities.Identifier) Builder {
+func (app *builder) WithCardinality(cardinality cardinalities.Cardinality) Builder {
 	app.cardinality = cardinality
 	return app
 }
@@ -53,34 +54,34 @@ func (app *builder) WithValue(value uint8) Builder {
 	return app
 }
 
-// WithExternal adds an external to the builder
-func (app *builder) WithExternal(external entities.Identifier) Builder {
-	app.external = external
+// WithExternal adds an pExternal to the builder
+func (app *builder) WithExternal(external hash.Hash) Builder {
+	app.pExternal = &external
 	return app
 }
 
 // WithToken adds a token to the builder
-func (app *builder) WithToken(token entities.Identifier) Builder {
-	app.token = token
+func (app *builder) WithToken(token hash.Hash) Builder {
+	app.pToken = &token
 	return app
 }
 
 // WithEverything adds an everything to the builder
-func (app *builder) WithEverything(everything entities.Identifier) Builder {
-	app.everything = everything
+func (app *builder) WithEverything(everything hash.Hash) Builder {
+	app.pEverything = &everything
 	return app
 }
 
 // WithRecursive adds a recursive to the builder
-func (app *builder) WithRecursive(recursive entities.Identifier) Builder {
-	app.recursive = recursive
+func (app *builder) WithRecursive(recursive hash.Hash) Builder {
+	app.pRecursive = &recursive
 	return app
 }
 
 // Now builds a new Element instance
 func (app *builder) Now() (Element, error) {
-	if app.entity == nil {
-		return nil, errors.New("the entity is mandatory in order to build an Element instance")
+	if app.pHash == nil {
+		return nil, errors.New("the hash is mandatory in order to build an Element instance")
 	}
 
 	if app.cardinality == nil {
@@ -89,27 +90,27 @@ func (app *builder) Now() (Element, error) {
 
 	if app.pValue != nil {
 		content := createContentWithValue(app.pValue)
-		return createElement(app.entity, app.cardinality, content), nil
+		return createElement(*app.pHash, app.cardinality, content), nil
 	}
 
-	if app.external != nil {
-		content := createContentWithExternal(app.external)
-		return createElement(app.entity, app.cardinality, content), nil
+	if app.pExternal != nil {
+		content := createContentWithExternal(app.pExternal)
+		return createElement(*app.pHash, app.cardinality, content), nil
 	}
 
-	if app.token != nil {
-		content := createContentWithToken(app.token)
-		return createElement(app.entity, app.cardinality, content), nil
+	if app.pToken != nil {
+		content := createContentWithToken(app.pToken)
+		return createElement(*app.pHash, app.cardinality, content), nil
 	}
 
-	if app.everything != nil {
-		content := createContentWithEverything(app.everything)
-		return createElement(app.entity, app.cardinality, content), nil
+	if app.pEverything != nil {
+		content := createContentWithEverything(app.pEverything)
+		return createElement(*app.pHash, app.cardinality, content), nil
 	}
 
-	if app.recursive != nil {
-		content := createContentWithRecursive(app.recursive)
-		return createElement(app.entity, app.cardinality, content), nil
+	if app.pRecursive != nil {
+		content := createContentWithRecursive(app.pRecursive)
+		return createElement(*app.pHash, app.cardinality, content), nil
 	}
 
 	return nil, errors.New("the Element is invalid")
