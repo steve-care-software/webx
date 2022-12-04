@@ -3,6 +3,7 @@ package elements
 import (
 	"encoding/binary"
 	"errors"
+	"fmt"
 )
 
 type cardinalityAdapter struct {
@@ -42,7 +43,7 @@ func (app *cardinalityAdapter) ToContent(ins Cardinality) ([]byte, error) {
 func (app *cardinalityAdapter) ToCardinality(content []byte) (Cardinality, error) {
 	contentLength := len(content)
 	if contentLength < 8 {
-		str := "the content was expected to contain at least %d bytes in order to convert data to a Cardinality instance, %d provided"
+		str := fmt.Sprintf("the content was expected to contain at least %d bytes in order to convert data to a Cardinality instance, %d provided", 8, contentLength)
 		return nil, errors.New(str)
 	}
 

@@ -4,13 +4,23 @@ import (
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
 )
 
+const minElementLength = hash.Size + 8
+
 const (
 	valueFlag = iota
-	external
-	token
-	everything
-	recursive
+	externalFlag
+	tokenFlag
+	everythingFlag
+	recursiveFlag
 )
+
+// NewAdapter creates a new adapter instance
+func NewAdapter() Adapter {
+	hashAdapter := hash.NewAdapter()
+	cardinalityAdapter := NewCardinalityAdapter()
+	builder := NewBuilder()
+	return createAdapter(hashAdapter, cardinalityAdapter, builder)
+}
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
