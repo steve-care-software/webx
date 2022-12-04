@@ -11,6 +11,18 @@ func NewBuilder() Builder {
 	return createBuilder()
 }
 
+// NewSuitesAdapter creates a new suites adapter
+func NewSuitesAdapter() SuitesAdapter {
+	builder := NewSuitesBuilder()
+	suiteAdapter := NewSuiteAdapter()
+	return createSuitesAdapter(builder, suiteAdapter)
+}
+
+// NewSuitesBuilder creates a new suites builder
+func NewSuitesBuilder() SuitesBuilder {
+	return createSuitesBuilder()
+}
+
 // NewSuiteAdapter creates a new suite adapter
 func NewSuiteAdapter() SuiteAdapter {
 	builder := NewSuiteBuilder()
