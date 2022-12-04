@@ -11,6 +11,18 @@ func NewBuilder() Builder {
 	return createBuilder()
 }
 
+// NewLinesAdapter creates a new lines adapter
+func NewLinesAdapter() LinesAdapter {
+	builder := NewLinesBuilder()
+	lineAdapter := NewLineAdapter()
+	return createLinesAdapter(builder, lineAdapter)
+}
+
+// NewLinesBuilder creates a new lines Builder
+func NewLinesBuilder() LinesBuilder {
+	return createLinesBuilder()
+}
+
 // NewLineAdapter creates a new line adapter
 func NewLineAdapter() LineAdapter {
 	hashAdapter := hash.NewAdapter()
