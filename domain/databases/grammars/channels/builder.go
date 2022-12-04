@@ -3,22 +3,22 @@ package channels
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/domain/cryptography/hash"
 )
 
 type builder struct {
-	entity entities.Entity
-	token  entities.Identifier
-	prev   entities.Identifier
-	next   entities.Identifier
+	pHash  *hash.Hash
+	pToken *hash.Hash
+	pPrev  *hash.Hash
+	pNext  *hash.Hash
 }
 
 func createBuilder() Builder {
 	out := builder{
-		entity: nil,
-		token:  nil,
-		prev:   nil,
-		next:   nil,
+		pHash:  nil,
+		pToken: nil,
+		pPrev:  nil,
+		pNext:  nil,
 	}
 
 	return &out
@@ -29,51 +29,51 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithEntity adds an entity to the builder
-func (app *builder) WithEntity(entity entities.Entity) Builder {
-	app.entity = entity
+// WithHash adds an hash to the builder
+func (app *builder) WithHash(hash hash.Hash) Builder {
+	app.pHash = &hash
 	return app
 }
 
 // WithToken adds a token to the builder
-func (app *builder) WithToken(token entities.Identifier) Builder {
-	app.token = token
+func (app *builder) WithToken(token hash.Hash) Builder {
+	app.pToken = &token
 	return app
 }
 
 // WithPrevious adds a previous to the builder
-func (app *builder) WithPrevious(previous entities.Identifier) Builder {
-	app.prev = previous
+func (app *builder) WithPrevious(previous hash.Hash) Builder {
+	app.pPrev = &previous
 	return app
 }
 
 // WithNext adds a next to the builder
-func (app *builder) WithNext(next entities.Identifier) Builder {
-	app.next = next
+func (app *builder) WithNext(next hash.Hash) Builder {
+	app.pNext = &next
 	return app
 }
 
 // Now builds a new Channel instance
 func (app *builder) Now() (Channel, error) {
-	if app.entity == nil {
-		return nil, errors.New("the entity is mandatory in order to build a Channel instance")
+	if app.pHash == nil {
+		return nil, errors.New("the hash is mandatory in order to build a Channel instance")
 	}
 
-	if app.token == nil {
+	if app.pToken == nil {
 		return nil, errors.New("the token is mandatory in order to build a Channel instance")
 	}
 
-	if app.prev != nil && app.next != nil {
-		return createChannelWithPreviousAndNext(app.entity, app.token, app.prev, app.next), nil
+	if app.pPrev != nil && app.pNext != nil {
+		return createChannelWithPreviousAndNext(*app.pHash, *app.pToken, app.pPrev, app.pNext), nil
 	}
 
-	if app.prev != nil {
-		return createChannelWithPrevious(app.entity, app.token, app.prev), nil
+	if app.pPrev != nil {
+		return createChannelWithPrevious(*app.pHash, *app.pToken, app.pPrev), nil
 	}
 
-	if app.next != nil {
-		return createChannelWithNext(app.entity, app.token, app.next), nil
+	if app.pNext != nil {
+		return createChannelWithNext(*app.pHash, *app.pToken, app.pNext), nil
 	}
 
-	return createChannel(app.entity, app.token), nil
+	return createChannel(*app.pHash, *app.pToken), nil
 }

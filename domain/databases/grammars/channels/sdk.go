@@ -1,30 +1,34 @@
 package channels
 
-import (
-	"github.com/steve-care-software/webx/domain/databases/entities"
-)
+import "github.com/steve-care-software/webx/domain/cryptography/hash"
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
 	return createBuilder()
 }
 
+// Adapter represents a channel adapter
+type Adapter interface {
+	ToContent(ins Channel) ([]byte, error)
+	ToChannel(content []byte) (Channel, error)
+}
+
 // Builder represents a channel builder
 type Builder interface {
 	Create() Builder
-	WithEntity(entity entities.Entity) Builder
-	WithToken(token entities.Identifier) Builder
-	WithPrevious(previous entities.Identifier) Builder
-	WithNext(next entities.Identifier) Builder
+	WithHash(hash hash.Hash) Builder
+	WithToken(token hash.Hash) Builder
+	WithPrevious(previous hash.Hash) Builder
+	WithNext(next hash.Hash) Builder
 	Now() (Channel, error)
 }
 
 // Channel represents a chanel
 type Channel interface {
-	Entity() entities.Entity
-	Token() entities.Identifier
+	Hash() hash.Hash
+	Token() hash.Hash
 	HasPrevious() bool
-	Previous() entities.Identifier
+	Previous() *hash.Hash
 	HasNext() bool
-	Next() entities.Identifier
+	Next() *hash.Hash
 }

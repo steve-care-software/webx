@@ -1,69 +1,71 @@
 package channels
 
-import "github.com/steve-care-software/webx/domain/databases/entities"
+import (
+	"github.com/steve-care-software/webx/domain/cryptography/hash"
+)
 
 type channel struct {
-	entity entities.Entity
-	token  entities.Identifier
-	prev   entities.Identifier
-	next   entities.Identifier
+	hash  hash.Hash
+	token hash.Hash
+	prev  *hash.Hash
+	next  *hash.Hash
 }
 
 func createChannel(
-	entity entities.Entity,
-	token entities.Identifier,
+	hash hash.Hash,
+	token hash.Hash,
 ) Channel {
-	return createChannelInternally(entity, token, nil, nil)
+	return createChannelInternally(hash, token, nil, nil)
 }
 
 func createChannelWithPrevious(
-	entity entities.Entity,
-	token entities.Identifier,
-	prev entities.Identifier,
+	hash hash.Hash,
+	token hash.Hash,
+	prev *hash.Hash,
 ) Channel {
-	return createChannelInternally(entity, token, prev, nil)
+	return createChannelInternally(hash, token, prev, nil)
 }
 
 func createChannelWithNext(
-	entity entities.Entity,
-	token entities.Identifier,
-	next entities.Identifier,
+	hash hash.Hash,
+	token hash.Hash,
+	next *hash.Hash,
 ) Channel {
-	return createChannelInternally(entity, token, nil, next)
+	return createChannelInternally(hash, token, nil, next)
 }
 
 func createChannelWithPreviousAndNext(
-	entity entities.Entity,
-	token entities.Identifier,
-	prev entities.Identifier,
-	next entities.Identifier,
+	hash hash.Hash,
+	token hash.Hash,
+	prev *hash.Hash,
+	next *hash.Hash,
 ) Channel {
-	return createChannelInternally(entity, token, prev, next)
+	return createChannelInternally(hash, token, prev, next)
 }
 
 func createChannelInternally(
-	entity entities.Entity,
-	token entities.Identifier,
-	prev entities.Identifier,
-	next entities.Identifier,
+	hash hash.Hash,
+	token hash.Hash,
+	prev *hash.Hash,
+	next *hash.Hash,
 ) Channel {
 	out := channel{
-		entity: entity,
-		token:  token,
-		prev:   prev,
-		next:   next,
+		hash:  hash,
+		token: token,
+		prev:  prev,
+		next:  next,
 	}
 
 	return &out
 }
 
-// Entity returns the entity
-func (obj *channel) Entity() entities.Entity {
-	return obj.entity
+// Hash returns the hash
+func (obj *channel) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Token returns the token
-func (obj *channel) Token() entities.Identifier {
+func (obj *channel) Token() hash.Hash {
 	return obj.token
 }
 
@@ -73,7 +75,7 @@ func (obj *channel) HasPrevious() bool {
 }
 
 // Previous returns the previous, if any
-func (obj *channel) Previous() entities.Identifier {
+func (obj *channel) Previous() *hash.Hash {
 	return obj.prev
 }
 
@@ -83,6 +85,6 @@ func (obj *channel) HasNext() bool {
 }
 
 // Next returns the next, if any
-func (obj *channel) Next() entities.Identifier {
+func (obj *channel) Next() *hash.Hash {
 	return obj.next
 }
