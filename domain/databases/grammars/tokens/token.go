@@ -1,35 +1,35 @@
 package tokens
 
-import "github.com/steve-care-software/webx/domain/databases/entities"
+import "github.com/steve-care-software/webx/domain/cryptography/hash"
 
 type token struct {
-	entity entities.Entity
+	hash   hash.Hash
 	lines  Lines
 	suites Suites
 }
 
 func createToken(
-	entity entities.Entity,
+	hash hash.Hash,
 	lines Lines,
 ) Token {
-	return createTokenInternally(entity, lines, nil)
+	return createTokenInternally(hash, lines, nil)
 }
 
 func createTokenWithSuites(
-	entity entities.Entity,
+	hash hash.Hash,
 	lines Lines,
 	suites Suites,
 ) Token {
-	return createTokenInternally(entity, lines, suites)
+	return createTokenInternally(hash, lines, suites)
 }
 
 func createTokenInternally(
-	entity entities.Entity,
+	hash hash.Hash,
 	lines Lines,
 	suites Suites,
 ) Token {
 	out := token{
-		entity: entity,
+		hash:   hash,
 		lines:  lines,
 		suites: suites,
 	}
@@ -37,9 +37,9 @@ func createTokenInternally(
 	return &out
 }
 
-// Entity returns the entity
-func (obj *token) Entity() entities.Entity {
-	return obj.entity
+// Hash returns the hash
+func (obj *token) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Lines returns the lines

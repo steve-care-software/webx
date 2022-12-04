@@ -2,7 +2,6 @@ package tokens
 
 import (
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/domain/databases/entities"
 )
 
 // NewBuilder creates a new builder instance
@@ -19,7 +18,7 @@ type Adapter interface {
 // Builder represents a token builder
 type Builder interface {
 	Create() Builder
-	WithEntity(entity entities.Entity) Builder
+	WithHash(hash hash.Hash) Builder
 	WithLines(lines Lines) Builder
 	WithSuites(suites Suites) Builder
 	Now() (Token, error)
@@ -27,7 +26,7 @@ type Builder interface {
 
 // Token represents token metadata
 type Token interface {
-	Entity() entities.Entity
+	Hash() hash.Hash
 	Lines() Lines
 	HasSuites() bool
 	Suites() Suites

@@ -3,18 +3,18 @@ package tokens
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/domain/cryptography/hash"
 )
 
 type builder struct {
-	entity entities.Entity
+	pHash  *hash.Hash
 	lines  Lines
 	suites Suites
 }
 
 func createBuilder() Builder {
 	out := builder{
-		entity: nil,
+		pHash:  nil,
 		lines:  nil,
 		suites: nil,
 	}
@@ -27,9 +27,9 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithEntity adds an entity to the builder
-func (app *builder) WithEntity(entity entities.Entity) Builder {
-	app.entity = entity
+// WithHash adds an hash to the builder
+func (app *builder) WithHash(hash hash.Hash) Builder {
+	app.pHash = &hash
 	return app
 }
 
@@ -47,8 +47,8 @@ func (app *builder) WithSuites(suites Suites) Builder {
 
 // Now builds a new Token instance
 func (app *builder) Now() (Token, error) {
-	if app.entity == nil {
-		return nil, errors.New("the entity is mandatory in order to build a Token instance")
+	if app.pHash == nil {
+		return nil, errors.New("the hash is mandatory in order to build a Token instance")
 	}
 
 	if app.lines == nil {
@@ -56,8 +56,8 @@ func (app *builder) Now() (Token, error) {
 	}
 
 	if app.suites != nil {
-		return createTokenWithSuites(app.entity, app.lines, app.suites), nil
+		return createTokenWithSuites(*app.pHash, app.lines, app.suites), nil
 	}
 
-	return createToken(app.entity, app.lines), nil
+	return createToken(*app.pHash, app.lines), nil
 }
