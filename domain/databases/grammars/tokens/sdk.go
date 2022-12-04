@@ -4,9 +4,22 @@ import (
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
 )
 
+const minSuiteSize = 2
+
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
 	return createBuilder()
+}
+
+// NewSuiteAdapter creates a new suite adapter
+func NewSuiteAdapter() SuiteAdapter {
+	builder := NewSuiteBuilder()
+	return createSuiteAdapter(builder)
+}
+
+// NewSuiteBuilder creates a new suite builder instance
+func NewSuiteBuilder() SuiteBuilder {
+	return createSuiteBuilder()
 }
 
 // Adapter represents a token adapter
