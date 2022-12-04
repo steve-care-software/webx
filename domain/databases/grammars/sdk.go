@@ -4,6 +4,15 @@ import (
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
 )
 
+const minGrammarSize = hash.Size * 2
+
+// NewAdapter creates a new adapter instance
+func NewAdapter() Adapter {
+	hashAdapter := hash.NewAdapter()
+	builder := NewBuilder()
+	return createAdapter(hashAdapter, builder)
+}
+
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
 	return createBuilder()
