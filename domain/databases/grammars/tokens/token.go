@@ -4,29 +4,29 @@ import "github.com/steve-care-software/webx/domain/databases/entities"
 
 type token struct {
 	entity entities.Entity
-	lines  entities.Identifiers
-	suites entities.Identifiers
+	lines  Lines
+	suites Suites
 }
 
 func createToken(
 	entity entities.Entity,
-	lines entities.Identifiers,
+	lines Lines,
 ) Token {
 	return createTokenInternally(entity, lines, nil)
 }
 
 func createTokenWithSuites(
 	entity entities.Entity,
-	lines entities.Identifiers,
-	suites entities.Identifiers,
+	lines Lines,
+	suites Suites,
 ) Token {
 	return createTokenInternally(entity, lines, suites)
 }
 
 func createTokenInternally(
 	entity entities.Entity,
-	lines entities.Identifiers,
-	suites entities.Identifiers,
+	lines Lines,
+	suites Suites,
 ) Token {
 	out := token{
 		entity: entity,
@@ -43,7 +43,7 @@ func (obj *token) Entity() entities.Entity {
 }
 
 // Lines returns the lines
-func (obj *token) Lines() entities.Identifiers {
+func (obj *token) Lines() Lines {
 	return obj.lines
 }
 
@@ -53,6 +53,6 @@ func (obj *token) HasSuites() bool {
 }
 
 // Suites returns the suites, if any
-func (obj *token) Suites() entities.Identifiers {
+func (obj *token) Suites() Suites {
 	return obj.suites
 }

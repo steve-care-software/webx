@@ -8,8 +8,8 @@ import (
 
 type builder struct {
 	entity entities.Entity
-	lines  entities.Identifiers
-	suites entities.Identifiers
+	lines  Lines
+	suites Suites
 }
 
 func createBuilder() Builder {
@@ -34,13 +34,13 @@ func (app *builder) WithEntity(entity entities.Entity) Builder {
 }
 
 // WithLines add lines to the builder
-func (app *builder) WithLines(lines entities.Identifiers) Builder {
+func (app *builder) WithLines(lines Lines) Builder {
 	app.lines = lines
 	return app
 }
 
 // WithSuites add suites to the builder
-func (app *builder) WithSuites(suites entities.Identifiers) Builder {
+func (app *builder) WithSuites(suites Suites) Builder {
 	app.suites = suites
 	return app
 }

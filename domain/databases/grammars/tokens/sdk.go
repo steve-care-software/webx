@@ -1,6 +1,7 @@
 package tokens
 
 import (
+	"github.com/steve-care-software/webx/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/domain/databases/entities"
 )
 
@@ -9,19 +10,99 @@ func NewBuilder() Builder {
 	return createBuilder()
 }
 
+// Adapter represents a token adapter
+type Adapter interface {
+	ToContent(ins Token) ([]byte, error)
+	ToToken(content []byte) (Token, error)
+}
+
 // Builder represents a token builder
 type Builder interface {
 	Create() Builder
 	WithEntity(entity entities.Entity) Builder
-	WithLines(lines entities.Identifiers) Builder
-	WithSuites(suites entities.Identifiers) Builder
+	WithLines(lines Lines) Builder
+	WithSuites(suites Suites) Builder
 	Now() (Token, error)
 }
 
 // Token represents token metadata
 type Token interface {
 	Entity() entities.Entity
-	Lines() entities.Identifiers
+	Lines() Lines
 	HasSuites() bool
-	Suites() entities.Identifiers
+	Suites() Suites
+}
+
+// LinesAdapter represents a lines adapter
+type LinesAdapter interface {
+	ToContent(ins Lines) ([]byte, error)
+	ToLines(content []byte) (Lines, error)
+}
+
+// LinesBuilder represents lines builder
+type LinesBuilder interface {
+	Create() LinesBuilder
+	WithList(list []Line) LinesBuilder
+	Now() (Lines, error)
+}
+
+// Lines represents lines
+type Lines interface {
+	List() []Line
+}
+
+// LineAdapter represents a line adapter
+type LineAdapter interface {
+	ToContent(ins Line) ([]byte, error)
+	ToLine(content []byte) (Line, error)
+}
+
+// LineBuilder represents a line builder
+type LineBuilder interface {
+	Create() LineBuilder
+	WithElements(elements []hash.Hash) LineBuilder
+	Now() (Line, error)
+}
+
+// Line represents a token line
+type Line interface {
+	Elements() []hash.Hash
+}
+
+// SuitesAdapter represents a suites adapter
+type SuitesAdapter interface {
+	ToContent(ins Suites) ([]byte, error)
+	ToSuites(content []byte) (Suites, error)
+}
+
+// SuitesBuilder represents a suites builder
+type SuitesBuilder interface {
+	Create() SuitesBuilder
+	WithList(list []Suite) SuitesBuilder
+	Now() (Suites, error)
+}
+
+// Suites represents suites
+type Suites interface {
+	List() []Suite
+}
+
+// SuiteAdapter represents a suite adapter
+type SuiteAdapter interface {
+	ToContent(ins Suite) ([]byte, error)
+	ToSuite(content []byte) (Suite, error)
+}
+
+// SuiteBuilder represents a suite builder
+type SuiteBuilder interface {
+	Create() SuiteBuilder
+	WithContent(content []byte) SuiteBuilder
+	IsValid() SuiteBuilder
+	Now() (Suite, error)
+}
+
+// Suite represents a suite
+type Suite interface {
+	IsValid() bool
+	Content() []byte
 }
