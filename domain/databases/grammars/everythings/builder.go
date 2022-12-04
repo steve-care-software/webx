@@ -3,20 +3,20 @@ package everythings
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/domain/cryptography/hash"
 )
 
 type builder struct {
-	entity    entities.Entity
-	exception entities.Identifier
-	escape    entities.Identifier
+	pHash      *hash.Hash
+	pException *hash.Hash
+	pEscape    *hash.Hash
 }
 
 func createBuilder() Builder {
 	out := builder{
-		entity:    nil,
-		exception: nil,
-		escape:    nil,
+		pHash:      nil,
+		pException: nil,
+		pEscape:    nil,
 	}
 
 	return &out
@@ -27,37 +27,37 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithEntity adds an entity to the builder
-func (app *builder) WithEntity(entity entities.Entity) Builder {
-	app.entity = entity
+// WithHash adds an hash to the builder
+func (app *builder) WithHash(hash hash.Hash) Builder {
+	app.pHash = &hash
 	return app
 }
 
 // WithException adds an exception to the builder
-func (app *builder) WithException(exception entities.Identifier) Builder {
-	app.exception = exception
+func (app *builder) WithException(exception hash.Hash) Builder {
+	app.pException = &exception
 	return app
 }
 
 // WithEscape adds an escape to the builder
-func (app *builder) WithEscape(escape entities.Identifier) Builder {
-	app.escape = escape
+func (app *builder) WithEscape(escape hash.Hash) Builder {
+	app.pEscape = &escape
 	return app
 }
 
 // Now builds a new Everything instance
 func (app *builder) Now() (Everything, error) {
-	if app.entity == nil {
-		return nil, errors.New("the entity is mandatory in order to build an Everything instance")
+	if app.pHash == nil {
+		return nil, errors.New("the hash is mandatory in order to build an Everything instance")
 	}
 
-	if app.exception == nil {
+	if app.pException == nil {
 		return nil, errors.New("the exception is mandatory in order to build an Everything instance")
 	}
 
-	if app.escape != nil {
-		return createEverythingWithEscape(app.entity, app.exception, app.escape), nil
+	if app.pEscape != nil {
+		return createEverythingWithEscape(*app.pHash, *app.pException, app.pEscape), nil
 	}
 
-	return createEverything(app.entity, app.exception), nil
+	return createEverything(*app.pHash, *app.pException), nil
 }

@@ -1,27 +1,31 @@
 package everythings
 
-import (
-	"github.com/steve-care-software/webx/domain/databases/entities"
-)
+import "github.com/steve-care-software/webx/domain/cryptography/hash"
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
 	return createBuilder()
 }
 
+// Adapter represents an everything adapter
+type Adapter interface {
+	ToContent(ins Everything) ([]byte, error)
+	ToEverything(content []byte) (Everything, error)
+}
+
 // Builder represents an everything builder
 type Builder interface {
 	Create() Builder
-	WithEntity(entity entities.Entity) Builder
-	WithException(exception entities.Identifier) Builder
-	WithEscape(escape entities.Identifier) Builder
+	WithHash(hash hash.Hash) Builder
+	WithException(exception hash.Hash) Builder
+	WithEscape(escape hash.Hash) Builder
 	Now() (Everything, error)
 }
 
 // Everything represents an everything
 type Everything interface {
-	Entity() entities.Entity
-	Exception() entities.Identifier
+	Hash() hash.Hash
+	Exception() hash.Hash
 	HasEscape() bool
-	Escape() entities.Identifier
+	Escape() *hash.Hash
 }
