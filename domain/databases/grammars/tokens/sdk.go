@@ -4,7 +4,17 @@ import (
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
 )
 
+const minTokenSize = hash.Size + 8
 const minSuiteSize = 2
+
+// NewAdapter creates a new adapter for tests
+func NewAdapter() Adapter {
+	hashAdapter := hash.NewAdapter()
+	linesAdapter := NewLinesAdapter()
+	suitesAdapter := NewSuitesAdapter()
+	builder := NewBuilder()
+	return createAdapter(hashAdapter, linesAdapter, suitesAdapter, builder)
+}
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {

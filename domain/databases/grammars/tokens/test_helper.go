@@ -8,6 +8,39 @@ import (
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
 )
 
+// NewTokenForTests creates a new token for tests
+func NewTokenForTests() Token {
+	pHash, err := hash.NewAdapter().FromBytes([]byte("this is a token hash"))
+	if err != nil {
+		panic(err)
+	}
+
+	lines := NewLinesForTests(100)
+	ins, err := NewBuilder().Create().WithHash(*pHash).WithLines(lines).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewTokenWithSuitesForTests creates a new token with suites for tests
+func NewTokenWithSuitesForTests() Token {
+	pHash, err := hash.NewAdapter().FromBytes([]byte("this is a token hash"))
+	if err != nil {
+		panic(err)
+	}
+
+	lines := NewLinesForTests(100)
+	suites := NewSuitesForTests(20)
+	ins, err := NewBuilder().Create().WithHash(*pHash).WithLines(lines).WithSuites(suites).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
 // NewLinesForTests creates a new lines for tests
 func NewLinesForTests(amount int) Lines {
 	list := []Line{}
@@ -15,7 +48,7 @@ func NewLinesForTests(amount int) Lines {
 		s1 := rand.NewSource(time.Now().UnixNano())
 		r1 := rand.New(s1)
 
-		list = append(list, NewLineForTests(r1.Intn(200)))
+		list = append(list, NewLineForTests(r1.Intn(200)+1))
 	}
 
 	ins, err := NewLinesBuilder().Create().WithList(list).Now()
