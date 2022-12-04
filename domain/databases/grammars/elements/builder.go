@@ -4,12 +4,11 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/domain/databases/grammars/cardinalities"
 )
 
 type builder struct {
 	pHash       *hash.Hash
-	cardinality cardinalities.Cardinality
+	cardinality Cardinality
 	pValue      *uint8
 	pExternal   *hash.Hash
 	pToken      *hash.Hash
@@ -43,7 +42,7 @@ func (app *builder) WithHash(hash hash.Hash) Builder {
 }
 
 // WithCardinality adds a cardinality to the builder
-func (app *builder) WithCardinality(cardinality cardinalities.Cardinality) Builder {
+func (app *builder) WithCardinality(cardinality Cardinality) Builder {
 	app.cardinality = cardinality
 	return app
 }

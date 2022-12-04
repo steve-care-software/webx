@@ -1,4 +1,4 @@
-package cardinalities
+package elements
 
 type cardinality struct {
 	min  uint

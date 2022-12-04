@@ -3,19 +3,18 @@ package elements
 import (
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/domain/databases/entities"
-	"github.com/steve-care-software/webx/domain/databases/grammars/cardinalities"
 )
 
 type element struct {
 	hash        hash.Hash
 	entity      entities.Entity
-	cardinality cardinalities.Cardinality
+	cardinality Cardinality
 	content     Content
 }
 
 func createElement(
 	hash hash.Hash,
-	cardinality cardinalities.Cardinality,
+	cardinality Cardinality,
 	content Content,
 ) Element {
 	out := element{
@@ -33,7 +32,7 @@ func (obj *element) Hash() hash.Hash {
 }
 
 // Cardinality returns the cardinality
-func (obj *element) Cardinality() cardinalities.Cardinality {
+func (obj *element) Cardinality() Cardinality {
 	return obj.cardinality
 }
 

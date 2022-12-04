@@ -1,13 +1,13 @@
-package cardinalities
+package elements
 
 import (
 	"reflect"
 	"testing"
 )
 
-func TestAdapter_Success(t *testing.T) {
+func TestCardinalityAdapter_Success(t *testing.T) {
 	cardinality := NewCardinalityForTests(false)
-	adapter := NewAdapter()
+	adapter := NewCardinalityAdapter()
 	content, err := adapter.ToContent(cardinality)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
@@ -26,9 +26,9 @@ func TestAdapter_Success(t *testing.T) {
 	}
 }
 
-func TestAdapter_withMaximum_Success(t *testing.T) {
+func TestCardinalityAdapter_withMaximum_Success(t *testing.T) {
 	cardinality := NewCardinalityForTests(true)
-	adapter := NewAdapter()
+	adapter := NewCardinalityAdapter()
 	content, err := adapter.ToContent(cardinality)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())

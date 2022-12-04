@@ -2,17 +2,16 @@ package elements
 
 import (
 	"github.com/steve-care-software/webx/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/domain/databases/grammars/cardinalities"
 )
 
 type adapter struct {
-	cardinalityAdapter cardinalities.Adapter
+	cardinalityAdapter CardinalityAdapter
 	hashAdapter        hash.Adapter
 	builder            Builder
 }
 
 func createAdapter(
-	cardinalityAdapter cardinalities.Adapter,
+	cardinalityAdapter CardinalityAdapter,
 	hashAdapter hash.Adapter,
 	builder Builder,
 ) Adapter {

@@ -1,16 +1,16 @@
-package cardinalities
+package elements
 
 import (
 	"errors"
 )
 
-type builder struct {
+type cardinalityBuilder struct {
 	pMin *uint
 	pMax *uint
 }
 
-func createBuilder() Builder {
-	out := builder{
+func createCardinalityBuilder() CardinalityBuilder {
+	out := cardinalityBuilder{
 		pMin: nil,
 		pMax: nil,
 	}
@@ -19,24 +19,24 @@ func createBuilder() Builder {
 }
 
 // Create initializes the builder
-func (app *builder) Create() Builder {
-	return createBuilder()
+func (app *cardinalityBuilder) Create() CardinalityBuilder {
+	return createCardinalityBuilder()
 }
 
 // WithMin adds a min to the builder
-func (app *builder) WithMin(min uint) Builder {
+func (app *cardinalityBuilder) WithMin(min uint) CardinalityBuilder {
 	app.pMin = &min
 	return app
 }
 
 // WithMax adds a max to the builder
-func (app *builder) WithMax(max uint) Builder {
+func (app *cardinalityBuilder) WithMax(max uint) CardinalityBuilder {
 	app.pMax = &max
 	return app
 }
 
 // Now builds a new Cardinality instance
-func (app *builder) Now() (Cardinality, error) {
+func (app *cardinalityBuilder) Now() (Cardinality, error) {
 	if app.pMin == nil {
 		return nil, errors.New("the minimum is mandatory in order to build a Cardinality instance")
 	}

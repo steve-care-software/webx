@@ -1,4 +1,4 @@
-package cardinalities
+package elements
 
 import (
 	"math/rand"
@@ -11,7 +11,7 @@ func NewCardinalityForTests(hasMax bool) Cardinality {
 	r1 := rand.New(s1)
 	min := uint(r1.Int())
 
-	builder := NewBuilder().Create().WithMin(min)
+	builder := NewCardinalityBuilder().Create().WithMin(min)
 	if hasMax {
 		s1 := rand.NewSource(time.Now().UnixNano())
 		r1 := rand.New(s1)

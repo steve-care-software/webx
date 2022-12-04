@@ -1,18 +1,18 @@
-package cardinalities
+package elements
 
 import (
 	"encoding/binary"
 	"errors"
 )
 
-type adapter struct {
-	builder Builder
+type cardinalityAdapter struct {
+	builder CardinalityBuilder
 }
 
-func createAdapter(
-	builder Builder,
-) Adapter {
-	out := adapter{
+func createCardinalityAdapter(
+	builder CardinalityBuilder,
+) CardinalityAdapter {
+	out := cardinalityAdapter{
 		builder: builder,
 	}
 
@@ -20,7 +20,7 @@ func createAdapter(
 }
 
 // ToContent converts a Cardinality to bytes
-func (app *adapter) ToContent(ins Cardinality) ([]byte, error) {
+func (app *cardinalityAdapter) ToContent(ins Cardinality) ([]byte, error) {
 	minBytes := make([]byte, 8)
 	binary.LittleEndian.PutUint64(minBytes, uint64(ins.Min()))
 
@@ -39,7 +39,7 @@ func (app *adapter) ToContent(ins Cardinality) ([]byte, error) {
 }
 
 // ToCardinality converts bytes to a Cardinality instance
-func (app *adapter) ToCardinality(content []byte) (Cardinality, error) {
+func (app *cardinalityAdapter) ToCardinality(content []byte) (Cardinality, error) {
 	contentLength := len(content)
 	if contentLength < 8 {
 		str := "the content was expected to contain at least %d bytes in order to convert data to a Cardinality instance, %d provided"
