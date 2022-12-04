@@ -1,7 +1,7 @@
 package grammars
 
 import (
-	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/domain/cryptography/hash"
 )
 
 // NewBuilder creates a new builder instance
@@ -9,19 +9,25 @@ func NewBuilder() Builder {
 	return createBuilder()
 }
 
+// Adapter represents a grammar adapter
+type Adapter interface {
+	ToContent(ins Grammar) ([]byte, error)
+	ToGrammar(content []byte) (Grammar, error)
+}
+
 // Builder represents a grammar
 type Builder interface {
 	Create() Builder
-	WithEntity(entity entities.Entity) Builder
-	WithRoot(root entities.Identifier) Builder
-	WithChannels(channels entities.Identifiers) Builder
+	WithHash(hash hash.Hash) Builder
+	WithRoot(root hash.Hash) Builder
+	WithChannels(channels []hash.Hash) Builder
 	Now() (Grammar, error)
 }
 
 // Grammar represents a grammar
 type Grammar interface {
-	Entity() entities.Entity
-	Root() entities.Identifier
+	Hash() hash.Hash
+	Root() hash.Hash
 	HasChannels() bool
-	Channels() entities.Identifiers
+	Channels() []hash.Hash
 }

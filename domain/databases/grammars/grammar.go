@@ -1,35 +1,37 @@
 package grammars
 
-import "github.com/steve-care-software/webx/domain/databases/entities"
+import (
+	"github.com/steve-care-software/webx/domain/cryptography/hash"
+)
 
 type grammar struct {
-	entity   entities.Entity
-	root     entities.Identifier
-	channels entities.Identifiers
+	hash     hash.Hash
+	root     hash.Hash
+	channels []hash.Hash
 }
 
 func createGrammar(
-	entity entities.Entity,
-	root entities.Identifier,
+	hash hash.Hash,
+	root hash.Hash,
 ) Grammar {
-	return createGrammarInternally(entity, root, nil)
+	return createGrammarInternally(hash, root, nil)
 }
 
 func createGrammarWithChannels(
-	entity entities.Entity,
-	root entities.Identifier,
-	channels entities.Identifiers,
+	hash hash.Hash,
+	root hash.Hash,
+	channels []hash.Hash,
 ) Grammar {
-	return createGrammarInternally(entity, root, channels)
+	return createGrammarInternally(hash, root, channels)
 }
 
 func createGrammarInternally(
-	entity entities.Entity,
-	root entities.Identifier,
-	channels entities.Identifiers,
+	hash hash.Hash,
+	root hash.Hash,
+	channels []hash.Hash,
 ) Grammar {
 	out := grammar{
-		entity:   entity,
+		hash:     hash,
 		root:     root,
 		channels: channels,
 	}
@@ -37,13 +39,13 @@ func createGrammarInternally(
 	return &out
 }
 
-// Entity returns the entity
-func (obj *grammar) Entity() entities.Entity {
-	return obj.entity
+// Hash returns the hash
+func (obj *grammar) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Root returns the root
-func (obj *grammar) Root() entities.Identifier {
+func (obj *grammar) Root() hash.Hash {
 	return obj.root
 }
 
@@ -53,6 +55,6 @@ func (obj *grammar) HasChannels() bool {
 }
 
 // Channels returns the channels, if any
-func (obj *grammar) Channels() entities.Identifiers {
+func (obj *grammar) Channels() []hash.Hash {
 	return obj.channels
 }
