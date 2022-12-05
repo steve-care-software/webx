@@ -1,14 +1,20 @@
-package tokens
+package suites
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+)
 
 type suiteBuilder struct {
+	pHash   *hash.Hash
 	isValid bool
 	content []byte
 }
 
 func createSuiteBuilder() SuiteBuilder {
 	out := suiteBuilder{
+		pHash:   nil,
 		isValid: false,
 		content: nil,
 	}
@@ -19,6 +25,12 @@ func createSuiteBuilder() SuiteBuilder {
 // Create initializes the builder
 func (app *suiteBuilder) Create() SuiteBuilder {
 	return createSuiteBuilder()
+}
+
+// WithHash adds an hash to the builder
+func (app *suiteBuilder) WithHash(hash hash.Hash) SuiteBuilder {
+	app.pHash = &hash
+	return app
 }
 
 // WithContent adds content to the builder
@@ -35,6 +47,10 @@ func (app *suiteBuilder) IsValid() SuiteBuilder {
 
 // Now builds a new Suite instance
 func (app *suiteBuilder) Now() (Suite, error) {
+	if app.pHash == nil {
+		return nil, errors.New("the hash is mandatory in order to build a Suite instance")
+	}
+
 	if app.content != nil && len(app.content) <= 0 {
 		app.content = nil
 	}
@@ -43,5 +59,5 @@ func (app *suiteBuilder) Now() (Suite, error) {
 		return nil, errors.New("the content is mandatory in order to build a Suite instance")
 	}
 
-	return createSuite(app.isValid, app.content), nil
+	return createSuite(*app.pHash, app.isValid, app.content), nil
 }

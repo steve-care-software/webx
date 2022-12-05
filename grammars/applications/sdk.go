@@ -20,6 +20,7 @@ type Application interface {
 type Database interface {
 	Retrieve(context uint, hash hash.Hash) (grammars.Grammar, error)
 	Search(context uint, suites grammars.Suites) (grammars.Grammar, error)
+	Scan(context uint, suites grammars.Suites) error
 	Insert(context uint, grammar grammars.Grammar) error
 	InsertAll(context uint, grammars []grammars.Grammar) error
 }

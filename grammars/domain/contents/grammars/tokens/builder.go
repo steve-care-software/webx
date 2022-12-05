@@ -7,16 +7,14 @@ import (
 )
 
 type builder struct {
-	pHash  *hash.Hash
-	lines  Lines
-	suites Suites
+	pHash *hash.Hash
+	lines Lines
 }
 
 func createBuilder() Builder {
 	out := builder{
-		pHash:  nil,
-		lines:  nil,
-		suites: nil,
+		pHash: nil,
+		lines: nil,
 	}
 
 	return &out
@@ -39,12 +37,6 @@ func (app *builder) WithLines(lines Lines) Builder {
 	return app
 }
 
-// WithSuites add suites to the builder
-func (app *builder) WithSuites(suites Suites) Builder {
-	app.suites = suites
-	return app
-}
-
 // Now builds a new Token instance
 func (app *builder) Now() (Token, error) {
 	if app.pHash == nil {
@@ -52,11 +44,7 @@ func (app *builder) Now() (Token, error) {
 	}
 
 	if app.lines == nil {
-		return nil, errors.New("the lines is mandatory in order to build a Token instance")
-	}
-
-	if app.suites != nil {
-		return createTokenWithSuites(*app.pHash, app.lines, app.suites), nil
+		return nil, errors.New("the Lines is mandatory in order to build a Token instance")
 	}
 
 	return createToken(*app.pHash, app.lines), nil

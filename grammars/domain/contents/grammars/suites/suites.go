@@ -1,4 +1,4 @@
-package tokens
+package suites
 
 type suites struct {
 	list []Suite

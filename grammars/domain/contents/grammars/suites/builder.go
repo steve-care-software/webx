@@ -1,13 +1,13 @@
-package tokens
+package suites
 
 import "errors"
 
-type suitesBuilder struct {
+type builder struct {
 	list []Suite
 }
 
-func createSuitesBuilder() SuitesBuilder {
-	out := suitesBuilder{
+func createBuilder() Builder {
+	out := builder{
 		list: nil,
 	}
 
@@ -15,18 +15,18 @@ func createSuitesBuilder() SuitesBuilder {
 }
 
 // Create initializes the builder
-func (app *suitesBuilder) Create() SuitesBuilder {
-	return createSuitesBuilder()
+func (app *builder) Create() Builder {
+	return createBuilder()
 }
 
 // WithList adds a list to the builder
-func (app *suitesBuilder) WithList(list []Suite) SuitesBuilder {
+func (app *builder) WithList(list []Suite) Builder {
 	app.list = list
 	return app
 }
 
 // Now builds a new Suites instance
-func (app *suitesBuilder) Now() (Suites, error) {
+func (app *builder) Now() (Suites, error) {
 	if app.list != nil && len(app.list) <= 0 {
 		app.list = nil
 	}

@@ -1,4 +1,4 @@
-package tokens
+package suites
 
 import (
 	"encoding/binary"
@@ -6,16 +6,16 @@ import (
 	"fmt"
 )
 
-type suitesAdapter struct {
-	builder      SuitesBuilder
+type adapter struct {
+	builder      Builder
 	suiteAdapter SuiteAdapter
 }
 
-func createSuitesAdapter(
-	builder SuitesBuilder,
+func createAdapter(
+	builder Builder,
 	suiteAdapter SuiteAdapter,
-) SuitesAdapter {
-	out := suitesAdapter{
+) Adapter {
+	out := adapter{
 		builder:      builder,
 		suiteAdapter: suiteAdapter,
 	}
@@ -24,7 +24,7 @@ func createSuitesAdapter(
 }
 
 // ToContent converts suites to content
-func (app *suitesAdapter) ToContent(ins Suites) ([]byte, error) {
+func (app *adapter) ToContent(ins Suites) ([]byte, error) {
 	list := ins.List()
 	output := []byte{}
 	for _, oneSuite := range list {
@@ -44,7 +44,7 @@ func (app *suitesAdapter) ToContent(ins Suites) ([]byte, error) {
 }
 
 // ToSuites converts content to suites instance
-func (app *suitesAdapter) ToSuites(content []byte) (Suites, error) {
+func (app *adapter) ToSuites(content []byte) (Suites, error) {
 	list := []Suite{}
 	remaining := content
 	for len(remaining) > 0 {

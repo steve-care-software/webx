@@ -1,19 +1,24 @@
-package tokens
+package suites
 
 import (
 	"errors"
 	"fmt"
+
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 )
 
 type suiteAdapter struct {
-	builder SuiteBuilder
+	hashAdapter hash.Adapter
+	builder     SuiteBuilder
 }
 
 func createSuiteAdapter(
+	hashAdapter hash.Adapter,
 	builder SuiteBuilder,
 ) SuiteAdapter {
 	out := suiteAdapter{
-		builder: builder,
+		hashAdapter: hashAdapter,
+		builder:     builder,
 	}
 
 	return &out
@@ -21,15 +26,15 @@ func createSuiteAdapter(
 
 // ToContent converts a Suite instance to content
 func (app *suiteAdapter) ToContent(ins Suite) ([]byte, error) {
+	hashBytes := ins.Hash().Bytes()
 	isValidByte := byte(0)
 	if ins.IsValid() {
 		isValidByte = byte(1)
 	}
 
-	output := []byte{
-		isValidByte,
-	}
-
+	output := []byte{}
+	output = append(output, hashBytes...)
+	output = append(output, isValidByte)
 	return append(output, ins.Content()...), nil
 }
 
@@ -41,8 +46,14 @@ func (app *suiteAdapter) ToSuite(content []byte) (Suite, error) {
 		return nil, errors.New(str)
 	}
 
-	builder := app.builder.Create().WithContent(content[1:])
-	if content[:1][0] != 0 {
+	pHash, err := app.hashAdapter.FromBytes(content[:hash.Size])
+	if err != nil {
+		return nil, err
+	}
+
+	delimiter := hash.Size + 1
+	builder := app.builder.Create().WithContent(content[delimiter:]).WithHash(*pHash)
+	if content[hash.Size:delimiter][0] != 0 {
 		builder.IsValid()
 	}
 

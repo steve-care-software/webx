@@ -1,13 +1,13 @@
-package tokens
+package suites
 
 import (
 	"reflect"
 	"testing"
 )
 
-func TestSuitesAdapter_withOneElement_Success(t *testing.T) {
+func TestAdapter_withOneElement_Success(t *testing.T) {
 	suites := NewSuitesForTests(1)
-	adapter := NewSuitesAdapter()
+	adapter := NewAdapter()
 	content, err := adapter.ToContent(suites)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
@@ -26,9 +26,9 @@ func TestSuitesAdapter_withOneElement_Success(t *testing.T) {
 	}
 }
 
-func TestSuitesAdapter_withMultipleElements_Success(t *testing.T) {
+func TestAdapter_withMultipleElements_Success(t *testing.T) {
 	suites := NewSuitesForTests(100)
-	adapter := NewSuitesAdapter()
+	adapter := NewAdapter()
 	content, err := adapter.ToContent(suites)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
