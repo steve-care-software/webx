@@ -10,6 +10,7 @@ import (
 
 // Application represents a grammar application
 type Application interface {
+	New(name string) error
 	applications.Database
 	Database
 	Software

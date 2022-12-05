@@ -10,6 +10,7 @@ import (
 
 // Application represents the read application
 type Application interface {
+	New(name string) error
 	Database
 	Blockchain
 	Content
@@ -28,7 +29,6 @@ type Blockchain interface {
 
 // Database represents the database application
 type Database interface {
-	New(name string) error
 	Delete(name string) error
 	List() ([]string, error)
 	Open(name string, height int) (*uint, error)
