@@ -3,9 +3,9 @@ package applications
 import (
 	"github.com/steve-care-software/webx/blockchains/applications"
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/grammars/domain/trees"
 	"github.com/steve-care-software/webx/grammars/domain/grammars"
 	"github.com/steve-care-software/webx/grammars/domain/grammars/coverages"
+	"github.com/steve-care-software/webx/grammars/domain/trees"
 )
 
 type application struct {
@@ -20,6 +20,21 @@ func createApplication(
 	}
 
 	return &out
+}
+
+// New creates a new database
+func (app *application) New(name string) error {
+	return nil
+}
+
+// Delete deletes an existing database
+func (app *application) Delete(name string) error {
+	return nil
+}
+
+// List lists database names
+func (app *application) List() ([]string, error) {
+	return nil, nil
 }
 
 // Open opens the context
