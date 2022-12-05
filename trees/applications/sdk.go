@@ -27,5 +27,5 @@ type Database interface {
 	Update
 	Delete
 	Retrieve
-	Search (by selector)
+	Search (by selector/program)
 */
