@@ -2,7 +2,11 @@ package files
 
 import (
 	"github.com/steve-care-software/webx/blockchains/applications"
+	"github.com/steve-care-software/webx/blockchains/domain/blockchains"
+	"github.com/steve-care-software/webx/blockchains/domain/blockchains/blocks"
+	"github.com/steve-care-software/webx/blockchains/domain/blockchains/transactions"
 	"github.com/steve-care-software/webx/blockchains/domain/contents/references"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 )
 
 type application struct {
@@ -19,9 +23,44 @@ func createApplication(
 	return &out
 }
 
-// Open opens a context
-func (app *application) Open(name string) (*uint, error) {
+// Open opens a context at height, height is -1 if the head is requested
+func (app *application) Open(name string, height int) (*uint, error) {
 	return nil, nil
+}
+
+// Blockchain returns the blockchain on a context
+func (app *application) Blockchain(context uint) (blockchains.Blockchain, error) {
+	return nil, nil
+}
+
+// BlockByHeight returns the block by height
+func (app *application) BlockByHeight(context uint, height uint) (blocks.Block, error) {
+	return nil, nil
+}
+
+// BlockByHash returns the block by hash
+func (app *application) BlockByHash(context uint, block hash.Hash) (blocks.Block, error) {
+	return nil, nil
+}
+
+// Pendings returns the pending transactions
+func (app *application) Pendings(context uint) (transactions.Transactions, error) {
+	return nil, nil
+}
+
+// Transactions returns the transactions by block
+func (app *application) Transactions(context uint, block hash.Hash) (transactions.Transactions, error) {
+	return nil, nil
+}
+
+// Transaction returns the transaction by block and trx hash
+func (app *application) Transaction(context uint, block hash.Hash, trx hash.Hash) (transactions.Transaction, error) {
+	return nil, nil
+}
+
+// ReplaceTransaction replaces a transaction
+func (app *application) ReplaceTransaction(context uint, block hash.Hash, trx transactions.Transaction) error {
+	return nil
 }
 
 // Read reads a pointer on a context
