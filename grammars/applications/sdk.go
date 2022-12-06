@@ -22,7 +22,6 @@ type Database interface {
 	Search(context uint, suites grammars.Suites) (grammars.Grammar, error)
 	Scan(context uint, suites grammars.Suites) error
 	Insert(context uint, grammar grammars.Grammar) error
-	InsertAll(context uint, grammars []grammars.Grammar) error
 }
 
 // Software represents the grammar software application

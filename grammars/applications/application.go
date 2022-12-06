@@ -24,7 +24,11 @@ import (
 type application struct {
 	blockchainApp                  applications.Application
 	contentAdapter                 contents_grammars.Adapter
+	contentBuilder                 contents_grammars.Builder
 	contentTokenAdapter            contents_tokens.Adapter
+	contentTokenBuilder            contents_tokens.Builder
+	contentTokenLinesBuilder       contents_tokens.LinesBuilder
+	contentTokenLineBuilder        contents_tokens.LineBuilder
 	contentElementAdapter          contents_elements.Adapter
 	contentEverythingAdapter       contents_everythings.Adapter
 	contentChannelAdapter          contents_channels.Adapter
@@ -65,7 +69,11 @@ type application struct {
 func createApplication(
 	blockchainApp applications.Application,
 	contentAdapter contents_grammars.Adapter,
+	contentBuilder contents_grammars.Builder,
 	contentTokenAdapter contents_tokens.Adapter,
+	contentTokenBuilder contents_tokens.Builder,
+	contentTokenLinesBuilder contents_tokens.LinesBuilder,
+	contentTokenLineBuilder contents_tokens.LineBuilder,
 	contentElementAdapter contents_elements.Adapter,
 	contentEverythingAdapter contents_everythings.Adapter,
 	contentChannelAdapter contents_channels.Adapter,
@@ -105,7 +113,11 @@ func createApplication(
 	out := application{
 		blockchainApp:                  blockchainApp,
 		contentAdapter:                 contentAdapter,
+		contentBuilder:                 contentBuilder,
 		contentTokenAdapter:            contentTokenAdapter,
+		contentTokenBuilder:            contentTokenBuilder,
+		contentTokenLinesBuilder:       contentTokenLinesBuilder,
+		contentTokenLineBuilder:        contentTokenLineBuilder,
 		contentElementAdapter:          contentElementAdapter,
 		contentEverythingAdapter:       contentEverythingAdapter,
 		contentChannelAdapter:          contentChannelAdapter,
@@ -290,90 +302,7 @@ func (app *application) retrieveElements(context uint, hashes []hash.Hash) ([]gr
 
 	list := []grammars.Element{}
 	for _, oneContent := range contents {
-		elementContent, err := app.contentElementAdapter.ToElement(oneContent)
-		if err != nil {
-			return nil, err
-		}
-
-		cardinalityContent := elementContent.Cardinality()
-		min := cardinalityContent.Min()
-		cardinalityBuilder := app.grammarCardinalityBuilder.Create().WithMin(min)
-		if cardinalityContent.HasMax() {
-			pMax := cardinalityContent.Max()
-			cardinalityBuilder.WithMax(*pMax)
-		}
-
-		cardinality, err := cardinalityBuilder.Now()
-		if err != nil {
-			return nil, err
-		}
-
-		contentContent := elementContent.Content()
-		builder := app.grammarElementBuilder.Create().WithCardinality(cardinality)
-		if contentContent.IsValue() {
-			pValue := contentContent.Value()
-			pHash, err := app.hashAdapter.FromBytes([]byte{
-				*pValue,
-			})
-
-			if err != nil {
-				return nil, err
-			}
-
-			value, err := app.grammarValueBuilder.Create().WithName(pHash.String()).WithNumber(*pValue).Now()
-			if err != nil {
-				return nil, err
-			}
-
-			builder.WithValue(value)
-		}
-
-		if contentContent.IsExternal() {
-			pExternalHash := contentContent.External()
-			external, err := app.retrieveExternal(context, *pExternalHash)
-			if err != nil {
-				return nil, err
-			}
-
-			builder.WithExternal(external)
-		}
-
-		if contentContent.IsToken() {
-			pTokenHash := contentContent.Token()
-			token, err := app.retrieveToken(context, *pTokenHash)
-			if err != nil {
-				return nil, err
-			}
-
-			instance, err := app.grammarInstanceBuilder.Create().WithToken(token).Now()
-			if err != nil {
-				return nil, err
-			}
-
-			builder.WithInstance(instance)
-		}
-
-		if contentContent.IsEverything() {
-			pEverythingHash := contentContent.Everything()
-			everything, err := app.retrieveEverything(context, *pEverythingHash)
-			if err != nil {
-				return nil, err
-			}
-
-			instance, err := app.grammarInstanceBuilder.Create().WithEverything(everything).Now()
-			if err != nil {
-				return nil, err
-			}
-
-			builder.WithInstance(instance)
-		}
-
-		if contentContent.IsRecursive() {
-			pRecursiveHash := contentContent.Recursive()
-			builder.WithRecursive(pRecursiveHash.String())
-		}
-
-		element, err := builder.Now()
+		element, err := app.contentToElement(context, oneContent)
 		if err != nil {
 			return nil, err
 		}
@@ -382,6 +311,102 @@ func (app *application) retrieveElements(context uint, hashes []hash.Hash) ([]gr
 	}
 
 	return list, nil
+}
+
+func (app *application) retrieveElement(context uint, hash hash.Hash) (grammars.Element, error) {
+	content, err := app.blockchainApp.ReadByHash(context, hash)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.contentToElement(context, content)
+}
+
+func (app *application) contentToElement(context uint, content []byte) (grammars.Element, error) {
+	elementContent, err := app.contentElementAdapter.ToElement(content)
+	if err != nil {
+		return nil, err
+	}
+
+	cardinalityContent := elementContent.Cardinality()
+	min := cardinalityContent.Min()
+	cardinalityBuilder := app.grammarCardinalityBuilder.Create().WithMin(min)
+	if cardinalityContent.HasMax() {
+		pMax := cardinalityContent.Max()
+		cardinalityBuilder.WithMax(*pMax)
+	}
+
+	cardinality, err := cardinalityBuilder.Now()
+	if err != nil {
+		return nil, err
+	}
+
+	contentContent := elementContent.Content()
+	builder := app.grammarElementBuilder.Create().WithCardinality(cardinality)
+	if contentContent.IsValue() {
+		pValue := contentContent.Value()
+		pHash, err := app.hashAdapter.FromBytes([]byte{
+			*pValue,
+		})
+
+		if err != nil {
+			return nil, err
+		}
+
+		value, err := app.grammarValueBuilder.Create().WithName(pHash.String()).WithNumber(*pValue).Now()
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithValue(value)
+	}
+
+	if contentContent.IsExternal() {
+		pExternalHash := contentContent.External()
+		external, err := app.retrieveExternal(context, *pExternalHash)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithExternal(external)
+	}
+
+	if contentContent.IsToken() {
+		pTokenHash := contentContent.Token()
+		token, err := app.retrieveToken(context, *pTokenHash)
+		if err != nil {
+			return nil, err
+		}
+
+		instance, err := app.grammarInstanceBuilder.Create().WithToken(token).Now()
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithInstance(instance)
+	}
+
+	if contentContent.IsEverything() {
+		pEverythingHash := contentContent.Everything()
+		everything, err := app.retrieveEverything(context, *pEverythingHash)
+		if err != nil {
+			return nil, err
+		}
+
+		instance, err := app.grammarInstanceBuilder.Create().WithEverything(everything).Now()
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithInstance(instance)
+	}
+
+	if contentContent.IsRecursive() {
+		pRecursiveHash := contentContent.Recursive()
+		builder.WithRecursive(pRecursiveHash.String())
+	}
+
+	return builder.Now()
 }
 
 func (app *application) retrieveExternal(context uint, hash hash.Hash) (grammars.External, error) {
@@ -437,50 +462,7 @@ func (app *application) retrieveChannels(context uint, hashes []hash.Hash) (gram
 
 	list := []grammars.Channel{}
 	for _, oneContent := range contents {
-		channelContent, err := app.contentChannelAdapter.ToChannel(oneContent)
-		if err != nil {
-			return nil, err
-		}
-
-		token, err := app.retrieveToken(context, channelContent.Token())
-		if err != nil {
-			return nil, err
-		}
-
-		builder := app.grammarChannelBuilder.Create().WithToken(token)
-		hasPrevious := channelContent.HasPrevious()
-		hasNext := channelContent.HasNext()
-		if hasPrevious || hasNext {
-			conditionBuilder := app.grammarChannelConditionBuilder.Create()
-			if hasPrevious {
-				pPreviousHash := channelContent.Previous()
-				previous, err := app.retrieveToken(context, *pPreviousHash)
-				if err != nil {
-					return nil, err
-				}
-
-				conditionBuilder.WithPrevious(previous)
-			}
-
-			if hasNext {
-				pNextHash := channelContent.Previous()
-				next, err := app.retrieveToken(context, *pNextHash)
-				if err != nil {
-					return nil, err
-				}
-
-				conditionBuilder.WithNext(next)
-			}
-
-			condition, err := conditionBuilder.Now()
-			if err != nil {
-				return nil, err
-			}
-
-			builder.WithCondition(condition)
-		}
-
-		channel, err := builder.Now()
+		channel, err := app.contentToChannel(context, oneContent)
 		if err != nil {
 			return nil, err
 		}
@@ -491,6 +473,62 @@ func (app *application) retrieveChannels(context uint, hashes []hash.Hash) (gram
 	return app.grammarChannelsBuilder.Create().
 		WithList(list).
 		Now()
+}
+
+func (app *application) retrieveChannel(context uint, hash hash.Hash) (grammars.Channel, error) {
+	content, err := app.blockchainApp.ReadByHash(context, hash)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.contentToChannel(context, content)
+}
+
+func (app *application) contentToChannel(context uint, content []byte) (grammars.Channel, error) {
+	channelContent, err := app.contentChannelAdapter.ToChannel(content)
+	if err != nil {
+		return nil, err
+	}
+
+	token, err := app.retrieveToken(context, channelContent.Token())
+	if err != nil {
+		return nil, err
+	}
+
+	builder := app.grammarChannelBuilder.Create().WithToken(token)
+	hasPrevious := channelContent.HasPrevious()
+	hasNext := channelContent.HasNext()
+	if hasPrevious || hasNext {
+		conditionBuilder := app.grammarChannelConditionBuilder.Create()
+		if hasPrevious {
+			pPreviousHash := channelContent.Previous()
+			previous, err := app.retrieveToken(context, *pPreviousHash)
+			if err != nil {
+				return nil, err
+			}
+
+			conditionBuilder.WithPrevious(previous)
+		}
+
+		if hasNext {
+			pNextHash := channelContent.Previous()
+			next, err := app.retrieveToken(context, *pNextHash)
+			if err != nil {
+				return nil, err
+			}
+
+			conditionBuilder.WithNext(next)
+		}
+
+		condition, err := conditionBuilder.Now()
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithCondition(condition)
+	}
+
+	return builder.Now()
 }
 
 // Search searches a grammar by suite
@@ -505,12 +543,154 @@ func (app *application) Scan(context uint, suites grammars.Suites) error {
 
 // Insert inserts a grammar
 func (app *application) Insert(context uint, grammar grammars.Grammar) error {
-	return nil
+	contents, err := app.grammarToBytes(context, grammar)
+	if err != nil {
+		return err
+	}
+
+	if len(contents) > 0 {
+		str := fmt.Sprintf("the grammar (hash: %s) cannot be inserted because it already exists", grammar.Hash().String())
+		return errors.New(str)
+	}
+
+	return app.blockchainApp.WriteAll(context, contents)
 }
 
-// InsertAll inserts a list of grammars
-func (app *application) InsertAll(context uint, grammars []grammars.Grammar) error {
-	return nil
+func (app *application) grammarToBytes(context uint, grammar grammars.Grammar) ([][]byte, error) {
+	output := [][]byte{}
+
+	// if the grammar already exists:
+	_, err := app.Retrieve(context, grammar.Hash())
+	if err == nil {
+		return output, nil
+	}
+
+	// root token:
+	rootToken := grammar.Root()
+	_, err = app.retrieveToken(context, rootToken.Hash())
+	if err != nil {
+		tokenBytes, err := app.tokenToBytes(context, rootToken)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(tokenBytes) > 0 {
+			output = append(output, tokenBytes...)
+		}
+	}
+
+	// channels:
+	if grammar.HasChannels() {
+		channels := grammar.Channels()
+		channelsBytes, err := app.channelsBytes(context, channels)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(channelsBytes) > 0 {
+			output = append(output, channelsBytes...)
+		}
+	}
+
+	grammarHash := grammar.Hash()
+	root := grammar.Root().Hash()
+
+	channels := []hash.Hash{}
+	if grammar.HasChannels() {
+		channelsList := grammar.Channels().List()
+		for _, oneChannel := range channelsList {
+			channels = append(channels, oneChannel.Hash())
+		}
+	}
+
+	builder := app.contentBuilder.Create().WithHash(grammarHash).WithRoot(root)
+	if len(channels) > 0 {
+		builder.WithChannels(channels)
+	}
+
+	content, err := builder.Now()
+	if err != nil {
+		return nil, err
+	}
+
+	grammarBytes, err := app.contentAdapter.ToContent(content)
+	if err != nil {
+		return nil, err
+	}
+
+	return append(output, grammarBytes), nil
+}
+
+func (app *application) tokenToBytes(context uint, token grammars.Token) ([][]byte, error) {
+	output := [][]byte{}
+
+	// elements:
+	contentLinesList := []contents_tokens.Line{}
+	blockLinesList := token.Block().Lines()
+	for _, oneLine := range blockLinesList {
+		elementHashes := []hash.Hash{}
+		elementsList := oneLine.Elements()
+		for _, oneElement := range elementsList {
+			elementHash := oneElement.Hash()
+			_, err := app.retrieveElement(context, elementHash)
+			if err != nil {
+				elementBytes, err := app.elementToBytes(context, oneElement)
+				if err != nil {
+					return nil, err
+				}
+
+				if len(elementBytes) > 0 {
+					output = append(output, elementBytes...)
+				}
+			}
+
+			elementHashes = append(elementHashes, elementHash)
+		}
+
+		contentLine, err := app.contentTokenLineBuilder.Create().WithElements(elementHashes).Now()
+		if err != nil {
+			return nil, err
+		}
+
+		contentLinesList = append(contentLinesList, contentLine)
+	}
+
+	contentLines, err := app.contentTokenLinesBuilder.Create().WithList(contentLinesList).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	hash := token.Hash()
+	contentToken, err := app.contentTokenBuilder.Create().WithHash(hash).WithLines(contentLines).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	tokenBytes, err := app.contentTokenAdapter.ToContent(contentToken)
+	if err != nil {
+		return nil, err
+	}
+
+	return append(output, tokenBytes), nil
+}
+
+func (app *application) suitesToBytes(context uint, suites grammars.Suites) ([][]byte, error) {
+	return nil, nil
+}
+
+func (app *application) elementToBytes(context uint, element grammars.Element) ([][]byte, error) {
+	return nil, nil
+}
+
+func (app *application) channelsBytes(context uint, channels grammars.Channels) ([][]byte, error) {
+	/*channelsList := grammar.Channels().List()
+	for _, oneChannelHash := range channelsList {
+		_, err = app.retrieveChannel(context, oneChannelHash)
+		if err != nil {
+			channelBytes,
+		}
+	}*/
+	return nil, nil
 }
 
 // Execute executes grammar on data

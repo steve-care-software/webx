@@ -109,17 +109,17 @@ func (app *application) ReadAll(context uint, pointers []references.Pointer) ([]
 }
 
 // ReadAllByHashes reads content by hashes
-func (app *application) ReadAllByHashes(content uint, hashes []hash.Hash) ([][]byte, error) {
+func (app *application) ReadAllByHashes(context uint, hashes []hash.Hash) ([][]byte, error) {
 	return nil, nil
 }
 
 // Write writes data to a context
-func (app *application) Write(data []byte) error {
+func (app *application) Write(context uint, data []byte) error {
 	return nil
 }
 
 // WriteAll writes a list of data to a context
-func (app *application) WriteAll(data [][]byte) error {
+func (app *application) WriteAll(context uint, data [][]byte) error {
 	return nil
 }
 

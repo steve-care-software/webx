@@ -73,7 +73,7 @@ type Content interface {
 	Read(context uint, pointer references.Pointer) ([]byte, error)
 	ReadByHash(content uint, hash hash.Hash) ([]byte, error)
 	ReadAll(context uint, pointers []references.Pointer) ([][]byte, error)
-	ReadAllByHashes(content uint, hashes []hash.Hash) ([][]byte, error)
-	Write(data []byte) error
-	WriteAll(data [][]byte) error
+	ReadAllByHashes(context uint, hashes []hash.Hash) ([][]byte, error)
+	Write(context uint, data []byte) error
+	WriteAll(context uint, data [][]byte) error
 }
