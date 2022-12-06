@@ -7,6 +7,8 @@ import (
 
 	"github.com/steve-care-software/webx/blockchains/applications"
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	contents_grammars "github.com/steve-care-software/webx/grammars/domain/contents/grammars"
+	contents_tokens "github.com/steve-care-software/webx/grammars/domain/contents/grammars/tokens"
 	"github.com/steve-care-software/webx/grammars/domain/grammars"
 	"github.com/steve-care-software/webx/grammars/domain/grammars/coverages"
 	"github.com/steve-care-software/webx/grammars/domain/trees"
@@ -14,7 +16,12 @@ import (
 
 type application struct {
 	blockchainApp             applications.Application
+	contentAdapter            contents_grammars.Adapter
+	contentTokenAdapter       contents_tokens.Adapter
+	builder                   grammars.Builder
 	grammarTokenBuilder       grammars.TokenBuilder
+	grammarBlockBuilder       grammars.BlockBuilder
+	grammarLineBuilder        grammars.LineBuilder
 	treesBuilder              trees.Builder
 	treeBuilder               trees.TreeBuilder
 	treeBlockBuilder          trees.BlockBuilder
@@ -33,7 +40,12 @@ type application struct {
 
 func createApplication(
 	blockchainApp applications.Application,
+	contentAdapter contents_grammars.Adapter,
+	contentTokenAdapter contents_tokens.Adapter,
+	builder grammars.Builder,
 	grammarTokenBuilder grammars.TokenBuilder,
+	grammarBlockBuilder grammars.BlockBuilder,
+	grammarLineBuilder grammars.LineBuilder,
 	treesBuilder trees.Builder,
 	treeBuilder trees.TreeBuilder,
 	treeBlockBuilder trees.BlockBuilder,
@@ -51,7 +63,12 @@ func createApplication(
 ) Application {
 	out := application{
 		blockchainApp:             blockchainApp,
+		contentAdapter:            contentAdapter,
+		contentTokenAdapter:       contentTokenAdapter,
+		builder:                   builder,
 		grammarTokenBuilder:       grammarTokenBuilder,
+		grammarBlockBuilder:       grammarBlockBuilder,
+		grammarLineBuilder:        grammarLineBuilder,
 		treesBuilder:              treesBuilder,
 		treeBuilder:               treeBuilder,
 		treeBlockBuilder:          treeBlockBuilder,
@@ -76,32 +93,96 @@ func (app *application) New(name string) error {
 	return app.blockchainApp.New(name)
 }
 
-// Delete deletes an existing database
-func (app *application) Delete(name string) error {
-	return app.blockchainApp.Delete(name)
-}
-
-// List lists database names
-func (app *application) List() ([]string, error) {
-	return app.blockchainApp.List()
-}
-
-// Open opens the context
-func (app *application) Open(name string, height int) (*uint, error) {
-	return app.blockchainApp.Open(name, height)
-}
-
 // Retrieve retrieves a grammar by hash
 func (app *application) Retrieve(context uint, hash hash.Hash) (grammars.Grammar, error) {
+	content, err := app.blockchainApp.ReadByHash(context, hash)
+	if err != nil {
+		return nil, err
+	}
 
-	// retrieve the content pointer by hash:
+	contentGrammarIns, err := app.contentAdapter.ToGrammar(content)
+	if err != nil {
+		return nil, err
+	}
 
-	// retrieve the content by pointer:
+	root, err := app.retrieveToken(context, contentGrammarIns.Root())
+	if err != nil {
+		return nil, err
+	}
 
-	// convert the pointer to grammar instance:
+	builder := app.builder.Create().WithRoot(root)
+	if contentGrammarIns.HasChannels() {
+		channels, err := app.retrieveChannels(context, contentGrammarIns.Channels())
+		if err != nil {
+			return nil, err
+		}
 
-	// return the grammar instance:
+		builder.WithChannels(channels)
+	}
 
+	return builder.Now()
+}
+
+func (app *application) retrieveToken(context uint, hash hash.Hash) (grammars.Token, error) {
+	content, err := app.blockchainApp.ReadByHash(context, hash)
+	if err != nil {
+		return nil, err
+	}
+
+	contentTokenIns, err := app.contentTokenAdapter.ToToken(content)
+	if err != nil {
+		return nil, err
+	}
+
+	linesList := []grammars.Line{}
+	contentLines := contentTokenIns.Lines().List()
+	for _, oneLine := range contentLines {
+		elementHashes := oneLine.Elements()
+		elements, err := app.retrieveElements(context, elementHashes)
+		if err != nil {
+			return nil, err
+		}
+
+		line, err := app.grammarLineBuilder.Create().WithElements(elements).Now()
+		if err != nil {
+			return nil, err
+		}
+
+		linesList = append(linesList, line)
+	}
+
+	block, err := app.grammarBlockBuilder.Create().WithLines(linesList).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	name := hash.String()
+	builder := app.grammarTokenBuilder.Create().WithName(name).WithBlock(block)
+	suites, err := app.retrieveSuitesByToken(context, hash)
+	if err == nil {
+		builder.WithSuites(suites)
+	}
+
+	return builder.Now()
+}
+
+func (app *application) retrieveSuitesByToken(context uint, tokenHash hash.Hash) (grammars.Suites, error) {
+	return nil, nil
+}
+
+func (app *application) retrieveElements(context uint, hashes []hash.Hash) ([]grammars.Element, error) {
+	return nil, nil
+}
+
+func (app *application) retrieveElement(context uint, hash hash.Hash) (grammars.Element, error) {
+	return nil, nil
+}
+
+func (app *application) retrieveChannels(context uint, hashes []hash.Hash) (grammars.Channels, error) {
+	return nil, nil
+}
+
+func (app *application) retrieveChannel(context uint, hash hash.Hash) (grammars.Channel, error) {
 	return nil, nil
 }
 
@@ -217,26 +298,6 @@ func (app *application) Uncovered(grammar grammars.Grammar) (map[string]map[uint
 	}
 
 	return uncoveredElements, nil
-}
-
-// Cancel cancels a context
-func (app *application) Cancel(context uint) error {
-	return app.blockchainApp.Cancel(context)
-}
-
-// Commit commits a context
-func (app *application) Commit(context uint) error {
-	return app.blockchainApp.Commit(context)
-}
-
-// Push pushes a context
-func (app *application) Push(context uint) error {
-	return app.blockchainApp.Push(context)
-}
-
-// Close closes a context
-func (app *application) Close(context uint) error {
-	return app.blockchainApp.Close(context)
 }
 
 func (app *application) coveragesToken(token grammars.Token, channels grammars.Channels, pSkip *map[string]bool) (coverages.Coverages, error) {

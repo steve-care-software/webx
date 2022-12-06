@@ -1,7 +1,6 @@
 package applications
 
 import (
-	"github.com/steve-care-software/webx/blockchains/applications"
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/grammars/domain/grammars"
 	"github.com/steve-care-software/webx/grammars/domain/grammars/coverages"
@@ -11,7 +10,6 @@ import (
 // Application represents a grammar application
 type Application interface {
 	New(name string) error
-	applications.Database
 	Database
 	Software
 }

@@ -8,10 +8,33 @@ import (
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 )
 
+const (
+	// PendingContentFlag represents the pending content flag
+	PendingContentFlag uint8 = iota
+
+	// ActiveContentFlag represents the active content flag
+	ActiveContentFlag
+
+	// DeletedContentFlag represents the deleted content flag
+	DeletedContentFlag
+)
+
+const (
+	// ChainBlockchainFlag represents the chain blockchain flag
+	ChainBlockchainFlag uint8 = iota
+
+	// BlockBlockchainFlag represents the block blockchain flag
+	BlockBlockchainFlag
+
+	// TransactionBlockchainFlag represents the transaction blockchain flag
+	TransactionBlockchainFlag
+)
+
 // Application represents the read application
 type Application interface {
 	New(name string) error
 	Database
+	Reference
 	Blockchain
 	Content
 }
@@ -25,6 +48,13 @@ type Blockchain interface {
 	Transactions(context uint, block hash.Hash) (transactions.Transactions, error)
 	Transaction(context uint, block hash.Hash, trx hash.Hash) (transactions.Transaction, error)
 	ReplaceTransaction(context uint, block hash.Hash, trx transactions.Transaction) error
+}
+
+// Reference represents the reference application
+type Reference interface {
+	ContentKey(context uint, hash hash.Hash, flag uint8) (references.ContentKey, error)
+	ContentKeyByTransaction(context uint, trx hash.Hash, flag uint8) (references.ContentKey, error)
+	BlockchainKey(context uint, hash hash.Hash, flag uint8) (references.BlockchainKey, error)
 }
 
 // Database represents the database application
@@ -41,7 +71,9 @@ type Database interface {
 // Content represents the content application
 type Content interface {
 	Read(context uint, pointer references.Pointer) ([]byte, error)
+	ReadByHash(content uint, hash hash.Hash) ([]byte, error)
 	ReadAll(context uint, pointers []references.Pointer) ([][]byte, error)
+	ReadAllByHashes(content uint, hashes []hash.Hash) ([][]byte, error)
 	Write(data []byte) error
 	WriteAll(data [][]byte) error
 }

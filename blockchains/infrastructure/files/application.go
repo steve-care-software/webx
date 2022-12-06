@@ -43,6 +43,21 @@ func (app *application) Open(name string, height int) (*uint, error) {
 	return nil, nil
 }
 
+// ContentKey returns the contentKey by hash and flag on a context
+func (app *application) ContentKey(context uint, hash hash.Hash, flag uint8) (references.ContentKey, error) {
+	return nil, nil
+}
+
+// ContentKeyByTransaction returns the contentKey by transaction hash and flag on a context
+func (app *application) ContentKeyByTransaction(context uint, trx hash.Hash, flag uint8) (references.ContentKey, error) {
+	return nil, nil
+}
+
+// BlockchainKey returns the blockchainKey by hash and flag on a context
+func (app *application) BlockchainKey(context uint, hash hash.Hash, flag uint8) (references.BlockchainKey, error) {
+	return nil, nil
+}
+
 // Blockchain returns the blockchain on a context
 func (app *application) Blockchain(context uint) (blockchains.Blockchain, error) {
 	return nil, nil
@@ -83,8 +98,18 @@ func (app *application) Read(context uint, pointer references.Pointer) ([]byte, 
 	return nil, nil
 }
 
+// ReadByHash reads content by hash
+func (app *application) ReadByHash(content uint, hash hash.Hash) ([]byte, error) {
+	return nil, nil
+}
+
 // ReadAll read pointers on a context
 func (app *application) ReadAll(context uint, pointers []references.Pointer) ([][]byte, error) {
+	return nil, nil
+}
+
+// ReadAllByHashes reads content by hashes
+func (app *application) ReadAllByHashes(content uint, hashes []hash.Hash) ([][]byte, error) {
 	return nil, nil
 }
 
