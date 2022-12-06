@@ -8,44 +8,74 @@ import (
 	"github.com/steve-care-software/webx/blockchains/applications"
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 	contents_grammars "github.com/steve-care-software/webx/grammars/domain/contents/grammars"
+	contents_channels "github.com/steve-care-software/webx/grammars/domain/contents/grammars/channels"
+	contents_elements "github.com/steve-care-software/webx/grammars/domain/contents/grammars/elements"
+	contents_everythings "github.com/steve-care-software/webx/grammars/domain/contents/grammars/everythings"
 	contents_tokens "github.com/steve-care-software/webx/grammars/domain/contents/grammars/tokens"
 	"github.com/steve-care-software/webx/grammars/domain/grammars"
+	"github.com/steve-care-software/webx/grammars/domain/grammars/cardinalities"
 	"github.com/steve-care-software/webx/grammars/domain/grammars/coverages"
+	"github.com/steve-care-software/webx/grammars/domain/grammars/values"
 	"github.com/steve-care-software/webx/grammars/domain/trees"
 )
 
 type application struct {
-	blockchainApp             applications.Application
-	contentAdapter            contents_grammars.Adapter
-	contentTokenAdapter       contents_tokens.Adapter
-	builder                   grammars.Builder
-	grammarTokenBuilder       grammars.TokenBuilder
-	grammarBlockBuilder       grammars.BlockBuilder
-	grammarLineBuilder        grammars.LineBuilder
-	treesBuilder              trees.Builder
-	treeBuilder               trees.TreeBuilder
-	treeBlockBuilder          trees.BlockBuilder
-	treeLineBuilder           trees.LineBuilder
-	treeElementsBuilder       trees.ElementsBuilder
-	treeElementBuilder        trees.ElementBuilder
-	treeContentsBuilder       trees.ContentsBuilder
-	treeContentBuilder        trees.ContentBuilder
-	treeValueBuilder          trees.ValueBuilder
-	coveragesBuilder          coverages.Builder
-	coverageBuilder           coverages.CoverageBuilder
-	coverageExecutionsBuilder coverages.ExecutionsBuilder
-	coverageExecutionBuilder  coverages.ExecutionBuilder
-	coverageResultBuilder     coverages.ResultBuilder
+	blockchainApp                  applications.Application
+	contentAdapter                 contents_grammars.Adapter
+	contentTokenAdapter            contents_tokens.Adapter
+	contentElementAdapter          contents_elements.Adapter
+	contentEverythingAdapter       contents_everythings.Adapter
+	contentChannelAdapter          contents_channels.Adapter
+	builder                        grammars.Builder
+	grammarTokenBuilder            grammars.TokenBuilder
+	grammarBlockBuilder            grammars.BlockBuilder
+	grammarLineBuilder             grammars.LineBuilder
+	grammarElementBuilder          grammars.ElementBuilder
+	grammarInstanceBuilder         grammars.InstanceBuilder
+	grammarExternalBuilder         grammars.ExternalBuilder
+	grammarEverythingBuilder       grammars.EverythingBuilder
+	grammarChannelsBuilder         grammars.ChannelsBuilder
+	grammarChannelBuilder          grammars.ChannelBuilder
+	grammarChannelConditionBuilder grammars.ChannelConditionBuilder
+	grammarValueBuilder            values.Builder
+	grammarCardinalityBuilder      cardinalities.Builder
+	treesBuilder                   trees.Builder
+	treeBuilder                    trees.TreeBuilder
+	treeBlockBuilder               trees.BlockBuilder
+	treeLineBuilder                trees.LineBuilder
+	treeElementsBuilder            trees.ElementsBuilder
+	treeElementBuilder             trees.ElementBuilder
+	treeContentsBuilder            trees.ContentsBuilder
+	treeContentBuilder             trees.ContentBuilder
+	treeValueBuilder               trees.ValueBuilder
+	coveragesBuilder               coverages.Builder
+	coverageBuilder                coverages.CoverageBuilder
+	coverageExecutionsBuilder      coverages.ExecutionsBuilder
+	coverageExecutionBuilder       coverages.ExecutionBuilder
+	coverageResultBuilder          coverages.ResultBuilder
+	hashAdapter                    hash.Adapter
 }
 
 func createApplication(
 	blockchainApp applications.Application,
 	contentAdapter contents_grammars.Adapter,
 	contentTokenAdapter contents_tokens.Adapter,
+	contentElementAdapter contents_elements.Adapter,
+	contentEverythingAdapter contents_everythings.Adapter,
+	contentChannelAdapter contents_channels.Adapter,
 	builder grammars.Builder,
 	grammarTokenBuilder grammars.TokenBuilder,
 	grammarBlockBuilder grammars.BlockBuilder,
 	grammarLineBuilder grammars.LineBuilder,
+	grammarElementBuilder grammars.ElementBuilder,
+	grammarInstanceBuilder grammars.InstanceBuilder,
+	grammarExternalBuilder grammars.ExternalBuilder,
+	grammarEverythingBuilder grammars.EverythingBuilder,
+	grammarChannelsBuilder grammars.ChannelsBuilder,
+	grammarChannelBuilder grammars.ChannelBuilder,
+	grammarChannelConditionBuilder grammars.ChannelConditionBuilder,
+	grammarValueBuilder values.Builder,
+	grammarCardinalityBuilder cardinalities.Builder,
 	treesBuilder trees.Builder,
 	treeBuilder trees.TreeBuilder,
 	treeBlockBuilder trees.BlockBuilder,
@@ -60,29 +90,43 @@ func createApplication(
 	coverageExecutionsBuilder coverages.ExecutionsBuilder,
 	coverageExecutionBuilder coverages.ExecutionBuilder,
 	coverageResultBuilder coverages.ResultBuilder,
+	hashAdapter hash.Adapter,
 ) Application {
 	out := application{
-		blockchainApp:             blockchainApp,
-		contentAdapter:            contentAdapter,
-		contentTokenAdapter:       contentTokenAdapter,
-		builder:                   builder,
-		grammarTokenBuilder:       grammarTokenBuilder,
-		grammarBlockBuilder:       grammarBlockBuilder,
-		grammarLineBuilder:        grammarLineBuilder,
-		treesBuilder:              treesBuilder,
-		treeBuilder:               treeBuilder,
-		treeBlockBuilder:          treeBlockBuilder,
-		treeLineBuilder:           treeLineBuilder,
-		treeElementsBuilder:       treeElementsBuilder,
-		treeElementBuilder:        treeElementBuilder,
-		treeContentsBuilder:       treeContentsBuilder,
-		treeContentBuilder:        treeContentBuilder,
-		treeValueBuilder:          treeValueBuilder,
-		coveragesBuilder:          coveragesBuilder,
-		coverageBuilder:           coverageBuilder,
-		coverageExecutionsBuilder: coverageExecutionsBuilder,
-		coverageExecutionBuilder:  coverageExecutionBuilder,
-		coverageResultBuilder:     coverageResultBuilder,
+		blockchainApp:                  blockchainApp,
+		contentAdapter:                 contentAdapter,
+		contentTokenAdapter:            contentTokenAdapter,
+		contentElementAdapter:          contentElementAdapter,
+		contentEverythingAdapter:       contentEverythingAdapter,
+		contentChannelAdapter:          contentChannelAdapter,
+		builder:                        builder,
+		grammarTokenBuilder:            grammarTokenBuilder,
+		grammarBlockBuilder:            grammarBlockBuilder,
+		grammarLineBuilder:             grammarLineBuilder,
+		grammarElementBuilder:          grammarElementBuilder,
+		grammarInstanceBuilder:         grammarInstanceBuilder,
+		grammarExternalBuilder:         grammarExternalBuilder,
+		grammarEverythingBuilder:       grammarEverythingBuilder,
+		grammarChannelsBuilder:         grammarChannelsBuilder,
+		grammarChannelBuilder:          grammarChannelBuilder,
+		grammarChannelConditionBuilder: grammarChannelConditionBuilder,
+		grammarValueBuilder:            grammarValueBuilder,
+		grammarCardinalityBuilder:      grammarCardinalityBuilder,
+		treesBuilder:                   treesBuilder,
+		treeBuilder:                    treeBuilder,
+		treeBlockBuilder:               treeBlockBuilder,
+		treeLineBuilder:                treeLineBuilder,
+		treeElementsBuilder:            treeElementsBuilder,
+		treeElementBuilder:             treeElementBuilder,
+		treeContentsBuilder:            treeContentsBuilder,
+		treeContentBuilder:             treeContentBuilder,
+		treeValueBuilder:               treeValueBuilder,
+		coveragesBuilder:               coveragesBuilder,
+		coverageBuilder:                coverageBuilder,
+		coverageExecutionsBuilder:      coverageExecutionsBuilder,
+		coverageExecutionBuilder:       coverageExecutionBuilder,
+		coverageResultBuilder:          coverageResultBuilder,
+		hashAdapter:                    hashAdapter,
 	}
 
 	return &out
@@ -171,19 +215,214 @@ func (app *application) retrieveSuitesByToken(context uint, tokenHash hash.Hash)
 }
 
 func (app *application) retrieveElements(context uint, hashes []hash.Hash) ([]grammars.Element, error) {
-	return nil, nil
+	contents, err := app.blockchainApp.ReadAllByHashes(context, hashes)
+	if err != nil {
+		return nil, err
+	}
+
+	list := []grammars.Element{}
+	for _, oneContent := range contents {
+		elementContent, err := app.contentElementAdapter.ToElement(oneContent)
+		if err != nil {
+			return nil, err
+		}
+
+		cardinalityContent := elementContent.Cardinality()
+		min := cardinalityContent.Min()
+		cardinalityBuilder := app.grammarCardinalityBuilder.Create().WithMin(min)
+		if cardinalityContent.HasMax() {
+			pMax := cardinalityContent.Max()
+			cardinalityBuilder.WithMax(*pMax)
+		}
+
+		cardinality, err := cardinalityBuilder.Now()
+		if err != nil {
+			return nil, err
+		}
+
+		contentContent := elementContent.Content()
+		builder := app.grammarElementBuilder.Create().WithCardinality(cardinality)
+		if contentContent.IsValue() {
+			pValue := contentContent.Value()
+			pHash, err := app.hashAdapter.FromBytes([]byte{
+				*pValue,
+			})
+
+			if err != nil {
+				return nil, err
+			}
+
+			value, err := app.grammarValueBuilder.Create().WithName(pHash.String()).WithNumber(*pValue).Now()
+			if err != nil {
+				return nil, err
+			}
+
+			builder.WithValue(value)
+		}
+
+		if contentContent.IsExternal() {
+			pExternalHash := contentContent.External()
+			external, err := app.retrieveExternal(context, *pExternalHash)
+			if err != nil {
+				return nil, err
+			}
+
+			builder.WithExternal(external)
+		}
+
+		if contentContent.IsToken() {
+			pTokenHash := contentContent.Token()
+			token, err := app.retrieveToken(context, *pTokenHash)
+			if err != nil {
+				return nil, err
+			}
+
+			instance, err := app.grammarInstanceBuilder.Create().WithToken(token).Now()
+			if err != nil {
+				return nil, err
+			}
+
+			builder.WithInstance(instance)
+		}
+
+		if contentContent.IsEverything() {
+			pEverythingHash := contentContent.Everything()
+			everything, err := app.retrieveEverything(context, *pEverythingHash)
+			if err != nil {
+				return nil, err
+			}
+
+			instance, err := app.grammarInstanceBuilder.Create().WithEverything(everything).Now()
+			if err != nil {
+				return nil, err
+			}
+
+			builder.WithInstance(instance)
+		}
+
+		if contentContent.IsRecursive() {
+			pRecursiveHash := contentContent.Recursive()
+			builder.WithRecursive(pRecursiveHash.String())
+		}
+
+		element, err := builder.Now()
+		if err != nil {
+			return nil, err
+		}
+
+		list = append(list, element)
+	}
+
+	return list, nil
 }
 
-func (app *application) retrieveElement(context uint, hash hash.Hash) (grammars.Element, error) {
-	return nil, nil
+func (app *application) retrieveExternal(context uint, hash hash.Hash) (grammars.External, error) {
+	grammar, err := app.Retrieve(context, hash)
+	if err != nil {
+		return nil, err
+	}
+
+	name := hash.String()
+	return app.grammarExternalBuilder.Create().
+		WithName(name).
+		WithGrammar(grammar).
+		Now()
+}
+
+func (app *application) retrieveEverything(context uint, hash hash.Hash) (grammars.Everything, error) {
+	content, err := app.blockchainApp.ReadByHash(context, hash)
+	if err != nil {
+		return nil, err
+	}
+
+	everythingContent, err := app.contentEverythingAdapter.ToEverything(content)
+	if err != nil {
+		return nil, err
+	}
+
+	exceptionHash := everythingContent.Exception()
+	exception, err := app.retrieveToken(context, exceptionHash)
+	if err != nil {
+		return nil, err
+	}
+
+	name := hash.String()
+	builder := app.grammarEverythingBuilder.Create().WithName(name).WithException(exception)
+	if everythingContent.HasEscape() {
+		pEscapeHash := everythingContent.Escape()
+		escape, err := app.retrieveToken(context, *pEscapeHash)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithEscape(escape)
+	}
+
+	return builder.Now()
 }
 
 func (app *application) retrieveChannels(context uint, hashes []hash.Hash) (grammars.Channels, error) {
-	return nil, nil
-}
+	contents, err := app.blockchainApp.ReadAllByHashes(context, hashes)
+	if err != nil {
+		return nil, err
+	}
 
-func (app *application) retrieveChannel(context uint, hash hash.Hash) (grammars.Channel, error) {
-	return nil, nil
+	list := []grammars.Channel{}
+	for _, oneContent := range contents {
+		channelContent, err := app.contentChannelAdapter.ToChannel(oneContent)
+		if err != nil {
+			return nil, err
+		}
+
+		token, err := app.retrieveToken(context, channelContent.Token())
+		if err != nil {
+			return nil, err
+		}
+
+		builder := app.grammarChannelBuilder.Create().WithToken(token)
+		hasPrevious := channelContent.HasPrevious()
+		hasNext := channelContent.HasNext()
+		if hasPrevious || hasNext {
+			conditionBuilder := app.grammarChannelConditionBuilder.Create()
+			if hasPrevious {
+				pPreviousHash := channelContent.Previous()
+				previous, err := app.retrieveToken(context, *pPreviousHash)
+				if err != nil {
+					return nil, err
+				}
+
+				conditionBuilder.WithPrevious(previous)
+			}
+
+			if hasNext {
+				pNextHash := channelContent.Previous()
+				next, err := app.retrieveToken(context, *pNextHash)
+				if err != nil {
+					return nil, err
+				}
+
+				conditionBuilder.WithNext(next)
+			}
+
+			condition, err := conditionBuilder.Now()
+			if err != nil {
+				return nil, err
+			}
+
+			builder.WithCondition(condition)
+		}
+
+		channel, err := builder.Now()
+		if err != nil {
+			return nil, err
+		}
+
+		list = append(list, channel)
+	}
+
+	return app.grammarChannelsBuilder.Create().
+		WithList(list).
+		Now()
 }
 
 // Search searches a grammar by suite
