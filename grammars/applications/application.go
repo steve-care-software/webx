@@ -11,6 +11,8 @@ import (
 	contents_channels "github.com/steve-care-software/webx/grammars/domain/contents/grammars/channels"
 	contents_elements "github.com/steve-care-software/webx/grammars/domain/contents/grammars/elements"
 	contents_everythings "github.com/steve-care-software/webx/grammars/domain/contents/grammars/everythings"
+	contents_matches "github.com/steve-care-software/webx/grammars/domain/contents/grammars/matches"
+	contents_suites "github.com/steve-care-software/webx/grammars/domain/contents/grammars/suites"
 	contents_tokens "github.com/steve-care-software/webx/grammars/domain/contents/grammars/tokens"
 	"github.com/steve-care-software/webx/grammars/domain/grammars"
 	"github.com/steve-care-software/webx/grammars/domain/grammars/cardinalities"
@@ -26,6 +28,8 @@ type application struct {
 	contentElementAdapter          contents_elements.Adapter
 	contentEverythingAdapter       contents_everythings.Adapter
 	contentChannelAdapter          contents_channels.Adapter
+	contentMatchAdapter            contents_matches.Adapter
+	contentSuiteAdapter            contents_suites.Adapter
 	builder                        grammars.Builder
 	grammarTokenBuilder            grammars.TokenBuilder
 	grammarBlockBuilder            grammars.BlockBuilder
@@ -37,6 +41,8 @@ type application struct {
 	grammarChannelsBuilder         grammars.ChannelsBuilder
 	grammarChannelBuilder          grammars.ChannelBuilder
 	grammarChannelConditionBuilder grammars.ChannelConditionBuilder
+	grammarSuitesBuilder           grammars.SuitesBuilder
+	grammarSuiteBuilder            grammars.SuiteBuilder
 	grammarValueBuilder            values.Builder
 	grammarCardinalityBuilder      cardinalities.Builder
 	treesBuilder                   trees.Builder
@@ -63,6 +69,8 @@ func createApplication(
 	contentElementAdapter contents_elements.Adapter,
 	contentEverythingAdapter contents_everythings.Adapter,
 	contentChannelAdapter contents_channels.Adapter,
+	contentMatchAdapter contents_matches.Adapter,
+	contentSuiteAdapter contents_suites.Adapter,
 	builder grammars.Builder,
 	grammarTokenBuilder grammars.TokenBuilder,
 	grammarBlockBuilder grammars.BlockBuilder,
@@ -74,6 +82,8 @@ func createApplication(
 	grammarChannelsBuilder grammars.ChannelsBuilder,
 	grammarChannelBuilder grammars.ChannelBuilder,
 	grammarChannelConditionBuilder grammars.ChannelConditionBuilder,
+	grammarSuitesBuilder grammars.SuitesBuilder,
+	grammarSuiteBuilder grammars.SuiteBuilder,
 	grammarValueBuilder values.Builder,
 	grammarCardinalityBuilder cardinalities.Builder,
 	treesBuilder trees.Builder,
@@ -99,6 +109,8 @@ func createApplication(
 		contentElementAdapter:          contentElementAdapter,
 		contentEverythingAdapter:       contentEverythingAdapter,
 		contentChannelAdapter:          contentChannelAdapter,
+		contentMatchAdapter:            contentMatchAdapter,
+		contentSuiteAdapter:            contentSuiteAdapter,
 		builder:                        builder,
 		grammarTokenBuilder:            grammarTokenBuilder,
 		grammarBlockBuilder:            grammarBlockBuilder,
@@ -110,6 +122,8 @@ func createApplication(
 		grammarChannelsBuilder:         grammarChannelsBuilder,
 		grammarChannelBuilder:          grammarChannelBuilder,
 		grammarChannelConditionBuilder: grammarChannelConditionBuilder,
+		grammarSuitesBuilder:           grammarSuitesBuilder,
+		grammarSuiteBuilder:            grammarSuiteBuilder,
 		grammarValueBuilder:            grammarValueBuilder,
 		grammarCardinalityBuilder:      grammarCardinalityBuilder,
 		treesBuilder:                   treesBuilder,
@@ -211,7 +225,61 @@ func (app *application) retrieveToken(context uint, hash hash.Hash) (grammars.To
 }
 
 func (app *application) retrieveSuitesByToken(context uint, tokenHash hash.Hash) (grammars.Suites, error) {
-	return nil, nil
+	pHash, err := app.hashAdapter.FromBytes([]byte(fmt.Sprintf(grammarMatchByTokenPattern, tokenHash.String())))
+	if err != nil {
+		return nil, err
+	}
+
+	content, err := app.blockchainApp.ReadByHash(context, *pHash)
+	if err != nil {
+		return nil, err
+	}
+
+	contentMatch, err := app.contentMatchAdapter.ToMatch(content)
+	if err != nil {
+		return nil, err
+	}
+
+	suiteHashes := contentMatch.Suites()
+	return app.retrieveSuites(context, suiteHashes)
+}
+
+func (app *application) retrieveSuites(context uint, hashes []hash.Hash) (grammars.Suites, error) {
+	contents, err := app.blockchainApp.ReadAllByHashes(context, hashes)
+	if err != nil {
+		return nil, err
+	}
+
+	list := []grammars.Suite{}
+	for _, oneContent := range contents {
+		contentSuite, err := app.contentSuiteAdapter.ToSuite(oneContent)
+		if err != nil {
+			return nil, err
+		}
+
+		content := contentSuite.Content()
+		isValid := contentSuite.IsValid()
+		builder := app.grammarSuiteBuilder.Create()
+		if isValid {
+			builder.WithValid(content)
+		}
+
+		if !isValid {
+			builder.WithInvalid(content)
+		}
+
+		suite, err := builder.Now()
+		if err != nil {
+			return nil, err
+		}
+
+		list = append(list, suite)
+
+	}
+
+	return app.grammarSuitesBuilder.Create().
+		WithList(list).
+		Now()
 }
 
 func (app *application) retrieveElements(context uint, hashes []hash.Hash) ([]grammars.Element, error) {

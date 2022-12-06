@@ -1,14 +1,22 @@
 package suites
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+)
 
 type builder struct {
-	list []Suite
+	pHash   *hash.Hash
+	isValid bool
+	content []byte
 }
 
 func createBuilder() Builder {
 	out := builder{
-		list: nil,
+		pHash:   nil,
+		isValid: false,
+		content: nil,
 	}
 
 	return &out
@@ -19,21 +27,37 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithList adds a list to the builder
-func (app *builder) WithList(list []Suite) Builder {
-	app.list = list
+// WithHash adds an hash to the builder
+func (app *builder) WithHash(hash hash.Hash) Builder {
+	app.pHash = &hash
 	return app
 }
 
-// Now builds a new Suites instance
-func (app *builder) Now() (Suites, error) {
-	if app.list != nil && len(app.list) <= 0 {
-		app.list = nil
+// WithContent adds content to the builder
+func (app *builder) WithContent(content []byte) Builder {
+	app.content = content
+	return app
+}
+
+// IsValid flags the builder as valid
+func (app *builder) IsValid() Builder {
+	app.isValid = true
+	return app
+}
+
+// Now builds a new Suite instance
+func (app *builder) Now() (Suite, error) {
+	if app.pHash == nil {
+		return nil, errors.New("the hash is mandatory in order to build a Suite instance")
 	}
 
-	if app.list == nil {
-		return nil, errors.New("there must be at least 1 Suite in order to build a Suites instance")
+	if app.content != nil && len(app.content) <= 0 {
+		app.content = nil
 	}
 
-	return createSuites(app.list), nil
+	if app.content == nil {
+		return nil, errors.New("the content is mandatory in order to build a Suite instance")
+	}
+
+	return createSuite(*app.pHash, app.isValid, app.content), nil
 }

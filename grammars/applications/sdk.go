@@ -7,6 +7,8 @@ import (
 	"github.com/steve-care-software/webx/grammars/domain/trees"
 )
 
+const grammarMatchByTokenPattern = "grammarMatchByToken:%s"
+
 // Application represents a grammar application
 type Application interface {
 	New(name string) error

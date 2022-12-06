@@ -4,6 +4,20 @@ import (
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 )
 
+const minMatchSize = hash.Size * 3
+
+// NewAdapter creates a new adapter for tests
+func NewAdapter() Adapter {
+	hashAdapter := hash.NewAdapter()
+	builder := NewBuilder()
+	return createAdapter(hashAdapter, builder)
+}
+
+// NewBuilder creates a new builder for tests
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Adapter represents a match adapter
 type Adapter interface {
 	ToContent(ins Match) ([]byte, error)

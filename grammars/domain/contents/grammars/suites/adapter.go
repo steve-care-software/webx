@@ -1,74 +1,61 @@
 package suites
 
 import (
-	"encoding/binary"
 	"errors"
 	"fmt"
+
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 )
 
 type adapter struct {
-	builder      Builder
-	suiteAdapter SuiteAdapter
+	hashAdapter hash.Adapter
+	builder     Builder
 }
 
 func createAdapter(
+	hashAdapter hash.Adapter,
 	builder Builder,
-	suiteAdapter SuiteAdapter,
 ) Adapter {
 	out := adapter{
-		builder:      builder,
-		suiteAdapter: suiteAdapter,
+		hashAdapter: hashAdapter,
+		builder:     builder,
 	}
 
 	return &out
 }
 
-// ToContent converts suites to content
-func (app *adapter) ToContent(ins Suites) ([]byte, error) {
-	list := ins.List()
-	output := []byte{}
-	for _, oneSuite := range list {
-		content, err := app.suiteAdapter.ToContent(oneSuite)
-		if err != nil {
-			return nil, err
-		}
-
-		lengthBytes := make([]byte, 8)
-		binary.LittleEndian.PutUint64(lengthBytes, uint64(len(content)))
-
-		output = append(output, lengthBytes...)
-		output = append(output, content...)
+// ToContent converts a Suite instance to content
+func (app *adapter) ToContent(ins Suite) ([]byte, error) {
+	hashBytes := ins.Hash().Bytes()
+	isValidByte := byte(0)
+	if ins.IsValid() {
+		isValidByte = byte(1)
 	}
 
-	return output, nil
+	output := []byte{}
+	output = append(output, hashBytes...)
+	output = append(output, isValidByte)
+	return append(output, ins.Content()...), nil
 }
 
-// ToSuites converts content to suites instance
-func (app *adapter) ToSuites(content []byte) (Suites, error) {
-	list := []Suite{}
-	remaining := content
-	for len(remaining) > 0 {
-		contentLength := len(remaining)
-		if contentLength < 8 {
-			str := fmt.Sprintf("the content was expected to contain at least %d bytes in order to convert data to a Suites instance, %d provided", 8, contentLength)
-			return nil, errors.New(str)
-		}
-
-		bytesLength := int(binary.LittleEndian.Uint64(remaining[:8]))
-		delimiter := bytesLength + 8
-		if contentLength < delimiter {
-			str := fmt.Sprintf("the content was expected to contain at least %d bytes in order to convert data to a Suites instance, %d provided", delimiter, contentLength)
-			return nil, errors.New(str)
-		}
-
-		suite, err := app.suiteAdapter.ToSuite(remaining[8:delimiter])
-		if err != nil {
-			return nil, err
-		}
-
-		list = append(list, suite)
-		remaining = remaining[delimiter:]
+// ToSuite converts content to a Suite instance
+func (app *adapter) ToSuite(content []byte) (Suite, error) {
+	contentLength := len(content)
+	if contentLength < minSuiteSize {
+		str := fmt.Sprintf("the content was expected to contain at least %d bytes in order to convert data to a Suite instance, %d provided", minSuiteSize, contentLength)
+		return nil, errors.New(str)
 	}
 
-	return app.builder.Create().WithList(list).Now()
+	pHash, err := app.hashAdapter.FromBytes(content[:hash.Size])
+	if err != nil {
+		return nil, err
+	}
+
+	delimiter := hash.Size + 1
+	builder := app.builder.Create().WithContent(content[delimiter:]).WithHash(*pHash)
+	if content[hash.Size:delimiter][0] != 0 {
+		builder.IsValid()
+	}
+
+	return builder.Now()
 }
