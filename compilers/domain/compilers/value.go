@@ -1,33 +1,35 @@
 package compilers
 
+import "github.com/steve-care-software/webx/selectors/domain/selectors"
+
 type value struct {
 	constant string
-	//criteria criterias.Criteria
+	selector selectors.Selector
 }
 
 func createValueWithNil() Value {
-	return createValueInternally("")
+	return createValueInternally("", nil)
 }
 
 func createValueWithConstant(
 	constant string,
 ) Value {
-	return createValueInternally(constant)
+	return createValueInternally(constant, nil)
 }
 
-func createValueWithCriteria(
-//criteria criterias.Criteria,
+func createValueWithSelector(
+	selector selectors.Selector,
 ) Value {
-	return createValueInternally("")
+	return createValueInternally("", selector)
 }
 
 func createValueInternally(
 	constant string,
-	//criteria criterias.Criteria,
+	selector selectors.Selector,
 ) Value {
 	out := value{
 		constant: constant,
-		//criteria: criteria,
+		selector: selector,
 	}
 
 	return &out
@@ -36,9 +38,9 @@ func createValueInternally(
 // IsConstant returns true if there is a constant, false otherwise
 func (obj *value) IsConstant() bool {
 	// if the value is nil:
-	/*if obj.criteria == nil && obj.constant == "" {
+	if obj.selector == nil && obj.constant == "" {
 		return true
-	}*/
+	}
 
 	return obj.constant != ""
 }
@@ -48,12 +50,12 @@ func (obj *value) Constant() string {
 	return obj.constant
 }
 
-// IsCriteria returns true if there is a criteria, false otherwise
-/*func (obj *value) IsCriteria() bool {
-	return obj.criteria != nil
+// IsSelector returns true if there is a selector, false otherwise
+func (obj *value) IsSelector() bool {
+	return obj.selector != nil
 }
 
-// Criteria returns the criteria, if any
-func (obj *value) Criteria() criterias.Criteria {
-	return obj.criteria
-}*/
+// Selector returns the criteria, if any
+func (obj *value) Selector() selectors.Selector {
+	return obj.selector
+}

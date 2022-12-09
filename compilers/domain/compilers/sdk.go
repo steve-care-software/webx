@@ -1,8 +1,9 @@
 package compilers
 
 import (
-	"github.com/steve-care-software/webx/grammars/domain/grammars"
 	"github.com/steve-care-software/webx/compilers/domain/instructions"
+	"github.com/steve-care-software/webx/grammars/domain/grammars"
+	"github.com/steve-care-software/webx/selectors/domain/selectors"
 )
 
 // NewBuilder creates a new builder instance
@@ -127,7 +128,7 @@ type Parameter interface {
 type ValueBuilder interface {
 	Create() ValueBuilder
 	WithConstant(constant string) ValueBuilder
-	//WithCriteria(criteria criterias.Criteria) ValueBuilder
+	WithSelector(selector selectors.Selector) ValueBuilder
 	Now() (Value, error)
 }
 
@@ -135,6 +136,6 @@ type ValueBuilder interface {
 type Value interface {
 	IsConstant() bool
 	Constant() string
-	/*IsCriteria() bool
-	Criteria() criterias.Criteria*/
+	IsSelector() bool
+	Selector() selectors.Selector
 }

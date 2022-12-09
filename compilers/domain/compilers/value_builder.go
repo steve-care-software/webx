@@ -1,14 +1,16 @@
 package compilers
 
+import "github.com/steve-care-software/webx/selectors/domain/selectors"
+
 type valueBuilder struct {
 	constant string
-	//criteria criterias.Criteria
+	selector selectors.Selector
 }
 
 func createValueBuilder() ValueBuilder {
 	out := valueBuilder{
 		constant: "",
-		//criteria: nil,
+		selector: nil,
 	}
 
 	return &out
@@ -25,17 +27,17 @@ func (app *valueBuilder) WithConstant(constant string) ValueBuilder {
 	return app
 }
 
-// WithCriteria adds a criteria to the builder
-/*func (app *valueBuilder) WithCriteria(criteria criterias.Criteria) ValueBuilder {
-	app.criteria = criteria
+// WithSelector adds a selector to the builder
+func (app *valueBuilder) WithSelector(selector selectors.Selector) ValueBuilder {
+	app.selector = selector
 	return app
-}*/
+}
 
 // Now builds a new Value instance
 func (app *valueBuilder) Now() (Value, error) {
-	/*if app.criteria != nil {
-		return createValueWithCriteria(app.criteria), nil
-	}*/
+	if app.selector != nil {
+		return createValueWithSelector(app.selector), nil
+	}
 
 	if app.constant != "" {
 		return createValueWithConstant(app.constant), nil
