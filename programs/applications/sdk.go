@@ -1,7 +1,6 @@
 package applications
 
 import (
-	"github.com/steve-care-software/webx/blockchains/applications"
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/programs/domain/compilers"
 	"github.com/steve-care-software/webx/programs/domain/programs"
@@ -11,7 +10,6 @@ import (
 // Application represents a program application
 type Application interface {
 	New(name string) error
-	applications.Database
 	Database
 	Software
 }
@@ -25,7 +23,7 @@ type Software interface {
 // Database represents the program database application
 type Database interface {
 	Retrieve(context uint, hash hash.Hash) (programs.Program, error)
-	Search(context uint, input map[string]interface{}, output map[string]interface{}) (programs.Program, error)
+	Scan(context uint, input map[string]interface{}, output map[string]interface{}) (programs.Program, error)
 	Insert(context uint, program programs.Program) error
 	InsertAll(context uint, programs []programs.Program) error
 }
