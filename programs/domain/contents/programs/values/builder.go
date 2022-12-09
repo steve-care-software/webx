@@ -4,24 +4,25 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/programs/domain/contents/programs/assignments"
 )
 
 type builder struct {
-	pHash      *hash.Hash
-	pInput     *uint
-	assignment assignments.Assignment
-	pExecution *hash.Hash
-	pProgram   *hash.Hash
+	pHash       *hash.Hash
+	pInput      *uint
+	pAssignment *hash.Hash
+	constant    []byte
+	pExecution  *hash.Hash
+	pProgram    *hash.Hash
 }
 
 func createBuilder() Builder {
 	out := builder{
-		pHash:      nil,
-		pInput:     nil,
-		assignment: nil,
-		pExecution: nil,
-		pProgram:   nil,
+		pHash:       nil,
+		pInput:      nil,
+		pAssignment: nil,
+		constant:    nil,
+		pExecution:  nil,
+		pProgram:    nil,
 	}
 
 	return &out
@@ -44,9 +45,15 @@ func (app *builder) WithInput(input uint) Builder {
 	return app
 }
 
+// WithConstant adds a constant to the builder
+func (app *builder) WithConstant(constant []byte) Builder {
+	app.constant = constant
+	return app
+}
+
 // WithAssignment adds an assignment to the builder
-func (app *builder) WithAssignment(assignment assignments.Assignment) Builder {
-	app.assignment = assignment
+func (app *builder) WithAssignment(assignment hash.Hash) Builder {
+	app.pAssignment = &assignment
 	return app
 }
 
@@ -68,13 +75,22 @@ func (app *builder) Now() (Value, error) {
 		return nil, errors.New("the hash is mandatory in order to build a Value instance")
 	}
 
+	if app.constant != nil && len(app.constant) <= 0 {
+		app.constant = nil
+	}
+
+	if app.constant != nil {
+		content := createContentWithConstant(app.constant)
+		return createValue(*app.pHash, content), nil
+	}
+
 	if app.pInput != nil {
 		content := createContentWithInput(app.pInput)
 		return createValue(*app.pHash, content), nil
 	}
 
-	if app.assignment != nil {
-		content := createContentWithAssignment(app.assignment)
+	if app.pAssignment != nil {
+		content := createContentWithAssignment(app.pAssignment)
 		return createValue(*app.pHash, content), nil
 	}
 

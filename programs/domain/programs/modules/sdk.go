@@ -24,6 +24,7 @@ type Builder interface {
 type Modules interface {
 	List() []Module
 	Fetch(name []byte) (Module, error)
+	FetchByIndex(index uint) (Module, error)
 }
 
 // ModuleBuilder creates a new module builder

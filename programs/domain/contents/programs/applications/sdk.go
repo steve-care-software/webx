@@ -22,7 +22,7 @@ func NewAttachmentBuilder() AttachmentBuilder {
 // Adapter represents the application adapter
 type Adapter interface {
 	ToContent(ins Application) ([]byte, error)
-	ToProgram(content []byte) (Application, error)
+	ToApplication(content []byte) (Application, error)
 }
 
 // Builder represents an application builder

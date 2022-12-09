@@ -3,6 +3,7 @@ package applications
 import (
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/programs/domain/programs"
+	"github.com/steve-care-software/webx/programs/domain/programs/modules"
 )
 
 // ScanCallbackFn represents the scan callback func
@@ -22,7 +23,7 @@ type Software interface {
 
 // Database represents the program database application
 type Database interface {
-	Retrieve(context uint, hash hash.Hash) (programs.Program, error)
+	Retrieve(context uint, hash hash.Hash, modules modules.Modules) (programs.Program, error)
 	Scan(context uint, input map[string]interface{}, callbackFn ScanCallbackFn) (programs.Program, error)
 	Insert(context uint, program programs.Program) error
 }

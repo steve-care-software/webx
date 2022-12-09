@@ -2,33 +2,32 @@ package instructions
 
 import (
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/programs/domain/contents/programs/assignments"
 )
 
 type content struct {
-	assignment assignments.Assignment
-	execution  hash.Hash
+	pAssignment *hash.Hash
+	pExecution  *hash.Hash
 }
 
 func createContentWithAssignment(
-	assignment assignments.Assignment,
+	pAssignment *hash.Hash,
 ) Content {
-	return createContentInternally(assignment, nil)
+	return createContentInternally(pAssignment, nil)
 }
 
 func createContentWithExecution(
-	execution hash.Hash,
+	pExecution *hash.Hash,
 ) Content {
-	return createContentInternally(nil, execution)
+	return createContentInternally(nil, pExecution)
 }
 
 func createContentInternally(
-	assignment assignments.Assignment,
-	execution hash.Hash,
+	pAssignment *hash.Hash,
+	pExecution *hash.Hash,
 ) Content {
 	out := content{
-		assignment: assignment,
-		execution:  execution,
+		pAssignment: pAssignment,
+		pExecution:  pExecution,
 	}
 
 	return &out
@@ -36,20 +35,20 @@ func createContentInternally(
 
 // IsAssignment returns true if there is an assignment, false otherwise
 func (obj *content) IsAssignment() bool {
-	return obj.assignment != nil
+	return obj.pAssignment != nil
 }
 
 // Assignment returns the assignment, if any
-func (obj *content) Assignment() assignments.Assignment {
-	return obj.assignment
+func (obj *content) Assignment() *hash.Hash {
+	return obj.pAssignment
 }
 
 // IsExecution returns true if there is an execution, false otherwise
 func (obj *content) IsExecution() bool {
-	return obj.execution != nil
+	return obj.pExecution != nil
 }
 
 // Execution returns the execution, if any
-func (obj *content) Execution() hash.Hash {
-	return obj.execution
+func (obj *content) Execution() *hash.Hash {
+	return obj.pExecution
 }

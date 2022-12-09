@@ -2,51 +2,59 @@ package values
 
 import (
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/programs/domain/contents/programs/assignments"
 )
 
 type content struct {
-	pInput     *uint
-	assignment assignments.Assignment
-	pExecution *hash.Hash
-	pProgram   *hash.Hash
+	pInput      *uint
+	pAssignment *hash.Hash
+	constant    []byte
+	pExecution  *hash.Hash
+	pProgram    *hash.Hash
 }
 
 func createContentWithInput(
 	pInput *uint,
 ) Content {
-	return createContentInternally(pInput, nil, nil, nil)
+	return createContentInternally(pInput, nil, nil, nil, nil)
 }
 
 func createContentWithAssignment(
-	assignment assignments.Assignment,
+	pAssignment *hash.Hash,
 ) Content {
-	return createContentInternally(nil, assignment, nil, nil)
+	return createContentInternally(nil, pAssignment, nil, nil, nil)
+}
+
+func createContentWithConstant(
+	constant []byte,
+) Content {
+	return createContentInternally(nil, nil, constant, nil, nil)
 }
 
 func createContentWithExecution(
 	pExecution *hash.Hash,
 ) Content {
-	return createContentInternally(nil, nil, pExecution, nil)
+	return createContentInternally(nil, nil, nil, pExecution, nil)
 }
 
 func createContentWithProgram(
 	pProgram *hash.Hash,
 ) Content {
-	return createContentInternally(nil, nil, nil, pProgram)
+	return createContentInternally(nil, nil, nil, nil, pProgram)
 }
 
 func createContentInternally(
 	pInput *uint,
-	assignment assignments.Assignment,
+	pAssignment *hash.Hash,
+	constant []byte,
 	pExecution *hash.Hash,
 	pProgram *hash.Hash,
 ) Content {
 	out := content{
-		pInput:     pInput,
-		assignment: assignment,
-		pExecution: pExecution,
-		pProgram:   pProgram,
+		pInput:      pInput,
+		pAssignment: pAssignment,
+		constant:    constant,
+		pExecution:  pExecution,
+		pProgram:    pProgram,
 	}
 
 	return &out
@@ -64,12 +72,22 @@ func (obj *content) Input() *uint {
 
 // IsAssignment returns true if there is an assignment, false otherwise
 func (obj *content) IsAssignment() bool {
-	return obj.assignment != nil
+	return obj.pAssignment != nil
 }
 
 // Assignment returns the assignment, if any
-func (obj *content) Assignment() assignments.Assignment {
-	return obj.assignment
+func (obj *content) Assignment() *hash.Hash {
+	return obj.pAssignment
+}
+
+// IsConstant returns true if there is a constant, false otherwise
+func (obj *content) IsConstant() bool {
+	return obj.constant != nil
+}
+
+// Constant returns the constant, if any
+func (obj *content) Constant() []byte {
+	return obj.constant
 }
 
 // IsExecution returns true if there is an execution, false otherwise

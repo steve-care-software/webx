@@ -41,3 +41,13 @@ func (obj *modules) Fetch(name []byte) (Module, error) {
 	str := fmt.Sprintf("the module (name: %v, hash: %s) is undefined", name, keyname)
 	return nil, errors.New(str)
 }
+
+// FetchByIndex fetches a module by its index
+func (obj *modules) FetchByIndex(index uint) (Module, error) {
+	if len(obj.list) <= int(index) {
+		str := fmt.Sprintf("there is no module at index: %d", index)
+		return nil, errors.New(str)
+	}
+
+	return obj.list[index], nil
+}

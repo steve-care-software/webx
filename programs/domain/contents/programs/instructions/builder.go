@@ -4,20 +4,19 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/programs/domain/contents/programs/assignments"
 )
 
 type builder struct {
-	pHash      *hash.Hash
-	assignment assignments.Assignment
-	pExecution *hash.Hash
+	pHash       *hash.Hash
+	pAssignment *hash.Hash
+	pExecution  *hash.Hash
 }
 
 func createBuilder() Builder {
 	out := builder{
-		pHash:      nil,
-		assignment: nil,
-		pExecution: nil,
+		pHash:       nil,
+		pAssignment: nil,
+		pExecution:  nil,
 	}
 
 	return &out
@@ -35,8 +34,8 @@ func (app *builder) WithHash(hash hash.Hash) Builder {
 }
 
 // WithAssignment adds an assignment to the builder
-func (app *builder) WithAssignment(assignment assignments.Assignment) Builder {
-	app.assignment = assignment
+func (app *builder) WithAssignment(assignment hash.Hash) Builder {
+	app.pAssignment = &assignment
 	return app
 }
 
@@ -52,13 +51,13 @@ func (app *builder) Now() (Instruction, error) {
 		return nil, errors.New("the hash is mandatory in order to build an Instruction instance")
 	}
 
-	if app.assignment != nil {
-		content := createContentWithAssignment(app.assignment)
+	if app.pAssignment != nil {
+		content := createContentWithAssignment(app.pAssignment)
 		return createInstruction(*app.pHash, content), nil
 	}
 
 	if app.pExecution != nil {
-		content := createContentWithExecution(*app.pExecution)
+		content := createContentWithExecution(app.pExecution)
 		return createInstruction(*app.pHash, content), nil
 	}
 

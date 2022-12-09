@@ -2,7 +2,6 @@ package instructions
 
 import (
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/programs/domain/contents/programs/assignments"
 )
 
 // NewBuilder creates a new builder instance
@@ -20,7 +19,7 @@ type Adapter interface {
 type Builder interface {
 	Create() Builder
 	WithHash(hash hash.Hash) Builder
-	WithAssignment(assignment assignments.Assignment) Builder
+	WithAssignment(assignment hash.Hash) Builder
 	WithExecution(execution hash.Hash) Builder
 	Now() (Instruction, error)
 }
@@ -34,7 +33,7 @@ type Instruction interface {
 // Content represents an instruction's content
 type Content interface {
 	IsAssignment() bool
-	Assignment() assignments.Assignment
+	Assignment() *hash.Hash
 	IsExecution() bool
-	Execution() hash.Hash
+	Execution() *hash.Hash
 }

@@ -114,7 +114,6 @@ type Attachment interface {
 // AssignmentBuilder represents an assignment builder
 type AssignmentBuilder interface {
 	Create() AssignmentBuilder
-	WithIndex(index uint) AssignmentBuilder
 	WithName(name []byte) AssignmentBuilder
 	WithValue(value Value) AssignmentBuilder
 	Now() (Assignment, error)
@@ -122,7 +121,6 @@ type AssignmentBuilder interface {
 
 // Assignment repesents an assignment
 type Assignment interface {
-	//Index() uint
 	Name() []byte
 	Value() Value
 }

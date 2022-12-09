@@ -6,21 +6,45 @@ import (
 
 	"github.com/steve-care-software/webx/blockchains/applications"
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	contents_programs "github.com/steve-care-software/webx/programs/domain/contents/programs"
+	contents_applications "github.com/steve-care-software/webx/programs/domain/contents/programs/applications"
+	contents_instructions "github.com/steve-care-software/webx/programs/domain/contents/programs/instructions"
+	contents_values "github.com/steve-care-software/webx/programs/domain/contents/programs/values"
 	"github.com/steve-care-software/webx/programs/domain/programs"
+	"github.com/steve-care-software/webx/programs/domain/programs/modules"
 )
 
 type application struct {
-	blockchainApp applications.Application
-	hashAdapter   hash.Adapter
+	blockchainApp             applications.Application
+	contentAdapter            contents_programs.Adapter
+	contentApplicationAdapter contents_applications.Adapter
+	contentInstructionAdapter contents_instructions.Adapter
+	contentValueAdapter       contents_values.Adapter
+	builder                   programs.Builder
+	instructionBuilder        programs.InstructionBuilder
+	assignmentBuilder         programs.AssignmentBuilder
+	applicationBuilder        programs.ApplicationBuilder
+	attachmentsBuilder        programs.AttachmentsBuilder
+	attachmentBuilder         programs.AttachmentBuilder
+	valueBuilder              programs.ValueBuilder
+	hashAdapter               hash.Adapter
 }
 
 func createApplication(
 	blockchainApp applications.Application,
+	contentAdapter contents_programs.Adapter,
+	contentApplicationAdapter contents_applications.Adapter,
+	contentInstructionAdapter contents_instructions.Adapter,
+	contentValueAdapter contents_values.Adapter,
 	hashAdapter hash.Adapter,
 ) Application {
 	out := application{
-		blockchainApp: blockchainApp,
-		hashAdapter:   hashAdapter,
+		blockchainApp:             blockchainApp,
+		contentAdapter:            contentAdapter,
+		contentApplicationAdapter: contentApplicationAdapter,
+		contentInstructionAdapter: contentInstructionAdapter,
+		contentValueAdapter:       contentValueAdapter,
+		hashAdapter:               hashAdapter,
 	}
 	return &out
 }
@@ -31,8 +55,203 @@ func (app *application) New(name string) error {
 }
 
 // Retrieve retrieves a program by hash
-func (app *application) Retrieve(context uint, hash hash.Hash) (programs.Program, error) {
-	return nil, nil
+func (app *application) Retrieve(context uint, hash hash.Hash, modules modules.Modules) (programs.Program, error) {
+	content, err := app.blockchainApp.ReadByHash(context, hash)
+	if err != nil {
+		return nil, err
+	}
+
+	contentProgramIns, err := app.contentAdapter.ToProgram(content)
+	if err != nil {
+		return nil, err
+	}
+
+	insHashes := contentProgramIns.Instructions()
+	instructions, err := app.retrieveInstructions(context, insHashes, modules)
+	if err != nil {
+		return nil, err
+	}
+
+	outputs := [][]byte{}
+	outputIndexes := contentProgramIns.Outputs()
+	for _, oneIndex := range outputIndexes {
+		outputs = append(outputs, []byte(fmt.Sprintf("%d", oneIndex)))
+	}
+
+	return app.builder.Create().
+		WithInstructions(instructions).
+		WithOutputs(outputs).
+		Now()
+}
+
+func (app *application) retrieveInstructions(context uint, hashes []hash.Hash, modules modules.Modules) ([]programs.Instruction, error) {
+	output := []programs.Instruction{}
+	for _, oneHash := range hashes {
+		ins, err := app.retrieveInstruction(context, oneHash, modules)
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, ins)
+	}
+
+	return output, nil
+}
+
+func (app *application) retrieveInstruction(context uint, hash hash.Hash, modules modules.Modules) (programs.Instruction, error) {
+	content, err := app.blockchainApp.ReadByHash(context, hash)
+	if err != nil {
+		return nil, err
+	}
+
+	contentInstruction, err := app.contentInstructionAdapter.ToInstruction(content)
+	if err != nil {
+		return nil, err
+	}
+
+	contentIns := contentInstruction.Content()
+	builder := app.instructionBuilder.Create()
+	if contentIns.IsAssignment() {
+		pAssignment := contentIns.Assignment()
+		assignment, err := app.retrieveAssignment(context, *pAssignment, modules)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithAssignment(assignment)
+	}
+
+	if contentIns.IsExecution() {
+		pExecutionHash := contentIns.Execution()
+		application, err := app.retrieveApplication(context, *pExecutionHash, modules)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithExecution(application)
+	}
+
+	return builder.Now()
+}
+
+func (app *application) retrieveApplication(context uint, hash hash.Hash, modules modules.Modules) (programs.Application, error) {
+	content, err := app.blockchainApp.ReadByHash(context, hash)
+	if err != nil {
+		return nil, err
+	}
+
+	contentApplication, err := app.contentApplicationAdapter.ToApplication(content)
+	if err != nil {
+		return nil, err
+	}
+
+	index := contentApplication.Module()
+	module, err := modules.FetchByIndex(index)
+	if err != nil {
+		return nil, err
+	}
+
+	name := hash.Bytes()
+	builder := app.applicationBuilder.Create().WithName(name).WithModule(module)
+	if contentApplication.HasAttachments() {
+		attachmentsList := []programs.Attachment{}
+		contentAttachmentsList := contentApplication.Attachments().List()
+		for _, oneContentAttachment := range contentAttachmentsList {
+			valueHash := oneContentAttachment.Value()
+			value, err := app.retrieveValue(context, valueHash, modules)
+			if err != nil {
+				return nil, err
+			}
+
+			localIndex := oneContentAttachment.Local()
+			local := []byte(fmt.Sprintf("%d", localIndex))
+			attachment, err := app.attachmentBuilder.Create().WithValue(value).WithLocal(local).Now()
+			if err != nil {
+				return nil, err
+			}
+
+			attachmentsList = append(attachmentsList, attachment)
+		}
+
+		attachments, err := app.attachmentsBuilder.Create().WithList(attachmentsList).Now()
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithAttachments(attachments)
+	}
+
+	return builder.Now()
+}
+
+func (app *application) retrieveAssignment(context uint, hash hash.Hash, modules modules.Modules) (programs.Assignment, error) {
+	value, err := app.retrieveValue(context, hash, modules)
+	if err != nil {
+		return nil, err
+	}
+
+	name := hash.Bytes()
+	return app.assignmentBuilder.Create().
+		WithName(name).
+		WithValue(value).
+		Now()
+}
+
+func (app *application) retrieveValue(context uint, hash hash.Hash, modules modules.Modules) (programs.Value, error) {
+	content, err := app.blockchainApp.ReadByHash(context, hash)
+	if err != nil {
+		return nil, err
+	}
+
+	contentValue, err := app.contentValueAdapter.ToValue(content)
+	if err != nil {
+		return nil, err
+	}
+
+	contentIns := contentValue.Content()
+	builder := app.valueBuilder.Create()
+	if contentIns.IsInput() {
+		inputIndex := contentIns.Input()
+		input := []byte(fmt.Sprintf("%d", inputIndex))
+		builder.WithInput(input)
+	}
+
+	if contentIns.IsAssignment() {
+		pAssignmentHash := contentIns.Assignment()
+		assignment, err := app.retrieveAssignment(context, *pAssignmentHash, modules)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithAssignment(assignment)
+	}
+
+	if contentIns.IsExecution() {
+		pExecutionHash := contentIns.Execution()
+		application, err := app.retrieveApplication(context, *pExecutionHash, modules)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithExecution(application)
+	}
+
+	if contentIns.IsProgram() {
+		pProgramHash := contentIns.Program()
+		program, err := app.Retrieve(context, *pProgramHash, modules)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithProgram(program)
+	}
+
+	if contentIns.IsConstant() {
+		constant := contentIns.Constant()
+		builder.WithConstant(constant)
+	}
+
+	return builder.Now()
 }
 
 // Scan scans the database for a program that can receive a given input and returns the requested output

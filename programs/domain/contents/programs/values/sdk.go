@@ -2,7 +2,6 @@ package values
 
 import (
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/programs/domain/contents/programs/assignments"
 )
 
 // NewBuilder creates a new builder instance
@@ -21,7 +20,8 @@ type Builder interface {
 	Create() Builder
 	WithHash(hash hash.Hash) Builder
 	WithInput(input uint) Builder
-	WithAssignment(assignment assignments.Assignment) Builder
+	WithAssignment(assignment hash.Hash) Builder
+	WithConstant(constant []byte) Builder
 	WithExecution(execution hash.Hash) Builder
 	WithProgram(program hash.Hash) Builder
 	Now() (Value, error)
@@ -38,7 +38,9 @@ type Content interface {
 	IsInput() bool
 	Input() *uint
 	IsAssignment() bool
-	Assignment() assignments.Assignment
+	Assignment() *hash.Hash
+	IsConstant() bool
+	Constant() []byte
 	IsExecution() bool
 	Execution() *hash.Hash
 	IsProgram() bool
