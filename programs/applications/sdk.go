@@ -4,7 +4,6 @@ import (
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/programs/domain/compilers"
 	"github.com/steve-care-software/webx/programs/domain/programs"
-	"github.com/steve-care-software/webx/programs/domain/programs/modules"
 )
 
 // Application represents a program application
@@ -17,7 +16,7 @@ type Application interface {
 // Software represents the program software application
 type Software interface {
 	Compile(compiler compilers.Compiler, script []byte) (programs.Program, error)
-	Execute(input map[string]interface{}, modules modules.Modules, program programs.Program) (map[string]interface{}, error)
+	Execute(input map[string]interface{}, program programs.Program) (map[string]interface{}, error)
 }
 
 // Database represents the program database application
