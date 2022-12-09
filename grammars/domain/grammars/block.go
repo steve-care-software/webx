@@ -24,6 +24,16 @@ func (obj *block) Hash() hash.Hash {
 	return obj.hash
 }
 
+// Points returns the amount of points a block contains
+func (obj *block) Points() uint {
+	amount := uint(0)
+	for _, oneLine := range obj.lines {
+		amount += oneLine.Points()
+	}
+
+	return amount
+}
+
 // Lines returns the lines
 func (obj *block) Lines() []Line {
 	return obj.lines

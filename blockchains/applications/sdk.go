@@ -52,6 +52,7 @@ type Blockchain interface {
 
 // Reference represents the reference application
 type Reference interface {
+	ContentKeys(context uint, kind uint8) (references.ContentKeys, error)
 	ContentKey(context uint, hash hash.Hash, flag uint8) (references.ContentKey, error)
 	ContentKeyByTransaction(context uint, trx hash.Hash, flag uint8) (references.ContentKey, error)
 	BlockchainKey(context uint, hash hash.Hash, flag uint8) (references.BlockchainKey, error)

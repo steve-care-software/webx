@@ -6,6 +6,8 @@ import (
 	"github.com/steve-care-software/webx/grammars/domain/grammars/values"
 )
 
+const pointsPerValue = uint(1)
+
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
 	hashAdapter := hash.NewAdapter()
@@ -101,6 +103,7 @@ type Builder interface {
 type Grammar interface {
 	Hash() hash.Hash
 	Root() Token
+	Points() uint
 	HasChannels() bool
 	Channels() Channels
 }
@@ -115,6 +118,7 @@ type ChannelsBuilder interface {
 // Channels represents channels
 type Channels interface {
 	Hash() hash.Hash
+	Points() uint
 	List() []Channel
 }
 
@@ -129,6 +133,7 @@ type ChannelBuilder interface {
 // Channel represents a channel
 type Channel interface {
 	Hash() hash.Hash
+	Points() uint
 	Token() Token
 	HasCondition() bool
 	Condition() ChannelCondition
@@ -145,6 +150,7 @@ type ChannelConditionBuilder interface {
 // ChannelCondition represents a channel condition
 type ChannelCondition interface {
 	Hash() hash.Hash
+	Points() uint
 	HasPrevious() bool
 	Previous() Token
 	HasNext() bool
@@ -177,6 +183,7 @@ type InstanceBuilder interface {
 // Instance represents an instance
 type Instance interface {
 	Hash() hash.Hash
+	Points() uint
 	Name() string
 	IsToken() bool
 	Token() Token
@@ -196,6 +203,7 @@ type EverythingBuilder interface {
 // Everything represents an everything except
 type Everything interface {
 	Hash() hash.Hash
+	Points() uint
 	Name() string
 	Exception() Token
 	HasEscape() bool
@@ -271,6 +279,7 @@ type BlockBuilder interface {
 // Block represents a decision block
 type Block interface {
 	Hash() hash.Hash
+	Points() uint
 	Lines() []Line
 }
 
@@ -284,6 +293,7 @@ type LineBuilder interface {
 // Line represents a line of elements
 type Line interface {
 	Hash() hash.Hash
+	Points() uint
 	Elements() []Element
 }
 
@@ -301,6 +311,7 @@ type ElementBuilder interface {
 // Element represents an element
 type Element interface {
 	Hash() hash.Hash
+	Points() uint
 	Name() string
 	Content() ElementContent
 	Cardinality() cardinalities.Cardinality

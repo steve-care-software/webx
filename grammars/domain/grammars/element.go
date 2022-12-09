@@ -30,6 +30,24 @@ func (obj *element) Hash() hash.Hash {
 	return obj.hash
 }
 
+// Points returns the amount of points an element contains
+func (obj *element) Points() uint {
+	content := obj.Content()
+	if content.IsValue() {
+		return pointsPerValue
+	}
+
+	if content.IsExternal() {
+		return content.External().Grammar().Root().Block().Points()
+	}
+
+	if content.IsRecursive() {
+		return uint(0)
+	}
+
+	return content.Instance().Points()
+}
+
 // Name returns the name
 func (obj *element) Name() string {
 	if obj.content.IsValue() {

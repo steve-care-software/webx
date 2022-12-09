@@ -40,6 +40,7 @@ type Builder interface {
 // Coverages represents coverages
 type Coverages interface {
 	List() []Coverage
+	ContainsError() bool
 }
 
 // CoverageBuilder represents a coverage builder
@@ -66,6 +67,7 @@ type ExecutionsBuilder interface {
 // Executions represents executions
 type Executions interface {
 	List() []Execution
+	ContainsError() bool
 }
 
 // ExecutionBuilder represents an execution builder

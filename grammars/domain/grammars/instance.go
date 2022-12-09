@@ -40,6 +40,15 @@ func (obj *instance) Hash() hash.Hash {
 	return obj.Everything().Hash()
 }
 
+// Points returns the amount of points an instance contains
+func (obj *instance) Points() uint {
+	if obj.IsToken() {
+		return obj.Token().Block().Points()
+	}
+
+	return obj.Everything().Points()
+}
+
 // Name returns the name
 func (obj *instance) Name() string {
 	if obj.IsToken() {

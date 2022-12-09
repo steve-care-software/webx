@@ -42,6 +42,16 @@ func (obj *channel) Hash() hash.Hash {
 	return obj.hash
 }
 
+// Points returns the amount of points a channel contains
+func (obj *channel) Points() uint {
+	amount := obj.Token().Block().Points()
+	if obj.HasCondition() {
+		amount += obj.Condition().Points()
+	}
+
+	return amount
+}
+
 // Token returns the token
 func (obj *channel) Token() Token {
 	return obj.token

@@ -42,6 +42,16 @@ func (obj *grammar) Hash() hash.Hash {
 	return obj.hash
 }
 
+// Points returns the amount of points a grammar contains
+func (obj *grammar) Points() uint {
+	amount := obj.Root().Block().Points()
+	if obj.HasChannels() {
+		amount += obj.Channels().Points()
+	}
+
+	return amount
+}
+
 // Root returns the root token
 func (obj *grammar) Root() Token {
 	return obj.root

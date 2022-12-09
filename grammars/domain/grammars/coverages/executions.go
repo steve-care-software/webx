@@ -18,3 +18,16 @@ func createExecutions(
 func (obj *executions) List() []Execution {
 	return obj.list
 }
+
+// ContainsError returns true if it contains an error, false otherwise
+func (obj *executions) ContainsError() bool {
+	for _, oneExecution := range obj.list {
+		if !oneExecution.Result().IsError() {
+			continue
+		}
+
+		return true
+	}
+
+	return false
+}

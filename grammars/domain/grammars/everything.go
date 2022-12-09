@@ -47,6 +47,16 @@ func (obj *everything) Hash() hash.Hash {
 	return obj.hash
 }
 
+// Points returns the amount of points an everything contains
+func (obj *everything) Points() uint {
+	amount := obj.Exception().Block().Points()
+	if obj.HasEscape() {
+		amount += obj.Escape().Block().Points()
+	}
+
+	return amount
+}
+
 // Name returns the name
 func (obj *everything) Name() string {
 	return obj.name

@@ -7,6 +7,7 @@ import (
 
 	"github.com/steve-care-software/webx/blockchains/applications"
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/domain/databases/references"
 	contents_grammars "github.com/steve-care-software/webx/grammars/domain/contents/grammars"
 	contents_channels "github.com/steve-care-software/webx/grammars/domain/contents/grammars/channels"
 	contents_elements "github.com/steve-care-software/webx/grammars/domain/contents/grammars/elements"
@@ -561,12 +562,78 @@ func (app *application) contentToChannel(context uint, content []byte) (grammars
 
 // Search searches a grammar by suite
 func (app *application) Search(context uint, suites grammars.Suites) (grammars.Grammar, error) {
+	// retrieve the matches related to our suites:
+
+	// fetch the tokens that contains all suites:
+
+	// for each token, fetch the grammars that contains the token as root:
+
+	// from the list of retrieved grammars, return the one with the smallest amount of elements:
 	return nil, nil
 }
 
 // Scan scans all the tokens to find matches for our suites, when they do, insert the suite in the database
-func (app *application) Scan(context uint, suites grammars.Suites) error {
-	return nil
+func (app *application) Scan(context uint, suites grammars.Suites) (grammars.Grammar, error) {
+	return app.ScanWithChannels(context, suites, nil)
+}
+
+// ScanWithChannels executes a scan with channels
+func (app *application) ScanWithChannels(context uint, suites grammars.Suites, channels grammars.Channels) (grammars.Grammar, error) {
+	// retrieve the token content keys:
+	contentKeys, err := app.blockchainApp.ContentKeys(context, references.KindGrammarToken)
+	if err != nil {
+		return nil, err
+	}
+
+	// for each contentKey:
+	var selected grammars.Grammar
+	list := contentKeys.List()
+	for _, oneContentKey := range list {
+		// retrieve the token:
+		token, err := app.retrieveToken(context, oneContentKey.Hash())
+		if err != nil {
+			return nil, err
+		}
+
+		// build the grammar instance:
+		builder := app.builder.Create().WithRoot(token)
+		if channels != nil {
+			builder.WithChannels(channels)
+		}
+
+		grammar, err := builder.Now()
+		if err != nil {
+			return nil, err
+		}
+
+		// execute the suite coverages:
+		coverages, err := app.Coverages(grammar)
+		if err != nil {
+			return nil, err
+		}
+
+		if coverages.ContainsError() {
+			continue
+		}
+
+		// the suite passed:
+		if selected == nil {
+			selected = grammar
+			continue
+		}
+
+		// we always keep the valid grammar with the lowest amount of points:
+		if selected.Points() > grammar.Points() {
+			selected = grammar
+		}
+	}
+
+	if selected == nil {
+		return nil, errors.New("there is no token that matches the provided suites and channels and therefore no grammar could be returned")
+	}
+
+	// returns the select grammar:
+	return selected, nil
 }
 
 // Insert inserts a grammar
