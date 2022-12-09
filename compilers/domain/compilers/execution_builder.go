@@ -3,7 +3,7 @@ package compilers
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/programs/domain/instructions"
+	"github.com/steve-care-software/webx/compilers/domain/instructions"
 )
 
 type executionBuilder struct {

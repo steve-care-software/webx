@@ -2,7 +2,7 @@ package compilers
 
 import (
 	"github.com/steve-care-software/webx/grammars/domain/grammars"
-	"github.com/steve-care-software/webx/programs/domain/instructions"
+	"github.com/steve-care-software/webx/compilers/domain/instructions"
 )
 
 // NewBuilder creates a new builder instance

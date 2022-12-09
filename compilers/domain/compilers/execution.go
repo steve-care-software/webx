@@ -1,6 +1,6 @@
 package compilers
 
-import "github.com/steve-care-software/webx/programs/domain/instructions"
+import "github.com/steve-care-software/webx/compilers/domain/instructions"
 
 type execution struct {
 	parameter    string

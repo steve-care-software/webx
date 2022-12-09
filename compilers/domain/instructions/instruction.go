@@ -1,9 +1,9 @@
 package instructions
 
 import (
-	"github.com/steve-care-software/webx/programs/domain/instructions/applications"
-	"github.com/steve-care-software/webx/programs/domain/instructions/attachments"
-	"github.com/steve-care-software/webx/programs/domain/instructions/parameters"
+	"github.com/steve-care-software/webx/compilers/domain/instructions/applications"
+	"github.com/steve-care-software/webx/compilers/domain/instructions/attachments"
+	"github.com/steve-care-software/webx/compilers/domain/instructions/parameters"
 )
 
 type instruction struct {
