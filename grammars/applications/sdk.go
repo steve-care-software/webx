@@ -16,18 +16,18 @@ type Application interface {
 	Software
 }
 
-// Database represents the grammar database application
-type Database interface {
-	Retrieve(context uint, hash hash.Hash) (grammars.Grammar, error)
-	Scan(context uint, suites grammars.Suites) (grammars.Grammar, error)
-	ScanWithChannels(context uint, suites grammars.Suites, channels grammars.Channels) (grammars.Grammar, error)
-	Insert(context uint, grammar grammars.Grammar) error
-}
-
 // Software represents the grammar software application
 type Software interface {
 	Execute(grammar grammars.Grammar, values []byte) (trees.Tree, error)
 	Coverages(grammar grammars.Grammar) (coverages.Coverages, error)
 	Covered(coverages coverages.Coverages) (map[string]map[uint]map[uint]string, error)
 	Uncovered(grammar grammars.Grammar) (map[string]map[uint]map[uint]string, error)
+}
+
+// Database represents the grammar database application
+type Database interface {
+	Retrieve(context uint, hash hash.Hash) (grammars.Grammar, error)
+	Scan(context uint, suites grammars.Suites) (grammars.Grammar, error)
+	ScanWithChannels(context uint, suites grammars.Suites, channels grammars.Channels) (grammars.Grammar, error)
+	Insert(context uint, grammar grammars.Grammar) error
 }
