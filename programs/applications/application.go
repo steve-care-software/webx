@@ -36,17 +36,17 @@ func (app *application) Retrieve(context uint, hash hash.Hash) (programs.Program
 }
 
 // Scan scans the database for a program that can receive a given input and returns the requested output
-func (app *application) Scan(context uint, input map[string]interface{}, output map[string]interface{}) (programs.Program, error) {
+func (app *application) Scan(context uint, input map[string]interface{}, callbackFn ScanCallbackFn) (programs.Program, error) {
+	// retrieve the list of programs:
+
+	// for each program, execute it with the input:
+
+	// pass the output to the callback, if it returns true, keep it, then return the program with the smallest amount of points:
 	return nil, nil
 }
 
 // Insert inserts a program
 func (app *application) Insert(context uint, program programs.Program) error {
-	return nil
-}
-
-// InsertAll inserts a list of programs
-func (app *application) InsertAll(context uint, programs []programs.Program) error {
 	return nil
 }
 
