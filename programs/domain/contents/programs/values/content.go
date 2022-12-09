@@ -1,15 +1,15 @@
 package values
 
 import (
-	"github.com/steve-care-software/webx/domain/databases/entities"
-	"github.com/steve-care-software/webx/domain/databases/programs/assignments"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/programs/domain/contents/programs/assignments"
 )
 
 type content struct {
 	pInput     *uint
 	assignment assignments.Assignment
-	execution  entities.Identifier
-	program    entities.Identifier
+	pExecution *hash.Hash
+	pProgram   *hash.Hash
 }
 
 func createContentWithInput(
@@ -25,28 +25,28 @@ func createContentWithAssignment(
 }
 
 func createContentWithExecution(
-	execution entities.Identifier,
+	pExecution *hash.Hash,
 ) Content {
-	return createContentInternally(nil, nil, execution, nil)
+	return createContentInternally(nil, nil, pExecution, nil)
 }
 
 func createContentWithProgram(
-	program entities.Identifier,
+	pProgram *hash.Hash,
 ) Content {
-	return createContentInternally(nil, nil, nil, program)
+	return createContentInternally(nil, nil, nil, pProgram)
 }
 
 func createContentInternally(
 	pInput *uint,
 	assignment assignments.Assignment,
-	execution entities.Identifier,
-	program entities.Identifier,
+	pExecution *hash.Hash,
+	pProgram *hash.Hash,
 ) Content {
 	out := content{
 		pInput:     pInput,
 		assignment: assignment,
-		execution:  execution,
-		program:    program,
+		pExecution: pExecution,
+		pProgram:   pProgram,
 	}
 
 	return &out
@@ -74,20 +74,20 @@ func (obj *content) Assignment() assignments.Assignment {
 
 // IsExecution returns true if there is an execution, false otherwise
 func (obj *content) IsExecution() bool {
-	return obj.execution != nil
+	return obj.pExecution != nil
 }
 
 // Execution returns the execution, if any
-func (obj *content) Execution() entities.Identifier {
-	return obj.execution
+func (obj *content) Execution() *hash.Hash {
+	return obj.pExecution
 }
 
 // IsProgram returns true if there is a program, false otherwise
 func (obj *content) IsProgram() bool {
-	return obj.program != nil
+	return obj.pProgram != nil
 }
 
 // Program returns the program, if any
-func (obj *content) Program() entities.Identifier {
-	return obj.program
+func (obj *content) Program() *hash.Hash {
+	return obj.pProgram
 }

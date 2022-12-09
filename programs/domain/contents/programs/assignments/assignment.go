@@ -1,15 +1,17 @@
 package assignments
 
-import "github.com/steve-care-software/webx/domain/databases/entities"
+import (
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+)
 
 type assignment struct {
 	index uint
-	value entities.Identifier
+	value hash.Hash
 }
 
 func createAssignment(
 	index uint,
-	value entities.Identifier,
+	value hash.Hash,
 ) Assignment {
 	out := assignment{
 		index: index,
@@ -25,6 +27,6 @@ func (obj *assignment) Index() uint {
 }
 
 // Value returns the value
-func (obj *assignment) Value() entities.Identifier {
+func (obj *assignment) Value() hash.Hash {
 	return obj.value
 }

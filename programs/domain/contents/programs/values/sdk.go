@@ -1,8 +1,8 @@
 package values
 
 import (
-	"github.com/steve-care-software/webx/domain/databases/entities"
-	"github.com/steve-care-software/webx/domain/databases/programs/assignments"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/programs/domain/contents/programs/assignments"
 )
 
 // NewBuilder creates a new builder instance
@@ -13,17 +13,17 @@ func NewBuilder() Builder {
 // Builder represents a value builder
 type Builder interface {
 	Create() Builder
-	WithEntity(entity entities.Entity) Builder
+	WithHash(hash hash.Hash) Builder
 	WithInput(input uint) Builder
 	WithAssignment(assignment assignments.Assignment) Builder
-	WithExecution(execution entities.Identifier) Builder
-	WithProgram(program entities.Identifier) Builder
+	WithExecution(execution hash.Hash) Builder
+	WithProgram(program hash.Hash) Builder
 	Now() (Value, error)
 }
 
 // Value represents a value
 type Value interface {
-	Entity() entities.Entity
+	Hash() hash.Hash
 	Content() Content
 }
 
@@ -34,7 +34,7 @@ type Content interface {
 	IsAssignment() bool
 	Assignment() assignments.Assignment
 	IsExecution() bool
-	Execution() entities.Identifier
+	Execution() *hash.Hash
 	IsProgram() bool
-	Program() entities.Identifier
+	Program() *hash.Hash
 }

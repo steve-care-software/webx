@@ -1,8 +1,8 @@
 package instructions
 
 import (
-	"github.com/steve-care-software/webx/domain/databases/entities"
-	"github.com/steve-care-software/webx/domain/databases/programs/assignments"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/programs/domain/contents/programs/assignments"
 )
 
 // NewBuilder creates a new builder instance
@@ -13,15 +13,15 @@ func NewBuilder() Builder {
 // Builder represents an instruction builder
 type Builder interface {
 	Create() Builder
-	WithEntity(entity entities.Entity) Builder
+	WithHash(hash hash.Hash) Builder
 	WithAssignment(assignment assignments.Assignment) Builder
-	WithExecution(execution entities.Identifier) Builder
+	WithExecution(execution hash.Hash) Builder
 	Now() (Instruction, error)
 }
 
 // Instruction represents an instruction
 type Instruction interface {
-	Entity() entities.Entity
+	Hash() hash.Hash
 	Content() Content
 }
 
@@ -30,5 +30,5 @@ type Content interface {
 	IsAssignment() bool
 	Assignment() assignments.Assignment
 	IsExecution() bool
-	Execution() entities.Identifier
+	Execution() hash.Hash
 }

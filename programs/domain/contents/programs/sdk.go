@@ -1,8 +1,6 @@
 package programs
 
-import (
-	"github.com/steve-care-software/webx/domain/databases/entities"
-)
+import "github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
@@ -12,16 +10,16 @@ func NewBuilder() Builder {
 // Builder represents a program
 type Builder interface {
 	Create() Builder
-	WithEntity(entity entities.Entity) Builder
-	WithInstructions(instructions entities.Identifiers) Builder
+	WithHash(hash hash.Hash) Builder
+	WithInstructions(instructions []hash.Hash) Builder
 	WithOutputs(outputs []uint) Builder
 	Now() (Program, error)
 }
 
 // Program represents a program
 type Program interface {
-	Entity() entities.Entity
-	Instructions() entities.Identifiers
+	Hash() hash.Hash
+	Instructions() []hash.Hash
 	HasOutputs() bool
 	Outputs() []uint
 }

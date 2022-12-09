@@ -1,27 +1,27 @@
 package instructions
 
-import "github.com/steve-care-software/webx/domain/databases/entities"
+import "github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 
 type instruction struct {
-	entity  entities.Entity
+	hash    hash.Hash
 	content Content
 }
 
 func createInstruction(
-	entity entities.Entity,
+	hash hash.Hash,
 	content Content,
 ) Instruction {
 	out := instruction{
-		entity:  entity,
+		hash:    hash,
 		content: content,
 	}
 
 	return &out
 }
 
-// Entity returns the entity
-func (obj *instruction) Entity() entities.Entity {
-	return obj.entity
+// Hash returns the hash
+func (obj *instruction) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Content returns the content

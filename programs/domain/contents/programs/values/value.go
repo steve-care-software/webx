@@ -1,27 +1,27 @@
 package values
 
-import "github.com/steve-care-software/webx/domain/databases/entities"
+import "github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 
 type value struct {
-	entity  entities.Entity
+	hash    hash.Hash
 	content Content
 }
 
 func createValue(
-	entity entities.Entity,
+	hash hash.Hash,
 	content Content,
 ) Value {
 	out := value{
-		entity:  entity,
+		hash:    hash,
 		content: content,
 	}
 
 	return &out
 }
 
-// Entity returns the entity
-func (obj *value) Entity() entities.Entity {
-	return obj.entity
+// Hash returns the hash
+func (obj *value) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Content returns the content

@@ -3,21 +3,21 @@ package instructions
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/domain/databases/entities"
-	"github.com/steve-care-software/webx/domain/databases/programs/assignments"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/programs/domain/contents/programs/assignments"
 )
 
 type builder struct {
-	entity     entities.Entity
+	pHash      *hash.Hash
 	assignment assignments.Assignment
-	execution  entities.Identifier
+	pExecution *hash.Hash
 }
 
 func createBuilder() Builder {
 	out := builder{
-		entity:     nil,
+		pHash:      nil,
 		assignment: nil,
-		execution:  nil,
+		pExecution: nil,
 	}
 
 	return &out
@@ -28,9 +28,9 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithEntity adds an entity to the builder
-func (app *builder) WithEntity(entity entities.Entity) Builder {
-	app.entity = entity
+// WithHash adds an hash to the builder
+func (app *builder) WithHash(hash hash.Hash) Builder {
+	app.pHash = &hash
 	return app
 }
 
@@ -41,25 +41,25 @@ func (app *builder) WithAssignment(assignment assignments.Assignment) Builder {
 }
 
 // WithExecution adds an execution to the builder
-func (app *builder) WithExecution(execution entities.Identifier) Builder {
-	app.execution = execution
+func (app *builder) WithExecution(execution hash.Hash) Builder {
+	app.pExecution = &execution
 	return app
 }
 
 // Now builds a new Instruction instance
 func (app *builder) Now() (Instruction, error) {
-	if app.entity == nil {
-		return nil, errors.New("the entity is mandatory in order to build an Instruction instance")
+	if app.pHash == nil {
+		return nil, errors.New("the hash is mandatory in order to build an Instruction instance")
 	}
 
 	if app.assignment != nil {
 		content := createContentWithAssignment(app.assignment)
-		return createInstruction(app.entity, content), nil
+		return createInstruction(*app.pHash, content), nil
 	}
 
-	if app.execution != nil {
-		content := createContentWithExecution(app.execution)
-		return createInstruction(app.entity, content), nil
+	if app.pExecution != nil {
+		content := createContentWithExecution(*app.pExecution)
+		return createInstruction(*app.pHash, content), nil
 	}
 
 	return nil, errors.New("the Instruction is invalid")

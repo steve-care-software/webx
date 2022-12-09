@@ -3,25 +3,25 @@ package values
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/domain/databases/entities"
-	"github.com/steve-care-software/webx/domain/databases/programs/assignments"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/programs/domain/contents/programs/assignments"
 )
 
 type builder struct {
-	entity     entities.Entity
+	pHash      *hash.Hash
 	pInput     *uint
 	assignment assignments.Assignment
-	execution  entities.Identifier
-	program    entities.Identifier
+	pExecution *hash.Hash
+	pProgram   *hash.Hash
 }
 
 func createBuilder() Builder {
 	out := builder{
-		entity:     nil,
+		pHash:      nil,
 		pInput:     nil,
 		assignment: nil,
-		execution:  nil,
-		program:    nil,
+		pExecution: nil,
+		pProgram:   nil,
 	}
 
 	return &out
@@ -32,9 +32,9 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithEntity adds an entity to the builder
-func (app *builder) WithEntity(entity entities.Entity) Builder {
-	app.entity = entity
+// WithHash adds an hash to the builder
+func (app *builder) WithHash(hash hash.Hash) Builder {
+	app.pHash = &hash
 	return app
 }
 
@@ -51,41 +51,41 @@ func (app *builder) WithAssignment(assignment assignments.Assignment) Builder {
 }
 
 // WithExecution adds an execution to the builder
-func (app *builder) WithExecution(execution entities.Identifier) Builder {
-	app.execution = execution
+func (app *builder) WithExecution(execution hash.Hash) Builder {
+	app.pExecution = &execution
 	return app
 }
 
 // WithProgram adds a program to the builder
-func (app *builder) WithProgram(program entities.Identifier) Builder {
-	app.program = program
+func (app *builder) WithProgram(program hash.Hash) Builder {
+	app.pProgram = &program
 	return app
 }
 
 // Now builds a new Value instance
 func (app *builder) Now() (Value, error) {
-	if app.entity == nil {
-		return nil, errors.New("the entity is mandatory in order to build a Value instance")
+	if app.pHash == nil {
+		return nil, errors.New("the hash is mandatory in order to build a Value instance")
 	}
 
 	if app.pInput != nil {
 		content := createContentWithInput(app.pInput)
-		return createValue(app.entity, content), nil
+		return createValue(*app.pHash, content), nil
 	}
 
 	if app.assignment != nil {
 		content := createContentWithAssignment(app.assignment)
-		return createValue(app.entity, content), nil
+		return createValue(*app.pHash, content), nil
 	}
 
-	if app.execution != nil {
-		content := createContentWithExecution(app.execution)
-		return createValue(app.entity, content), nil
+	if app.pExecution != nil {
+		content := createContentWithExecution(app.pExecution)
+		return createValue(*app.pHash, content), nil
 	}
 
-	if app.program != nil {
-		content := createContentWithProgram(app.program)
-		return createValue(app.entity, content), nil
+	if app.pProgram != nil {
+		content := createContentWithProgram(app.pProgram)
+		return createValue(*app.pHash, content), nil
 	}
 
 	return nil, errors.New("the Value is invalid")

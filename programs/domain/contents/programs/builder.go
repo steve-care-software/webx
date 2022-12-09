@@ -3,18 +3,18 @@ package programs
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 )
 
 type builder struct {
-	entity       entities.Entity
-	instructions entities.Identifiers
+	pHash        *hash.Hash
+	instructions []hash.Hash
 	outputs      []uint
 }
 
 func createBuilder() Builder {
 	out := builder{
-		entity:       nil,
+		pHash:        nil,
 		instructions: nil,
 		outputs:      nil,
 	}
@@ -27,14 +27,14 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithEntity adds an entity to the builder
-func (app *builder) WithEntity(entity entities.Entity) Builder {
-	app.entity = entity
+// WithHash adds an hash to the builder
+func (app *builder) WithHash(hash hash.Hash) Builder {
+	app.pHash = &hash
 	return app
 }
 
 // WithInstructions add instructions to the builder
-func (app *builder) WithInstructions(instructions entities.Identifiers) Builder {
+func (app *builder) WithInstructions(instructions []hash.Hash) Builder {
 	app.instructions = instructions
 	return app
 }
@@ -47,12 +47,16 @@ func (app *builder) WithOutputs(outputs []uint) Builder {
 
 // Now builds a new Program instance
 func (app *builder) Now() (Program, error) {
-	if app.entity == nil {
-		return nil, errors.New("the entity is mandatory in order to build a Program instance")
+	if app.pHash == nil {
+		return nil, errors.New("the hash is mandatory in order to build a Program instance")
+	}
+
+	if app.instructions != nil && len(app.instructions) <= 0 {
+		app.instructions = nil
 	}
 
 	if app.instructions == nil {
-		return nil, errors.New("the instructions is mandatory in order to build a Program instance")
+		return nil, errors.New("there must be at least 1 Instruction in order to build a Program instance")
 	}
 
 	if app.outputs != nil && len(app.outputs) <= 0 {
@@ -60,8 +64,8 @@ func (app *builder) Now() (Program, error) {
 	}
 
 	if app.outputs != nil {
-		return createProgramWithOutputs(app.entity, app.instructions, app.outputs), nil
+		return createProgramWithOutputs(*app.pHash, app.instructions, app.outputs), nil
 	}
 
-	return createProgram(app.entity, app.instructions), nil
+	return createProgram(*app.pHash, app.instructions), nil
 }

@@ -1,13 +1,13 @@
 package instructions
 
 import (
-	"github.com/steve-care-software/webx/domain/databases/entities"
-	"github.com/steve-care-software/webx/domain/databases/programs/assignments"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/programs/domain/contents/programs/assignments"
 )
 
 type content struct {
 	assignment assignments.Assignment
-	execution  entities.Identifier
+	execution  hash.Hash
 }
 
 func createContentWithAssignment(
@@ -17,14 +17,14 @@ func createContentWithAssignment(
 }
 
 func createContentWithExecution(
-	execution entities.Identifier,
+	execution hash.Hash,
 ) Content {
 	return createContentInternally(nil, execution)
 }
 
 func createContentInternally(
 	assignment assignments.Assignment,
-	execution entities.Identifier,
+	execution hash.Hash,
 ) Content {
 	out := content{
 		assignment: assignment,
@@ -50,6 +50,6 @@ func (obj *content) IsExecution() bool {
 }
 
 // Execution returns the execution, if any
-func (obj *content) Execution() entities.Identifier {
+func (obj *content) Execution() hash.Hash {
 	return obj.execution
 }

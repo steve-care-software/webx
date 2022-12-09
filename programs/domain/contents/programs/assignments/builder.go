@@ -3,18 +3,18 @@ package assignments
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 )
 
 type builder struct {
 	pIndex *uint
-	value  entities.Identifier
+	pValue *hash.Hash
 }
 
 func createBuilder() Builder {
 	out := builder{
 		pIndex: nil,
-		value:  nil,
+		pValue: nil,
 	}
 
 	return &out
@@ -32,8 +32,8 @@ func (app *builder) WithIndex(index uint) Builder {
 }
 
 // WithValue adds a value to the builder
-func (app *builder) WithValue(value entities.Identifier) Builder {
-	app.value = value
+func (app *builder) WithValue(value hash.Hash) Builder {
+	app.pValue = &value
 	return app
 }
 
@@ -43,9 +43,9 @@ func (app *builder) Now() (Assignment, error) {
 		return nil, errors.New("the index is mandatory in order to build an Assignment instance")
 	}
 
-	if app.value == nil {
+	if app.pValue == nil {
 		return nil, errors.New("the value is mandatory in order to build an Assignment instance")
 	}
 
-	return createAssignment(*app.pIndex, app.value), nil
+	return createAssignment(*app.pIndex, *app.pValue), nil
 }

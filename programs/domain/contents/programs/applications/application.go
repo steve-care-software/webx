@@ -1,35 +1,37 @@
 package applications
 
-import "github.com/steve-care-software/webx/domain/databases/entities"
+import (
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+)
 
 type application struct {
-	entity      entities.Entity
+	hash        hash.Hash
 	module      uint
 	attachments Attachments
 }
 
 func createApplication(
-	entity entities.Entity,
+	hash hash.Hash,
 	module uint,
 ) Application {
-	return createApplicationInternally(entity, module, nil)
+	return createApplicationInternally(hash, module, nil)
 }
 
 func createApplicationWithAttachments(
-	entity entities.Entity,
+	hash hash.Hash,
 	module uint,
 	attachments Attachments,
 ) Application {
-	return createApplicationInternally(entity, module, attachments)
+	return createApplicationInternally(hash, module, attachments)
 }
 
 func createApplicationInternally(
-	entity entities.Entity,
+	hash hash.Hash,
 	module uint,
 	attachments Attachments,
 ) Application {
 	out := application{
-		entity:      entity,
+		hash:        hash,
 		module:      module,
 		attachments: attachments,
 	}
@@ -37,9 +39,9 @@ func createApplicationInternally(
 	return &out
 }
 
-// Entity returns the entity
-func (obj *application) Entity() entities.Entity {
-	return obj.entity
+// Hash returns the hash
+func (obj *application) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Module returns the module

@@ -1,14 +1,14 @@
 package applications
 
-import "github.com/steve-care-software/webx/domain/databases/entities"
+import "github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 
 type attachment struct {
-	value entities.Identifier
+	value hash.Hash
 	local uint
 }
 
 func createAttachment(
-	value entities.Identifier,
+	value hash.Hash,
 	local uint,
 ) Attachment {
 	out := attachment{
@@ -20,7 +20,7 @@ func createAttachment(
 }
 
 // Value returns the value
-func (obj *attachment) Value() entities.Identifier {
+func (obj *attachment) Value() hash.Hash {
 	return obj.value
 }
 

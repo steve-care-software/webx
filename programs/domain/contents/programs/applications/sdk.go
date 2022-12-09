@@ -1,7 +1,7 @@
 package applications
 
 import (
-	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 )
 
 // NewBuilder creates a new builder instance
@@ -22,7 +22,7 @@ func NewAttachmentBuilder() AttachmentBuilder {
 // Builder represents an application builder
 type Builder interface {
 	Create() Builder
-	WithEntity(entity entities.Entity) Builder
+	WithHash(hash hash.Hash) Builder
 	WithModule(module uint) Builder
 	WithAttachments(attachments Attachments) Builder
 	Now() (Application, error)
@@ -30,7 +30,7 @@ type Builder interface {
 
 // Application represents an application
 type Application interface {
-	Entity() entities.Entity
+	Hash() hash.Hash
 	Module() uint
 	HasAttachments() bool
 	Attachments() Attachments
@@ -51,13 +51,13 @@ type Attachments interface {
 // AttachmentBuilder represents an attachment builder
 type AttachmentBuilder interface {
 	Create() AttachmentBuilder
-	WithValue(value entities.Identifier) AttachmentBuilder
+	WithValue(value hash.Hash) AttachmentBuilder
 	WithLocal(local uint) AttachmentBuilder
 	Now() (Attachment, error)
 }
 
 // Attachment represents an attachment
 type Attachment interface {
-	Value() entities.Identifier
+	Value() hash.Hash
 	Local() uint
 }

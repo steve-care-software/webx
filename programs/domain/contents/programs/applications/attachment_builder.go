@@ -3,17 +3,17 @@ package applications
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 )
 
 type attachmentBuilder struct {
-	value  entities.Identifier
+	pValue *hash.Hash
 	pLocal *uint
 }
 
 func createAttachmentBuilder() AttachmentBuilder {
 	out := attachmentBuilder{
-		value:  nil,
+		pValue: nil,
 		pLocal: nil,
 	}
 
@@ -26,8 +26,8 @@ func (app *attachmentBuilder) Create() AttachmentBuilder {
 }
 
 // WithValue adds a value to the builder
-func (app *attachmentBuilder) WithValue(value entities.Identifier) AttachmentBuilder {
-	app.value = value
+func (app *attachmentBuilder) WithValue(value hash.Hash) AttachmentBuilder {
+	app.pValue = &value
 	return app
 }
 
@@ -39,7 +39,7 @@ func (app *attachmentBuilder) WithLocal(local uint) AttachmentBuilder {
 
 // Now builds a new Attachment instance
 func (app *attachmentBuilder) Now() (Attachment, error) {
-	if app.value == nil {
+	if app.pValue == nil {
 		return nil, errors.New("the value is mandatory in order to build an Attachment instance")
 	}
 
@@ -47,5 +47,5 @@ func (app *attachmentBuilder) Now() (Attachment, error) {
 		return nil, errors.New("the local is mandatory in order to build an Attachment instance")
 	}
 
-	return createAttachment(app.value, *app.pLocal), nil
+	return createAttachment(*app.pValue, *app.pLocal), nil
 }

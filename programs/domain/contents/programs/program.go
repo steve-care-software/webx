@@ -1,35 +1,35 @@
 package programs
 
-import "github.com/steve-care-software/webx/domain/databases/entities"
+import "github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 
 type program struct {
-	entity       entities.Entity
-	instructions entities.Identifiers
+	hash         hash.Hash
+	instructions []hash.Hash
 	outputs      []uint
 }
 
 func createProgram(
-	entity entities.Entity,
-	instructions entities.Identifiers,
+	hash hash.Hash,
+	instructions []hash.Hash,
 ) Program {
-	return createProgramInternally(entity, instructions, nil)
+	return createProgramInternally(hash, instructions, nil)
 }
 
 func createProgramWithOutputs(
-	entity entities.Entity,
-	instructions entities.Identifiers,
+	hash hash.Hash,
+	instructions []hash.Hash,
 	outputs []uint,
 ) Program {
-	return createProgramInternally(entity, instructions, outputs)
+	return createProgramInternally(hash, instructions, outputs)
 }
 
 func createProgramInternally(
-	entity entities.Entity,
-	instructions entities.Identifiers,
+	hash hash.Hash,
+	instructions []hash.Hash,
 	outputs []uint,
 ) Program {
 	out := program{
-		entity:       entity,
+		hash:         hash,
 		instructions: instructions,
 		outputs:      outputs,
 	}
@@ -37,13 +37,13 @@ func createProgramInternally(
 	return &out
 }
 
-// Entity returns the entity
-func (obj *program) Entity() entities.Entity {
-	return obj.entity
+// Hash returns the hash
+func (obj *program) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Instructions returns the instructions
-func (obj *program) Instructions() entities.Identifiers {
+func (obj *program) Instructions() []hash.Hash {
 	return obj.instructions
 }
 
