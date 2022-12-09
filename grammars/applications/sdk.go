@@ -19,7 +19,6 @@ type Application interface {
 // Database represents the grammar database application
 type Database interface {
 	Retrieve(context uint, hash hash.Hash) (grammars.Grammar, error)
-	Search(context uint, suites grammars.Suites) (grammars.Grammar, error)
 	Scan(context uint, suites grammars.Suites) (grammars.Grammar, error)
 	ScanWithChannels(context uint, suites grammars.Suites, channels grammars.Channels) (grammars.Grammar, error)
 	Insert(context uint, grammar grammars.Grammar) error

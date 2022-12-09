@@ -560,18 +560,6 @@ func (app *application) contentToChannel(context uint, content []byte) (grammars
 	return builder.Now()
 }
 
-// Search searches a grammar by suite
-func (app *application) Search(context uint, suites grammars.Suites) (grammars.Grammar, error) {
-	// retrieve the matches related to our suites:
-
-	// fetch the tokens that contains all suites:
-
-	// for each token, fetch the grammars that contains the token as root:
-
-	// from the list of retrieved grammars, return the one with the smallest amount of elements:
-	return nil, nil
-}
-
 // Scan scans all the tokens to find matches for our suites, when they do, insert the suite in the database
 func (app *application) Scan(context uint, suites grammars.Suites) (grammars.Grammar, error) {
 	return app.ScanWithChannels(context, suites, nil)
