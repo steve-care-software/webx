@@ -19,6 +19,12 @@ func NewAttachmentBuilder() AttachmentBuilder {
 	return createAttachmentBuilder()
 }
 
+// Adapter represents the application adapter
+type Adapter interface {
+	ToContent(ins Application) ([]byte, error)
+	ToProgram(content []byte) (Application, error)
+}
+
 // Builder represents an application builder
 type Builder interface {
 	Create() Builder
@@ -36,6 +42,12 @@ type Application interface {
 	Attachments() Attachments
 }
 
+// AttachmentsAdapter represents the attachments adapter
+type AttachmentsAdapter interface {
+	ToContent(ins Attachments) ([]byte, error)
+	ToAttachments(content []byte) (Attachments, error)
+}
+
 // AttachmentsBuilder represents an attachments builder
 type AttachmentsBuilder interface {
 	Create() AttachmentsBuilder
@@ -46,6 +58,12 @@ type AttachmentsBuilder interface {
 // Attachments represents the attachments
 type Attachments interface {
 	List() []Attachment
+}
+
+// AttachmentAdapter represents the attachment adapter
+type AttachmentAdapter interface {
+	ToContent(ins Attachment) ([]byte, error)
+	ToAttachment(content []byte) (Attachment, error)
 }
 
 // AttachmentBuilder represents an attachment builder

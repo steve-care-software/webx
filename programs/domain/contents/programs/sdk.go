@@ -7,6 +7,12 @@ func NewBuilder() Builder {
 	return createBuilder()
 }
 
+// Adapter represents the program adapter
+type Adapter interface {
+	ToContent(ins Program) ([]byte, error)
+	ToProgram(content []byte) (Program, error)
+}
+
 // Builder represents a program
 type Builder interface {
 	Create() Builder

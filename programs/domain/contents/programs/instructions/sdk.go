@@ -10,6 +10,12 @@ func NewBuilder() Builder {
 	return createBuilder()
 }
 
+// Adapter represents the instruction adapter
+type Adapter interface {
+	ToContent(ins Instruction) ([]byte, error)
+	ToInstruction(content []byte) (Instruction, error)
+}
+
 // Builder represents an instruction builder
 type Builder interface {
 	Create() Builder

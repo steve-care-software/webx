@@ -10,6 +10,12 @@ func NewBuilder() Builder {
 	return createBuilder()
 }
 
+// Adapter represents the value adapter
+type Adapter interface {
+	ToContent(ins Value) ([]byte, error)
+	ToValue(content []byte) (Value, error)
+}
+
 // Builder represents a value builder
 type Builder interface {
 	Create() Builder

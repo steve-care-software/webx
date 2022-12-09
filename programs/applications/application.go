@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/steve-care-software/webx/blockchains/applications"
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/programs/domain/compilers"
 	"github.com/steve-care-software/webx/programs/domain/instructions"
@@ -15,7 +16,7 @@ import (
 )
 
 type application struct {
-	hashAdapter        hash.Adapter
+	blockchainApp      applications.Application
 	builder            programs.Builder
 	instructionBuilder programs.InstructionBuilder
 	applicationBuilder programs.ApplicationBuilder
@@ -23,10 +24,11 @@ type application struct {
 	attachmentBuilder  programs.AttachmentBuilder
 	assignmentBuilder  programs.AssignmentBuilder
 	valueBuilder       programs.ValueBuilder
+	hashAdapter        hash.Adapter
 }
 
 func createApplication(
-	hashAdapter hash.Adapter,
+	blockchainApp applications.Application,
 	builder programs.Builder,
 	instructionBuilder programs.InstructionBuilder,
 	applicationBuilder programs.ApplicationBuilder,
@@ -34,9 +36,10 @@ func createApplication(
 	attachmentBuilder programs.AttachmentBuilder,
 	assignmentBuilder programs.AssignmentBuilder,
 	valueBuilder programs.ValueBuilder,
+	hashAdapter hash.Adapter,
 ) Application {
 	out := application{
-		hashAdapter:        hashAdapter,
+		blockchainApp:      blockchainApp,
 		builder:            builder,
 		instructionBuilder: instructionBuilder,
 		applicationBuilder: applicationBuilder,
@@ -44,13 +47,14 @@ func createApplication(
 		attachmentBuilder:  attachmentBuilder,
 		assignmentBuilder:  assignmentBuilder,
 		valueBuilder:       valueBuilder,
+		hashAdapter:        hashAdapter,
 	}
 	return &out
 }
 
 // New creates a new application
 func (app *application) New(name string) error {
-	return nil
+	return app.blockchainApp.New(name)
 }
 
 // Retrieve retrieves a program by hash
