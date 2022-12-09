@@ -7,7 +7,6 @@ import (
 
 	"github.com/steve-care-software/webx/blockchains/applications"
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/domain/databases/references"
 	contents_grammars "github.com/steve-care-software/webx/grammars/domain/contents/grammars"
 	contents_channels "github.com/steve-care-software/webx/grammars/domain/contents/grammars/channels"
 	contents_elements "github.com/steve-care-software/webx/grammars/domain/contents/grammars/elements"
@@ -243,54 +242,9 @@ func (app *application) retrieveToken(context uint, hash hash.Hash) (grammars.To
 	}
 
 	name := hash.String()
-	builder := app.grammarTokenBuilder.Create().WithName(name).WithBlock(block)
-	suites, err := app.retrieveSuitesByToken(context, hash)
-	if err == nil {
-		builder.WithSuites(suites)
-	}
-
-	return builder.Now()
-}
-
-func (app *application) retrieveSuitesByToken(context uint, tokenHash hash.Hash) (grammars.Suites, error) {
-	pHash, err := app.hashAdapter.FromBytes([]byte(fmt.Sprintf(grammarMatchByTokenPattern, tokenHash.String())))
-	if err != nil {
-		return nil, err
-	}
-
-	content, err := app.blockchainApp.ReadByHash(context, *pHash)
-	if err != nil {
-		return nil, err
-	}
-
-	contentMatch, err := app.contentMatchAdapter.ToMatch(content)
-	if err != nil {
-		return nil, err
-	}
-
-	suiteHashes := contentMatch.Suites()
-	return app.retrieveSuites(context, suiteHashes)
-}
-
-func (app *application) retrieveSuites(context uint, hashes []hash.Hash) (grammars.Suites, error) {
-	contents, err := app.blockchainApp.ReadAllByHashes(context, hashes)
-	if err != nil {
-		return nil, err
-	}
-
-	list := []grammars.Suite{}
-	for _, oneContent := range contents {
-		suite, err := app.contentToSuite(context, oneContent)
-		if err != nil {
-			return nil, err
-		}
-
-		list = append(list, suite)
-
-	}
-
-	return app.grammarSuitesBuilder.Create().
-		WithList(list).
+	return app.grammarTokenBuilder.Create().
+		WithName(name).
+		WithBlock(block).
 		Now()
 }
 
@@ -568,7 +522,7 @@ func (app *application) Scan(context uint, suites grammars.Suites) (grammars.Gra
 // ScanWithChannels executes a scan with channels
 func (app *application) ScanWithChannels(context uint, suites grammars.Suites, channels grammars.Channels) (grammars.Grammar, error) {
 	// retrieve the token content keys:
-	contentKeys, err := app.blockchainApp.ContentKeys(context, references.KindGrammarToken)
+	contentKeys, err := app.blockchainApp.ContentKeys(context, KindGrammar)
 	if err != nil {
 		return nil, err
 	}
@@ -666,17 +620,17 @@ func (app *application) insertGrammar(context uint, grammar grammars.Grammar, re
 	}
 
 	root := grammar.Root().Hash()
-	channels := []hash.Hash{}
+	channelsHashes := []hash.Hash{}
 	if grammar.HasChannels() {
 		channelsList := grammar.Channels().List()
 		for _, oneChannel := range channelsList {
-			channels = append(channels, oneChannel.Hash())
+			channelsHashes = append(channelsHashes, oneChannel.Hash())
 		}
 	}
 
 	builder := app.contentBuilder.Create().WithHash(grammarHash).WithRoot(root)
-	if len(channels) > 0 {
-		builder.WithChannels(channels)
+	if len(channelsHashes) > 0 {
+		builder.WithChannels(channelsHashes)
 	}
 
 	content, err := builder.Now()
@@ -756,45 +710,6 @@ func (app *application) insertToken(context uint, token grammars.Token, recursiv
 	}
 
 	return recursives, nil
-}
-
-func (app *application) insertSuites(context uint, suites grammars.Suites) error {
-	list := suites.List()
-	for _, oneSuite := range list {
-		err := app.insertSuite(context, oneSuite)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (app *application) insertSuite(context uint, suite grammars.Suite) error {
-	// if the suite already exists:
-	suiteHash := suite.Hash()
-	_, err := app.retrieveSuite(context, suiteHash)
-	if err == nil {
-		return nil
-	}
-
-	content := suite.Content()
-	builder := app.contentSuiteBuilder.Create().WithHash(suiteHash).WithContent(content)
-	if suite.IsValid() {
-		builder.IsValid()
-	}
-
-	contentSuite, err := builder.Now()
-	if err != nil {
-		return err
-	}
-
-	suiteBytes, err := app.contentSuiteAdapter.ToContent(contentSuite)
-	if err != nil {
-		return err
-	}
-
-	return app.blockchainApp.Write(context, suiteHash, suiteBytes, KindSuite)
 }
 
 func (app *application) insertElement(context uint, element grammars.Element, recursives map[string]hash.Hash) (map[string]hash.Hash, error) {

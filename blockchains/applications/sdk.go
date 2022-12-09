@@ -71,10 +71,12 @@ type Database interface {
 
 // Content represents the content application
 type Content interface {
-	ListByKind(context uint, kind uint, index uint, amount uint) ([]hash.Hash, uint, error)
+	//PartialListByKind(context uint, kind uint, index uint, amount uint) ([]hash.Hash, uint, error)
+	//ListByHash(context uint, listHash hash.Hash) ([]hash.Hash, error)
 	Read(context uint, pointer references.Pointer) ([]byte, error)
 	ReadByHash(content uint, hash hash.Hash) ([]byte, error)
 	ReadAll(context uint, pointers []references.Pointer) ([][]byte, error)
 	ReadAllByHashes(context uint, hashes []hash.Hash) ([][]byte, error)
+	//WriteInListByHash(context uint, listHash hash.Hash, elementHash hash.Hash) error
 	Write(context uint, hash hash.Hash, data []byte, kind uint8) error
 }

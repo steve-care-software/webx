@@ -7,8 +7,6 @@ import (
 	"github.com/steve-care-software/webx/grammars/domain/trees"
 )
 
-const grammarMatchByTokenPattern = "grammarMatchByToken:%s"
-
 const (
 	// KindGrammar represents the grammar kind
 	KindGrammar = iota
