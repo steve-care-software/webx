@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/grammars/domain/grammars"
 	"github.com/steve-care-software/webx/grammars/domain/trees"
 	"github.com/steve-care-software/webx/selectors/domain/selectors"
 )
@@ -40,6 +41,11 @@ func (app *application) Insert(context uint, selector selectors.Selector) error 
 // InsertAll inserts a list of selectors
 func (app *application) InsertAll(context uint, selectors []selectors.Selector) error {
 	return nil
+}
+
+// Matches returns true if the selector matches the grammar, false otherwise
+func (app *application) Matches(grammar grammars.Grammar, selector selectors.Selector) (bool, error) {
+	return true, nil
 }
 
 // Execute executes a selector on a data tree

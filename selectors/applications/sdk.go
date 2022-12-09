@@ -2,6 +2,7 @@ package applications
 
 import (
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/grammars/domain/grammars"
 	"github.com/steve-care-software/webx/grammars/domain/trees"
 	"github.com/steve-care-software/webx/selectors/domain/selectors"
 )
@@ -15,6 +16,7 @@ type Application interface {
 
 // Software represents the selector software application
 type Software interface {
+	Matches(grammar grammars.Grammar, selector selectors.Selector) (bool, error)
 	Execute(selector selectors.Selector, tree trees.Tree) (interface{}, bool, error)
 }
 
