@@ -3,22 +3,22 @@ package selectors
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 )
 
 type builder struct {
-	entity entities.Entity
-	token  entities.Identifier
-	inside entities.Identifier
-	fn     entities.Identifier
+	pHash   *hash.Hash
+	pToken  *hash.Hash
+	pInside *hash.Hash
+	pFn     *hash.Hash
 }
 
 func createBuilder() Builder {
 	out := builder{
-		entity: nil,
-		token:  nil,
-		inside: nil,
-		fn:     nil,
+		pHash:   nil,
+		pToken:  nil,
+		pInside: nil,
+		pFn:     nil,
 	}
 
 	return &out
@@ -29,47 +29,47 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithEntity adds an entity to the builder
-func (app *builder) WithEntity(entity entities.Entity) Builder {
-	app.entity = entity
+// WithHash adds an hash to the builder
+func (app *builder) WithHash(hash hash.Hash) Builder {
+	app.pHash = &hash
 	return app
 }
 
 // WithToken add token to the builder
-func (app *builder) WithToken(token entities.Identifier) Builder {
-	app.token = token
+func (app *builder) WithToken(token hash.Hash) Builder {
+	app.pToken = &token
 	return app
 }
 
 // WithInside add inside to the builder
-func (app *builder) WithInside(inside entities.Identifier) Builder {
-	app.inside = inside
+func (app *builder) WithInside(inside hash.Hash) Builder {
+	app.pInside = &inside
 	return app
 }
 
 // WithFunc add fn to the builder
-func (app *builder) WithFunc(fn entities.Identifier) Builder {
-	app.fn = fn
+func (app *builder) WithFunc(fn hash.Hash) Builder {
+	app.pFn = &fn
 	return app
 }
 
 // Now builds a new Selector instance
 func (app *builder) Now() (Selector, error) {
-	if app.entity == nil {
-		return nil, errors.New("the entity is mandatory in order to build a Selector instance")
+	if app.pHash == nil {
+		return nil, errors.New("the hash is mandatory in order to build a Selector instance")
 	}
 
-	if app.token == nil {
+	if app.pToken == nil {
 		return nil, errors.New("the token is mandatory in order to build a Selector instance")
 	}
 
-	if app.inside == nil {
+	if app.pInside == nil {
 		return nil, errors.New("the inside is mandatory in order to build a Selector instance")
 	}
 
-	if app.fn == nil {
+	if app.pFn == nil {
 		return nil, errors.New("the func is mandatory in order to build a Selector instance")
 	}
 
-	return createSelector(app.entity, app.token, app.inside, app.fn), nil
+	return createSelector(*app.pHash, *app.pToken, *app.pInside, *app.pFn), nil
 }

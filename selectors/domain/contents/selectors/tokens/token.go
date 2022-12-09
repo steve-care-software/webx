@@ -1,39 +1,41 @@
 package tokens
 
-import "github.com/steve-care-software/webx/domain/databases/entities"
+import (
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+)
 
 type token struct {
-	entity   entities.Entity
-	reverse  entities.Identifier
+	hash     hash.Hash
+	reverse  hash.Hash
 	element  Element
 	pContent *uint
 }
 
 func createToken(
-	entity entities.Entity,
-	reverse entities.Identifier,
+	hash hash.Hash,
+	reverse hash.Hash,
 	element Element,
 ) Token {
-	return createTokenInternally(entity, reverse, element, nil)
+	return createTokenInternally(hash, reverse, element, nil)
 }
 
 func createTokenWithContentIndex(
-	entity entities.Entity,
-	reverse entities.Identifier,
+	hash hash.Hash,
+	reverse hash.Hash,
 	element Element,
 	pContent *uint,
 ) Token {
-	return createTokenInternally(entity, reverse, element, pContent)
+	return createTokenInternally(hash, reverse, element, pContent)
 }
 
 func createTokenInternally(
-	entity entities.Entity,
-	reverse entities.Identifier,
+	hash hash.Hash,
+	reverse hash.Hash,
 	element Element,
 	pContent *uint,
 ) Token {
 	out := token{
-		entity:   entity,
+		hash:     hash,
 		reverse:  reverse,
 		element:  element,
 		pContent: pContent,
@@ -42,13 +44,13 @@ func createTokenInternally(
 	return &out
 }
 
-// Entity returns the entity
-func (obj *token) Entity() entities.Entity {
-	return obj.entity
+// Hash returns the hash
+func (obj *token) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Reverse returns the reverse
-func (obj *token) Reverse() entities.Identifier {
+func (obj *token) Reverse() hash.Hash {
 	return obj.reverse
 }
 

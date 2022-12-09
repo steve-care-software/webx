@@ -3,22 +3,22 @@ package tokens
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 )
 
 type builder struct {
-	entity        entities.Entity
-	reverse       entities.Identifier
-	element       entities.Identifier
+	pHash         *hash.Hash
+	pReverse      *hash.Hash
+	pElement      *hash.Hash
 	pElementIndex *uint
 	pContentIndex *uint
 }
 
 func createBuilder() Builder {
 	out := builder{
-		entity:        nil,
-		reverse:       nil,
-		element:       nil,
+		pHash:         nil,
+		pReverse:      nil,
+		pElement:      nil,
 		pElementIndex: nil,
 		pContentIndex: nil,
 	}
@@ -31,21 +31,21 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithEntity adds an entity to the builder
-func (app *builder) WithEntity(entity entities.Entity) Builder {
-	app.entity = entity
+// WithHash adds an hash to the builder
+func (app *builder) WithHash(hash hash.Hash) Builder {
+	app.pHash = &hash
 	return app
 }
 
 // WithReverse adds a reverse to the builder
-func (app *builder) WithReverse(reverse entities.Identifier) Builder {
-	app.reverse = reverse
+func (app *builder) WithReverse(reverse hash.Hash) Builder {
+	app.pReverse = &reverse
 	return app
 }
 
 // WithElement adds an element to the builder
-func (app *builder) WithElement(element entities.Identifier) Builder {
-	app.element = element
+func (app *builder) WithElement(element hash.Hash) Builder {
+	app.pElement = &element
 	return app
 }
 
@@ -63,15 +63,15 @@ func (app *builder) WithContentIndex(contentIndex uint) Builder {
 
 // Now builds a new Token instance
 func (app *builder) Now() (Token, error) {
-	if app.entity == nil {
-		return nil, errors.New("the entity is mandatory in order to build a Token instance")
+	if app.pHash == nil {
+		return nil, errors.New("the hash is mandatory in order to build a Token instance")
 	}
 
-	if app.reverse == nil {
+	if app.pReverse == nil {
 		return nil, errors.New("the reverse is mandatory in order to build a Token instance")
 	}
 
-	if app.element == nil {
+	if app.pElement == nil {
 		return nil, errors.New("the element is mandatory in order to build a Token instance")
 	}
 
@@ -79,10 +79,10 @@ func (app *builder) Now() (Token, error) {
 		return nil, errors.New("the element index is mandatory in order to build a Token instance")
 	}
 
-	element := createElement(app.element, *app.pElementIndex)
+	element := createElement(*app.pElement, *app.pElementIndex)
 	if app.pContentIndex != nil {
-		return createTokenWithContentIndex(app.entity, app.reverse, element, app.pContentIndex), nil
+		return createTokenWithContentIndex(*app.pHash, *app.pReverse, element, app.pContentIndex), nil
 	}
 
-	return createToken(app.entity, app.reverse, element), nil
+	return createToken(*app.pHash, *app.pReverse, element), nil
 }

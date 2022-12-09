@@ -1,7 +1,6 @@
 package applications
 
 import (
-	"github.com/steve-care-software/webx/blockchains/applications"
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/grammars/domain/trees"
 	"github.com/steve-care-software/webx/selectors/domain/selectors"
@@ -10,7 +9,6 @@ import (
 // Application represents a selector application
 type Application interface {
 	New(name string) error
-	applications.Database
 	Database
 	Software
 }
@@ -23,7 +21,7 @@ type Software interface {
 // Database represents the selector database application
 type Database interface {
 	Retrieve(context uint, hash hash.Hash) (selectors.Selector, error)
-	Search(context uint, grammar hash.Hash, data []byte, output interface{}) (selectors.Selector, error)
+	Scan(context uint, grammar hash.Hash, data []byte, output interface{}) (selectors.Selector, error)
 	Insert(context uint, selector selectors.Selector) error
 	InsertAll(context uint, selectors []selectors.Selector) error
 }

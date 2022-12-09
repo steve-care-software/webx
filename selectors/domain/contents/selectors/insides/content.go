@@ -1,27 +1,29 @@
 package insides
 
-import "github.com/steve-care-software/webx/domain/databases/entities"
+import (
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+)
 
 type content struct {
-	fn       entities.Identifier
-	fetchers entities.Identifiers
+	fn       hash.Hash
+	fetchers []hash.Hash
 }
 
 func createContentWithFn(
-	fn entities.Identifier,
+	fn hash.Hash,
 ) Content {
 	return createContentInternally(fn, nil)
 }
 
 func createContentWithFetchers(
-	fetchers entities.Identifiers,
+	fetchers []hash.Hash,
 ) Content {
 	return createContentInternally(nil, fetchers)
 }
 
 func createContentInternally(
-	fn entities.Identifier,
-	fetchers entities.Identifiers,
+	fn hash.Hash,
+	fetchers []hash.Hash,
 ) Content {
 	out := content{
 		fn:       fn,
@@ -37,7 +39,7 @@ func (obj *content) IsFn() bool {
 }
 
 // Fn returns the func, if any
-func (obj *content) Fn() entities.Identifier {
+func (obj *content) Fn() hash.Hash {
 	return obj.fn
 }
 
@@ -47,6 +49,6 @@ func (obj *content) IsFetchers() bool {
 }
 
 // Fetchers returns the fetchers, if any
-func (obj *content) Fetchers() entities.Identifiers {
+func (obj *content) Fetchers() []hash.Hash {
 	return obj.fetchers
 }

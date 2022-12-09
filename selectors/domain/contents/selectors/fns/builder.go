@@ -3,20 +3,20 @@ package fns
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 )
 
 type builder struct {
-	entity    entities.Entity
+	pHash     *hash.Hash
 	isSingle  bool
 	isContent bool
-	program   entities.Identifier
+	program   hash.Hash
 	pParam    *uint
 }
 
 func createBuilder() Builder {
 	out := builder{
-		entity:    nil,
+		pHash:     nil,
 		isSingle:  false,
 		isContent: false,
 		program:   nil,
@@ -31,14 +31,14 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithEntity adds an entity to the builder
-func (app *builder) WithEntity(entity entities.Entity) Builder {
-	app.entity = entity
+// WithHash adds an hash to the builder
+func (app *builder) WithHash(hash hash.Hash) Builder {
+	app.pHash = &hash
 	return app
 }
 
 // WithProgram adds a program to the builder
-func (app *builder) WithProgram(program entities.Identifier) Builder {
+func (app *builder) WithProgram(program hash.Hash) Builder {
 	app.program = program
 	return app
 }
@@ -63,8 +63,8 @@ func (app *builder) IsContent() Builder {
 
 // Now builds a new Fn isntance
 func (app *builder) Now() (Fn, error) {
-	if app.entity == nil {
-		return nil, errors.New("the entity is mandatory in order to build a Fn instance")
+	if app.pHash == nil {
+		return nil, errors.New("the hash is mandatory in order to build a Fn instance")
 	}
 
 	if app.program == nil {
@@ -75,5 +75,5 @@ func (app *builder) Now() (Fn, error) {
 		return nil, errors.New("the param is mandatory in order to build a Fn instance")
 	}
 
-	return createFn(app.entity, app.isSingle, app.isContent, app.program, *app.pParam), nil
+	return createFn(*app.pHash, app.isSingle, app.isContent, app.program, *app.pParam), nil
 }

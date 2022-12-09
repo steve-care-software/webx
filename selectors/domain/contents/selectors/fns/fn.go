@@ -1,24 +1,26 @@
 package fns
 
-import "github.com/steve-care-software/webx/domain/databases/entities"
+import (
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+)
 
 type fn struct {
-	entity    entities.Entity
+	hash      hash.Hash
 	isSingle  bool
 	isContent bool
-	program   entities.Identifier
+	program   hash.Hash
 	param     uint
 }
 
 func createFn(
-	entity entities.Entity,
+	hash hash.Hash,
 	isSingle bool,
 	isContent bool,
-	program entities.Identifier,
+	program hash.Hash,
 	param uint,
 ) Fn {
 	out := fn{
-		entity:    entity,
+		hash:      hash,
 		isSingle:  isSingle,
 		isContent: isContent,
 		program:   program,
@@ -28,9 +30,9 @@ func createFn(
 	return &out
 }
 
-// Entity returns the entity
-func (obj *fn) Entity() entities.Entity {
-	return obj.entity
+// Hash returns the hash
+func (obj *fn) Hash() hash.Hash {
+	return obj.hash
 }
 
 // IsSingle returns true if single, false otherwise
@@ -44,7 +46,7 @@ func (obj *fn) IsContent() bool {
 }
 
 // Program returns the program
-func (obj *fn) Program() entities.Identifier {
+func (obj *fn) Program() hash.Hash {
 	return obj.program
 }
 

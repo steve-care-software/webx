@@ -1,31 +1,33 @@
 package fetchers
 
-import "github.com/steve-care-software/webx/domain/databases/entities"
+import (
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+)
 
 type content struct {
-	recursive entities.Identifier
-	selector  entities.Identifier
+	pRecursive *hash.Hash
+	pSelector  *hash.Hash
 }
 
 func createContentWithRecursive(
-	recursive entities.Identifier,
+	pRecursive *hash.Hash,
 ) Content {
-	return createContentInternally(recursive, nil)
+	return createContentInternally(pRecursive, nil)
 }
 
 func createContentWithSelector(
-	selector entities.Identifier,
+	pSelector *hash.Hash,
 ) Content {
-	return createContentInternally(nil, selector)
+	return createContentInternally(nil, pSelector)
 }
 
 func createContentInternally(
-	recursive entities.Identifier,
-	selector entities.Identifier,
+	pRecursive *hash.Hash,
+	pSelector *hash.Hash,
 ) Content {
 	out := content{
-		recursive: recursive,
-		selector:  selector,
+		pRecursive: pRecursive,
+		pSelector:  pSelector,
 	}
 
 	return &out
@@ -33,20 +35,20 @@ func createContentInternally(
 
 // IsRecursive returns true if recursive, false otherwise
 func (obj *content) IsRecursive() bool {
-	return obj.recursive != nil
+	return obj.pRecursive != nil
 }
 
 // Recursive returns the recursive, if any
-func (obj *content) Recursive() entities.Identifier {
-	return obj.recursive
+func (obj *content) Recursive() *hash.Hash {
+	return obj.pRecursive
 }
 
 // IsSelector returns true if selector, false otherwise
 func (obj *content) IsSelector() bool {
-	return obj.selector != nil
+	return obj.pSelector != nil
 }
 
 // Selector returns the selector, if any
-func (obj *content) Selector() entities.Identifier {
-	return obj.selector
+func (obj *content) Selector() *hash.Hash {
+	return obj.pSelector
 }

@@ -1,7 +1,7 @@
 package fns
 
 import (
-	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 )
 
 // NewBuilder initializes the builder
@@ -12,8 +12,8 @@ func NewBuilder() Builder {
 // Builder represents a func builder
 type Builder interface {
 	Create() Builder
-	WithEntity(entity entities.Entity) Builder
-	WithProgram(program entities.Identifier) Builder
+	WithHash(hash hash.Hash) Builder
+	WithProgram(program hash.Hash) Builder
 	WithParam(param uint) Builder
 	IsSingle() Builder
 	IsContent() Builder
@@ -22,9 +22,9 @@ type Builder interface {
 
 // Fn represents a func
 type Fn interface {
-	Entity() entities.Entity
+	Hash() hash.Hash
 	IsSingle() bool
 	IsContent() bool
-	Program() entities.Identifier
+	Program() hash.Hash
 	Param() uint
 }

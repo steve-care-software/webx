@@ -1,7 +1,7 @@
 package tokens
 
 import (
-	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 )
 
 // NewBuilder creates a new builder instance
@@ -12,9 +12,9 @@ func NewBuilder() Builder {
 // Builder represents a token builder
 type Builder interface {
 	Create() Builder
-	WithEntity(entity entities.Entity) Builder
-	WithReverse(reverse entities.Identifier) Builder
-	WithElement(element entities.Identifier) Builder
+	WithHash(hash hash.Hash) Builder
+	WithReverse(reverse hash.Hash) Builder
+	WithElement(element hash.Hash) Builder
 	WithElementIndex(elementIndex uint) Builder
 	WithContentIndex(contentIndex uint) Builder
 	Now() (Token, error)
@@ -22,8 +22,8 @@ type Builder interface {
 
 // Token represents a token
 type Token interface {
-	Entity() entities.Entity
-	Reverse() entities.Identifier
+	Hash() hash.Hash
+	Reverse() hash.Hash
 	Element() Element
 	HasContent() bool
 	Content() *uint
@@ -31,6 +31,6 @@ type Token interface {
 
 // Element represents an element
 type Element interface {
-	Element() entities.Identifier
+	Element() hash.Hash
 	Index() uint
 }

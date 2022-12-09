@@ -1,22 +1,24 @@
 package selectors
 
-import "github.com/steve-care-software/webx/domain/databases/entities"
+import (
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+)
 
 type selector struct {
-	entity entities.Entity
-	token  entities.Identifier
-	inside entities.Identifier
-	fn     entities.Identifier
+	hash   hash.Hash
+	token  hash.Hash
+	inside hash.Hash
+	fn     hash.Hash
 }
 
 func createSelector(
-	entity entities.Entity,
-	token entities.Identifier,
-	inside entities.Identifier,
-	fn entities.Identifier,
+	hash hash.Hash,
+	token hash.Hash,
+	inside hash.Hash,
+	fn hash.Hash,
 ) Selector {
 	out := selector{
-		entity: entity,
+		hash:   hash,
 		token:  token,
 		inside: inside,
 		fn:     fn,
@@ -25,22 +27,22 @@ func createSelector(
 	return &out
 }
 
-// Entity returns the entity
-func (obj *selector) Entity() entities.Entity {
-	return obj.entity
+// Hash returns the hash
+func (obj *selector) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Token returns the token
-func (obj *selector) Token() entities.Identifier {
+func (obj *selector) Token() hash.Hash {
 	return obj.token
 }
 
 // Inside returns the inside
-func (obj *selector) Inside() entities.Identifier {
+func (obj *selector) Inside() hash.Hash {
 	return obj.inside
 }
 
 // Func returns the func
-func (obj *selector) Func() entities.Identifier {
+func (obj *selector) Func() hash.Hash {
 	return obj.fn
 }

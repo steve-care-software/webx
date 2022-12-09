@@ -1,27 +1,27 @@
 package fetchers
 
-import "github.com/steve-care-software/webx/domain/databases/entities"
+import "github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 
 type fetcher struct {
-	entity  entities.Entity
+	hash    hash.Hash
 	content Content
 }
 
 func createFetcher(
-	entity entities.Entity,
+	hash hash.Hash,
 	content Content,
 ) Fetcher {
 	out := fetcher{
-		entity:  entity,
+		hash:    hash,
 		content: content,
 	}
 
 	return &out
 }
 
-// Entity returns the entity
-func (obj *fetcher) Entity() entities.Entity {
-	return obj.entity
+// Hash returns the hash
+func (obj *fetcher) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Content returns the content

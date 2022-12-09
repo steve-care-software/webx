@@ -1,27 +1,27 @@
 package insides
 
-import "github.com/steve-care-software/webx/domain/databases/entities"
+import "github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 
 type inside struct {
-	entity  entities.Entity
+	hash    hash.Hash
 	content Content
 }
 
 func createInside(
-	entity entities.Entity,
+	hash hash.Hash,
 	content Content,
 ) Inside {
 	out := inside{
-		entity:  entity,
+		hash:    hash,
 		content: content,
 	}
 
 	return &out
 }
 
-// Entity returns the entity
-func (obj *inside) Entity() entities.Entity {
-	return obj.entity
+// Hash returns the hash
+func (obj *inside) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Content returns the content

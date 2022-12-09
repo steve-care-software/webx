@@ -1,14 +1,14 @@
 package tokens
 
-import "github.com/steve-care-software/webx/domain/databases/entities"
+import "github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 
 type element struct {
-	el    entities.Identifier
+	el    hash.Hash
 	index uint
 }
 
 func createElement(
-	el entities.Identifier,
+	el hash.Hash,
 	index uint,
 ) Element {
 	out := element{
@@ -20,7 +20,7 @@ func createElement(
 }
 
 // Element returns the element
-func (obj *element) Element() entities.Identifier {
+func (obj *element) Element() hash.Hash {
 	return obj.el
 }
 

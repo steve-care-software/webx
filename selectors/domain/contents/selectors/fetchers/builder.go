@@ -3,20 +3,20 @@ package fetchers
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 )
 
 type builder struct {
-	entity    entities.Entity
-	recursive entities.Identifier
-	selector  entities.Identifier
+	pHash      *hash.Hash
+	pRecursive *hash.Hash
+	pSelector  *hash.Hash
 }
 
 func createBuilder() Builder {
 	out := builder{
-		entity:    nil,
-		recursive: nil,
-		selector:  nil,
+		pHash:      nil,
+		pRecursive: nil,
+		pSelector:  nil,
 	}
 
 	return &out
@@ -27,38 +27,38 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithEntity adds an entity to the builder
-func (app *builder) WithEntity(entity entities.Entity) Builder {
-	app.entity = entity
+// WithHash adds an hash to the builder
+func (app *builder) WithHash(hash hash.Hash) Builder {
+	app.pHash = &hash
 	return app
 }
 
 // WithRecursive adds a recursive to the builder
-func (app *builder) WithRecursive(recursive entities.Identifier) Builder {
-	app.recursive = recursive
+func (app *builder) WithRecursive(recursive hash.Hash) Builder {
+	app.pRecursive = &recursive
 	return app
 }
 
 // WithSelector adds a selector to the builder
-func (app *builder) WithSelector(selector entities.Identifier) Builder {
-	app.selector = selector
+func (app *builder) WithSelector(selector hash.Hash) Builder {
+	app.pSelector = &selector
 	return app
 }
 
 // Now builds a new Fetcher instance
 func (app *builder) Now() (Fetcher, error) {
-	if app.entity == nil {
-		return nil, errors.New("the entity is mandatory in order to build a Fetcher instance")
+	if app.pHash == nil {
+		return nil, errors.New("the hash is mandatory in order to build a Fetcher instance")
 	}
 
-	if app.recursive != nil {
-		content := createContentWithRecursive(app.recursive)
-		return createFetcher(app.entity, content), nil
+	if app.pRecursive != nil {
+		content := createContentWithRecursive(app.pRecursive)
+		return createFetcher(*app.pHash, content), nil
 	}
 
-	if app.selector != nil {
-		content := createContentWithSelector(app.selector)
-		return createFetcher(app.entity, content), nil
+	if app.pSelector != nil {
+		content := createContentWithSelector(app.pSelector)
+		return createFetcher(*app.pHash, content), nil
 	}
 
 	return nil, errors.New("the Fetcher is invalid")

@@ -1,7 +1,7 @@
 package selectors
 
 import (
-	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 )
 
 // NewBuilder creates a new builder instance
@@ -12,17 +12,17 @@ func NewBuilder() Builder {
 // Builder represents a selector builder
 type Builder interface {
 	Create() Builder
-	WithEntity(entity entities.Entity) Builder
-	WithToken(token entities.Identifier) Builder
-	WithInside(inside entities.Identifier) Builder
-	WithFunc(fn entities.Identifier) Builder
+	WithHash(hash hash.Hash) Builder
+	WithToken(token hash.Hash) Builder
+	WithInside(inside hash.Hash) Builder
+	WithFunc(fn hash.Hash) Builder
 	Now() (Selector, error)
 }
 
 // Selector represents a selector
 type Selector interface {
-	Entity() entities.Entity
-	Token() entities.Identifier
-	Inside() entities.Identifier
-	Func() entities.Identifier
+	Hash() hash.Hash
+	Token() hash.Hash
+	Inside() hash.Hash
+	Func() hash.Hash
 }

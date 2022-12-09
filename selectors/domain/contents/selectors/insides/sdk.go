@@ -1,7 +1,7 @@
 package insides
 
 import (
-	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 )
 
 // NewBuilder creates a new builder instance
@@ -12,22 +12,22 @@ func NewBuilder() Builder {
 // Builder represents an inside builder
 type Builder interface {
 	Create() Builder
-	WithEntity(entity entities.Entity) Builder
-	WithFn(fn entities.Identifier) Builder
-	WithFetchers(fetchers entities.Identifiers) Builder
+	WithHash(hash hash.Hash) Builder
+	WithFn(fn hash.Hash) Builder
+	WithFetchers(fetchers []hash.Hash) Builder
 	Now() (Inside, error)
 }
 
 // Inside represents an inside
 type Inside interface {
-	Entity() entities.Entity
+	Hash() hash.Hash
 	Content() Content
 }
 
 // Content represents an inside content
 type Content interface {
 	IsFn() bool
-	Fn() entities.Identifier
+	Fn() hash.Hash
 	IsFetchers() bool
-	Fetchers() entities.Identifiers
+	Fetchers() []hash.Hash
 }

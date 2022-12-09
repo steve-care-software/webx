@@ -3,19 +3,19 @@ package insides
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/domain/databases/entities"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 )
 
 type builder struct {
-	entity   entities.Entity
-	fn       entities.Identifier
-	fetchers entities.Identifiers
+	pHash    *hash.Hash
+	pFn      *hash.Hash
+	fetchers []hash.Hash
 }
 
 func createBuilder() Builder {
 	out := builder{
-		entity:   nil,
-		fn:       nil,
+		pHash:    nil,
+		pFn:      nil,
 		fetchers: nil,
 	}
 
@@ -27,38 +27,42 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithEntity adds an entity to the builder
-func (app *builder) WithEntity(entity entities.Entity) Builder {
-	app.entity = entity
+// WithHash adds an hash to the builder
+func (app *builder) WithHash(hash hash.Hash) Builder {
+	app.pHash = &hash
 	return app
 }
 
 // WithFn adds a fn to the builder
-func (app *builder) WithFn(fn entities.Identifier) Builder {
-	app.fn = fn
+func (app *builder) WithFn(fn hash.Hash) Builder {
+	app.pFn = &fn
 	return app
 }
 
 // WithFetchers adds a fetchers to the builder
-func (app *builder) WithFetchers(fetchers entities.Identifiers) Builder {
+func (app *builder) WithFetchers(fetchers []hash.Hash) Builder {
 	app.fetchers = fetchers
 	return app
 }
 
 // Now builds a new Inside instance
 func (app *builder) Now() (Inside, error) {
-	if app.entity == nil {
-		return nil, errors.New("the entity is mndatory in order to build an Inside instance")
+	if app.pHash == nil {
+		return nil, errors.New("the hash is mndatory in order to build an Inside instance")
 	}
 
-	if app.fn != nil {
-		content := createContentWithFn(app.fn)
-		return createInside(app.entity, content), nil
+	if app.fetchers != nil && len(app.fetchers) <= 0 {
+		app.fetchers = nil
+	}
+
+	if app.pFn != nil {
+		content := createContentWithFn(*app.pFn)
+		return createInside(*app.pHash, content), nil
 	}
 
 	if app.fetchers != nil {
 		content := createContentWithFetchers(app.fetchers)
-		return createInside(app.entity, content), nil
+		return createInside(*app.pHash, content), nil
 	}
 
 	return nil, errors.New("the Inside is invalid")
