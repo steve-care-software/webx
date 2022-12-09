@@ -21,7 +21,7 @@ type Software interface {
 // Database represents the selector database application
 type Database interface {
 	Retrieve(context uint, hash hash.Hash) (selectors.Selector, error)
-	Scan(context uint, grammar hash.Hash, data []byte, output interface{}) (selectors.Selector, error)
+	Scan(context uint, input trees.Tree, output interface{}) (selectors.Selector, error)
 	Insert(context uint, selector selectors.Selector) error
 	InsertAll(context uint, selectors []selectors.Selector) error
 }
