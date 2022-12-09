@@ -626,58 +626,46 @@ func (app *application) ScanWithChannels(context uint, suites grammars.Suites, c
 
 // Insert inserts a grammar
 func (app *application) Insert(context uint, grammar grammars.Grammar) error {
-	contents, err := app.grammarToBytes(context, grammar)
+	_, err := app.insertGrammar(context, grammar, map[string]hash.Hash{})
 	if err != nil {
 		return err
 	}
 
-	if len(contents) > 0 {
-		str := fmt.Sprintf("the grammar (hash: %s) cannot be inserted because it already exists", grammar.Hash().String())
-		return errors.New(str)
-	}
-
-	return app.blockchainApp.WriteAll(context, contents)
+	return nil
 }
 
-func (app *application) grammarToBytes(context uint, grammar grammars.Grammar) ([][]byte, error) {
-	output := [][]byte{}
-
+func (app *application) insertGrammar(context uint, grammar grammars.Grammar, recursives map[string]hash.Hash) (map[string]hash.Hash, error) {
 	// if the grammar already exists:
-	_, err := app.Retrieve(context, grammar.Hash())
+	grammarHash := grammar.Hash()
+	_, err := app.Retrieve(context, grammarHash)
 	if err == nil {
-		return output, nil
+		return recursives, nil
 	}
 
 	// root token:
 	rootToken := grammar.Root()
 	_, err = app.retrieveToken(context, rootToken.Hash())
 	if err != nil {
-		tokenBytes, err := app.tokenToBytes(context, rootToken, map[string]hash.Hash{})
+		rec, err := app.insertToken(context, rootToken, recursives)
 		if err != nil {
 			return nil, err
 		}
 
-		if len(tokenBytes) > 0 {
-			output = append(output, tokenBytes...)
-		}
+		recursives = rec
 	}
 
 	// channels:
 	if grammar.HasChannels() {
 		channels := grammar.Channels()
-		channelsBytes, err := app.channelsToBytes(context, channels)
+		rec, err := app.insertChannels(context, channels, recursives)
 		if err != nil {
 			return nil, err
 		}
 
-		if len(channelsBytes) > 0 {
-			output = append(output, channelsBytes...)
-		}
+		recursives = rec
 	}
 
-	grammarHash := grammar.Hash()
 	root := grammar.Root().Hash()
-
 	channels := []hash.Hash{}
 	if grammar.HasChannels() {
 		channelsList := grammar.Channels().List()
@@ -701,15 +689,20 @@ func (app *application) grammarToBytes(context uint, grammar grammars.Grammar) (
 		return nil, err
 	}
 
-	return append(output, grammarBytes), nil
+	err = app.blockchainApp.Write(context, grammarHash, grammarBytes, KindGrammar)
+	if err != nil {
+		return nil, err
+	}
+
+	return recursives, nil
 }
 
-func (app *application) tokenToBytes(context uint, token grammars.Token, recursives map[string]hash.Hash) ([][]byte, error) {
-	output := [][]byte{}
-
-	name := token.Name()
-	if _, ok := recursives[name]; !ok {
-		recursives[name] = token.Hash()
+func (app *application) insertToken(context uint, token grammars.Token, recursives map[string]hash.Hash) (map[string]hash.Hash, error) {
+	// if the token already exists:
+	tokenHash := token.Hash()
+	_, err := app.retrieveToken(context, tokenHash)
+	if err == nil {
+		return recursives, nil
 	}
 
 	// elements:
@@ -722,14 +715,12 @@ func (app *application) tokenToBytes(context uint, token grammars.Token, recursi
 			elementHash := oneElement.Hash()
 			_, err := app.retrieveElement(context, elementHash)
 			if err != nil {
-				elementBytes, err := app.elementToBytes(context, oneElement, recursives)
+				rec, err := app.insertElement(context, oneElement, recursives)
 				if err != nil {
 					return nil, err
 				}
 
-				if len(elementBytes) > 0 {
-					output = append(output, elementBytes...)
-				}
+				recursives = rec
 			}
 
 			elementHashes = append(elementHashes, elementHash)
@@ -759,52 +750,54 @@ func (app *application) tokenToBytes(context uint, token grammars.Token, recursi
 		return nil, err
 	}
 
-	return append(output, tokenBytes), nil
-}
-
-func (app *application) suitesToBytes(context uint, suites grammars.Suites) ([][]byte, error) {
-	output := [][]byte{}
-	list := suites.List()
-	for _, oneSuite := range list {
-		content, err := app.suiteToBytes(context, oneSuite)
-		if err != nil {
-			return nil, err
-		}
-
-		if len(content) <= 0 {
-			continue
-		}
-
-		output = append(output, content)
+	err = app.blockchainApp.Write(context, tokenHash, tokenBytes, KindToken)
+	if err != nil {
+		return nil, err
 	}
 
-	return output, nil
+	return recursives, nil
 }
 
-func (app *application) suiteToBytes(context uint, suite grammars.Suite) ([]byte, error) {
-	hash := suite.Hash()
-	_, err := app.retrieveSuite(context, hash)
+func (app *application) insertSuites(context uint, suites grammars.Suites) error {
+	list := suites.List()
+	for _, oneSuite := range list {
+		err := app.insertSuite(context, oneSuite)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (app *application) insertSuite(context uint, suite grammars.Suite) error {
+	// if the suite already exists:
+	suiteHash := suite.Hash()
+	_, err := app.retrieveSuite(context, suiteHash)
 	if err == nil {
-		return []byte{}, nil
+		return nil
 	}
 
 	content := suite.Content()
-	builder := app.contentSuiteBuilder.Create().WithHash(hash).WithContent(content)
+	builder := app.contentSuiteBuilder.Create().WithHash(suiteHash).WithContent(content)
 	if suite.IsValid() {
 		builder.IsValid()
 	}
 
 	contentSuite, err := builder.Now()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return app.contentSuiteAdapter.ToContent(contentSuite)
+	suiteBytes, err := app.contentSuiteAdapter.ToContent(contentSuite)
+	if err != nil {
+		return err
+	}
+
+	return app.blockchainApp.Write(context, suiteHash, suiteBytes, KindSuite)
 }
 
-func (app *application) elementToBytes(context uint, element grammars.Element, recursives map[string]hash.Hash) ([][]byte, error) {
-	output := [][]byte{}
-
+func (app *application) insertElement(context uint, element grammars.Element, recursives map[string]hash.Hash) (map[string]hash.Hash, error) {
 	cardinality := element.Cardinality()
 	min := cardinality.Min()
 	contentCardinalityBuilder := app.contentElementCardinalityBuilder.Create().WithMin(min)
@@ -818,9 +811,9 @@ func (app *application) elementToBytes(context uint, element grammars.Element, r
 		return nil, err
 	}
 
-	hash := element.Hash()
+	elementHash := element.Hash()
 	content := element.Content()
-	builder := app.contentElementBuilder.Create().WithHash(hash).WithCardinality(contentCardinality)
+	builder := app.contentElementBuilder.Create().WithHash(elementHash).WithCardinality(contentCardinality)
 	if content.IsValue() {
 		number := content.Value().Number()
 		builder.WithValue(number)
@@ -831,14 +824,12 @@ func (app *application) elementToBytes(context uint, element grammars.Element, r
 		grammarHash := grammar.Hash()
 		_, err := app.Retrieve(context, grammarHash)
 		if err != nil {
-			grammarBytes, err := app.grammarToBytes(context, grammar)
+			rec, err := app.insertGrammar(context, grammar, recursives)
 			if err != nil {
 				return nil, err
 			}
 
-			if len(grammarBytes) > 0 {
-				output = append(output, grammarBytes...)
-			}
+			recursives = rec
 		}
 
 		builder.WithExternal(grammarHash)
@@ -851,14 +842,12 @@ func (app *application) elementToBytes(context uint, element grammars.Element, r
 			tokenHash := token.Hash()
 			_, err := app.retrieveToken(context, tokenHash)
 			if err != nil {
-				tokenBytes, err := app.tokenToBytes(context, token, recursives)
+				rec, err := app.insertToken(context, token, recursives)
 				if err != nil {
 					return nil, err
 				}
 
-				if len(tokenBytes) > 0 {
-					output = append(output, tokenBytes...)
-				}
+				recursives = rec
 			}
 
 			builder.WithToken(tokenHash)
@@ -869,14 +858,12 @@ func (app *application) elementToBytes(context uint, element grammars.Element, r
 			everythingHash := everything.Hash()
 			_, err := app.retrieveEverything(context, everythingHash)
 			if err != nil {
-				everythingBytes, err := app.everythingToBytes(context, everything, recursives)
+				rec, err := app.insertEverything(context, everything, recursives)
 				if err != nil {
 					return nil, err
 				}
 
-				if len(everythingBytes) > 0 {
-					output = append(output, everythingBytes...)
-				}
+				recursives = rec
 			}
 
 			builder.WithEverything(everythingHash)
@@ -903,42 +890,42 @@ func (app *application) elementToBytes(context uint, element grammars.Element, r
 		return nil, err
 	}
 
-	return append(output, elementBytes), nil
+	err = app.blockchainApp.Write(context, elementHash, elementBytes, KindElement)
+	if err != nil {
+		return nil, err
+	}
+
+	return recursives, nil
 }
 
-func (app *application) everythingToBytes(context uint, everything grammars.Everything, recursives map[string]hash.Hash) ([][]byte, error) {
-	output := [][]byte{}
-
+func (app *application) insertEverything(context uint, everything grammars.Everything, recursives map[string]hash.Hash) (map[string]hash.Hash, error) {
 	// eception:
 	exception := everything.Exception()
 	exceptionHash := exception.Hash()
 	_, err := app.retrieveToken(context, exceptionHash)
 	if err != nil {
-		tokenBytes, err := app.tokenToBytes(context, exception, recursives)
+		rec, err := app.insertToken(context, exception, recursives)
 		if err != nil {
 			return nil, err
 		}
 
-		if len(tokenBytes) > 0 {
-			output = append(output, tokenBytes...)
-		}
+		recursives = rec
 	}
 
 	// escape:
-	builder := app.contentEverythingBuilder.Create().WithException(exceptionHash)
+	everythingHash := everything.Hash()
+	builder := app.contentEverythingBuilder.Create().WithHash(everythingHash).WithException(exceptionHash)
 	if everything.HasEscape() {
 		escape := everything.Escape()
 		escapeHash := escape.Hash()
 		_, err := app.retrieveToken(context, escapeHash)
 		if err != nil {
-			tokenBytes, err := app.tokenToBytes(context, escape, recursives)
+			rec, err := app.insertToken(context, escape, recursives)
 			if err != nil {
 				return nil, err
 			}
 
-			if len(tokenBytes) > 0 {
-				output = append(output, tokenBytes...)
-			}
+			recursives = rec
 		}
 
 		builder.WithEscape(escapeHash)
@@ -954,48 +941,43 @@ func (app *application) everythingToBytes(context uint, everything grammars.Ever
 		return nil, err
 	}
 
-	return append(output, contentBytes), nil
+	err = app.blockchainApp.Write(context, everythingHash, contentBytes, KindEverything)
+	if err != nil {
+		return nil, err
+	}
+
+	return recursives, nil
 }
 
-func (app *application) channelsToBytes(context uint, channels grammars.Channels) ([][]byte, error) {
-	output := [][]byte{}
+func (app *application) insertChannels(context uint, channels grammars.Channels, recursives map[string]hash.Hash) (map[string]hash.Hash, error) {
 	channelsList := channels.List()
-	recursives := map[string]hash.Hash{}
 	for _, oneChannel := range channelsList {
-		bytes, err := app.channelToBytes(context, oneChannel, recursives)
+		rec, err := app.insertChannel(context, oneChannel, recursives)
 		if err != nil {
 			return nil, err
 		}
 
-		if len(bytes) <= 0 {
-			continue
-		}
-
-		output = append(output, bytes...)
+		recursives = rec
 	}
 
-	return output, nil
+	return recursives, nil
 }
 
-func (app *application) channelToBytes(context uint, channel grammars.Channel, recursives map[string]hash.Hash) ([][]byte, error) {
-	output := [][]byte{}
-
+func (app *application) insertChannel(context uint, channel grammars.Channel, recursives map[string]hash.Hash) (map[string]hash.Hash, error) {
 	token := channel.Token()
 	tokenHash := token.Hash()
 	_, err := app.retrieveToken(context, tokenHash)
 	if err != nil {
-		tokenBytes, err := app.tokenToBytes(context, token, recursives)
+		rec, err := app.insertToken(context, token, recursives)
 		if err != nil {
 			return nil, err
 		}
 
-		if len(tokenBytes) > 0 {
-			output = append(output, tokenBytes...)
-		}
+		recursives = rec
 	}
 
-	hash := channel.Hash()
-	builder := app.contentChannelBuilder.Create().WithHash(hash).WithToken(tokenHash)
+	channelHash := channel.Hash()
+	builder := app.contentChannelBuilder.Create().WithHash(channelHash).WithToken(tokenHash)
 	if channel.HasCondition() {
 		condition := channel.Condition()
 		if condition.HasPrevious() {
@@ -1003,14 +985,12 @@ func (app *application) channelToBytes(context uint, channel grammars.Channel, r
 			previousHash := previous.Hash()
 			_, err := app.retrieveToken(context, previousHash)
 			if err != nil {
-				tokenBytes, err := app.tokenToBytes(context, previous, recursives)
+				rec, err := app.insertToken(context, previous, recursives)
 				if err != nil {
 					return nil, err
 				}
 
-				if len(tokenBytes) > 0 {
-					output = append(output, tokenBytes...)
-				}
+				recursives = rec
 			}
 
 			builder.WithPrevious(previousHash)
@@ -1021,14 +1001,12 @@ func (app *application) channelToBytes(context uint, channel grammars.Channel, r
 			nextHash := next.Hash()
 			_, err := app.retrieveToken(context, nextHash)
 			if err != nil {
-				tokenBytes, err := app.tokenToBytes(context, next, recursives)
+				rec, err := app.insertToken(context, next, recursives)
 				if err != nil {
 					return nil, err
 				}
 
-				if len(tokenBytes) > 0 {
-					output = append(output, tokenBytes...)
-				}
+				recursives = rec
 			}
 
 			builder.WithNext(nextHash)
@@ -1045,7 +1023,12 @@ func (app *application) channelToBytes(context uint, channel grammars.Channel, r
 		return nil, err
 	}
 
-	return append(output, channelBytes), nil
+	err = app.blockchainApp.Write(context, channelHash, channelBytes, KindChannel)
+	if err != nil {
+		return nil, err
+	}
+
+	return recursives, nil
 }
 
 // Execute executes grammar on data

@@ -43,6 +43,11 @@ func (app *application) Open(name string, height int) (*uint, error) {
 	return nil, nil
 }
 
+// ContentKeys returns the contentKey kind on a context
+func (app *application) ContentKeys(context uint, kind uint8) (references.ContentKeys, error) {
+	return nil, nil
+}
+
 // ContentKey returns the contentKey by hash and flag on a context
 func (app *application) ContentKey(context uint, hash hash.Hash, flag uint8) (references.ContentKey, error) {
 	return nil, nil
@@ -93,6 +98,11 @@ func (app *application) ReplaceTransaction(context uint, block hash.Hash, trx tr
 	return nil
 }
 
+// ListByKind returns the list by kind
+func (app *application) ListByKind(context uint, kind uint, index uint, amount uint) ([]hash.Hash, uint, error) {
+	return nil, 0, nil
+}
+
 // Read reads a pointer on a context
 func (app *application) Read(context uint, pointer references.Pointer) ([]byte, error) {
 	return nil, nil
@@ -114,12 +124,7 @@ func (app *application) ReadAllByHashes(context uint, hashes []hash.Hash) ([][]b
 }
 
 // Write writes data to a context
-func (app *application) Write(context uint, data []byte) error {
-	return nil
-}
-
-// WriteAll writes a list of data to a context
-func (app *application) WriteAll(context uint, data [][]byte) error {
+func (app *application) Write(context uint, hash hash.Hash, data []byte, kind uint8) error {
 	return nil
 }
 

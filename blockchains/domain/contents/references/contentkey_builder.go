@@ -2,7 +2,6 @@ package references
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
@@ -85,11 +84,5 @@ func (app *contentKeyBuilder) Now() (ContentKey, error) {
 		return nil, errors.New("the creation time is mandatory in order to build a ContentKey instance")
 	}
 
-	kind := *app.pKind
-	if kind > KindApplication {
-		str := fmt.Sprintf("the kind must be a uint8 with a value between %d and %d, %d provided", KindIdentity, KindApplication, kind)
-		return nil, errors.New(str)
-	}
-
-	return createContentKey(*app.pHash, kind, app.content, *app.pTrx, *app.pCreatedOn), nil
+	return createContentKey(*app.pHash, *app.pKind, app.content, *app.pTrx, *app.pCreatedOn), nil
 }

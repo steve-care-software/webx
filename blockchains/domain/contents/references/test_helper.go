@@ -66,7 +66,7 @@ func NewContentKeyForTests() ContentKey {
 	createdOn := time.Now().UTC()
 	ins, err := NewContentKeyBuilder().Create().
 		WithHash(*pHash).
-		WithKind(KindIdentity).
+		WithKind(43).
 		WithContent(pointer).
 		WithTransaction(*pTrxHash).
 		CreatedOn(createdOn).

@@ -9,6 +9,26 @@ import (
 
 const grammarMatchByTokenPattern = "grammarMatchByToken:%s"
 
+const (
+	// KindGrammar represents the grammar kind
+	KindGrammar = iota
+
+	// KindToken represents the token kind
+	KindToken
+
+	// KindSuite represents the suite kind
+	KindSuite
+
+	// KindElement represents the element kind
+	KindElement
+
+	// KindEverything represents the everything kind
+	KindEverything
+
+	// KindChannel represents the channel kind
+	KindChannel
+)
+
 // Application represents a grammar application
 type Application interface {
 	New(name string) error
