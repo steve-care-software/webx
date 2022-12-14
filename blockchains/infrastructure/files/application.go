@@ -23,19 +23,9 @@ func createApplication(
 	return &out
 }
 
-// New creates a new database
-func (app *application) New(name string) error {
-	return nil
-}
-
 // Delete deletes an existing database
 func (app *application) Delete(name string) error {
 	return nil
-}
-
-// List lists database names
-func (app *application) List() ([]string, error) {
-	return nil, nil
 }
 
 // Open opens a context at height, height is -1 if the head is requested

@@ -9,7 +9,6 @@ import (
 
 // Application represents a compiler application
 type Application interface {
-	New(name string) error
 	Database
 	Software
 }
@@ -21,7 +20,7 @@ type Software interface {
 
 // Database represents the compiler database application
 type Database interface {
-	List(ontext uint) ([]hash.Hash, error)
+	List(context uint) ([]hash.Hash, error)
 	Retrieve(context uint, hash hash.Hash) (compilers.Compiler, error)
 	Insert(context uint, compiler compilers.Compiler) error
 	InsertAll(context uint, compilers []compilers.Compiler) error

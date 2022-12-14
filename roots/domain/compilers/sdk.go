@@ -1,0 +1,31 @@
+package compilers
+
+import (
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hashtrees"
+	"github.com/steve-care-software/webx/programs/domain/programs/modules"
+	"github.com/steve-care-software/webx/roots/domain/programs"
+	"github.com/steve-care-software/webx/roots/domain/selectors"
+)
+
+// Builder represents a compiler builder
+type Builder interface {
+	Create() Builder
+	WithName(name string) Builder
+	WithModules(modules modules.Modules) Builder
+	WithSelectors(selectors selectors.Selectors) Builder
+	WithPrograms(programs programs.Programs) Builder
+	WithHistory(history hashtrees.HashTree) Builder
+	Now() (Compiler, error)
+}
+
+// Compiler represents the compiler database application
+type Compiler interface {
+	Hash() hash.Hash
+	Name() string
+	Modules() modules.Modules
+	Selectors() selectors.Selectors
+	Programs() programs.Programs
+	HasHistory() bool
+	History() hashtrees.HashTree
+}

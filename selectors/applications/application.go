@@ -25,11 +25,6 @@ func createApplication(
 	return &out
 }
 
-// New creates a new selector database
-func (app *application) New(name string, grammar grammars.Grammar) error {
-	return nil
-}
-
 // Retrieve retrieves a selector
 func (app *application) Retrieve(context uint, hash hash.Hash) (selectors.Selector, error) {
 	return nil, nil

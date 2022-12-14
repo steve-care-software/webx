@@ -26,7 +26,6 @@ type ScanCallbackFn func(output map[string]interface{}) bool
 
 // Application represents a program application
 type Application interface {
-	New(name string) error
 	Database
 	Software
 }

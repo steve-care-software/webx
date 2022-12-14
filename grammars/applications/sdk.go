@@ -29,7 +29,6 @@ const (
 
 // Application represents a grammar application
 type Application interface {
-	New(name string) error
 	Database
 	Software
 }

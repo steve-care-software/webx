@@ -75,11 +75,6 @@ func createApplication(
 	return &out
 }
 
-// New creates a new application
-func (app *application) New(name string) error {
-	return app.blockchainApp.New(name)
-}
-
 // Retrieve retrieves a program by hash
 func (app *application) Retrieve(context uint, hash hash.Hash, modules modules.Modules) (programs.Program, error) {
 	content, err := app.blockchainApp.ReadByHash(context, hash)

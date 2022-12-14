@@ -32,7 +32,6 @@ const (
 
 // Application represents the read application
 type Application interface {
-	New(name string) error
 	Database
 	Reference
 	Blockchain
@@ -61,7 +60,6 @@ type Reference interface {
 // Database represents the database application
 type Database interface {
 	Delete(name string) error
-	List() ([]string, error)
 	Open(name string, height int) (*uint, error)
 	Cancel(context uint) error
 	Commit(context uint) error

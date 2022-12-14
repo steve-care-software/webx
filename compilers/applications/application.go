@@ -50,11 +50,6 @@ func createApplication(
 	return &out
 }
 
-// New creates a new application
-func (app *application) New(name string) error {
-	return app.blockchainApp.New(name)
-}
-
 // List lists the compilers
 func (app *application) List(ontext uint) ([]hash.Hash, error) {
 	return nil, nil
