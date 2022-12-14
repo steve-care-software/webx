@@ -1,8 +1,6 @@
 package modules
 
 import (
-	"crypto/sha512"
-	b64 "encoding/base64"
 	"errors"
 )
 
@@ -39,12 +37,10 @@ func (app *builder) Now() (Modules, error) {
 		return nil, errors.New("there must be at least 1 Module in order to build a Modules instance")
 	}
 
-	mp := map[string]Module{}
+	mp := map[uint]Module{}
 	for _, oneModule := range app.list {
-		name := oneModule.Name()
-		hashedData := sha512.New().Sum(name)
-		keyname := b64.StdEncoding.EncodeToString(hashedData)
-		mp[keyname] = oneModule
+		index := oneModule.Index()
+		mp[index] = oneModule
 	}
 
 	return createModules(app.list, mp), nil

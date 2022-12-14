@@ -1,25 +1,25 @@
 package modules
 
 type module struct {
-	name []byte
-	fn   ExecuteFn
+	index uint
+	fn    ExecuteFn
 }
 
 func createModule(
-	name []byte,
+	index uint,
 	fn ExecuteFn,
 ) Module {
 	out := module{
-		name: name,
-		fn:   fn,
+		index: index,
+		fn:    fn,
 	}
 
 	return &out
 }
 
-// Name returns the name
-func (obj *module) Name() []byte {
-	return obj.name
+// Index returns the index
+func (obj *module) Index() uint {
+	return obj.index
 }
 
 // Func returns the execute fn

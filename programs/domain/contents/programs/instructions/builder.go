@@ -7,16 +7,16 @@ import (
 )
 
 type builder struct {
-	pHash       *hash.Hash
-	pAssignment *hash.Hash
-	pExecution  *hash.Hash
+	pHash      *hash.Hash
+	pValue     *hash.Hash
+	pExecution *hash.Hash
 }
 
 func createBuilder() Builder {
 	out := builder{
-		pHash:       nil,
-		pAssignment: nil,
-		pExecution:  nil,
+		pHash:      nil,
+		pValue:     nil,
+		pExecution: nil,
 	}
 
 	return &out
@@ -33,9 +33,9 @@ func (app *builder) WithHash(hash hash.Hash) Builder {
 	return app
 }
 
-// WithAssignment adds an assignment to the builder
-func (app *builder) WithAssignment(assignment hash.Hash) Builder {
-	app.pAssignment = &assignment
+// WithValue adds an value to the builder
+func (app *builder) WithValue(value hash.Hash) Builder {
+	app.pValue = &value
 	return app
 }
 
@@ -51,8 +51,8 @@ func (app *builder) Now() (Instruction, error) {
 		return nil, errors.New("the hash is mandatory in order to build an Instruction instance")
 	}
 
-	if app.pAssignment != nil {
-		content := createContentWithAssignment(app.pAssignment)
+	if app.pValue != nil {
+		content := createContentWithValue(app.pValue)
 		return createInstruction(*app.pHash, content), nil
 	}
 

@@ -2,15 +2,22 @@ package programs
 
 import (
 	"errors"
+	"fmt"
+
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 )
 
 type builder struct {
-	instructions []Instruction
-	outputs      [][]byte
+	hashAdapter  hash.Adapter
+	instructions Instructions
+	outputs      []uint
 }
 
-func createBuilder() Builder {
+func createBuilder(
+	hashAdapter hash.Adapter,
+) Builder {
 	out := builder{
+		hashAdapter:  hashAdapter,
 		instructions: nil,
 		outputs:      nil,
 	}
@@ -20,38 +27,51 @@ func createBuilder() Builder {
 
 // Create initializes the builder
 func (app *builder) Create() Builder {
-	return createBuilder()
+	return createBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithInstructions add instructions to the builder
-func (app *builder) WithInstructions(instructions []Instruction) Builder {
+func (app *builder) WithInstructions(instructions Instructions) Builder {
 	app.instructions = instructions
 	return app
 }
 
 // WithOutputs add outputs to the builder
-func (app *builder) WithOutputs(outputs [][]byte) Builder {
+func (app *builder) WithOutputs(outputs []uint) Builder {
 	app.outputs = outputs
 	return app
 }
 
 // Now builds a new Program instance
 func (app *builder) Now() (Program, error) {
-	if app.instructions != nil && len(app.instructions) <= 0 {
-		app.instructions = nil
-	}
-
 	if app.instructions == nil {
-		return nil, errors.New("the instructions are mandatory in order to build a Program instance")
+		return nil, errors.New("the instructions is mandatory in order to build a Program instance")
 	}
 
 	if app.outputs != nil && len(app.outputs) <= 0 {
 		app.outputs = nil
 	}
 
-	if app.outputs != nil {
-		return createProgramWithOutputs(app.instructions, app.outputs), nil
+	data := [][]byte{
+		app.instructions.Hash().Bytes(),
 	}
 
-	return createProgram(app.instructions), nil
+	if app.outputs != nil {
+		for _, oneOutput := range app.outputs {
+			data = append(data, []byte(fmt.Sprintf("%d", oneOutput)))
+		}
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	if app.outputs != nil {
+		return createProgramWithOutputs(*pHash, app.instructions, app.outputs), nil
+	}
+
+	return createProgram(*pHash, app.instructions), nil
 }

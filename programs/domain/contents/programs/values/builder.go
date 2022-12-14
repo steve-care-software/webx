@@ -7,22 +7,22 @@ import (
 )
 
 type builder struct {
-	pHash       *hash.Hash
-	pInput      *uint
-	pAssignment *hash.Hash
-	constant    []byte
-	pExecution  *hash.Hash
-	pProgram    *hash.Hash
+	pHash      *hash.Hash
+	pInput     *uint
+	pValue     *hash.Hash
+	constant   []byte
+	pExecution *hash.Hash
+	pProgram   *hash.Hash
 }
 
 func createBuilder() Builder {
 	out := builder{
-		pHash:       nil,
-		pInput:      nil,
-		pAssignment: nil,
-		constant:    nil,
-		pExecution:  nil,
-		pProgram:    nil,
+		pHash:      nil,
+		pInput:     nil,
+		pValue:     nil,
+		constant:   nil,
+		pExecution: nil,
+		pProgram:   nil,
 	}
 
 	return &out
@@ -51,9 +51,9 @@ func (app *builder) WithConstant(constant []byte) Builder {
 	return app
 }
 
-// WithAssignment adds an assignment to the builder
-func (app *builder) WithAssignment(assignment hash.Hash) Builder {
-	app.pAssignment = &assignment
+// WithValue adds an value to the builder
+func (app *builder) WithValue(value hash.Hash) Builder {
+	app.pValue = &value
 	return app
 }
 
@@ -89,8 +89,8 @@ func (app *builder) Now() (Value, error) {
 		return createValue(*app.pHash, content), nil
 	}
 
-	if app.pAssignment != nil {
-		content := createContentWithAssignment(app.pAssignment)
+	if app.pValue != nil {
+		content := createContentWithValue(app.pValue)
 		return createValue(*app.pHash, content), nil
 	}
 

@@ -17,12 +17,16 @@ import (
 type application struct {
 	blockchainApp             applications.Application
 	contentAdapter            contents_programs.Adapter
+	contentBuilder            contents_programs.Builder
 	contentApplicationAdapter contents_applications.Adapter
+	contentApplicationBuilder contents_applications.Builder
 	contentInstructionAdapter contents_instructions.Adapter
+	contentInstructionBuilder contents_instructions.Builder
 	contentValueAdapter       contents_values.Adapter
+	contentValueBuilder       contents_values.Builder
 	builder                   programs.Builder
+	instructionsBuilder       programs.InstructionsBuilder
 	instructionBuilder        programs.InstructionBuilder
-	assignmentBuilder         programs.AssignmentBuilder
 	applicationBuilder        programs.ApplicationBuilder
 	attachmentsBuilder        programs.AttachmentsBuilder
 	attachmentBuilder         programs.AttachmentBuilder
@@ -33,17 +37,39 @@ type application struct {
 func createApplication(
 	blockchainApp applications.Application,
 	contentAdapter contents_programs.Adapter,
+	contentBuilder contents_programs.Builder,
 	contentApplicationAdapter contents_applications.Adapter,
+	contentApplicationBuilder contents_applications.Builder,
 	contentInstructionAdapter contents_instructions.Adapter,
+	contentInstructionBuilder contents_instructions.Builder,
 	contentValueAdapter contents_values.Adapter,
+	contentValueBuilder contents_values.Builder,
+	builder programs.Builder,
+	instructionsBuilder programs.InstructionsBuilder,
+	instructionBuilder programs.InstructionBuilder,
+	applicationBuilder programs.ApplicationBuilder,
+	attachmentsBuilder programs.AttachmentsBuilder,
+	attachmentBuilder programs.AttachmentBuilder,
+	valueBuilder programs.ValueBuilder,
 	hashAdapter hash.Adapter,
 ) Application {
 	out := application{
 		blockchainApp:             blockchainApp,
 		contentAdapter:            contentAdapter,
+		contentBuilder:            contentBuilder,
 		contentApplicationAdapter: contentApplicationAdapter,
+		contentApplicationBuilder: contentApplicationBuilder,
 		contentInstructionAdapter: contentInstructionAdapter,
+		contentInstructionBuilder: contentInstructionBuilder,
 		contentValueAdapter:       contentValueAdapter,
+		contentValueBuilder:       contentValueBuilder,
+		builder:                   builder,
+		instructionsBuilder:       instructionsBuilder,
+		instructionBuilder:        instructionBuilder,
+		applicationBuilder:        applicationBuilder,
+		attachmentsBuilder:        attachmentsBuilder,
+		attachmentBuilder:         attachmentBuilder,
+		valueBuilder:              valueBuilder,
 		hashAdapter:               hashAdapter,
 	}
 	return &out
@@ -72,10 +98,10 @@ func (app *application) Retrieve(context uint, hash hash.Hash, modules modules.M
 		return nil, err
 	}
 
-	outputs := [][]byte{}
+	outputs := []uint{}
 	outputIndexes := contentProgramIns.Outputs()
 	for _, oneIndex := range outputIndexes {
-		outputs = append(outputs, []byte(fmt.Sprintf("%d", oneIndex)))
+		outputs = append(outputs, oneIndex)
 	}
 
 	return app.builder.Create().
@@ -84,18 +110,20 @@ func (app *application) Retrieve(context uint, hash hash.Hash, modules modules.M
 		Now()
 }
 
-func (app *application) retrieveInstructions(context uint, hashes []hash.Hash, modules modules.Modules) ([]programs.Instruction, error) {
-	output := []programs.Instruction{}
+func (app *application) retrieveInstructions(context uint, hashes []hash.Hash, modules modules.Modules) (programs.Instructions, error) {
+	list := []programs.Instruction{}
 	for _, oneHash := range hashes {
 		ins, err := app.retrieveInstruction(context, oneHash, modules)
 		if err != nil {
 			return nil, err
 		}
 
-		output = append(output, ins)
+		list = append(list, ins)
 	}
 
-	return output, nil
+	return app.instructionsBuilder.Create().
+		WithList(list).
+		Now()
 }
 
 func (app *application) retrieveInstruction(context uint, hash hash.Hash, modules modules.Modules) (programs.Instruction, error) {
@@ -111,14 +139,14 @@ func (app *application) retrieveInstruction(context uint, hash hash.Hash, module
 
 	contentIns := contentInstruction.Content()
 	builder := app.instructionBuilder.Create()
-	if contentIns.IsAssignment() {
-		pAssignment := contentIns.Assignment()
-		assignment, err := app.retrieveAssignment(context, *pAssignment, modules)
+	if contentIns.IsValue() {
+		pValueHash := contentIns.Value()
+		value, err := app.retrieveValue(context, *pValueHash, modules)
 		if err != nil {
 			return nil, err
 		}
 
-		builder.WithAssignment(assignment)
+		builder.WithValue(value)
 	}
 
 	if contentIns.IsExecution() {
@@ -145,14 +173,14 @@ func (app *application) retrieveApplication(context uint, hash hash.Hash, module
 		return nil, err
 	}
 
-	index := contentApplication.Module()
-	module, err := modules.FetchByIndex(index)
+	moduleIndex := contentApplication.Module()
+	module, err := modules.Fetch(moduleIndex)
 	if err != nil {
 		return nil, err
 	}
 
-	name := hash.Bytes()
-	builder := app.applicationBuilder.Create().WithName(name).WithModule(module)
+	index := contentApplication.Index()
+	builder := app.applicationBuilder.Create().WithIndex(index).WithModule(module)
 	if contentApplication.HasAttachments() {
 		attachmentsList := []programs.Attachment{}
 		contentAttachmentsList := contentApplication.Attachments().List()
@@ -163,8 +191,7 @@ func (app *application) retrieveApplication(context uint, hash hash.Hash, module
 				return nil, err
 			}
 
-			localIndex := oneContentAttachment.Local()
-			local := []byte(fmt.Sprintf("%d", localIndex))
+			local := oneContentAttachment.Local()
 			attachment, err := app.attachmentBuilder.Create().WithValue(value).WithLocal(local).Now()
 			if err != nil {
 				return nil, err
@@ -184,19 +211,6 @@ func (app *application) retrieveApplication(context uint, hash hash.Hash, module
 	return builder.Now()
 }
 
-func (app *application) retrieveAssignment(context uint, hash hash.Hash, modules modules.Modules) (programs.Assignment, error) {
-	value, err := app.retrieveValue(context, hash, modules)
-	if err != nil {
-		return nil, err
-	}
-
-	name := hash.Bytes()
-	return app.assignmentBuilder.Create().
-		WithName(name).
-		WithValue(value).
-		Now()
-}
-
 func (app *application) retrieveValue(context uint, hash hash.Hash, modules modules.Modules) (programs.Value, error) {
 	content, err := app.blockchainApp.ReadByHash(context, hash)
 	if err != nil {
@@ -211,19 +225,18 @@ func (app *application) retrieveValue(context uint, hash hash.Hash, modules modu
 	contentIns := contentValue.Content()
 	builder := app.valueBuilder.Create()
 	if contentIns.IsInput() {
-		inputIndex := contentIns.Input()
-		input := []byte(fmt.Sprintf("%d", inputIndex))
-		builder.WithInput(input)
+		pIndex := contentIns.Input()
+		builder.WithInput(*pIndex)
 	}
 
-	if contentIns.IsAssignment() {
-		pAssignmentHash := contentIns.Assignment()
-		assignment, err := app.retrieveAssignment(context, *pAssignmentHash, modules)
+	if contentIns.IsValue() {
+		pValueHash := contentIns.Value()
+		value, err := app.retrieveValue(context, *pValueHash, modules)
 		if err != nil {
 			return nil, err
 		}
 
-		builder.WithAssignment(assignment)
+		builder.WithValue(value)
 	}
 
 	if contentIns.IsExecution() {
@@ -269,56 +282,66 @@ func (app *application) Insert(context uint, program programs.Program) error {
 	return nil
 }
 
-// Execute executes a program
-func (app *application) Execute(input map[string]interface{}, program programs.Program) (map[string]interface{}, error) {
-	values := map[string]interface{}{}
-	instructions := program.Instructions()
-	for idx, oneInstruction := range instructions {
-		if oneInstruction.IsAssignment() {
-			assignment := oneInstruction.Assignment()
-			name := assignment.Name()
-			value := assignment.Value()
+func (app *application) insertApplication(context uint, application programs.Application) error {
+	return nil
+}
 
-			ins, err := app.executeValue(input, values, value)
+func (app *application) insertInstruction(context uint, instruction programs.Instruction) error {
+	return nil
+}
+
+func (app *application) insertValue(context uint, value programs.Value) error {
+	// if the value already exists:
+	/*valueHash := value.Hash()
+	_, err := app.Retrieve(context, valueHash)
+	if err == nil {
+		return nil
+	}*/
+
+	return nil
+}
+
+// Execute executes a program
+func (app *application) Execute(input map[uint]interface{}, program programs.Program) (map[uint]interface{}, error) {
+	valueHashes := map[string]interface{}{}
+	valueIndexes := map[uint]interface{}{}
+	instructions := program.Instructions().List()
+	for idx, oneInstruction := range instructions {
+		if oneInstruction.IsValue() {
+			value := oneInstruction.Value()
+			valueHash := value.Hash().String()
+
+			ins, err := app.executeValue(input, valueHashes, value)
 			if err != nil {
-				str := fmt.Sprintf("there was an error while executing an assignment (index: %d. name: %s): %s", idx, name, err.Error())
+				str := fmt.Sprintf("there was an error while executing an assignment (index: %d. value's hash: %s): %s", idx, valueHash, err.Error())
 				return nil, errors.New(str)
 			}
 
-			pHash, err := app.hashAdapter.FromBytes(name)
-			if err != nil {
-				return nil, err
-			}
-
-			values[pHash.String()] = ins
+			valueHashes[valueHash] = ins
+			valueIndexes[uint(idx)] = ins
 			continue
 		}
 
 		execution := oneInstruction.Execution()
-		_, err := app.execute(input, values, execution)
+		_, err := app.execute(input, valueHashes, execution)
 		if err != nil {
-			name := execution.Name()
-			str := fmt.Sprintf("there was an error while executing an application (index: %d. name: %s): %s", idx, name, err.Error())
+			hash := execution.Hash().String()
+			index := execution.Index()
+			str := fmt.Sprintf("there was an error while executing an application (index: %d, application's hash: %s, application's index: %d): %s", idx, hash, index, err.Error())
 			return nil, errors.New(str)
 		}
 	}
 
-	filtered := map[string]interface{}{}
+	filtered := map[uint]interface{}{}
 	if program.HasOutputs() {
 		outputs := program.Outputs()
 		for _, oneOutput := range outputs {
-			pHash, err := app.hashAdapter.FromBytes(oneOutput)
-			if err != nil {
-				return nil, err
-			}
-
-			keyname := pHash.String()
-			if ins, ok := values[keyname]; ok {
-				filtered[keyname] = ins
+			if ins, ok := valueIndexes[oneOutput]; ok {
+				filtered[oneOutput] = ins
 				continue
 			}
 
-			str := fmt.Sprintf("the program has an output parameter (name: %v, hash: %s), but the executed program does not contain that value", oneOutput, pHash.String())
+			str := fmt.Sprintf("the program has an output parameter (%d), but the executed program does not contain that value", oneOutput)
 			return nil, errors.New(str)
 		}
 	}
@@ -326,46 +349,35 @@ func (app *application) Execute(input map[string]interface{}, program programs.P
 	return filtered, nil
 }
 
-func (app *application) executeValue(input map[string]interface{}, values map[string]interface{}, value programs.Value) (interface{}, error) {
-	if value.IsInput() {
-		inputName := value.Input()
-		pHash, err := app.hashAdapter.FromBytes(inputName)
-		if err != nil {
-			return nil, err
-		}
-
-		keyname := pHash.String()
-		if ins, ok := input[keyname]; ok {
+func (app *application) executeValue(input map[uint]interface{}, values map[string]interface{}, value programs.Value) (interface{}, error) {
+	content := value.Content()
+	if content.IsInput() {
+		pInputIndex := content.Input()
+		if ins, ok := input[*pInputIndex]; ok {
 			return ins, nil
 		}
 
-		str := fmt.Sprintf("the requested input variable (name: %s, hash: %s) is undefined", inputName, keyname)
+		str := fmt.Sprintf("the requested input variable (index: %d) is undefined", *pInputIndex)
 		return nil, errors.New(str)
 	}
 
-	if value.IsAssignment() {
-		assignment := value.Assignment()
-		assignmentName := assignment.Name()
-		pHash, err := app.hashAdapter.FromBytes(assignmentName)
-		if err != nil {
-			return nil, err
-		}
-
-		keyname := pHash.String()
-		if ins, ok := values[keyname]; ok {
+	if content.IsValue() {
+		value := content.Value()
+		valueHash := value.Hash().String()
+		if ins, ok := values[valueHash]; ok {
 			return ins, nil
 		}
 
-		str := fmt.Sprintf("the requested variable (name: %v, hash: %s) is undefined", assignmentName, keyname)
+		str := fmt.Sprintf("the requested value (hash: %s) is undefined", valueHash)
 		return nil, errors.New(str)
 	}
 
-	if value.IsConstant() {
-		return value.Constant(), nil
+	if content.IsConstant() {
+		return content.Constant(), nil
 	}
 
-	if value.IsProgram() {
-		subProgram := value.Program()
+	if content.IsProgram() {
+		subProgram := content.Program()
 		subProgramOutput, err := app.Execute(input, subProgram)
 		if err != nil {
 			return nil, err
@@ -374,13 +386,13 @@ func (app *application) executeValue(input map[string]interface{}, values map[st
 		return subProgramOutput, nil
 	}
 
-	execution := value.Execution()
+	execution := content.Execution()
 	return app.execute(input, values, execution)
 }
 
-func (app *application) execute(input map[string]interface{}, values map[string]interface{}, execution programs.Application) (interface{}, error) {
+func (app *application) execute(input map[uint]interface{}, values map[string]interface{}, execution programs.Application) (interface{}, error) {
 	module := execution.Module()
-	parameters := map[string]interface{}{}
+	parameters := map[uint]interface{}{}
 	if execution.HasAttachments() {
 		attachments := execution.Attachments().List()
 		for _, oneAttachment := range attachments {
@@ -391,12 +403,7 @@ func (app *application) execute(input map[string]interface{}, values map[string]
 			}
 
 			local := oneAttachment.Local()
-			pHash, err := app.hashAdapter.FromBytes(local)
-			if err != nil {
-				return nil, err
-			}
-
-			parameters[pHash.String()] = ins
+			parameters[local] = ins
 		}
 	}
 

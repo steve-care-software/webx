@@ -1,18 +1,24 @@
 package selectors
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/webx/grammars/domain/grammars"
+)
 
 type builder struct {
-	token  Token
-	inside Inside
-	fn     SelectorFn
+	grammar grammars.Grammar
+	token   Token
+	inside  Inside
+	fn      SelectorFn
 }
 
 func createBuilder() Builder {
 	out := builder{
-		token:  nil,
-		inside: nil,
-		fn:     nil,
+		grammar: nil,
+		token:   nil,
+		inside:  nil,
+		fn:      nil,
 	}
 
 	return &out
@@ -21,6 +27,12 @@ func createBuilder() Builder {
 // Create initializes the builder
 func (app *builder) Create() Builder {
 	return createBuilder()
+}
+
+// WithGrammar adds a grammar to the builder
+func (app *builder) WithGrammar(grammar grammars.Grammar) Builder {
+	app.grammar = grammar
+	return app
 }
 
 // WithToken adds a token to the builder
@@ -43,6 +55,10 @@ func (app *builder) WithFn(fn SelectorFn) Builder {
 
 // Now builds a new Selector instance
 func (app *builder) Now() (Selector, error) {
+	if app.grammar == nil {
+		return nil, errors.New("the grammar is mandatory in order to build a Selector instance")
+	}
+
 	if app.token == nil {
 		return nil, errors.New("the token is mandatory in order to build a Selector instance")
 	}
@@ -55,5 +71,5 @@ func (app *builder) Now() (Selector, error) {
 		return nil, errors.New("the func is mandatory in order to build a Selector instance")
 	}
 
-	return createSelector(app.token, app.inside, app.fn), nil
+	return createSelector(app.grammar, app.token, app.inside, app.fn), nil
 }

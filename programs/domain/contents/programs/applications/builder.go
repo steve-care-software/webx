@@ -8,6 +8,7 @@ import (
 
 type builder struct {
 	pHash       *hash.Hash
+	pIndex      *uint
 	pModule     *uint
 	attachments Attachments
 }
@@ -15,6 +16,7 @@ type builder struct {
 func createBuilder() Builder {
 	out := builder{
 		pHash:       nil,
+		pIndex:      nil,
 		pModule:     nil,
 		attachments: nil,
 	}
@@ -30,6 +32,12 @@ func (app *builder) Create() Builder {
 // WithHash adds an hash to the builder
 func (app *builder) WithHash(hash hash.Hash) Builder {
 	app.pHash = &hash
+	return app
+}
+
+// WithIndex adds an index to the builder
+func (app *builder) WithIndex(index uint) Builder {
+	app.pIndex = &index
 	return app
 }
 
@@ -51,13 +59,17 @@ func (app *builder) Now() (Application, error) {
 		return nil, errors.New("the hash is mandatory in order to build an Application instance")
 	}
 
+	if app.pIndex == nil {
+		return nil, errors.New("the index is mandatory in order to build an Application instance")
+	}
+
 	if app.pModule == nil {
 		return nil, errors.New("the module is mandatory in order to build an Application instance")
 	}
 
 	if app.attachments != nil {
-		return createApplicationWithAttachments(*app.pHash, *app.pModule, app.attachments), nil
+		return createApplicationWithAttachments(*app.pHash, *app.pIndex, *app.pModule, app.attachments), nil
 	}
 
-	return createApplication(*app.pHash, *app.pModule), nil
+	return createApplication(*app.pHash, *app.pIndex, *app.pModule), nil
 }

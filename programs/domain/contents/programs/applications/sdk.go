@@ -29,6 +29,7 @@ type Adapter interface {
 type Builder interface {
 	Create() Builder
 	WithHash(hash hash.Hash) Builder
+	WithIndex(index uint) Builder
 	WithModule(module uint) Builder
 	WithAttachments(attachments Attachments) Builder
 	Now() (Application, error)
@@ -37,6 +38,7 @@ type Builder interface {
 // Application represents an application
 type Application interface {
 	Hash() hash.Hash
+	Index() uint
 	Module() uint
 	HasAttachments() bool
 	Attachments() Attachments

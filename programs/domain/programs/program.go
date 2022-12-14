@@ -1,28 +1,35 @@
 package programs
 
+import "github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+
 type program struct {
-	instructions []Instruction
-	outputs      [][]byte
+	hash         hash.Hash
+	instructions Instructions
+	outputs      []uint
 }
 
 func createProgram(
-	instructions []Instruction,
+	hash hash.Hash,
+	instructions Instructions,
 ) Program {
-	return createProgramInternally(instructions, nil)
+	return createProgramInternally(hash, instructions, nil)
 }
 
 func createProgramWithOutputs(
-	instructions []Instruction,
-	outputs [][]byte,
+	hash hash.Hash,
+	instructions Instructions,
+	outputs []uint,
 ) Program {
-	return createProgramInternally(instructions, outputs)
+	return createProgramInternally(hash, instructions, outputs)
 }
 
 func createProgramInternally(
-	instructions []Instruction,
-	outputs [][]byte,
+	hash hash.Hash,
+	instructions Instructions,
+	outputs []uint,
 ) Program {
 	out := program{
+		hash:         hash,
 		instructions: instructions,
 		outputs:      outputs,
 	}
@@ -30,8 +37,13 @@ func createProgramInternally(
 	return &out
 }
 
+// Hash returns the hash
+func (obj *program) Hash() hash.Hash {
+	return obj.hash
+}
+
 // Instructions returns the instructions
-func (obj *program) Instructions() []Instruction {
+func (obj *program) Instructions() Instructions {
 	return obj.instructions
 }
 
@@ -41,6 +53,6 @@ func (obj *program) HasOutputs() bool {
 }
 
 // Outputs returns the outputs, if any
-func (obj *program) Outputs() [][]byte {
+func (obj *program) Outputs() []uint {
 	return obj.outputs
 }

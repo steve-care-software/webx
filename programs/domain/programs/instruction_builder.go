@@ -3,14 +3,14 @@ package programs
 import "errors"
 
 type instructionBuilder struct {
-	assignment Assignment
-	execution  Application
+	value     Value
+	execution Application
 }
 
 func createInstructionBuilder() InstructionBuilder {
 	out := instructionBuilder{
-		assignment: nil,
-		execution:  nil,
+		value:     nil,
+		execution: nil,
 	}
 
 	return &out
@@ -21,9 +21,9 @@ func (app *instructionBuilder) Create() InstructionBuilder {
 	return createInstructionBuilder()
 }
 
-// WithAssignment adds an assignment to the builder
-func (app *instructionBuilder) WithAssignment(assignment Assignment) InstructionBuilder {
-	app.assignment = assignment
+// WithValue adds a value to the builder
+func (app *instructionBuilder) WithValue(value Value) InstructionBuilder {
+	app.value = value
 	return app
 }
 
@@ -35,8 +35,8 @@ func (app *instructionBuilder) WithExecution(execution Application) InstructionB
 
 // Now builds a new Instruction instance
 func (app *instructionBuilder) Now() (Instruction, error) {
-	if app.assignment != nil {
-		return createInstructionWithAssignment(app.assignment), nil
+	if app.value != nil {
+		return createInstructionWithValue(app.value), nil
 	}
 
 	if app.execution != nil {

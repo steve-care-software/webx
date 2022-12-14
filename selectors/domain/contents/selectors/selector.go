@@ -5,23 +5,26 @@ import (
 )
 
 type selector struct {
-	hash   hash.Hash
-	token  hash.Hash
-	inside hash.Hash
-	fn     hash.Hash
+	hash    hash.Hash
+	grammar hash.Hash
+	token   hash.Hash
+	inside  hash.Hash
+	fn      hash.Hash
 }
 
 func createSelector(
 	hash hash.Hash,
+	grammar hash.Hash,
 	token hash.Hash,
 	inside hash.Hash,
 	fn hash.Hash,
 ) Selector {
 	out := selector{
-		hash:   hash,
-		token:  token,
-		inside: inside,
-		fn:     fn,
+		hash:    hash,
+		grammar: grammar,
+		token:   token,
+		inside:  inside,
+		fn:      fn,
 	}
 
 	return &out
@@ -30,6 +33,11 @@ func createSelector(
 // Hash returns the hash
 func (obj *selector) Hash() hash.Hash {
 	return obj.hash
+}
+
+// Grammar returns the grammar hash
+func (obj *selector) Grammar() hash.Hash {
+	return obj.grammar
 }
 
 // Token returns the token

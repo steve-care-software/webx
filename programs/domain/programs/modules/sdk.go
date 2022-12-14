@@ -1,7 +1,7 @@
 package modules
 
 // ExecuteFn represents the execute func
-type ExecuteFn func(input map[string]interface{}) (interface{}, error)
+type ExecuteFn func(input map[uint]interface{}) (interface{}, error)
 
 // NewBuilder creates a new builder
 func NewBuilder() Builder {
@@ -23,20 +23,19 @@ type Builder interface {
 // Modules represents modules
 type Modules interface {
 	List() []Module
-	Fetch(name []byte) (Module, error)
-	FetchByIndex(index uint) (Module, error)
+	Fetch(index uint) (Module, error)
 }
 
 // ModuleBuilder creates a new module builder
 type ModuleBuilder interface {
 	Create() ModuleBuilder
-	WithName(name []byte) ModuleBuilder
+	WithIndex(index uint) ModuleBuilder
 	WithFunc(fn ExecuteFn) ModuleBuilder
 	Now() (Module, error)
 }
 
 // Module represents a module
 type Module interface {
-	Name() []byte
+	Index() uint
 	Func() ExecuteFn
 }

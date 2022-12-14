@@ -5,14 +5,14 @@ import (
 )
 
 type content struct {
-	pAssignment *hash.Hash
-	pExecution  *hash.Hash
+	pValue     *hash.Hash
+	pExecution *hash.Hash
 }
 
-func createContentWithAssignment(
-	pAssignment *hash.Hash,
+func createContentWithValue(
+	pValue *hash.Hash,
 ) Content {
-	return createContentInternally(pAssignment, nil)
+	return createContentInternally(pValue, nil)
 }
 
 func createContentWithExecution(
@@ -22,25 +22,25 @@ func createContentWithExecution(
 }
 
 func createContentInternally(
-	pAssignment *hash.Hash,
+	pValue *hash.Hash,
 	pExecution *hash.Hash,
 ) Content {
 	out := content{
-		pAssignment: pAssignment,
-		pExecution:  pExecution,
+		pValue:     pValue,
+		pExecution: pExecution,
 	}
 
 	return &out
 }
 
-// IsAssignment returns true if there is an assignment, false otherwise
-func (obj *content) IsAssignment() bool {
-	return obj.pAssignment != nil
+// IsValue returns true if there is an value, false otherwise
+func (obj *content) IsValue() bool {
+	return obj.pValue != nil
 }
 
-// Assignment returns the assignment, if any
-func (obj *content) Assignment() *hash.Hash {
-	return obj.pAssignment
+// Value returns the value, if any
+func (obj *content) Value() *hash.Hash {
+	return obj.pValue
 }
 
 // IsExecution returns true if there is an execution, false otherwise

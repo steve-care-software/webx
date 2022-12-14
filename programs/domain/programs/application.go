@@ -1,35 +1,43 @@
 package programs
 
-import "github.com/steve-care-software/webx/programs/domain/programs/modules"
+import (
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/programs/domain/programs/modules"
+)
 
 type application struct {
-	name        []byte
+	hash        hash.Hash
+	index       uint
 	module      modules.Module
 	attachments Attachments
 }
 
 func createApplication(
-	name []byte,
+	hash hash.Hash,
+	index uint,
 	module modules.Module,
 ) Application {
-	return createApplicationInternally(name, module, nil)
+	return createApplicationInternally(hash, index, module, nil)
 }
 
 func createApplicationWithAttachments(
-	name []byte,
+	hash hash.Hash,
+	index uint,
 	module modules.Module,
 	attachments Attachments,
 ) Application {
-	return createApplicationInternally(name, module, attachments)
+	return createApplicationInternally(hash, index, module, attachments)
 }
 
 func createApplicationInternally(
-	name []byte,
+	hash hash.Hash,
+	index uint,
 	module modules.Module,
 	attachments Attachments,
 ) Application {
 	out := application{
-		name:        name,
+		hash:        hash,
+		index:       index,
 		module:      module,
 		attachments: attachments,
 	}
@@ -37,9 +45,14 @@ func createApplicationInternally(
 	return &out
 }
 
-// Name returns the name
-func (obj *application) Name() []byte {
-	return obj.name
+// Hash returns the hash
+func (obj *application) Hash() hash.Hash {
+	return obj.hash
+}
+
+// Index returns the index
+func (obj *application) Index() uint {
+	return obj.index
 }
 
 // Module returns the module

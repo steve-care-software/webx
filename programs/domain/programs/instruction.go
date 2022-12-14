@@ -1,14 +1,16 @@
 package programs
 
+import "github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+
 type instruction struct {
-	assignment Assignment
-	execution  Application
+	value     Value
+	execution Application
 }
 
-func createInstructionWithAssignment(
-	assignment Assignment,
+func createInstructionWithValue(
+	value Value,
 ) Instruction {
-	return createInstructionInternally(assignment, nil)
+	return createInstructionInternally(value, nil)
 }
 
 func createInstructionWithExecution(
@@ -18,25 +20,34 @@ func createInstructionWithExecution(
 }
 
 func createInstructionInternally(
-	assignment Assignment,
+	value Value,
 	execution Application,
 ) Instruction {
 	out := instruction{
-		assignment: assignment,
-		execution:  execution,
+		value:     value,
+		execution: execution,
 	}
 
 	return &out
 }
 
-// IsAssignment returns true if there is an assignment, false otherwise
-func (obj *instruction) IsAssignment() bool {
-	return obj.assignment != nil
+// Hash returns the hash
+func (obj *instruction) Hash() hash.Hash {
+	if obj.IsValue() {
+		return obj.value.Hash()
+	}
+
+	return obj.execution.Hash()
 }
 
-// Assignment returns the assignment, if any
-func (obj *instruction) Assignment() Assignment {
-	return obj.assignment
+// IsValue returns true if there is a value, false otherwise
+func (obj *instruction) IsValue() bool {
+	return obj.value != nil
+}
+
+// Value returns the value, if any
+func (obj *instruction) Value() Value {
+	return obj.value
 }
 
 // IsExecution returns true if there is an execution, false otherwise

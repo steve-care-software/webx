@@ -3,14 +3,14 @@ package programs
 import "errors"
 
 type attachmentBuilder struct {
-	value Value
-	local []byte
+	value  Value
+	pLocal *uint
 }
 
 func createAttachmentBuilder() AttachmentBuilder {
 	out := attachmentBuilder{
-		value: nil,
-		local: nil,
+		value:  nil,
+		pLocal: nil,
 	}
 
 	return &out
@@ -28,8 +28,8 @@ func (app *attachmentBuilder) WithValue(value Value) AttachmentBuilder {
 }
 
 // WithLocal adds a local to the builder
-func (app *attachmentBuilder) WithLocal(local []byte) AttachmentBuilder {
-	app.local = local
+func (app *attachmentBuilder) WithLocal(local uint) AttachmentBuilder {
+	app.pLocal = &local
 	return app
 }
 
@@ -39,9 +39,9 @@ func (app *attachmentBuilder) Now() (Attachment, error) {
 		return nil, errors.New("the value is mandatory in order to build an Attachment instance")
 	}
 
-	if app.local == nil {
+	if app.pLocal == nil {
 		return nil, errors.New("the local is mandatory in order to build an Attachment instance")
 	}
 
-	return createAttachment(app.value, app.local), nil
+	return createAttachment(app.value, *app.pLocal), nil
 }

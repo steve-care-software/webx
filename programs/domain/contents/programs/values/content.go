@@ -5,11 +5,11 @@ import (
 )
 
 type content struct {
-	pInput      *uint
-	pAssignment *hash.Hash
-	constant    []byte
-	pExecution  *hash.Hash
-	pProgram    *hash.Hash
+	pInput     *uint
+	pValue     *hash.Hash
+	constant   []byte
+	pExecution *hash.Hash
+	pProgram   *hash.Hash
 }
 
 func createContentWithInput(
@@ -18,10 +18,10 @@ func createContentWithInput(
 	return createContentInternally(pInput, nil, nil, nil, nil)
 }
 
-func createContentWithAssignment(
-	pAssignment *hash.Hash,
+func createContentWithValue(
+	pValue *hash.Hash,
 ) Content {
-	return createContentInternally(nil, pAssignment, nil, nil, nil)
+	return createContentInternally(nil, pValue, nil, nil, nil)
 }
 
 func createContentWithConstant(
@@ -44,17 +44,17 @@ func createContentWithProgram(
 
 func createContentInternally(
 	pInput *uint,
-	pAssignment *hash.Hash,
+	pValue *hash.Hash,
 	constant []byte,
 	pExecution *hash.Hash,
 	pProgram *hash.Hash,
 ) Content {
 	out := content{
-		pInput:      pInput,
-		pAssignment: pAssignment,
-		constant:    constant,
-		pExecution:  pExecution,
-		pProgram:    pProgram,
+		pInput:     pInput,
+		pValue:     pValue,
+		constant:   constant,
+		pExecution: pExecution,
+		pProgram:   pProgram,
 	}
 
 	return &out
@@ -70,14 +70,14 @@ func (obj *content) Input() *uint {
 	return obj.pInput
 }
 
-// IsAssignment returns true if there is an assignment, false otherwise
-func (obj *content) IsAssignment() bool {
-	return obj.pAssignment != nil
+// IsValue returns true if there is an value, false otherwise
+func (obj *content) IsValue() bool {
+	return obj.pValue != nil
 }
 
-// Assignment returns the assignment, if any
-func (obj *content) Assignment() *hash.Hash {
-	return obj.pAssignment
+// Value returns the value, if any
+func (obj *content) Value() *hash.Hash {
+	return obj.pValue
 }
 
 // IsConstant returns true if there is a constant, false otherwise

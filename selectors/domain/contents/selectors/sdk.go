@@ -13,6 +13,7 @@ func NewBuilder() Builder {
 type Builder interface {
 	Create() Builder
 	WithHash(hash hash.Hash) Builder
+	WithGrammar(grammar hash.Hash) Builder
 	WithToken(token hash.Hash) Builder
 	WithInside(inside hash.Hash) Builder
 	WithFunc(fn hash.Hash) Builder
@@ -22,6 +23,7 @@ type Builder interface {
 // Selector represents a selector
 type Selector interface {
 	Hash() hash.Hash
+	Grammar() hash.Hash
 	Token() hash.Hash
 	Inside() hash.Hash
 	Func() hash.Hash

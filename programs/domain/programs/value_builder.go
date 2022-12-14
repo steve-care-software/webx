@@ -1,22 +1,31 @@
 package programs
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+)
 
 type valueBuilder struct {
-	input      []byte
-	assignment Assignment
-	constant   []byte
-	execution  Application
-	program    Program
+	hashAdapter hash.Adapter
+	pInput      *uint
+	value       Value
+	constant    []byte
+	execution   Application
+	program     Program
 }
 
-func createValueBuilder() ValueBuilder {
+func createValueBuilder(
+	hashAdapter hash.Adapter,
+) ValueBuilder {
 	out := valueBuilder{
-		input:      nil,
-		assignment: nil,
-		constant:   nil,
-		execution:  nil,
-		program:    nil,
+		hashAdapter: hashAdapter,
+		pInput:      nil,
+		value:       nil,
+		constant:    nil,
+		execution:   nil,
+		program:     nil,
 	}
 
 	return &out
@@ -24,18 +33,20 @@ func createValueBuilder() ValueBuilder {
 
 // Create initializes the builder
 func (app *valueBuilder) Create() ValueBuilder {
-	return createValueBuilder()
+	return createValueBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithInput adds an input to the builder
-func (app *valueBuilder) WithInput(input []byte) ValueBuilder {
-	app.input = input
+func (app *valueBuilder) WithInput(input uint) ValueBuilder {
+	app.pInput = &input
 	return app
 }
 
-// WithAssignment adds an assignment to the builder
-func (app *valueBuilder) WithAssignment(assignment Assignment) ValueBuilder {
-	app.assignment = assignment
+// WithValue adds a value to the builder
+func (app *valueBuilder) WithValue(value Value) ValueBuilder {
+	app.value = value
 	return app
 }
 
@@ -59,24 +70,55 @@ func (app *valueBuilder) WithProgram(program Program) ValueBuilder {
 
 // Now builds a new Value instance
 func (app *valueBuilder) Now() (Value, error) {
-	if app.input != nil {
-		return createValueWithInput(app.input), nil
+	data := []byte{}
+	if app.pInput != nil {
+		data = append(data, []byte(fmt.Sprintf("%d", *app.pInput))...)
 	}
 
-	if app.assignment != nil {
-		return createValueWithAssignment(app.assignment), nil
+	if app.value != nil {
+		data = append(data, app.value.Hash().Bytes()...)
 	}
 
 	if app.constant != nil {
-		return createValueWithConstant(app.constant), nil
+		data = append(data, app.constant...)
 	}
 
 	if app.execution != nil {
-		return createValueWithExecution(app.execution), nil
+		data = append(data, app.execution.Hash().Bytes()...)
 	}
 
 	if app.program != nil {
-		return createValueWithProgram(app.program), nil
+		data = append(data, app.program.Hash().Bytes()...)
+	}
+
+	pHash, err := app.hashAdapter.FromBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	if app.pInput != nil {
+		content := createContentWithInput(app.pInput)
+		return createValue(*pHash, content), nil
+	}
+
+	if app.value != nil {
+		content := createContentWithValue(app.value)
+		return createValue(*pHash, content), nil
+	}
+
+	if app.constant != nil {
+		content := createContentWithConstant(app.constant)
+		return createValue(*pHash, content), nil
+	}
+
+	if app.execution != nil {
+		content := createContentWithExecution(app.execution)
+		return createValue(*pHash, content), nil
+	}
+
+	if app.program != nil {
+		content := createContentWithProgram(app.program)
+		return createValue(*pHash, content), nil
 	}
 
 	return nil, errors.New("the Value is invalid")

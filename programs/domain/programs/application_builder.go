@@ -2,19 +2,25 @@ package programs
 
 import (
 	"errors"
+	"fmt"
 
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/programs/domain/programs/modules"
 )
 
 type applicationBuilder struct {
-	name        []byte
+	hashAdapter hash.Adapter
+	pIndex      *uint
 	module      modules.Module
 	attachments Attachments
 }
 
-func createApplicationBuilder() ApplicationBuilder {
+func createApplicationBuilder(
+	hashAdapter hash.Adapter,
+) ApplicationBuilder {
 	out := applicationBuilder{
-		name:        nil,
+		hashAdapter: hashAdapter,
+		pIndex:      nil,
 		module:      nil,
 		attachments: nil,
 	}
@@ -24,12 +30,14 @@ func createApplicationBuilder() ApplicationBuilder {
 
 // Create initializes the builder
 func (app *applicationBuilder) Create() ApplicationBuilder {
-	return createApplicationBuilder()
+	return createApplicationBuilder(
+		app.hashAdapter,
+	)
 }
 
-// WithName adds a name to the builder
-func (app *applicationBuilder) WithName(name []byte) ApplicationBuilder {
-	app.name = name
+// WithIndex adds an index to the builder
+func (app *applicationBuilder) WithIndex(index uint) ApplicationBuilder {
+	app.pIndex = &index
 	return app
 }
 
@@ -47,17 +55,31 @@ func (app *applicationBuilder) WithAttachments(attachments Attachments) Applicat
 
 // Now builds a new Application instance
 func (app *applicationBuilder) Now() (Application, error) {
-	if app.name == nil {
-		return nil, errors.New("the name is mandatory in order to build an Application instance")
+	if app.pIndex == nil {
+		return nil, errors.New("the index is mandatory in order to build an Application instance")
 	}
 
 	if app.module == nil {
 		return nil, errors.New("the module is mandatory in order to build an Application instance")
 	}
 
-	if app.attachments != nil {
-		return createApplicationWithAttachments(app.name, app.module, app.attachments), nil
+	data := [][]byte{
+		[]byte(fmt.Sprintf("%d", *app.pIndex)),
+		[]byte(fmt.Sprintf("%d", app.module.Index())),
 	}
 
-	return createApplication(app.name, app.module), nil
+	if app.attachments != nil {
+		data = append(data, app.attachments.Hash().Bytes())
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	if app.attachments != nil {
+		return createApplicationWithAttachments(*pHash, *app.pIndex, app.module, app.attachments), nil
+	}
+
+	return createApplication(*pHash, *app.pIndex, app.module), nil
 }

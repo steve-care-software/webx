@@ -1,10 +1,22 @@
 package programs
 
-import "github.com/steve-care-software/webx/programs/domain/programs/modules"
+import (
+	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/programs/domain/programs/modules"
+)
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
-	return createBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
+// NewInstructionsBuilder creates a new instructions builder
+func NewInstructionsBuilder() InstructionsBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createInstructionsBuilder(hashAdapter)
 }
 
 // NewInstructionBuilder creates a new instruction builder
@@ -14,12 +26,18 @@ func NewInstructionBuilder() InstructionBuilder {
 
 // NewApplicationBuilder creates a new application builder instance
 func NewApplicationBuilder() ApplicationBuilder {
-	return createApplicationBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createApplicationBuilder(
+		hashAdapter,
+	)
 }
 
 // NewAttachmentsBuilder creates a new attachments builder
 func NewAttachmentsBuilder() AttachmentsBuilder {
-	return createAttachmentsBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createAttachmentsBuilder(
+		hashAdapter,
+	)
 }
 
 // NewAttachmentBuilder creates a new attachment builder
@@ -27,43 +45,56 @@ func NewAttachmentBuilder() AttachmentBuilder {
 	return createAttachmentBuilder()
 }
 
-// NewAssignmentBuilder creates a new assignment builder
-func NewAssignmentBuilder() AssignmentBuilder {
-	return createAssignmentBuilder()
-}
-
 // NewValueBuilder creates a new value builder
 func NewValueBuilder() ValueBuilder {
-	return createValueBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createValueBuilder(
+		hashAdapter,
+	)
 }
 
 // Builder represents a program builder
 type Builder interface {
 	Create() Builder
-	WithInstructions(instructions []Instruction) Builder
-	WithOutputs(outputs [][]byte) Builder
+	WithInstructions(instructions Instructions) Builder
+	WithOutputs(outputs []uint) Builder
 	Now() (Program, error)
 }
 
 // Program represents a program
 type Program interface {
-	Instructions() []Instruction
+	Hash() hash.Hash
+	Instructions() Instructions
 	HasOutputs() bool
-	Outputs() [][]byte
+	Outputs() []uint
+}
+
+// InstructionsBuilder represents instructions builder
+type InstructionsBuilder interface {
+	Create() InstructionsBuilder
+	WithList(list []Instruction) InstructionsBuilder
+	Now() (Instructions, error)
+}
+
+// Instructions represents instructions
+type Instructions interface {
+	Hash() hash.Hash
+	List() []Instruction
 }
 
 // InstructionBuilder represents an instruction builder
 type InstructionBuilder interface {
 	Create() InstructionBuilder
-	WithAssignment(assignment Assignment) InstructionBuilder
+	WithValue(value Value) InstructionBuilder
 	WithExecution(execution Application) InstructionBuilder
 	Now() (Instruction, error)
 }
 
 // Instruction represents an instruction
 type Instruction interface {
-	IsAssignment() bool
-	Assignment() Assignment
+	Hash() hash.Hash
+	IsValue() bool
+	Value() Value
 	IsExecution() bool
 	Execution() Application
 }
@@ -71,7 +102,7 @@ type Instruction interface {
 // ApplicationBuilder represents an application builder
 type ApplicationBuilder interface {
 	Create() ApplicationBuilder
-	WithName(name []byte) ApplicationBuilder
+	WithIndex(index uint) ApplicationBuilder
 	WithModule(module modules.Module) ApplicationBuilder
 	WithAttachments(attachments Attachments) ApplicationBuilder
 	Now() (Application, error)
@@ -79,7 +110,8 @@ type ApplicationBuilder interface {
 
 // Application represents an application
 type Application interface {
-	Name() []byte
+	Hash() hash.Hash
+	Index() uint
 	Module() modules.Module
 	HasAttachments() bool
 	Attachments() Attachments
@@ -94,6 +126,7 @@ type AttachmentsBuilder interface {
 
 // Attachments represents attachments
 type Attachments interface {
+	Hash() hash.Hash
 	List() []Attachment
 }
 
@@ -101,35 +134,21 @@ type Attachments interface {
 type AttachmentBuilder interface {
 	Create() AttachmentBuilder
 	WithValue(value Value) AttachmentBuilder
-	WithLocal(local []byte) AttachmentBuilder
+	WithLocal(local uint) AttachmentBuilder
 	Now() (Attachment, error)
 }
 
 // Attachment represents an attachment
 type Attachment interface {
 	Value() Value
-	Local() []byte
-}
-
-// AssignmentBuilder represents an assignment builder
-type AssignmentBuilder interface {
-	Create() AssignmentBuilder
-	WithName(name []byte) AssignmentBuilder
-	WithValue(value Value) AssignmentBuilder
-	Now() (Assignment, error)
-}
-
-// Assignment repesents an assignment
-type Assignment interface {
-	Name() []byte
-	Value() Value
+	Local() uint
 }
 
 // ValueBuilder represents a value builder
 type ValueBuilder interface {
 	Create() ValueBuilder
-	WithInput(input []byte) ValueBuilder
-	WithAssignment(assignment Assignment) ValueBuilder
+	WithInput(input uint) ValueBuilder
+	WithValue(value Value) ValueBuilder
 	WithConstant(constant []byte) ValueBuilder
 	WithExecution(execution Application) ValueBuilder
 	WithProgram(program Program) ValueBuilder
@@ -138,10 +157,16 @@ type ValueBuilder interface {
 
 // Value represents a value
 type Value interface {
+	Hash() hash.Hash
+	Content() Content
+}
+
+// Content represents a value's content
+type Content interface {
 	IsInput() bool
-	Input() []byte
-	IsAssignment() bool
-	Assignment() Assignment
+	Input() *uint
+	IsValue() bool
+	Value() Value
 	IsConstant() bool
 	Constant() []byte
 	IsExecution() bool

@@ -6,32 +6,37 @@ import (
 
 type application struct {
 	hash        hash.Hash
+	index       uint
 	module      uint
 	attachments Attachments
 }
 
 func createApplication(
 	hash hash.Hash,
+	index uint,
 	module uint,
 ) Application {
-	return createApplicationInternally(hash, module, nil)
+	return createApplicationInternally(hash, index, module, nil)
 }
 
 func createApplicationWithAttachments(
 	hash hash.Hash,
+	index uint,
 	module uint,
 	attachments Attachments,
 ) Application {
-	return createApplicationInternally(hash, module, attachments)
+	return createApplicationInternally(hash, index, module, attachments)
 }
 
 func createApplicationInternally(
 	hash hash.Hash,
+	index uint,
 	module uint,
 	attachments Attachments,
 ) Application {
 	out := application{
 		hash:        hash,
+		index:       index,
 		module:      module,
 		attachments: attachments,
 	}
@@ -42,6 +47,11 @@ func createApplicationInternally(
 // Hash returns the hash
 func (obj *application) Hash() hash.Hash {
 	return obj.hash
+}
+
+// Index returns the index
+func (obj *application) Index() uint {
+	return obj.index
 }
 
 // Module returns the module

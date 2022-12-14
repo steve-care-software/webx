@@ -19,7 +19,7 @@ type Adapter interface {
 type Builder interface {
 	Create() Builder
 	WithHash(hash hash.Hash) Builder
-	WithAssignment(assignment hash.Hash) Builder
+	WithValue(value hash.Hash) Builder
 	WithExecution(execution hash.Hash) Builder
 	Now() (Instruction, error)
 }
@@ -32,8 +32,8 @@ type Instruction interface {
 
 // Content represents an instruction's content
 type Content interface {
-	IsAssignment() bool
-	Assignment() *hash.Hash
+	IsValue() bool
+	Value() *hash.Hash
 	IsExecution() bool
 	Execution() *hash.Hash
 }
