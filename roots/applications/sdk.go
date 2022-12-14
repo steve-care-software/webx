@@ -3,10 +3,10 @@ package applications
 import (
 	compiler_applications "github.com/steve-care-software/webx/compilers/applications"
 	grammar_applications "github.com/steve-care-software/webx/grammars/applications"
+	"github.com/steve-care-software/webx/grammars/domain/grammars"
 	program_applications "github.com/steve-care-software/webx/programs/applications"
 	"github.com/steve-care-software/webx/programs/domain/programs/modules"
 	"github.com/steve-care-software/webx/roots/domain/compilers"
-	"github.com/steve-care-software/webx/roots/domain/grammars"
 	"github.com/steve-care-software/webx/roots/domain/programs"
 	"github.com/steve-care-software/webx/roots/domain/selectors"
 	selector_applications "github.com/steve-care-software/webx/selectors/applications"
@@ -21,7 +21,7 @@ type Builder interface {
 
 // Application represents a root application
 type Application interface {
-	New(genesis grammars.Grammar) error
+	New(name string) error
 	Database
 }
 
@@ -42,7 +42,7 @@ type Grammar interface {
 // Program represents the program database application
 type Program interface {
 	List() ([]string, error)
-	New(program programs.Program) error
+	New(name string, modules []uint) error
 	Retrieve(name string) (programs.Program, error)
 	Application(name string) (program_applications.Application, error)
 	Delete(name string) error
@@ -51,7 +51,7 @@ type Program interface {
 // Selector represebrs the root selector database application
 type Selector interface {
 	List() ([]string, error)
-	New(selector selectors.Selector) error
+	New(name string, grammar grammars.Grammar) error
 	Retrieve(name string) (selectors.Selector, error)
 	Application(name string) (selector_applications.Application, error)
 	Delete(name string) error
@@ -60,7 +60,7 @@ type Selector interface {
 // Compiler represents the root compiler database application
 type Compiler interface {
 	List() ([]string, error)
-	New(compiler compilers.Compiler) error
+	New(name string, modules []uint, selectors []string, programs []string) error
 	Retrieve(name string) (compilers.Compiler, error)
 	Application(name string) (compiler_applications.Application, error)
 	Delete(name string) error
