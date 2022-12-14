@@ -19,7 +19,7 @@ func createApplication() Application {
 }
 
 // New creates a new selector database
-func (app *application) New(name string) error {
+func (app *application) New(name string, grammar grammars.Grammar) error {
 	return nil
 }
 

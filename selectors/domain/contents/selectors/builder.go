@@ -7,20 +7,18 @@ import (
 )
 
 type builder struct {
-	pHash    *hash.Hash
-	pGrammar *hash.Hash
-	pToken   *hash.Hash
-	pInside  *hash.Hash
-	pFn      *hash.Hash
+	pHash   *hash.Hash
+	pToken  *hash.Hash
+	pInside *hash.Hash
+	pFn     *hash.Hash
 }
 
 func createBuilder() Builder {
 	out := builder{
-		pHash:    nil,
-		pGrammar: nil,
-		pToken:   nil,
-		pInside:  nil,
-		pFn:      nil,
+		pHash:   nil,
+		pToken:  nil,
+		pInside: nil,
+		pFn:     nil,
 	}
 
 	return &out
@@ -34,12 +32,6 @@ func (app *builder) Create() Builder {
 // WithHash adds an hash to the builder
 func (app *builder) WithHash(hash hash.Hash) Builder {
 	app.pHash = &hash
-	return app
-}
-
-// WithGrammar adds a grammar to the builder
-func (app *builder) WithGrammar(grammar hash.Hash) Builder {
-	app.pGrammar = &grammar
 	return app
 }
 
@@ -67,10 +59,6 @@ func (app *builder) Now() (Selector, error) {
 		return nil, errors.New("the hash is mandatory in order to build a Selector instance")
 	}
 
-	if app.pGrammar == nil {
-		return nil, errors.New("the grammar is mandatory in order to build a Selector instance")
-	}
-
 	if app.pToken == nil {
 		return nil, errors.New("the token is mandatory in order to build a Selector instance")
 	}
@@ -85,7 +73,6 @@ func (app *builder) Now() (Selector, error) {
 
 	return createSelector(
 		*app.pHash,
-		*app.pGrammar,
 		*app.pToken,
 		*app.pInside,
 		*app.pFn,

@@ -9,7 +9,7 @@ import (
 
 // Application represents a selector application
 type Application interface {
-	New(name string) error
+	New(name string, grammar grammars.Grammar) error
 	Database
 	Software
 }
