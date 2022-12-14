@@ -6,7 +6,6 @@ import (
 
 type content struct {
 	pInput     *uint
-	pValue     *hash.Hash
 	constant   []byte
 	pExecution *hash.Hash
 	pProgram   *hash.Hash
@@ -15,43 +14,35 @@ type content struct {
 func createContentWithInput(
 	pInput *uint,
 ) Content {
-	return createContentInternally(pInput, nil, nil, nil, nil)
-}
-
-func createContentWithValue(
-	pValue *hash.Hash,
-) Content {
-	return createContentInternally(nil, pValue, nil, nil, nil)
+	return createContentInternally(pInput, nil, nil, nil)
 }
 
 func createContentWithConstant(
 	constant []byte,
 ) Content {
-	return createContentInternally(nil, nil, constant, nil, nil)
+	return createContentInternally(nil, constant, nil, nil)
 }
 
 func createContentWithExecution(
 	pExecution *hash.Hash,
 ) Content {
-	return createContentInternally(nil, nil, nil, pExecution, nil)
+	return createContentInternally(nil, nil, pExecution, nil)
 }
 
 func createContentWithProgram(
 	pProgram *hash.Hash,
 ) Content {
-	return createContentInternally(nil, nil, nil, nil, pProgram)
+	return createContentInternally(nil, nil, nil, pProgram)
 }
 
 func createContentInternally(
 	pInput *uint,
-	pValue *hash.Hash,
 	constant []byte,
 	pExecution *hash.Hash,
 	pProgram *hash.Hash,
 ) Content {
 	out := content{
 		pInput:     pInput,
-		pValue:     pValue,
 		constant:   constant,
 		pExecution: pExecution,
 		pProgram:   pProgram,
@@ -68,16 +59,6 @@ func (obj *content) IsInput() bool {
 // Input returns the input, if any
 func (obj *content) Input() *uint {
 	return obj.pInput
-}
-
-// IsValue returns true if there is an value, false otherwise
-func (obj *content) IsValue() bool {
-	return obj.pValue != nil
-}
-
-// Value returns the value, if any
-func (obj *content) Value() *hash.Hash {
-	return obj.pValue
 }
 
 // IsConstant returns true if there is a constant, false otherwise

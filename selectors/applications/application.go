@@ -5,16 +5,23 @@ import (
 	"fmt"
 
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	grammar_applications "github.com/steve-care-software/webx/grammars/applications"
 	"github.com/steve-care-software/webx/grammars/domain/grammars"
 	"github.com/steve-care-software/webx/grammars/domain/trees"
 	"github.com/steve-care-software/webx/selectors/domain/selectors"
 )
 
 type application struct {
+	grammarSoftware grammar_applications.Software
 }
 
-func createApplication() Application {
-	out := application{}
+func createApplication(
+	grammarSoftware grammar_applications.Software,
+) Application {
+	out := application{
+		grammarSoftware: grammarSoftware,
+	}
+
 	return &out
 }
 
@@ -49,8 +56,24 @@ func (app *application) Matches(grammar grammars.Grammar, selector selectors.Sel
 }
 
 // Execute executes a selector on a data tree
-func (app *application) Execute(selector selectors.Selector, tree trees.Tree) (interface{}, bool, error) {
-	return app.selectorFetch(selector, tree, nil)
+func (app *application) Execute(selector selectors.Selector, script []byte) (interface{}, bool, []byte, error) {
+	grammar := selector.Grammar()
+	treeIns, err := app.grammarSoftware.Execute(grammar, script)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	ins, isValid, err := app.selectorFetch(selector, treeIns, nil)
+	if err != nil {
+		return nil, false, nil, err
+	}
+
+	remaining := []byte{}
+	if treeIns.HasRemaining() {
+		remaining = treeIns.Remaining()
+	}
+
+	return ins, isValid, remaining, nil
 }
 
 func (app *application) selectorFetch(selector selectors.Selector, tree trees.Tree, previous map[string]selectors.Selector) (interface{}, bool, error) {

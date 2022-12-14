@@ -17,7 +17,7 @@ type Application interface {
 // Software represents the selector software application
 type Software interface {
 	Matches(grammar grammars.Grammar, selector selectors.Selector) (bool, error)
-	Execute(selector selectors.Selector, tree trees.Tree) (interface{}, bool, error)
+	Execute(selector selectors.Selector, script []byte) (interface{}, bool, []byte, error)
 }
 
 // Database represents the selector database application

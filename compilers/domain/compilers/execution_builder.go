@@ -3,18 +3,20 @@ package compilers
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/compilers/domain/instructions"
+	"github.com/steve-care-software/webx/programs/domain/programs"
 )
 
 type executionBuilder struct {
-	parameter    string
-	instructions instructions.Instructions
+	parameters            Parameters
+	program               programs.Program
+	pExecuteProgramModule *uint
 }
 
 func createExecutionBuilder() ExecutionBuilder {
 	out := executionBuilder{
-		parameter:    "",
-		instructions: nil,
+		parameters:            nil,
+		program:               nil,
+		pExecuteProgramModule: nil,
 	}
 
 	return &out
@@ -25,27 +27,37 @@ func (app *executionBuilder) Create() ExecutionBuilder {
 	return createExecutionBuilder()
 }
 
-// WithParameter adds a parameter to the builder
-func (app *executionBuilder) WithParameter(parameter string) ExecutionBuilder {
-	app.parameter = parameter
+// WithParameters add parameters to the builder
+func (app *executionBuilder) WithParameters(parameters Parameters) ExecutionBuilder {
+	app.parameters = parameters
 	return app
 }
 
-// WithInstructions add instructions to the builder
-func (app *executionBuilder) WithInstructions(instructions instructions.Instructions) ExecutionBuilder {
-	app.instructions = instructions
+// WithProgram add a program to the builder
+func (app *executionBuilder) WithProgram(program programs.Program) ExecutionBuilder {
+	app.program = program
+	return app
+}
+
+// WithExecuteProgramModule adds an execution program module to the builder
+func (app *executionBuilder) WithExecuteProgramModule(execProgramModule uint) ExecutionBuilder {
+	app.pExecuteProgramModule = &execProgramModule
 	return app
 }
 
 // Now builds a new Execution instance
 func (app *executionBuilder) Now() (Execution, error) {
-	if app.parameter == "" {
-		return nil, errors.New("the parameter is mandatory in order to build an Execution instance")
+	if app.parameters == nil {
+		return nil, errors.New("the parameters is mandatory in order to build an Execution instance")
 	}
 
-	if app.instructions == nil {
-		return nil, errors.New("the instructions is mandatory in order to build an Execution instance")
+	if app.program == nil {
+		return nil, errors.New("the program is mandatory in order to build an Execution instance")
 	}
 
-	return createExecution(app.parameter, app.instructions), nil
+	if app.pExecuteProgramModule == nil {
+		return nil, errors.New("the executeProgramModule is mandatory in order to build an Execution instance")
+	}
+
+	return createExecution(app.parameters, app.program, *app.pExecuteProgramModule), nil
 }

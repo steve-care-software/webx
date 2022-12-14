@@ -10,7 +10,6 @@ import (
 type valueBuilder struct {
 	hashAdapter hash.Adapter
 	pInput      *uint
-	value       Value
 	constant    []byte
 	execution   Application
 	program     Program
@@ -22,7 +21,6 @@ func createValueBuilder(
 	out := valueBuilder{
 		hashAdapter: hashAdapter,
 		pInput:      nil,
-		value:       nil,
 		constant:    nil,
 		execution:   nil,
 		program:     nil,
@@ -41,12 +39,6 @@ func (app *valueBuilder) Create() ValueBuilder {
 // WithInput adds an input to the builder
 func (app *valueBuilder) WithInput(input uint) ValueBuilder {
 	app.pInput = &input
-	return app
-}
-
-// WithValue adds a value to the builder
-func (app *valueBuilder) WithValue(value Value) ValueBuilder {
-	app.value = value
 	return app
 }
 
@@ -75,10 +67,6 @@ func (app *valueBuilder) Now() (Value, error) {
 		data = append(data, []byte(fmt.Sprintf("%d", *app.pInput))...)
 	}
 
-	if app.value != nil {
-		data = append(data, app.value.Hash().Bytes()...)
-	}
-
 	if app.constant != nil {
 		data = append(data, app.constant...)
 	}
@@ -98,11 +86,6 @@ func (app *valueBuilder) Now() (Value, error) {
 
 	if app.pInput != nil {
 		content := createContentWithInput(app.pInput)
-		return createValue(*pHash, content), nil
-	}
-
-	if app.value != nil {
-		content := createContentWithValue(app.value)
 		return createValue(*pHash, content), nil
 	}
 

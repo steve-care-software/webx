@@ -20,7 +20,6 @@ type Builder interface {
 	Create() Builder
 	WithHash(hash hash.Hash) Builder
 	WithInput(input uint) Builder
-	WithValue(value hash.Hash) Builder
 	WithConstant(constant []byte) Builder
 	WithExecution(execution hash.Hash) Builder
 	WithProgram(program hash.Hash) Builder
@@ -37,8 +36,6 @@ type Value interface {
 type Content interface {
 	IsInput() bool
 	Input() *uint
-	IsValue() bool
-	Value() *hash.Hash
 	IsConstant() bool
 	Constant() []byte
 	IsExecution() bool

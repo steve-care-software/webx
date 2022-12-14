@@ -1,30 +1,38 @@
 package compilers
 
-import "github.com/steve-care-software/webx/compilers/domain/instructions"
+import "github.com/steve-care-software/webx/programs/domain/programs"
 
 type execution struct {
-	parameter    string
-	instructions instructions.Instructions
+	parameters           Parameters
+	program              programs.Program
+	executeProgramModule uint
 }
 
 func createExecution(
-	parameter string,
-	instructions instructions.Instructions,
+	parameters Parameters,
+	program programs.Program,
+	executeProgramModule uint,
 ) Execution {
 	out := execution{
-		parameter:    parameter,
-		instructions: instructions,
+		parameters:           parameters,
+		program:              program,
+		executeProgramModule: executeProgramModule,
 	}
 
 	return &out
 }
 
-// Parameter returns the parameter
-func (obj *execution) Parameter() string {
-	return obj.parameter
+// Parameters returns the parameters
+func (obj *execution) Parameters() Parameters {
+	return obj.parameters
 }
 
-// Instructions returns the instructions
-func (obj *execution) Instructions() instructions.Instructions {
-	return obj.instructions
+// Program returns the program
+func (obj *execution) Program() programs.Program {
+	return obj.program
+}
+
+// ExecuteProgramModule returns the execute program module
+func (obj *execution) ExecuteProgramModule() uint {
+	return obj.executeProgramModule
 }

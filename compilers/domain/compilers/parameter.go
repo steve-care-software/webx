@@ -1,28 +1,30 @@
 package compilers
 
+import "github.com/steve-care-software/webx/selectors/domain/selectors"
+
 type parameter struct {
-	name  string
-	value Value
+	index    uint
+	selector selectors.Selector
 }
 
 func createPrameter(
-	name string,
-	value Value,
+	index uint,
+	selector selectors.Selector,
 ) Parameter {
 	out := parameter{
-		name:  name,
-		value: value,
+		index:    index,
+		selector: selector,
 	}
 
 	return &out
 }
 
-// Name returns the name
-func (obj *parameter) Name() string {
-	return obj.name
+// Index returns the index
+func (obj *parameter) Index() uint {
+	return obj.index
 }
 
-// Value returns the value
-func (obj *parameter) Value() Value {
-	return obj.value
+// Selector returns the selector
+func (obj *parameter) Selector() selectors.Selector {
+	return obj.selector
 }

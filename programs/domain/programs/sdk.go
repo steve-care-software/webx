@@ -148,7 +148,6 @@ type Attachment interface {
 type ValueBuilder interface {
 	Create() ValueBuilder
 	WithInput(input uint) ValueBuilder
-	WithValue(value Value) ValueBuilder
 	WithConstant(constant []byte) ValueBuilder
 	WithExecution(execution Application) ValueBuilder
 	WithProgram(program Program) ValueBuilder
@@ -165,8 +164,6 @@ type Value interface {
 type Content interface {
 	IsInput() bool
 	Input() *uint
-	IsValue() bool
-	Value() Value
 	IsConstant() bool
 	Constant() []byte
 	IsExecution() bool

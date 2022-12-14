@@ -229,16 +229,6 @@ func (app *application) retrieveValue(context uint, hash hash.Hash, modules modu
 		builder.WithInput(*pIndex)
 	}
 
-	if contentIns.IsValue() {
-		pValueHash := contentIns.Value()
-		value, err := app.retrieveValue(context, *pValueHash, modules)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithValue(value)
-	}
-
 	if contentIns.IsExecution() {
 		pExecutionHash := contentIns.Execution()
 		application, err := app.retrieveApplication(context, *pExecutionHash, modules)
@@ -358,17 +348,6 @@ func (app *application) executeValue(input map[uint]interface{}, values map[stri
 		}
 
 		str := fmt.Sprintf("the requested input variable (index: %d) is undefined", *pInputIndex)
-		return nil, errors.New(str)
-	}
-
-	if content.IsValue() {
-		value := content.Value()
-		valueHash := value.Hash().String()
-		if ins, ok := values[valueHash]; ok {
-			return ins, nil
-		}
-
-		str := fmt.Sprintf("the requested value (hash: %s) is undefined", valueHash)
 		return nil, errors.New(str)
 	}
 
