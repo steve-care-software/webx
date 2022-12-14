@@ -1,27 +1,35 @@
 package applications
 
 import (
+	blockchain_applications "github.com/steve-care-software/webx/blockchains/applications"
 	compiler_applications "github.com/steve-care-software/webx/compilers/applications"
 	grammar_applications "github.com/steve-care-software/webx/grammars/applications"
 	"github.com/steve-care-software/webx/grammars/domain/grammars"
 	program_applications "github.com/steve-care-software/webx/programs/applications"
 	"github.com/steve-care-software/webx/programs/domain/programs/modules"
 	"github.com/steve-care-software/webx/roots/domain/compilers"
+	roots_grammar "github.com/steve-care-software/webx/roots/domain/grammars"
 	"github.com/steve-care-software/webx/roots/domain/programs"
 	"github.com/steve-care-software/webx/roots/domain/selectors"
 	selector_applications "github.com/steve-care-software/webx/selectors/applications"
 )
 
+const (
+	// GrammarDatabaseKind represents the grammar database kind
+	GrammarDatabaseKind = iota
+)
+
 // Builder represents an application builder
 type Builder interface {
 	Create() Builder
+	WithBlockchain(blockchain blockchain_applications.Application) Builder
 	WithModules(modules modules.Modules) Builder
 	Now() (Application, error)
 }
 
 // Application represents a root application
 type Application interface {
-	New(name string) error
+	New(context uint, name string) error
 	Database
 }
 
@@ -35,8 +43,8 @@ type Database interface {
 
 // Grammar represents the grammar database application
 type Grammar interface {
-	Retrieve() (grammars.Grammar, error)
-	Application() (grammar_applications.Application, error)
+	Retrieve(context uint) (roots_grammar.Grammar, error)
+	Application(context uint) (grammar_applications.Application, error)
 }
 
 // Program represents the program database application

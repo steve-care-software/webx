@@ -30,6 +30,13 @@ const (
 	TransactionBlockchainFlag
 )
 
+// Builder represents an application builder
+type Builder interface {
+	Create() Builder
+	WithName(name string) Builder
+	Now() (Application, error)
+}
+
 // Application represents the read application
 type Application interface {
 	Database

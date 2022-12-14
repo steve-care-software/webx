@@ -5,6 +5,12 @@ import (
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hashtrees"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(hashAdapter)
+}
+
 // Builder represents a grammar builder
 type Builder interface {
 	Create() Builder
