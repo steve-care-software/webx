@@ -1,8 +1,8 @@
 package coverages
 
 import (
-	"github.com/steve-care-software/webx/grammars/domain/grammars"
-	"github.com/steve-care-software/webx/grammars/domain/trees"
+	"github.com/steve-care-software/webx/roots/domain/grammars/grammars"
+	"github.com/steve-care-software/webx/roots/domain/grammars/trees"
 )
 
 // NewBuilder initializes the builder

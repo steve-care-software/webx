@@ -2,7 +2,7 @@ package grammars
 
 import (
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/grammars/domain/grammars/values"
+	"github.com/steve-care-software/webx/roots/domain/grammars/grammars/values"
 )
 
 type elementContent struct {

@@ -3,7 +3,7 @@ package trees
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/grammars/domain/grammars"
+	"github.com/steve-care-software/webx/roots/domain/grammars/grammars"
 )
 
 type lineBuilder struct {

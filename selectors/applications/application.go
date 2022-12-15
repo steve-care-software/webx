@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
-	grammar_applications "github.com/steve-care-software/webx/grammars/applications"
-	"github.com/steve-care-software/webx/grammars/domain/grammars"
-	"github.com/steve-care-software/webx/grammars/domain/trees"
+	grammar_applications "github.com/steve-care-software/webx/roots/applications/grammars"
+	"github.com/steve-care-software/webx/roots/domain/grammars/grammars"
+	"github.com/steve-care-software/webx/roots/domain/grammars/trees"
 	"github.com/steve-care-software/webx/selectors/domain/selectors"
 )
 

@@ -1,6 +1,6 @@
 package coverages
 
-import "github.com/steve-care-software/webx/grammars/domain/trees"
+import "github.com/steve-care-software/webx/roots/domain/grammars/trees"
 
 type result struct {
 	tree trees.Tree

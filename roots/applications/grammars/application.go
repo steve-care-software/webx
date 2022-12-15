@@ -1,4 +1,4 @@
-package applications
+package grammars
 
 import (
 	"bytes"
@@ -7,16 +7,16 @@ import (
 
 	"github.com/steve-care-software/webx/blockchains/applications"
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
-	contents_grammars "github.com/steve-care-software/webx/grammars/domain/contents/grammars"
-	contents_channels "github.com/steve-care-software/webx/grammars/domain/contents/grammars/channels"
-	contents_elements "github.com/steve-care-software/webx/grammars/domain/contents/grammars/elements"
-	contents_everythings "github.com/steve-care-software/webx/grammars/domain/contents/grammars/everythings"
-	contents_tokens "github.com/steve-care-software/webx/grammars/domain/contents/grammars/tokens"
-	"github.com/steve-care-software/webx/grammars/domain/grammars"
-	"github.com/steve-care-software/webx/grammars/domain/grammars/cardinalities"
-	"github.com/steve-care-software/webx/grammars/domain/grammars/coverages"
-	"github.com/steve-care-software/webx/grammars/domain/grammars/values"
-	"github.com/steve-care-software/webx/grammars/domain/trees"
+	contents_grammars "github.com/steve-care-software/webx/roots/domain/grammars/contents/grammars"
+	contents_channels "github.com/steve-care-software/webx/roots/domain/grammars/contents/grammars/channels"
+	contents_elements "github.com/steve-care-software/webx/roots/domain/grammars/contents/grammars/elements"
+	contents_everythings "github.com/steve-care-software/webx/roots/domain/grammars/contents/grammars/everythings"
+	contents_tokens "github.com/steve-care-software/webx/roots/domain/grammars/contents/grammars/tokens"
+	"github.com/steve-care-software/webx/roots/domain/grammars/grammars"
+	"github.com/steve-care-software/webx/roots/domain/grammars/grammars/cardinalities"
+	"github.com/steve-care-software/webx/roots/domain/grammars/grammars/coverages"
+	"github.com/steve-care-software/webx/roots/domain/grammars/grammars/values"
+	"github.com/steve-care-software/webx/roots/domain/grammars/trees"
 )
 
 type application struct {

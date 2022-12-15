@@ -3,8 +3,8 @@ package applications
 import (
 	blockchain_applications "github.com/steve-care-software/webx/blockchains/applications"
 	compiler_applications "github.com/steve-care-software/webx/compilers/applications"
-	grammar_applications "github.com/steve-care-software/webx/grammars/applications"
-	"github.com/steve-care-software/webx/grammars/domain/grammars"
+	grammar_applications "github.com/steve-care-software/webx/roots/applications/grammars"
+	"github.com/steve-care-software/webx/roots/domain/grammars/grammars"
 	program_applications "github.com/steve-care-software/webx/programs/applications"
 	"github.com/steve-care-software/webx/programs/domain/programs/modules"
 	"github.com/steve-care-software/webx/roots/domain/roots/compilers"

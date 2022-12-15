@@ -2,8 +2,8 @@ package applications
 
 import (
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/grammars/domain/grammars"
-	"github.com/steve-care-software/webx/grammars/domain/trees"
+	"github.com/steve-care-software/webx/roots/domain/grammars/grammars"
+	"github.com/steve-care-software/webx/roots/domain/grammars/trees"
 	"github.com/steve-care-software/webx/selectors/domain/selectors"
 )
 
