@@ -3,7 +3,7 @@ package programs
 import (
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hashtrees"
-	"github.com/steve-care-software/webx/programs/domain/programs/modules"
+	"github.com/steve-care-software/webx/roots/domain/programs/programs/modules"
 )
 
 // Builder represents a programs builder

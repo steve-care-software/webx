@@ -1,10 +1,10 @@
-package applications
+package programs
 
 import (
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 	grammars_application "github.com/steve-care-software/webx/roots/applications/grammars"
-	"github.com/steve-care-software/webx/programs/domain/programs"
-	"github.com/steve-care-software/webx/programs/domain/programs/modules"
+	"github.com/steve-care-software/webx/roots/domain/programs/programs"
+	"github.com/steve-care-software/webx/roots/domain/programs/programs/modules"
 )
 
 const (
