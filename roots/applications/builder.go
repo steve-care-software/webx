@@ -6,8 +6,8 @@ import (
 	blockchain_applications "github.com/steve-care-software/webx/blockchains/applications"
 	grammar_applications "github.com/steve-care-software/webx/grammars/applications"
 	"github.com/steve-care-software/webx/programs/domain/programs/modules"
-	contents_grammar "github.com/steve-care-software/webx/roots/domain/contents/grammars"
-	roots_grammar "github.com/steve-care-software/webx/roots/domain/grammars"
+	contents_grammar "github.com/steve-care-software/webx/roots/domain/roots/contents/grammars"
+	roots_grammar "github.com/steve-care-software/webx/roots/domain/roots/grammars"
 )
 
 type builder struct {

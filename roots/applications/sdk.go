@@ -7,10 +7,10 @@ import (
 	"github.com/steve-care-software/webx/grammars/domain/grammars"
 	program_applications "github.com/steve-care-software/webx/programs/applications"
 	"github.com/steve-care-software/webx/programs/domain/programs/modules"
-	"github.com/steve-care-software/webx/roots/domain/compilers"
-	roots_grammar "github.com/steve-care-software/webx/roots/domain/grammars"
-	"github.com/steve-care-software/webx/roots/domain/programs"
-	"github.com/steve-care-software/webx/roots/domain/selectors"
+	"github.com/steve-care-software/webx/roots/domain/roots/compilers"
+	roots_grammar "github.com/steve-care-software/webx/roots/domain/roots/grammars"
+	"github.com/steve-care-software/webx/roots/domain/roots/programs"
+	"github.com/steve-care-software/webx/roots/domain/roots/selectors"
 	selector_applications "github.com/steve-care-software/webx/selectors/applications"
 )
 
