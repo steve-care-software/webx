@@ -1,4 +1,4 @@
-package applications
+package compilers
 
 import (
 	"errors"
@@ -6,10 +6,10 @@ import (
 
 	"github.com/steve-care-software/webx/blockchains/applications"
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/compilers/domain/compilers"
-	"github.com/steve-care-software/webx/programs/domain/programs"
-	"github.com/steve-care-software/webx/programs/domain/programs/modules"
-	selector_applications "github.com/steve-care-software/webx/selectors/applications"
+	selector_applications "github.com/steve-care-software/webx/roots/applications/selectors"
+	"github.com/steve-care-software/webx/roots/domain/compilers/compilers"
+	"github.com/steve-care-software/webx/roots/domain/programs/programs"
+	"github.com/steve-care-software/webx/roots/domain/programs/programs/modules"
 )
 
 type application struct {

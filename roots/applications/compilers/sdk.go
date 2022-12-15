@@ -1,10 +1,10 @@
-package applications
+package compilers
 
 import (
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/compilers/domain/compilers"
-	"github.com/steve-care-software/webx/programs/domain/programs"
-	"github.com/steve-care-software/webx/programs/domain/programs/modules"
+	"github.com/steve-care-software/webx/roots/domain/compilers/compilers"
+	"github.com/steve-care-software/webx/roots/domain/programs/programs"
+	"github.com/steve-care-software/webx/roots/domain/programs/programs/modules"
 )
 
 // Application represents a compiler application

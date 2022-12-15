@@ -1,6 +1,6 @@
 package compilers
 
-import "github.com/steve-care-software/webx/selectors/domain/selectors"
+import "github.com/steve-care-software/webx/roots/domain/selectors/selectors"
 
 type parameter struct {
 	index    uint

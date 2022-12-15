@@ -2,7 +2,7 @@ package applications
 
 import (
 	blockchain_applications "github.com/steve-care-software/webx/blockchains/applications"
-	compiler_applications "github.com/steve-care-software/webx/compilers/applications"
+	compiler_applications "github.com/steve-care-software/webx/roots/applications/compilers"
 	grammar_applications "github.com/steve-care-software/webx/roots/applications/grammars"
 	"github.com/steve-care-software/webx/roots/domain/grammars/grammars"
 	program_applications "github.com/steve-care-software/webx/roots/applications/programs"
