@@ -1,6 +1,6 @@
 package channels
 
-import "github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+import "github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
 
 // NewChannelForTests creates a new channel for tests
 func NewChannelForTests() Channel {

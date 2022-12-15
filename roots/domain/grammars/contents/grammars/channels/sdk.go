@@ -1,6 +1,6 @@
 package channels
 
-import "github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+import "github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
 
 const minChannelSize = (hash.Size * 2) + 1
 

@@ -1,8 +1,8 @@
 package compilers
 
 import (
-	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hashtrees"
+	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
+	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hashtrees"
 )
 
 // Adapter represents a compiler adapter

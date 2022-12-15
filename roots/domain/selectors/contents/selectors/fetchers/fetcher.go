@@ -1,6 +1,6 @@
 package fetchers
 
-import "github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+import "github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
 
 type fetcher struct {
 	hash    hash.Hash

@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
 )
 
 // NewTokenForTests creates a new token for tests

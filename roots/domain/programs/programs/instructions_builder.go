@@ -3,7 +3,7 @@ package programs
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
 )
 
 type instructionsBuilder struct {

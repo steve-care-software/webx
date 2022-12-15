@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
 )
 
 type builder struct {

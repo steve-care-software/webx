@@ -1,7 +1,7 @@
 package fns
 
 import (
-	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
 )
 
 // NewBuilder initializes the builder

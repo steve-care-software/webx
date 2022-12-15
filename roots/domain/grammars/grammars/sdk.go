@@ -1,7 +1,7 @@
 package grammars
 
 import (
-	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
 	"github.com/steve-care-software/webx/roots/domain/grammars/grammars/cardinalities"
 	"github.com/steve-care-software/webx/roots/domain/grammars/grammars/values"
 )

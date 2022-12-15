@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/steve-care-software/webx/blockchains/applications"
-	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/roots/applications/blockchains"
+	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
 	contents_programs "github.com/steve-care-software/webx/roots/domain/programs/contents/programs"
 	contents_applications "github.com/steve-care-software/webx/roots/domain/programs/contents/programs/applications"
 	contents_instructions "github.com/steve-care-software/webx/roots/domain/programs/contents/programs/instructions"

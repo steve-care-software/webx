@@ -3,7 +3,7 @@ package grammars
 import (
 	"fmt"
 
-	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
 )
 
 // NewGrammarForTests creates a new grammar for tests

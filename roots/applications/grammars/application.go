@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/steve-care-software/webx/blockchains/applications"
-	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/roots/applications/blockchains"
+	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
 	contents_grammars "github.com/steve-care-software/webx/roots/domain/grammars/contents/grammars"
 	contents_channels "github.com/steve-care-software/webx/roots/domain/grammars/contents/grammars/channels"
 	contents_elements "github.com/steve-care-software/webx/roots/domain/grammars/contents/grammars/elements"

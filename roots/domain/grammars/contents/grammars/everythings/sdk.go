@@ -1,6 +1,6 @@
 package everythings
 
-import "github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+import "github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
 
 const minEverythingSize = hash.Size * 2
 

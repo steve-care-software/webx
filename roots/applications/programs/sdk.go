@@ -1,7 +1,7 @@
 package programs
 
 import (
-	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
 	grammars_application "github.com/steve-care-software/webx/roots/applications/grammars"
 	"github.com/steve-care-software/webx/roots/domain/programs/programs"
 	"github.com/steve-care-software/webx/roots/domain/programs/programs/modules"

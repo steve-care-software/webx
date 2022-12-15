@@ -3,7 +3,7 @@ package applications
 import (
 	"errors"
 
-	blockchain_applications "github.com/steve-care-software/webx/blockchains/applications"
+	blockchain_applications "github.com/steve-care-software/webx/roots/applications/blockchains"
 	grammar_applications "github.com/steve-care-software/webx/roots/applications/grammars"
 	"github.com/steve-care-software/webx/roots/domain/programs/programs/modules"
 	contents_grammar "github.com/steve-care-software/webx/roots/domain/roots/contents/grammars"

@@ -1,6 +1,6 @@
 package programs
 
-import "github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+import "github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
