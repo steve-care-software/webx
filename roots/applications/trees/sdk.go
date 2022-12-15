@@ -1,14 +1,12 @@
 package applications
 
 import (
-	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/grammars/applications"
+	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
 )
 
 // Application represents a tree application
 type Application interface {
 	New(name string, grammar hash.Hash) error
-	applications.Database
 	Database
 	Software
 }
