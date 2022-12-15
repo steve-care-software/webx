@@ -23,15 +23,3 @@ type Blockchain interface {
 	Reference() hash.Hash
 	Head() blocks.Block
 }
-
-// Repository represents a blockchain repository
-type Repository interface {
-	List() ([]hash.Hash, error)
-	Retrieve(ref hash.Hash) (Blockchain, error)
-}
-
-// Service represents a blockchain service
-type Service interface {
-	Save(blockchain Blockchain) error
-	Delete(blockchain Blockchain) error
-}

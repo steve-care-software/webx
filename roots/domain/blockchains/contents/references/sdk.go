@@ -8,7 +8,7 @@ import (
 
 const pointerSize = 8 * 2
 const blockchainKeySize = hash.Size + pointerSize + 8
-const contentKeySize = blockchainKeySize + 1 + hash.Size
+const contentKeySize = blockchainKeySize + 8 + hash.Size
 
 // NewAdapter creates a new adapter instance
 func NewAdapter() Adapter {
@@ -229,7 +229,7 @@ type ContentKeyAdapter interface {
 type ContentKeyBuilder interface {
 	Create() ContentKeyBuilder
 	WithHash(hash hash.Hash) ContentKeyBuilder
-	WithKind(kind uint8) ContentKeyBuilder
+	WithKind(kind uint) ContentKeyBuilder
 	WithContent(content Pointer) ContentKeyBuilder
 	WithTransaction(trx hash.Hash) ContentKeyBuilder
 	CreatedOn(createdOn time.Time) ContentKeyBuilder
@@ -239,7 +239,7 @@ type ContentKeyBuilder interface {
 // ContentKey represents a content key
 type ContentKey interface {
 	BlockchainKey
-	Kind() uint8
+	Kind() uint
 	Transaction() hash.Hash
 }
 

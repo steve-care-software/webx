@@ -1,6 +1,12 @@
 package blockchains
 
 import (
+	"encoding/binary"
+	"errors"
+	"fmt"
+	"os"
+	"path/filepath"
+
 	applications "github.com/steve-care-software/webx/roots/applications/blockchains"
 	"github.com/steve-care-software/webx/roots/domain/blockchains/blockchains"
 	"github.com/steve-care-software/webx/roots/domain/blockchains/blockchains/blocks"
@@ -10,14 +16,25 @@ import (
 )
 
 type application struct {
-	dirPath string
+	referenceAdapter   references.Adapter
+	contentKeyBuilder  references.ContentKeyBuilder
+	transactionBuilder transactions.TransactionBuilder
+	dirPath            string
+	contexts           map[uint]*context
 }
 
 func createApplication(
+	referenceAdapter references.Adapter,
+	contentKeyBuilder references.ContentKeyBuilder,
+	transactionBuilder transactions.TransactionBuilder,
 	dirPath string,
 ) applications.Application {
 	out := application{
-		dirPath: dirPath,
+		referenceAdapter:   referenceAdapter,
+		contentKeyBuilder:  contentKeyBuilder,
+		transactionBuilder: transactionBuilder,
+		dirPath:            dirPath,
+		contexts:           map[uint]*context{},
 	}
 
 	return &out
@@ -25,16 +42,73 @@ func createApplication(
 
 // Delete deletes an existing database
 func (app *application) Delete(name string) error {
-	return nil
+	path := filepath.Join(app.dirPath, name)
+	pInfo, err := os.Stat(name)
+	if err != nil {
+		return err
+	}
+
+	if !pInfo.IsDir() {
+		str := fmt.Sprintf("the name (%s) was expected to be a file, not a directory", name)
+		return errors.New(str)
+	}
+
+	return os.Remove(path)
 }
 
 // Open opens a context at height, height is -1 if the head is requested
 func (app *application) Open(name string, height int) (*uint, error) {
-	return nil, nil
+	path := filepath.Join(app.dirPath, name)
+	pConn, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+
+	// read the reference length in bytes:
+	refLengthBytes := make([]byte, expectedReferenceBytesLength)
+	refAmount, err := pConn.Read(refLengthBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	if refAmount != expectedReferenceBytesLength {
+		str := fmt.Sprintf("%d bytes were expected to be read when reading the reference length bytes, %d actually read", expectedReferenceBytesLength, refAmount)
+		return nil, errors.New(str)
+	}
+
+	// convert the reference length to uint64:
+	refLength := binary.LittleEndian.Uint64(refLengthBytes)
+
+	// read the reference data:
+	refContentBytes := make([]byte, refLength)
+	refContentAmount, err := pConn.ReadAt(refContentBytes, int64(refLength))
+	if err != nil {
+		return nil, err
+	}
+
+	if refContentAmount != int(refLength) {
+		str := fmt.Sprintf("%d bytes were expected to be read when reading the reference bytes, %d actually read", refLength, refContentAmount)
+		return nil, errors.New(str)
+	}
+
+	// convert the content to a reference instance:
+	reference, err := app.referenceAdapter.ToReference(refContentBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	pContext := &context{
+		identifier:  uint(len(app.contexts)),
+		pConn:       pConn,
+		reference:   reference,
+		contentList: []*content{},
+	}
+
+	return &pContext.identifier, nil
 }
 
 // ContentKeys returns the contentKey kind on a context
-func (app *application) ContentKeys(context uint, kind uint8) (references.ContentKeys, error) {
+func (app *application) ContentKeys(context uint, kind uint) (references.ContentKeys, error) {
 	return nil, nil
 }
 
@@ -88,11 +162,6 @@ func (app *application) ReplaceTransaction(context uint, block hash.Hash, trx tr
 	return nil
 }
 
-// ListByKind returns the list by kind
-func (app *application) ListByKind(context uint, kind uint, index uint, amount uint) ([]hash.Hash, uint, error) {
-	return nil, 0, nil
-}
-
 // Read reads a pointer on a context
 func (app *application) Read(context uint, pointer references.Pointer) ([]byte, error) {
 	return nil, nil
@@ -114,18 +183,58 @@ func (app *application) ReadAllByHashes(context uint, hashes []hash.Hash) ([][]b
 }
 
 // Write writes data to a context
-func (app *application) Write(context uint, hash hash.Hash, data []byte, kind uint8) error {
-	return nil
+func (app *application) Write(context uint, hash hash.Hash, data []byte, kind uint) error {
+	if pContext, ok := app.contexts[context]; ok {
+		pContext.contentList = append(pContext.contentList, &content{
+			hash: hash,
+			data: data,
+			kind: kind,
+		})
+
+		app.contexts[context] = pContext
+		return nil
+	}
+
+	str := fmt.Sprintf("the given context (%d) does not exists and therefore cannot be written to", context)
+	return errors.New(str)
 }
 
 // Cancel cancels a context
 func (app *application) Cancel(context uint) error {
-	return nil
+	if pContext, ok := app.contexts[context]; ok {
+		pContext.contentList = []*content{}
+		app.contexts[context] = pContext
+		return nil
+	}
+
+	str := fmt.Sprintf("the given context (%d) does not exists and therefore cannot be canceled", context)
+	return errors.New(str)
 }
 
 // Commit commits a context
 func (app *application) Commit(context uint) error {
-	return nil
+	if pContext, ok := app.contexts[context]; ok {
+		for _, oneContent := range pContext.contentList {
+
+			// create a new transaction:
+
+			// find the latest block:
+
+			// save the transaction:
+
+			// find the next point for the data kind:
+
+			// build a new content key:
+			//contentKey, err := app.contentKeyBuilder.Create().WithHash(oneContent.hash).WithKind(pContext.kind)
+
+			// save the content key to the reference:
+
+			// save the reference on disk:
+		}
+	}
+
+	str := fmt.Sprintf("the given context (%d) does not exists and therefore cannot be comitted", context)
+	return errors.New(str)
 }
 
 // Push pushes a context
@@ -135,5 +244,15 @@ func (app *application) Push(context uint) error {
 
 // Close closes a context
 func (app *application) Close(context uint) error {
-	return nil
+	if pContext, ok := app.contexts[context]; ok {
+		err := pContext.pConn.Close()
+		if err != nil {
+			return err
+		}
+
+		delete(app.contexts, context)
+	}
+
+	str := fmt.Sprintf("the given context (%d) does not exists and therefore cannot be closed", context)
+	return errors.New(str)
 }

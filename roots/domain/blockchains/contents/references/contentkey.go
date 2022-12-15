@@ -8,7 +8,7 @@ import (
 
 type contentKey struct {
 	hash      hash.Hash
-	kind      uint8
+	kind      uint
 	content   Pointer
 	trx       hash.Hash
 	createdOn time.Time
@@ -16,7 +16,7 @@ type contentKey struct {
 
 func createContentKey(
 	hash hash.Hash,
-	kind uint8,
+	kind uint,
 	content Pointer,
 	trx hash.Hash,
 	createdOn time.Time,
@@ -38,7 +38,7 @@ func (obj *contentKey) Hash() hash.Hash {
 }
 
 // Kind returns the kind
-func (obj *contentKey) Kind() uint8 {
+func (obj *contentKey) Kind() uint {
 	return obj.kind
 }
 

@@ -4,7 +4,7 @@ import (
 	"math/big"
 
 	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
-	"github.com/steve-care-software/webx/domain/blockchains/transactions"
+	"github.com/steve-care-software/webx/roots/domain/blockchains/blockchains/transactions"
 )
 
 // NewBuilder creates a new builder instance
@@ -40,17 +40,4 @@ type Score interface {
 	Next() *big.Int
 	Pending() *big.Int
 	Total() *big.Int
-}
-
-// Repository represents a block repository
-type Repository interface {
-	RetrieveByHeight(reference hash.Hash, height uint) (Block, error)
-	RetrieveByHash(reference hash.Hash, hash hash.Hash) (Block, error)
-	RetrieveByPreviousHash(reference hash.Hash, prev hash.Hash) (Block, error)
-}
-
-// Service represents a block service
-type Service interface {
-	Save(reference hash.Hash, block Block) error
-	Delete(reference hash.Hash, block Block) error
 }

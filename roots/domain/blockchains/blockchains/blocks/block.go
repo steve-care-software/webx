@@ -1,7 +1,7 @@
 package blocks
 
 import (
-	"github.com/steve-care-software/webx/domain/blockchains/transactions"
+	"github.com/steve-care-software/webx/roots/domain/blockchains/blockchains/transactions"
 	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
 )
 

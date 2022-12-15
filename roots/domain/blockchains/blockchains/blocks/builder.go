@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/steve-care-software/webx/roots/domain/blockchains/blockchains/transactions"
 	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
-	"github.com/steve-care-software/webx/domain/blockchains/transactions"
 )
 
 type builder struct {

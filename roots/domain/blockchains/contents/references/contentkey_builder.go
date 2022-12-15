@@ -9,7 +9,7 @@ import (
 
 type contentKeyBuilder struct {
 	pHash      *hash.Hash
-	pKind      *uint8
+	pKind      *uint
 	content    Pointer
 	pTrx       *hash.Hash
 	pCreatedOn *time.Time
@@ -39,7 +39,7 @@ func (app *contentKeyBuilder) WithHash(hash hash.Hash) ContentKeyBuilder {
 }
 
 // WithKind adds a kind to the builder
-func (app *contentKeyBuilder) WithKind(kind uint8) ContentKeyBuilder {
+func (app *contentKeyBuilder) WithKind(kind uint) ContentKeyBuilder {
 	app.pKind = &kind
 	return app
 }

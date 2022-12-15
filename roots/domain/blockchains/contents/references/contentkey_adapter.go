@@ -32,7 +32,10 @@ func createContentKeyAdapter(
 // ToContent converts ContentKey to bytes
 func (app *contentKeyAdapter) ToContent(ins ContentKey) ([]byte, error) {
 	hashBytes := ins.Hash().Bytes()
-	kind := ins.Kind()
+
+	kindBytes := make([]byte, 8)
+	binary.LittleEndian.PutUint64(kindBytes, uint64(ins.Kind()))
+
 	contentBytes, err := app.pointerAdapter.ToContent(ins.Content())
 	if err != nil {
 		return nil, err
@@ -44,7 +47,7 @@ func (app *contentKeyAdapter) ToContent(ins ContentKey) ([]byte, error) {
 
 	output := []byte{}
 	output = append(output, hashBytes...)
-	output = append(output, kind)
+	output = append(output, kindBytes...)
 	output = append(output, contentBytes...)
 	output = append(output, trxBytes...)
 	output = append(output, createdOnBytes...)
@@ -63,8 +66,8 @@ func (app *contentKeyAdapter) ToContentKey(content []byte) (ContentKey, error) {
 		return nil, err
 	}
 
-	kindDelimiter := hash.Size + 1
-	kind := content[hash.Size:kindDelimiter][0]
+	kindDelimiter := hash.Size + 8
+	kind := binary.LittleEndian.Uint64(content[hash.Size:kindDelimiter])
 
 	contentDelimiter := kindDelimiter + pointerSize
 	pointerContent, err := app.pointerAdapter.ToPointer(content[kindDelimiter:contentDelimiter])
@@ -83,7 +86,7 @@ func (app *contentKeyAdapter) ToContentKey(content []byte) (ContentKey, error) {
 
 	return app.builder.Create().
 		WithHash(*pHash).
-		WithKind(kind).
+		WithKind(uint(kind)).
 		WithContent(pointerContent).
 		WithTransaction(*pTrxHash).
 		CreatedOn(createdOn).

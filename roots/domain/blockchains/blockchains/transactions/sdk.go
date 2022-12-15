@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	uuid "github.com/satori/go.uuid"
 	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
 )
 
@@ -139,16 +138,4 @@ type Transaction interface {
 	Proof() big.Int
 	Mine() hash.Hash
 	Score() *big.Int
-}
-
-// Repository represents a transaction repository
-type Repository interface {
-	Retrieve(id uuid.UUID) (Transaction, error)
-	RetrieveList(list []uuid.UUID) (Transactions, error)
-}
-
-// Service represents a transaction service
-type Service interface {
-	Save(trx Transaction) error
-	Delete(trx Transaction) error
 }
