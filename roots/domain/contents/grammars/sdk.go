@@ -5,6 +5,11 @@ import (
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hashtrees"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Adapter represents a grammar adapter
 type Adapter interface {
 	ToGrammar(content []byte) (Grammar, error)
