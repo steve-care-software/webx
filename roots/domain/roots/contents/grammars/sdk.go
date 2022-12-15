@@ -5,6 +5,16 @@ import (
 	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hashtrees"
 )
 
+const minGrammarLength = hash.Size + 8 + 1
+
+// NewAdapter creates a new adapter
+func NewAdapter() Adapter {
+	hashAdapter := hash.NewAdapter()
+	hashTreeAdapter := hashtrees.NewAdapter()
+	builder := NewBuilder()
+	return createAdapter(hashAdapter, hashTreeAdapter, builder)
+}
+
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
 	return createBuilder()
@@ -12,8 +22,8 @@ func NewBuilder() Builder {
 
 // Adapter represents a grammar adapter
 type Adapter interface {
-	ToGrammar(content []byte) (Grammar, error)
 	ToContent(ins Grammar) ([]byte, error)
+	ToGrammar(content []byte) (Grammar, error)
 }
 
 // Builder represents a grammar builder
