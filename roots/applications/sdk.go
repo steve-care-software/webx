@@ -11,7 +11,7 @@ import (
 	roots_grammar "github.com/steve-care-software/webx/roots/domain/roots/grammars"
 	"github.com/steve-care-software/webx/roots/domain/roots/programs"
 	"github.com/steve-care-software/webx/roots/domain/roots/selectors"
-	selector_applications "github.com/steve-care-software/webx/selectors/applications"
+	selector_applications "github.com/steve-care-software/webx/roots/applications/selectors"
 )
 
 const (

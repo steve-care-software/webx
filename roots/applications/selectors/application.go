@@ -1,4 +1,4 @@
-package applications
+package selectors
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	grammar_applications "github.com/steve-care-software/webx/roots/applications/grammars"
 	"github.com/steve-care-software/webx/roots/domain/grammars/grammars"
 	"github.com/steve-care-software/webx/roots/domain/grammars/trees"
-	"github.com/steve-care-software/webx/selectors/domain/selectors"
+	"github.com/steve-care-software/webx/roots/domain/selectors/selectors"
 )
 
 type application struct {

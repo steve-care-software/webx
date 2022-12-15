@@ -1,10 +1,10 @@
-package applications
+package selectors
 
 import (
 	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/roots/domain/grammars/grammars"
 	"github.com/steve-care-software/webx/roots/domain/grammars/trees"
-	"github.com/steve-care-software/webx/selectors/domain/selectors"
+	"github.com/steve-care-software/webx/roots/domain/selectors/selectors"
 )
 
 // Application represents a selector application
