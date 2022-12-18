@@ -1,6 +1,6 @@
 package insides
 
-import "github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
+import "github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 
 type inside struct {
 	hash    hash.Hash

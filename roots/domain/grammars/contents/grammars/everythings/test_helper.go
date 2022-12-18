@@ -1,6 +1,6 @@
 package everythings
 
-import "github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
+import "github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 
 // NewEverythingForTests creates a new everything for tests
 func NewEverythingForTests() Everything {

@@ -4,33 +4,33 @@ import (
 	"errors"
 	"fmt"
 
-	blockchain_applications "github.com/steve-care-software/webx/roots/applications/blockchains"
+	database_applications "github.com/steve-care-software/webx/databases/applications"
 	grammar_applications "github.com/steve-care-software/webx/roots/applications/grammars"
 	contents_grammar "github.com/steve-care-software/webx/roots/domain/roots/contents/grammars"
 	roots_grammar "github.com/steve-care-software/webx/roots/domain/roots/grammars"
 )
 
 type grammar struct {
-	blockchainApp        blockchain_applications.Application
-	blockchainAppBuilder blockchain_applications.Builder
-	grammarAppBuilder    grammar_applications.Builder
-	builder              roots_grammar.Builder
-	contentAdapter       contents_grammar.Adapter
+	databaseApp        database_applications.Application
+	databaseAppBuilder database_applications.Builder
+	grammarAppBuilder  grammar_applications.Builder
+	builder            roots_grammar.Builder
+	contentAdapter     contents_grammar.Adapter
 }
 
 func createGrammar(
-	blockchainApp blockchain_applications.Application,
-	blockchainAppBuilder blockchain_applications.Builder,
+	databaseApp database_applications.Application,
+	databaseAppBuilder database_applications.Builder,
 	grammarAppBuilder grammar_applications.Builder,
 	builder roots_grammar.Builder,
 	contentAdapter contents_grammar.Adapter,
 ) Grammar {
 	out := grammar{
-		blockchainApp:        blockchainApp,
-		blockchainAppBuilder: blockchainAppBuilder,
-		grammarAppBuilder:    grammarAppBuilder,
-		builder:              builder,
-		contentAdapter:       contentAdapter,
+		databaseApp:        databaseApp,
+		databaseAppBuilder: databaseAppBuilder,
+		grammarAppBuilder:  grammarAppBuilder,
+		builder:            builder,
+		contentAdapter:     contentAdapter,
 	}
 
 	return &out
@@ -38,7 +38,7 @@ func createGrammar(
 
 // Retrieve retrieves the grammar database instance
 func (app *grammar) Retrieve(context uint) (roots_grammar.Grammar, error) {
-	contentKeys, err := app.blockchainApp.ContentKeys(context, GrammarDatabaseKind)
+	contentKeys, err := app.databaseApp.ContentKeys(context, GrammarDatabaseKind)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (app *grammar) Retrieve(context uint) (roots_grammar.Grammar, error) {
 		return nil, errors.New(str)
 	}
 
-	content, err := app.blockchainApp.Read(context, list[0].Content())
+	content, err := app.databaseApp.Read(context, list[0].Content())
 	if err != nil {
 		return nil, err
 	}
@@ -77,12 +77,12 @@ func (app *grammar) Application(context uint) (grammar_applications.Application,
 	}
 
 	name := grammarIns.Name()
-	blockchainApp, err := app.blockchainAppBuilder.Create().WithName(name).Now()
+	databaseApp, err := app.databaseAppBuilder.Create().WithName(name).Now()
 	if err != nil {
 		return nil, err
 	}
 
 	return app.grammarAppBuilder.Create().
-		WithBlockchain(blockchainApp).
+		WithBlockchain(databaseApp).
 		Now()
 }

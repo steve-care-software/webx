@@ -1,14 +1,14 @@
 package applications
 
 import (
-	blockchain_applications "github.com/steve-care-software/webx/roots/applications/blockchains"
+	database_applications "github.com/steve-care-software/webx/databases/applications"
 	"github.com/steve-care-software/webx/roots/domain/programs/programs/modules"
 	contents_grammar "github.com/steve-care-software/webx/roots/domain/roots/contents/grammars"
 	roots_grammar "github.com/steve-care-software/webx/roots/domain/roots/grammars"
 )
 
 type application struct {
-	blockchainApp         blockchain_applications.Application
+	databaseApp         database_applications.Application
 	grammar               Grammar
 	program               Program
 	selector              Selector
@@ -20,7 +20,7 @@ type application struct {
 }
 
 func createApplication(
-	blockchainApp blockchain_applications.Application,
+	databaseApp database_applications.Application,
 	grammar Grammar,
 	program Program,
 	selector Selector,
@@ -31,7 +31,7 @@ func createApplication(
 	modules modules.Modules,
 ) Application {
 	out := application{
-		blockchainApp:         blockchainApp,
+		databaseApp:         databaseApp,
 		grammar:               grammar,
 		program:               program,
 		selector:              selector,
@@ -63,7 +63,7 @@ func (app *application) New(context uint, name string) error {
 		return err
 	}
 
-	return app.blockchainApp.Write(context, hash, content, GrammarDatabaseKind)
+	return app.databaseApp.Write(context, hash, content, GrammarDatabaseKind)
 }
 
 // Grammar returns the grammar application

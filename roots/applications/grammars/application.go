@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/steve-care-software/webx/roots/applications/blockchains"
-	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
+	"github.com/steve-care-software/webx/databases/applications"
+	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 	contents_grammars "github.com/steve-care-software/webx/roots/domain/grammars/contents/grammars"
 	contents_channels "github.com/steve-care-software/webx/roots/domain/grammars/contents/grammars/channels"
 	contents_elements "github.com/steve-care-software/webx/roots/domain/grammars/contents/grammars/elements"
@@ -20,7 +20,7 @@ import (
 )
 
 type application struct {
-	blockchainApp                    applications.Application
+	databaseApp                      applications.Application
 	contentAdapter                   contents_grammars.Adapter
 	contentBuilder                   contents_grammars.Builder
 	contentTokenAdapter              contents_tokens.Adapter
@@ -65,7 +65,7 @@ type application struct {
 }
 
 func createApplication(
-	blockchainApp applications.Application,
+	databaseApp applications.Application,
 	contentAdapter contents_grammars.Adapter,
 	contentBuilder contents_grammars.Builder,
 	contentTokenAdapter contents_tokens.Adapter,
@@ -109,7 +109,7 @@ func createApplication(
 	hashAdapter hash.Adapter,
 ) Application {
 	out := application{
-		blockchainApp:                    blockchainApp,
+		databaseApp:                      databaseApp,
 		contentAdapter:                   contentAdapter,
 		contentBuilder:                   contentBuilder,
 		contentTokenAdapter:              contentTokenAdapter,
@@ -158,7 +158,7 @@ func createApplication(
 
 // Retrieve retrieves a grammar by hash
 func (app *application) Retrieve(context uint, hash hash.Hash) (grammars.Grammar, error) {
-	content, err := app.blockchainApp.ReadByHash(context, hash)
+	content, err := app.databaseApp.ReadByHash(context, hash)
 	if err != nil {
 		return nil, err
 	}
@@ -187,7 +187,7 @@ func (app *application) Retrieve(context uint, hash hash.Hash) (grammars.Grammar
 }
 
 func (app *application) retrieveToken(context uint, hash hash.Hash) (grammars.Token, error) {
-	content, err := app.blockchainApp.ReadByHash(context, hash)
+	content, err := app.databaseApp.ReadByHash(context, hash)
 	if err != nil {
 		return nil, err
 	}
@@ -227,7 +227,7 @@ func (app *application) retrieveToken(context uint, hash hash.Hash) (grammars.To
 }
 
 func (app *application) retrieveElements(context uint, hashes []hash.Hash) ([]grammars.Element, error) {
-	contents, err := app.blockchainApp.ReadAllByHashes(context, hashes)
+	contents, err := app.databaseApp.ReadAllByHashes(context, hashes)
 	if err != nil {
 		return nil, err
 	}
@@ -246,7 +246,7 @@ func (app *application) retrieveElements(context uint, hashes []hash.Hash) ([]gr
 }
 
 func (app *application) retrieveElement(context uint, hash hash.Hash) (grammars.Element, error) {
-	content, err := app.blockchainApp.ReadByHash(context, hash)
+	content, err := app.databaseApp.ReadByHash(context, hash)
 	if err != nil {
 		return nil, err
 	}
@@ -355,7 +355,7 @@ func (app *application) retrieveExternal(context uint, hash hash.Hash) (grammars
 }
 
 func (app *application) retrieveEverything(context uint, hash hash.Hash) (grammars.Everything, error) {
-	content, err := app.blockchainApp.ReadByHash(context, hash)
+	content, err := app.databaseApp.ReadByHash(context, hash)
 	if err != nil {
 		return nil, err
 	}
@@ -387,7 +387,7 @@ func (app *application) retrieveEverything(context uint, hash hash.Hash) (gramma
 }
 
 func (app *application) retrieveChannels(context uint, hashes []hash.Hash) (grammars.Channels, error) {
-	contents, err := app.blockchainApp.ReadAllByHashes(context, hashes)
+	contents, err := app.databaseApp.ReadAllByHashes(context, hashes)
 	if err != nil {
 		return nil, err
 	}
@@ -408,7 +408,7 @@ func (app *application) retrieveChannels(context uint, hashes []hash.Hash) (gram
 }
 
 func (app *application) retrieveChannel(context uint, hash hash.Hash) (grammars.Channel, error) {
-	content, err := app.blockchainApp.ReadByHash(context, hash)
+	content, err := app.databaseApp.ReadByHash(context, hash)
 	if err != nil {
 		return nil, err
 	}
@@ -471,7 +471,7 @@ func (app *application) Scan(context uint, suites grammars.Suites) (grammars.Gra
 // ScanWithChannels executes a scan with channels
 func (app *application) ScanWithChannels(context uint, suites grammars.Suites, channels grammars.Channels) (grammars.Grammar, error) {
 	// retrieve the token content keys:
-	contentKeys, err := app.blockchainApp.ContentKeys(context, KindGrammar)
+	contentKeys, err := app.databaseApp.ContentKeys(context, KindGrammar)
 	if err != nil {
 		return nil, err
 	}
@@ -592,7 +592,7 @@ func (app *application) insertGrammar(context uint, grammar grammars.Grammar, re
 		return nil, err
 	}
 
-	err = app.blockchainApp.Write(context, grammarHash, grammarBytes, KindGrammar)
+	err = app.databaseApp.Write(context, grammarHash, grammarBytes, KindGrammar)
 	if err != nil {
 		return nil, err
 	}
@@ -653,7 +653,7 @@ func (app *application) insertToken(context uint, token grammars.Token, recursiv
 		return nil, err
 	}
 
-	err = app.blockchainApp.Write(context, tokenHash, tokenBytes, KindToken)
+	err = app.databaseApp.Write(context, tokenHash, tokenBytes, KindToken)
 	if err != nil {
 		return nil, err
 	}
@@ -754,7 +754,7 @@ func (app *application) insertElement(context uint, element grammars.Element, re
 		return nil, err
 	}
 
-	err = app.blockchainApp.Write(context, elementHash, elementBytes, KindElement)
+	err = app.databaseApp.Write(context, elementHash, elementBytes, KindElement)
 	if err != nil {
 		return nil, err
 	}
@@ -805,7 +805,7 @@ func (app *application) insertEverything(context uint, everything grammars.Every
 		return nil, err
 	}
 
-	err = app.blockchainApp.Write(context, everythingHash, contentBytes, KindEverything)
+	err = app.databaseApp.Write(context, everythingHash, contentBytes, KindEverything)
 	if err != nil {
 		return nil, err
 	}
@@ -887,7 +887,7 @@ func (app *application) insertChannel(context uint, channel grammars.Channel, re
 		return nil, err
 	}
 
-	err = app.blockchainApp.Write(context, channelHash, channelBytes, KindChannel)
+	err = app.databaseApp.Write(context, channelHash, channelBytes, KindChannel)
 	if err != nil {
 		return nil, err
 	}

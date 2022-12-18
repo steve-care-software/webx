@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/steve-care-software/webx/roots/applications/blockchains"
-	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
+	"github.com/steve-care-software/webx/databases/applications"
+	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 	contents_programs "github.com/steve-care-software/webx/roots/domain/programs/contents/programs"
 	contents_applications "github.com/steve-care-software/webx/roots/domain/programs/contents/programs/applications"
 	contents_instructions "github.com/steve-care-software/webx/roots/domain/programs/contents/programs/instructions"
@@ -15,7 +15,7 @@ import (
 )
 
 type application struct {
-	blockchainApp             applications.Application
+	databaseApp               applications.Application
 	contentAdapter            contents_programs.Adapter
 	contentBuilder            contents_programs.Builder
 	contentApplicationAdapter contents_applications.Adapter
@@ -35,7 +35,7 @@ type application struct {
 }
 
 func createApplication(
-	blockchainApp applications.Application,
+	databaseApp applications.Application,
 	contentAdapter contents_programs.Adapter,
 	contentBuilder contents_programs.Builder,
 	contentApplicationAdapter contents_applications.Adapter,
@@ -54,7 +54,7 @@ func createApplication(
 	hashAdapter hash.Adapter,
 ) Application {
 	out := application{
-		blockchainApp:             blockchainApp,
+		databaseApp:               databaseApp,
 		contentAdapter:            contentAdapter,
 		contentBuilder:            contentBuilder,
 		contentApplicationAdapter: contentApplicationAdapter,
@@ -77,7 +77,7 @@ func createApplication(
 
 // Retrieve retrieves a program by hash
 func (app *application) Retrieve(context uint, hash hash.Hash, modules modules.Modules) (programs.Program, error) {
-	content, err := app.blockchainApp.ReadByHash(context, hash)
+	content, err := app.databaseApp.ReadByHash(context, hash)
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +122,7 @@ func (app *application) retrieveInstructions(context uint, hashes []hash.Hash, m
 }
 
 func (app *application) retrieveInstruction(context uint, hash hash.Hash, modules modules.Modules) (programs.Instruction, error) {
-	content, err := app.blockchainApp.ReadByHash(context, hash)
+	content, err := app.databaseApp.ReadByHash(context, hash)
 	if err != nil {
 		return nil, err
 	}
@@ -158,7 +158,7 @@ func (app *application) retrieveInstruction(context uint, hash hash.Hash, module
 }
 
 func (app *application) retrieveApplication(context uint, hash hash.Hash, modules modules.Modules) (programs.Application, error) {
-	content, err := app.blockchainApp.ReadByHash(context, hash)
+	content, err := app.databaseApp.ReadByHash(context, hash)
 	if err != nil {
 		return nil, err
 	}
@@ -207,7 +207,7 @@ func (app *application) retrieveApplication(context uint, hash hash.Hash, module
 }
 
 func (app *application) retrieveValue(context uint, hash hash.Hash, modules modules.Modules) (programs.Value, error) {
-	content, err := app.blockchainApp.ReadByHash(context, hash)
+	content, err := app.databaseApp.ReadByHash(context, hash)
 	if err != nil {
 		return nil, err
 	}

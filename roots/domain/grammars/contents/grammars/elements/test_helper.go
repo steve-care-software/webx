@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
+	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 )
 
 // NewElementWithValueForTests creates a new element with value for tests

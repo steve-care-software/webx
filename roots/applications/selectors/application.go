@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
+	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 	grammar_applications "github.com/steve-care-software/webx/roots/applications/grammars"
 	"github.com/steve-care-software/webx/roots/domain/grammars/grammars"
 	"github.com/steve-care-software/webx/roots/domain/grammars/trees"

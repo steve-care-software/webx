@@ -1,6 +1,6 @@
 package values
 
-import "github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
+import "github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 
 type value struct {
 	hash   hash.Hash

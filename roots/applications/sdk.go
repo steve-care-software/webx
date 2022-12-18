@@ -1,17 +1,17 @@
 package applications
 
 import (
-	blockchain_applications "github.com/steve-care-software/webx/roots/applications/blockchains"
+	database_applications "github.com/steve-care-software/webx/databases/applications"
 	compiler_applications "github.com/steve-care-software/webx/roots/applications/compilers"
 	grammar_applications "github.com/steve-care-software/webx/roots/applications/grammars"
-	"github.com/steve-care-software/webx/roots/domain/grammars/grammars"
 	program_applications "github.com/steve-care-software/webx/roots/applications/programs"
+	selector_applications "github.com/steve-care-software/webx/roots/applications/selectors"
+	"github.com/steve-care-software/webx/roots/domain/grammars/grammars"
 	"github.com/steve-care-software/webx/roots/domain/programs/programs/modules"
 	"github.com/steve-care-software/webx/roots/domain/roots/compilers"
 	roots_grammar "github.com/steve-care-software/webx/roots/domain/roots/grammars"
 	"github.com/steve-care-software/webx/roots/domain/roots/programs"
 	"github.com/steve-care-software/webx/roots/domain/roots/selectors"
-	selector_applications "github.com/steve-care-software/webx/roots/applications/selectors"
 )
 
 const (
@@ -22,7 +22,7 @@ const (
 // Builder represents an application builder
 type Builder interface {
 	Create() Builder
-	WithBlockchain(blockchain blockchain_applications.Application) Builder
+	WithBlockchain(blockchain database_applications.Application) Builder
 	WithModules(modules modules.Modules) Builder
 	Now() (Application, error)
 }

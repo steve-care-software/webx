@@ -1,7 +1,7 @@
 package fetchers
 
 import (
-	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
+	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 )
 
 // NewBuilder creates a new builder instance

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/steve-care-software/webx/roots/applications/blockchains"
-	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
+	"github.com/steve-care-software/webx/databases/applications"
+	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 	selector_applications "github.com/steve-care-software/webx/roots/applications/selectors"
 	"github.com/steve-care-software/webx/roots/domain/compilers/compilers"
 	"github.com/steve-care-software/webx/roots/domain/programs/programs"
@@ -13,7 +13,7 @@ import (
 )
 
 type application struct {
-	blockchainApp       applications.Application
+	databaseApp         applications.Application
 	selectorSoftware    selector_applications.Software
 	programBuilder      programs.Builder
 	instructionsBuilder programs.InstructionsBuilder
@@ -25,7 +25,7 @@ type application struct {
 }
 
 func createApplication(
-	blockchainApp applications.Application,
+	databaseApp applications.Application,
 	selectorSoftware selector_applications.Software,
 	programBuilder programs.Builder,
 	instructionsBuilder programs.InstructionsBuilder,
@@ -36,7 +36,7 @@ func createApplication(
 	valueBuilder programs.ValueBuilder,
 ) Application {
 	out := application{
-		blockchainApp:       blockchainApp,
+		databaseApp:         databaseApp,
 		selectorSoftware:    selectorSoftware,
 		programBuilder:      programBuilder,
 		instructionsBuilder: instructionsBuilder,

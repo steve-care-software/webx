@@ -1,6 +1,6 @@
 package cardinalities
 
-import "github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
+import "github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {

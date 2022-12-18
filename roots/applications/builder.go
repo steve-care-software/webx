@@ -3,7 +3,7 @@ package applications
 import (
 	"errors"
 
-	blockchain_applications "github.com/steve-care-software/webx/roots/applications/blockchains"
+	database_applications "github.com/steve-care-software/webx/databases/applications"
 	grammar_applications "github.com/steve-care-software/webx/roots/applications/grammars"
 	"github.com/steve-care-software/webx/roots/domain/programs/programs/modules"
 	contents_grammar "github.com/steve-care-software/webx/roots/domain/roots/contents/grammars"
@@ -11,24 +11,24 @@ import (
 )
 
 type builder struct {
-	blockchainAppBuilder  blockchain_applications.Builder
+	databaseAppBuilder  database_applications.Builder
 	grammarAppBuilder     grammar_applications.Builder
 	grammarBuilder        roots_grammar.Builder
 	contentGrammarAdapter contents_grammar.Adapter
 	contentGrammarBuilder contents_grammar.Builder
-	blockchain            blockchain_applications.Application
+	blockchain            database_applications.Application
 	modules               modules.Modules
 }
 
 func createBuilder(
-	blockchainAppBuilder blockchain_applications.Builder,
+	databaseAppBuilder database_applications.Builder,
 	grammarAppBuilder grammar_applications.Builder,
 	grammarBuilder roots_grammar.Builder,
 	contentGrammarAdapter contents_grammar.Adapter,
 	contentGrammarBuilder contents_grammar.Builder,
 ) Builder {
 	out := builder{
-		blockchainAppBuilder:  blockchainAppBuilder,
+		databaseAppBuilder:  databaseAppBuilder,
 		grammarAppBuilder:     grammarAppBuilder,
 		grammarBuilder:        grammarBuilder,
 		contentGrammarAdapter: contentGrammarAdapter,
@@ -43,7 +43,7 @@ func createBuilder(
 // Create initializes the builder
 func (app *builder) Create() Builder {
 	return createBuilder(
-		app.blockchainAppBuilder,
+		app.databaseAppBuilder,
 		app.grammarAppBuilder,
 		app.grammarBuilder,
 		app.contentGrammarAdapter,
@@ -52,7 +52,7 @@ func (app *builder) Create() Builder {
 }
 
 // WithBlockchain adds a blockchain to the builder
-func (app *builder) WithBlockchain(blockchain blockchain_applications.Application) Builder {
+func (app *builder) WithBlockchain(blockchain database_applications.Application) Builder {
 	app.blockchain = blockchain
 	return app
 }
@@ -75,7 +75,7 @@ func (app *builder) Now() (Application, error) {
 
 	grammar := createGrammar(
 		app.blockchain,
-		app.blockchainAppBuilder,
+		app.databaseAppBuilder,
 		app.grammarAppBuilder,
 		app.grammarBuilder,
 		app.contentGrammarAdapter,

@@ -1,7 +1,7 @@
 package elements
 
 import (
-	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
+	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 )
 
 const minElementLength = hash.Size + 8

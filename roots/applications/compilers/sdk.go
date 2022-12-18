@@ -1,7 +1,7 @@
 package compilers
 
 import (
-	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
+	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/roots/domain/compilers/compilers"
 	"github.com/steve-care-software/webx/roots/domain/programs/programs"
 	"github.com/steve-care-software/webx/roots/domain/programs/programs/modules"

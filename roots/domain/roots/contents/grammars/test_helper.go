@@ -1,8 +1,8 @@
 package grammars
 
 import (
-	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hash"
-	"github.com/steve-care-software/webx/roots/domain/blockchains/cryptography/hashtrees"
+	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/databases/domain/cryptography/hashtrees"
 )
 
 // NewGrammarForTests creates a new grammar for tests
