@@ -206,6 +206,20 @@ func (app *application) ReadByHash(context uint, hash hash.Hash) ([]byte, error)
 	return app.Read(context, contentKey.Content())
 }
 
+func (app *application) retrieveActiveContentKeyByHash(context uint, hash hash.Hash) (references.ContentKey, error) {
+	content, err := app.Content(context)
+	if err != nil {
+		return nil, err
+	}
+
+	if !content.HasActive() {
+		str := fmt.Sprintf("the ContentKey (hash: %s) could not be retrieved because the reference contains no active ContentKeys instance", hash.String())
+		return nil, errors.New(str)
+	}
+
+	return content.Active().Fetch(hash)
+}
+
 // ReadAll read pointers on a context
 func (app *application) ReadAll(context uint, pointers []references.Pointer) ([][]byte, error) {
 	output := [][]byte{}
@@ -272,7 +286,7 @@ func (app *application) Commit(context uint) error {
 		builder := app.commitBuilder.Create()
 		if pContext.reference.HasCommits() {
 			refCommit := pContext.reference.Commits().Latest()
-			latestCommit, err := app.retrieveCommitByPointer(context, refCommit.Pointer())
+			latestCommit, err := app.retrieveCommitByCommitReference(context, refCommit)
 			if err != nil {
 				return err
 			}
@@ -299,7 +313,7 @@ func (app *application) Commit(context uint) error {
 
 		commitHash := commit.Hash()
 		commitValues := commit.Values()
-		commitContentBuilder := app.commitContentBuilder.Create().WithHash(commitHash).WithValues(commitValues).CreatedOn(createdOn)
+		commitContentBuilder := app.commitContentBuilder.Create().WithHash(commitHash).WithValues(commitValues)
 		if commit.HasParent() {
 			commitParent := commit.Parent().Hash()
 			commitContentBuilder.WithParent(commitParent)
@@ -398,7 +412,8 @@ func (app *application) Commit(context uint) error {
 	return errors.New(str)
 }
 
-func (app *application) retrieveCommitByPointer(context uint, pointer references.Pointer) (commits.Commit, error) {
+func (app *application) retrieveCommitByCommitReference(context uint, refCommit references.Commit) (commits.Commit, error) {
+	pointer := refCommit.Pointer()
 	contentBytes, err := app.Read(context, pointer)
 	if err != nil {
 		return nil, err
@@ -410,16 +425,16 @@ func (app *application) retrieveCommitByPointer(context uint, pointer references
 	}
 
 	values := commitContent.Values()
-	createdOn := commitContent.CreatedOn()
+	createdOn := refCommit.CreatedOn()
 	builder := app.commitBuilder.Create().WithValues(values).CreatedOn(createdOn)
 	if commitContent.HasParent() {
 		pParentHash := commitContent.Parent()
-		parentContentKey, err := app.retrieveActiveContentKeyByHash(context, *pParentHash)
+		parentCommit, err := app.retrieveCommitByHash(context, *pParentHash)
 		if err != nil {
 			return nil, err
 		}
 
-		parent, err := app.retrieveCommitByPointer(context, parentContentKey.Content())
+		parent, err := app.retrieveCommitByCommitReference(context, parentCommit)
 		if err != nil {
 			return nil, err
 		}
@@ -430,18 +445,13 @@ func (app *application) retrieveCommitByPointer(context uint, pointer references
 	return builder.Now()
 }
 
-func (app *application) retrieveActiveContentKeyByHash(context uint, hash hash.Hash) (references.ContentKey, error) {
-	content, err := app.Content(context)
+func (app *application) retrieveCommitByHash(context uint, hash hash.Hash) (references.Commit, error) {
+	commit, err := app.Commits(context)
 	if err != nil {
 		return nil, err
 	}
 
-	if !content.HasActive() {
-		str := fmt.Sprintf("the ContentKey (hash: %s) could not be retrieved because the reference contains no active ContentKeys instance", hash.String())
-		return nil, errors.New(str)
-	}
-
-	return content.Active().Fetch(hash)
+	return commit.Fetch(hash)
 }
 
 func (app *application) updateDatabaseOnDisk(context *context, updatedReference references.Reference) error {

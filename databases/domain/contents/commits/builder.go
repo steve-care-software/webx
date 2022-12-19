@@ -2,25 +2,22 @@ package commits
 
 import (
 	"errors"
-	"time"
 
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hashtrees"
 )
 
 type builder struct {
-	pHash      *hash.Hash
-	values     hashtrees.HashTree
-	pCreatedOn *time.Time
-	pParent    *hash.Hash
+	pHash   *hash.Hash
+	values  hashtrees.HashTree
+	pParent *hash.Hash
 }
 
 func createBuilder() Builder {
 	out := builder{
-		pHash:      nil,
-		values:     nil,
-		pCreatedOn: nil,
-		pParent:    nil,
+		pHash:   nil,
+		values:  nil,
+		pParent: nil,
 	}
 
 	return &out
@@ -49,12 +46,6 @@ func (app *builder) WithParent(parent hash.Hash) Builder {
 	return app
 }
 
-// CreatedOn adds a creation time to the builder
-func (app *builder) CreatedOn(createdOn time.Time) Builder {
-	app.pCreatedOn = &createdOn
-	return app
-}
-
 // Now builds a new Commit instance
 func (app *builder) Now() (Commit, error) {
 	if app.pHash == nil {
@@ -65,9 +56,5 @@ func (app *builder) Now() (Commit, error) {
 		return nil, errors.New("the values is mandatory in order to build a Commit instance")
 	}
 
-	if app.pCreatedOn == nil {
-		return nil, errors.New("the creation time is mandatory in order to build a Commit instance")
-	}
-
-	return createCommit(*app.pHash, app.values, *app.pCreatedOn), nil
+	return createCommit(*app.pHash, app.values), nil
 }

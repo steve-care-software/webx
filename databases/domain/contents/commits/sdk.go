@@ -1,11 +1,19 @@
 package commits
 
 import (
-	"time"
-
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hashtrees"
 )
+
+const commitMinSize = hash.Size + 8 + hashtrees.MinHashtreeSize
+
+// NewAdapter creates a new adapter
+func NewAdapter() Adapter {
+	hashAdapter := hash.NewAdapter()
+	hashTreeAdapter := hashtrees.NewAdapter()
+	builder := NewBuilder()
+	return createAdapter(hashAdapter, hashTreeAdapter, builder)
+}
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
@@ -24,7 +32,6 @@ type Builder interface {
 	WithHash(hash hash.Hash) Builder
 	WithValues(values hashtrees.HashTree) Builder
 	WithParent(parent hash.Hash) Builder
-	CreatedOn(createdOn time.Time) Builder
 	Now() (Commit, error)
 }
 
@@ -32,7 +39,6 @@ type Builder interface {
 type Commit interface {
 	Hash() hash.Hash
 	Values() hashtrees.HashTree
-	CreatedOn() time.Time
 	HasParent() bool
 	Parent() *hash.Hash
 }
