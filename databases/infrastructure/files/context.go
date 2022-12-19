@@ -1,6 +1,7 @@
 package files
 
 import (
+	"net/url"
 	"os"
 
 	"github.com/juju/fslock"
@@ -15,4 +16,5 @@ type context struct {
 	reference   references.Reference
 	dataOffset  uint
 	contentList []*content
+	peerList    []*url.URL
 }

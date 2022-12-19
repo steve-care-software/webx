@@ -1,6 +1,7 @@
 package references
 
 import (
+	"net/url"
 	"time"
 
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
@@ -107,6 +108,7 @@ type Builder interface {
 	Create() Builder
 	WithContentKeys(contentKeys ContentKeys) Builder
 	WithCommits(commits Commits) Builder
+	WithPeers(peers []*url.URL) Builder
 	Now() (Reference, error)
 }
 
@@ -115,6 +117,8 @@ type Reference interface {
 	Next() int64
 	ContentKeys() ContentKeys
 	Commits() Commits
+	HasPeers() bool
+	Peers() []*url.URL
 }
 
 // CommitsAdapter represents a commits adapter

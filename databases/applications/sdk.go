@@ -1,6 +1,8 @@
 package applications
 
 import (
+	"net/url"
+
 	"github.com/steve-care-software/webx/databases/domain/configs"
 	"github.com/steve-care-software/webx/databases/domain/contents/references"
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
@@ -33,6 +35,7 @@ type Database interface {
 	Open(name string, height int) (*uint, error)
 	Cancel(context uint) error
 	Commit(context uint) error
+	Share(context uint, peer *url.URL) error
 	Push(config configs.Config) error
 	Close(context uint) error
 }

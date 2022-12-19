@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net/url"
 	"os"
 	"path/filepath"
 	"time"
@@ -199,6 +200,7 @@ func (app *application) Open(name string, height int) (*uint, error) {
 		reference:   reference,
 		dataOffset:  uint(refLength),
 		contentList: []*content{},
+		peerList:    []*url.URL{},
 	}
 
 	return &pContext.identifier, nil
@@ -408,7 +410,11 @@ func (app *application) updateReference(context uint) (references.Reference, err
 		}
 
 		// build the pointer:
-		commitFrom := pContext.reference.Next()
+		commitFrom := int64(0)
+		if pContext.reference != nil {
+			commitFrom = pContext.reference.Next()
+		}
+
 		commitPointer, err := app.referencePointerBuilder.Create().From(uint(commitFrom)).WithLength(uint(len(commitBytes))).Now()
 		if err != nil {
 			return nil, err
@@ -466,14 +472,59 @@ func (app *application) updateReference(context uint) (references.Reference, err
 			return nil, err
 		}
 
-		return app.referenceBuilder.Create().
+		currentList := []*url.URL{}
+		if pContext.reference != nil {
+			if pContext.reference.HasPeers() {
+				currentList = pContext.reference.Peers()
+			}
+		}
+
+		updatedPeers, err := app.mergePeers(currentList, pContext.peerList)
+		if err != nil {
+			return nil, err
+		}
+
+		refBuilder := app.referenceBuilder.Create().
 			WithContentKeys(updatedContentKeys).
-			WithCommits(commits).
-			Now()
+			WithCommits(commits)
+
+		if len(updatedPeers) > 0 {
+			refBuilder.WithPeers(updatedPeers)
+		}
+
+		return refBuilder.Now()
 	}
 
 	str := fmt.Sprintf("the given context (%d) does not exists and therefore cannot be comitted", context)
 	return nil, errors.New(str)
+}
+
+func (app *application) mergePeers(currentList []*url.URL, newList []*url.URL) ([]*url.URL, error) {
+	if len(currentList) <= 0 {
+		return newList, nil
+	}
+
+	if len(newList) <= 0 {
+		return currentList, nil
+	}
+
+	peersMap := map[string]*url.URL{}
+	for _, onePeer := range currentList {
+		keyname := onePeer.String()
+		peersMap[keyname] = onePeer
+	}
+
+	for _, onePeer := range newList {
+		keyname := onePeer.String()
+		peersMap[keyname] = onePeer
+	}
+
+	updatedList := []*url.URL{}
+	for _, onePeer := range peersMap {
+		updatedList = append(updatedList, onePeer)
+	}
+
+	return updatedList, nil
 }
 
 func (app *application) retrieveCommitByCommitReference(context uint, refCommit references.Commit) (commits.Commit, error) {
@@ -659,6 +710,17 @@ func (app *application) saveDataOnDisk(offset int64, data []byte, pConn *os.File
 	}
 
 	return nil
+}
+
+// Share shares the database interactions with a new peer, using the given context
+func (app *application) Share(context uint, peer *url.URL) error {
+	if pContext, ok := app.contexts[context]; ok {
+		pContext.peerList = append(pContext.peerList, peer)
+		return nil
+	}
+
+	str := fmt.Sprintf("the given context (%d) does not exists and therefore cannot be used to share to a peer", context)
+	return errors.New(str)
 }
 
 // Push retrieves the commits from peers, then chain our commits to them using the given configuration
