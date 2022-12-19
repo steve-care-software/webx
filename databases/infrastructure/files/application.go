@@ -82,7 +82,7 @@ func createApplication(
 // New creates a new database
 func (app *application) New(name string) error {
 	path := filepath.Join(app.dirPath, name)
-	_, err := os.Stat(name)
+	_, err := os.Stat(path)
 	if err == nil {
 		str := fmt.Sprintf("the database (name: %s) already exists and therefore cannot be created again", name)
 		return errors.New(str)
@@ -98,6 +98,11 @@ func (app *application) New(name string) error {
 		return err
 	}
 
+	return app.saveReferenceOnDisk(name, reference)
+}
+
+func (app *application) saveReferenceOnDisk(name string, reference references.Reference) error {
+	path := filepath.Join(app.dirPath, name)
 	contentBytes, err := app.referenceAdapter.ToContent(reference)
 	if err != nil {
 		return err
@@ -115,7 +120,7 @@ func (app *application) New(name string) error {
 // Delete deletes an existing database
 func (app *application) Delete(name string) error {
 	path := filepath.Join(app.dirPath, name)
-	pInfo, err := os.Stat(name)
+	pInfo, err := os.Stat(path)
 	if err != nil {
 		return err
 	}
