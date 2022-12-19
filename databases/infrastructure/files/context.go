@@ -10,5 +10,6 @@ type context struct {
 	identifier  uint
 	pConn       *os.File
 	reference   references.Reference
+	dataOffset  uint
 	contentList []*content
 }

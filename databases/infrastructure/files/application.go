@@ -10,6 +10,7 @@ import (
 
 	"github.com/steve-care-software/webx/databases/applications"
 	"github.com/steve-care-software/webx/databases/domain/commits"
+	"github.com/steve-care-software/webx/databases/domain/configs"
 	commit_contents "github.com/steve-care-software/webx/databases/domain/contents/commits"
 	"github.com/steve-care-software/webx/databases/domain/contents/references"
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
@@ -30,6 +31,8 @@ type application struct {
 	referencePointerBuilder     references.PointerBuilder
 	hashTreeBuilder             hashtrees.Builder
 	dirPath                     string
+	bckExtension                string
+	readChunkSize               uint
 	contexts                    map[uint]*context
 }
 
@@ -47,6 +50,8 @@ func createApplication(
 	referencePointerBuilder references.PointerBuilder,
 	hashTreeBuilder hashtrees.Builder,
 	dirPath string,
+	bckExtension string,
+	readChunkSize uint,
 ) applications.Application {
 	out := application{
 		commitBuilder:               commitBuilder,
@@ -62,6 +67,8 @@ func createApplication(
 		referencePointerBuilder:     referencePointerBuilder,
 		hashTreeBuilder:             hashTreeBuilder,
 		dirPath:                     dirPath,
+		bckExtension:                bckExtension,
+		readChunkSize:               readChunkSize,
 		contexts:                    map[uint]*context{},
 	}
 
@@ -108,19 +115,24 @@ func (app *application) Open(name string, height int) (*uint, error) {
 	refLength := binary.LittleEndian.Uint64(refLengthBytes)
 
 	// read the reference data:
-	refContentBytes := make([]byte, refLength)
-	refContentAmount, err := pConn.ReadAt(refContentBytes, int64(refLength))
-	if err != nil {
-		return nil, err
-	}
+	refAllBytes := []byte{}
+	offset := int64(refLength)
+	for {
+		refContentBytes := make([]byte, app.readChunkSize)
+		refContentAmount, err := pConn.ReadAt(refContentBytes, offset)
+		if err != nil {
+			return nil, err
+		}
 
-	if refContentAmount != int(refLength) {
-		str := fmt.Sprintf("%d bytes were expected to be read when reading the reference bytes, %d actually read", refLength, refContentAmount)
-		return nil, errors.New(str)
+		refAllBytes = append(refAllBytes, refContentBytes...)
+		offset += int64(refContentAmount)
+		if refContentAmount != int(refLength) {
+			break
+		}
 	}
 
 	// convert the content to a reference instance:
-	reference, err := app.referenceAdapter.ToReference(refContentBytes)
+	reference, err := app.referenceAdapter.ToReference(refAllBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -129,60 +141,99 @@ func (app *application) Open(name string, height int) (*uint, error) {
 		identifier:  uint(len(app.contexts)),
 		pConn:       pConn,
 		reference:   reference,
+		dataOffset:  uint(refLength),
 		contentList: []*content{},
 	}
 
 	return &pContext.identifier, nil
 }
 
-// ContentKeys returns the contentKey kind on a context
-func (app *application) ContentKeys(context uint, kind uint) (references.ContentKeys, error) {
-	return nil, nil
-}
+// Content returns the content by context
+func (app *application) Content(context uint) (references.Content, error) {
+	if pContext, ok := app.contexts[context]; ok {
+		return pContext.reference.Content(), nil
+	}
 
-// ContentKeysByCommit returns the contentKeys by commit on a context
-func (app *application) ContentKeysByCommit(context uint, commit hash.Hash) (references.ContentKeys, error) {
-	return nil, nil
-}
-
-// ContentKey returns the contentKey by hash and flag on a context
-func (app *application) ContentKey(context uint, hash hash.Hash, flag uint8) (references.ContentKey, error) {
-	return nil, nil
+	str := fmt.Sprintf("the given context (%d) does not exists and therefore cannot return the Content instance", context)
+	return nil, errors.New(str)
 }
 
 // Commits returns the commits on a context
 func (app *application) Commits(context uint) (references.Commits, error) {
-	return nil, nil
-}
+	if pContext, ok := app.contexts[context]; ok {
+		if !pContext.reference.HasCommits() {
+			str := fmt.Sprintf("the given context (%d) contains a reference that contains %d Commit instance", context, 0)
+			return nil, errors.New(str)
+		}
 
-// Latest retrieves the latest commit
-func (app *application) Latest() (commits.Commit, error) {
-	return nil, nil
-}
+		return pContext.reference.Commits(), nil
+	}
 
-// Retrieve retrieves the commit by hash
-func (app *application) Retrieve(hash hash.Hash) (commits.Commit, error) {
-	return nil, nil
+	str := fmt.Sprintf("the given context (%d) does not exists and therefore cannot return the Commits instance", context)
+	return nil, errors.New(str)
 }
 
 // Read reads a pointer on a context
 func (app *application) Read(context uint, pointer references.Pointer) ([]byte, error) {
-	return nil, nil
+	if pContext, ok := app.contexts[context]; ok {
+		offset := pContext.dataOffset + pointer.From()
+		length := pointer.Length()
+		contentBytes := make([]byte, length)
+		refContentAmount, err := pContext.pConn.ReadAt(contentBytes, int64(offset))
+		if err != nil {
+			return nil, err
+		}
+
+		if refContentAmount != int(length) {
+			str := fmt.Sprintf("the Read operation was expected to read %d bytes, %d returned", length, refContentAmount)
+			return nil, errors.New(str)
+		}
+
+		return contentBytes, nil
+	}
+
+	str := fmt.Sprintf("the given context (%d) does not exists and therefore cannot Read using this context", context)
+	return nil, errors.New(str)
 }
 
 // ReadByHash reads content by hash
-func (app *application) ReadByHash(content uint, hash hash.Hash) ([]byte, error) {
-	return nil, nil
+func (app *application) ReadByHash(context uint, hash hash.Hash) ([]byte, error) {
+	contentKey, err := app.retrieveActiveContentKeyByHash(context, hash)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.Read(context, contentKey.Content())
 }
 
 // ReadAll read pointers on a context
 func (app *application) ReadAll(context uint, pointers []references.Pointer) ([][]byte, error) {
-	return nil, nil
+	output := [][]byte{}
+	for _, onePointer := range pointers {
+		content, err := app.Read(context, onePointer)
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, content)
+	}
+
+	return output, nil
 }
 
 // ReadAllByHashes reads content by hashes
 func (app *application) ReadAllByHashes(context uint, hashes []hash.Hash) ([][]byte, error) {
-	return nil, nil
+	output := [][]byte{}
+	for _, oneHash := range hashes {
+		content, err := app.ReadByHash(context, oneHash)
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, content)
+	}
+
+	return output, nil
 }
 
 // Write writes data to a context
@@ -216,15 +267,20 @@ func (app *application) Cancel(context uint) error {
 
 // Commit commits a context
 func (app *application) Commit(context uint) error {
-	// find the latest commit:
-	latestCommit, _ := app.Latest()
-	builder := app.commitBuilder.Create()
-	if latestCommit != nil {
-		builder.WithParent(latestCommit)
-	}
-
-	blocks := [][]byte{}
 	if pContext, ok := app.contexts[context]; ok {
+		// find the latest commit:
+		builder := app.commitBuilder.Create()
+		if pContext.reference.HasCommits() {
+			refCommit := pContext.reference.Commits().Latest()
+			latestCommit, err := app.retrieveCommitByPointer(context, refCommit.Pointer())
+			if err != nil {
+				return err
+			}
+
+			builder.WithParent(latestCommit)
+		}
+
+		blocks := [][]byte{}
 		for _, oneContent := range pContext.contentList {
 			// add the hash in the blocks for the commit values:
 			blocks = append(blocks, oneContent.hash.Bytes())
@@ -243,13 +299,13 @@ func (app *application) Commit(context uint) error {
 
 		commitHash := commit.Hash()
 		commitValues := commit.Values()
-		builder := app.commitContentBuilder.Create().WithHash(commitHash).WithValues(commitValues).CreatedOn(createdOn)
+		commitContentBuilder := app.commitContentBuilder.Create().WithHash(commitHash).WithValues(commitValues).CreatedOn(createdOn)
 		if commit.HasParent() {
 			commitParent := commit.Parent().Hash()
-			builder.WithParent(commitParent)
+			commitContentBuilder.WithParent(commitParent)
 		}
 
-		commitContent, err := builder.Now()
+		commitContent, err := commitContentBuilder.Now()
 		if err != nil {
 			return err
 		}
@@ -342,6 +398,52 @@ func (app *application) Commit(context uint) error {
 	return errors.New(str)
 }
 
+func (app *application) retrieveCommitByPointer(context uint, pointer references.Pointer) (commits.Commit, error) {
+	contentBytes, err := app.Read(context, pointer)
+	if err != nil {
+		return nil, err
+	}
+
+	commitContent, err := app.commitContentAdapter.ToCommit(contentBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	values := commitContent.Values()
+	createdOn := commitContent.CreatedOn()
+	builder := app.commitBuilder.Create().WithValues(values).CreatedOn(createdOn)
+	if commitContent.HasParent() {
+		pParentHash := commitContent.Parent()
+		parentContentKey, err := app.retrieveActiveContentKeyByHash(context, *pParentHash)
+		if err != nil {
+			return nil, err
+		}
+
+		parent, err := app.retrieveCommitByPointer(context, parentContentKey.Content())
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithParent(parent)
+	}
+
+	return builder.Now()
+}
+
+func (app *application) retrieveActiveContentKeyByHash(context uint, hash hash.Hash) (references.ContentKey, error) {
+	content, err := app.Content(context)
+	if err != nil {
+		return nil, err
+	}
+
+	if !content.HasActive() {
+		str := fmt.Sprintf("the ContentKey (hash: %s) could not be retrieved because the reference contains no active ContentKeys instance", hash.String())
+		return nil, errors.New(str)
+	}
+
+	return content.Active().Fetch(hash)
+}
+
 func (app *application) updateDatabaseOnDisk(context *context, updatedReference references.Reference) error {
 	// rename the old database to a backup name:
 
@@ -387,8 +489,8 @@ func (app *application) saveDataOnDisk(data []byte, reference references.Referen
 	return pointer, nil
 }
 
-// Push pushes a context
-func (app *application) Push(context uint) error {
+// Push retrieves the commits from peers and chain then main our commit properlyusing the given configuration
+func (app *application) Push(context uint, config configs.Config) error {
 	return nil
 }
 
