@@ -1,8 +1,8 @@
 package applications
 
 import (
-	"github.com/steve-care-software/webx/blockchains/applications"
-	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/databases/applications"
+	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/identities/domain/cryptography/signatures"
 	"github.com/steve-care-software/webx/identities/domain/identities"
 )

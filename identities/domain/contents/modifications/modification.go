@@ -1,6 +1,6 @@
 package modifications
 
-import "github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+import "github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 
 type modification struct {
 	hash    hash.Hash

@@ -4,7 +4,7 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 
-	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 )
 
 type publicKeyAdapter struct {

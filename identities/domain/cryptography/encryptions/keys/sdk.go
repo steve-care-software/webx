@@ -3,7 +3,7 @@ package keys
 import (
 	"crypto/rsa"
 
-	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 )
 
 // NewFactory returns a new encryption's privatekey factory

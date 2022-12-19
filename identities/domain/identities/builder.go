@@ -3,9 +3,9 @@ package identities
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/identities/domain/identities/modifications"
 	"github.com/steve-care-software/webx/identities/domain/cryptography/encryptions/keys"
 	"github.com/steve-care-software/webx/identities/domain/cryptography/signatures"
+	"github.com/steve-care-software/webx/identities/domain/identities/modifications"
 )
 
 type builder struct {

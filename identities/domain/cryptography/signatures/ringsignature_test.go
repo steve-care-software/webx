@@ -3,7 +3,7 @@ package signatures
 import (
 	"testing"
 
-	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 )
 
 func TestRingSignature_Success(t *testing.T) {

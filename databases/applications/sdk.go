@@ -33,7 +33,7 @@ type Database interface {
 	Open(name string, height int) (*uint, error)
 	Cancel(context uint) error
 	Commit(context uint) error
-	Push(context uint, config configs.Config) error
+	Push(config configs.Config) error
 	Close(context uint) error
 }
 

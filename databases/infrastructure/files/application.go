@@ -4,11 +4,13 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
 
+	"github.com/juju/fslock"
 	"github.com/steve-care-software/webx/databases/applications"
 	"github.com/steve-care-software/webx/databases/domain/commits"
 	"github.com/steve-care-software/webx/databases/domain/configs"
@@ -33,6 +35,7 @@ type application struct {
 	referencePointerBuilder     references.PointerBuilder
 	hashTreeBuilder             hashtrees.Builder
 	dirPath                     string
+	dstExtension                string
 	bckExtension                string
 	readChunkSize               uint
 	contexts                    map[uint]*context
@@ -53,6 +56,7 @@ func createApplication(
 	referencePointerBuilder references.PointerBuilder,
 	hashTreeBuilder hashtrees.Builder,
 	dirPath string,
+	dstExtension string,
 	bckExtension string,
 	readChunkSize uint,
 ) applications.Application {
@@ -71,6 +75,7 @@ func createApplication(
 		referencePointerBuilder:     referencePointerBuilder,
 		hashTreeBuilder:             hashTreeBuilder,
 		dirPath:                     dirPath,
+		dstExtension:                dstExtension,
 		bckExtension:                bckExtension,
 		readChunkSize:               readChunkSize,
 		contexts:                    map[uint]*context{},
@@ -103,9 +108,18 @@ func (app *application) New(name string) error {
 
 func (app *application) saveReferenceOnDisk(name string, reference references.Reference) error {
 	path := filepath.Join(app.dirPath, name)
-	contentBytes, err := app.referenceAdapter.ToContent(reference)
+	data, err := app.referenceToContent(reference)
 	if err != nil {
 		return err
+	}
+
+	return ioutil.WriteFile(path, data, filePermission)
+}
+
+func (app *application) referenceToContent(reference references.Reference) ([]byte, error) {
+	contentBytes, err := app.referenceAdapter.ToContent(reference)
+	if err != nil {
+		return nil, err
 	}
 
 	bytesLength := make([]byte, expectedReferenceBytesLength)
@@ -113,8 +127,7 @@ func (app *application) saveReferenceOnDisk(name string, reference references.Re
 
 	data := []byte{}
 	data = append(data, bytesLength...)
-	data = append(data, contentBytes...)
-	return ioutil.WriteFile(path, data, filePermission)
+	return append(data, contentBytes...), nil
 }
 
 // Delete deletes an existing database
@@ -179,9 +192,15 @@ func (app *application) Open(name string, height int) (*uint, error) {
 		return nil, err
 	}
 
+	// create a Lock instance on the path:
+	pLock := fslock.New(path)
+
+	// create the context:
 	pContext := &context{
 		identifier:  uint(len(app.contexts)),
 		pConn:       pConn,
+		pLock:       pLock,
+		name:        name,
 		reference:   reference,
 		dataOffset:  uint(refLength),
 		contentList: []*content{},
@@ -323,6 +342,28 @@ func (app *application) Cancel(context uint) error {
 
 // Commit commits a context
 func (app *application) Commit(context uint) error {
+	// update the reference:
+	updatedReference, err := app.updateReference(context)
+	if err != nil {
+		return err
+	}
+
+	if pContext, ok := app.contexts[context]; ok {
+		// update database on disk:
+		err := app.updateDatabaseOnDisk(pContext, updatedReference)
+		if err != nil {
+			return err
+		}
+
+		// delete the context:
+		delete(app.contexts, context)
+	}
+
+	str := fmt.Sprintf("the given context (%d) does not exists and therefore cannot be comitted", context)
+	return errors.New(str)
+}
+
+func (app *application) updateReference(context uint) (references.Reference, error) {
 	if pContext, ok := app.contexts[context]; ok {
 		// find the latest commit:
 		builder := app.commitBuilder.Create()
@@ -330,7 +371,7 @@ func (app *application) Commit(context uint) error {
 			refCommit := pContext.reference.Commits().Latest()
 			latestCommit, err := app.retrieveCommitByCommitReference(context, refCommit)
 			if err != nil {
-				return err
+				return nil, err
 			}
 
 			builder.WithParent(latestCommit)
@@ -344,13 +385,13 @@ func (app *application) Commit(context uint) error {
 
 		values, err := app.hashTreeBuilder.Create().WithBlocks(blocks).Now()
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		createdOn := time.Now().UTC()
 		commit, err := builder.WithValues(values).CreatedOn(createdOn).Now()
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		commitHash := commit.Hash()
@@ -363,24 +404,25 @@ func (app *application) Commit(context uint) error {
 
 		commitContent, err := commitContentBuilder.Now()
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		commitBytes, err := app.commitContentAdapter.ToContent(commitContent)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
-		// save the commit content on file:
-		pointer, err := app.saveDataOnDisk(commitBytes, pContext.reference, pContext.pConn)
+		// build the pointer:
+		commitFrom := pContext.reference.Next()
+		commitPointer, err := app.referencePointerBuilder.Create().From(uint(commitFrom)).WithLength(uint(len(commitBytes))).Now()
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		// build the commit reference:
-		refCommit, err := app.referenceCommitBuilder.Create().WithHash(commitHash).WithPointer(pointer).Now()
+		refCommit, err := app.referenceCommitBuilder.Create().WithHash(commitHash).WithPointer(commitPointer).Now()
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		// save the pointers in the commit references:
@@ -392,7 +434,7 @@ func (app *application) Commit(context uint) error {
 		commitsList = append(commitsList, refCommit)
 		commits, err := app.referenceCommitsBuilder.Create().WithList(commitsList).Now()
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		// get the pending content list:
@@ -403,26 +445,31 @@ func (app *application) Commit(context uint) error {
 		}
 
 		// save all content:
+		offset := commitFrom
 		for _, oneContent := range pContext.contentList {
-			// save the content on file:
-			pointer, err := app.saveDataOnDisk(oneContent.data, pContext.reference, pContext.pConn)
+			// build the pointer:
+			dataLength := int64(len(oneContent.data))
+			contentKeyPointer, err := app.referencePointerBuilder.Create().From(uint(offset)).WithLength(uint(dataLength)).Now()
 			if err != nil {
-				return err
+				return nil, err
 			}
 
 			// build the content key:
-			contentKey, err := app.referenceContentKeyBuilder.Create().WithHash(oneContent.hash).WithKind(oneContent.kind).WithContent(pointer).WithCommit(commitHash).Now()
+			contentKey, err := app.referenceContentKeyBuilder.Create().WithHash(oneContent.hash).WithKind(oneContent.kind).WithContent(contentKeyPointer).WithCommit(commitHash).Now()
 			if err != nil {
-				return err
+				return nil, err
 			}
 
 			//save the content key to the pending:
 			pendingList = append(pendingList, contentKey)
+
+			// update the offset:
+			offset += dataLength
 		}
 
 		pendingContentKeys, err := app.referenceContentKeysBuilder.Create().WithList(pendingList).Now()
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		updatedContentBuilder := app.referenceContentBuilder.Create().WithPendings(pendingContentKeys)
@@ -438,20 +485,17 @@ func (app *application) Commit(context uint) error {
 
 		updatedContent, err := updatedContentBuilder.Now()
 		if err != nil {
-			return err
+			return nil, err
 		}
 
-		updatedReference, err := app.referenceBuilder.Create().WithContent(updatedContent).WithCommits(commits).Now()
-		if err != nil {
-			return err
-		}
-
-		// update database on disk:
-		return app.updateDatabaseOnDisk(pContext, updatedReference)
+		return app.referenceBuilder.Create().
+			WithContent(updatedContent).
+			WithCommits(commits).
+			Now()
 	}
 
 	str := fmt.Sprintf("the given context (%d) does not exists and therefore cannot be comitted", context)
-	return errors.New(str)
+	return nil, errors.New(str)
 }
 
 func (app *application) retrieveCommitByCommitReference(context uint, refCommit references.Commit) (commits.Commit, error) {
@@ -497,52 +541,150 @@ func (app *application) retrieveCommitByHash(context uint, hash hash.Hash) (refe
 }
 
 func (app *application) updateDatabaseOnDisk(context *context, updatedReference references.Reference) error {
-	// rename the old database to a backup name:
+	// create a lock on the file:
+	err := context.pLock.TryLock()
+	if err != nil {
+		return err
+	}
 
-	// rename the temporary database to the database name:
+	// release the lock on closing the method:
+	defer context.pLock.Unlock()
 
-	// delete the backup database:
+	// write destination file:
+	err = app.writeDestinationOnDisk(context, updatedReference)
+	if err != nil {
+		return err
+	}
+
+	// rename the source database to a backup file:
+	sourcePath := filepath.Join(app.dirPath, context.name)
+	backupPath := filepath.Join(sourcePath, app.bckExtension)
+	backupPtr, err := os.Create(backupPath)
+	if err != nil {
+		return err
+	}
+
+	_, err = io.Copy(backupPtr, context.pConn)
+	if err != nil {
+		return err
+	}
+
+	// close the backup file:
+	err = backupPtr.Close()
+	if err != nil {
+		return err
+	}
+
+	// close the source connection:
+	err = context.pConn.Close()
+	if err != nil {
+		return err
+	}
+
+	// delete the source database:
+	err = os.Remove(sourcePath)
+	if err != nil {
+		return err
+	}
+
+	// rename the destination database to source:
+	destinationPath := filepath.Join(sourcePath, app.dstExtension)
+	err = os.Rename(destinationPath, sourcePath)
+	if err != nil {
+		return err
+	}
+
+	// delete the backup file:
+	return os.Remove(backupPath)
+}
+
+func (app *application) writeDestinationOnDisk(context *context, updatedReference references.Reference) error {
+	// build the path:
+	sourcePath := filepath.Join(app.dirPath, context.name)
+	destinationPath := filepath.Join(sourcePath, app.dstExtension)
+
+	// create the destination file:
+	destination, err := os.Create(destinationPath)
+	if err != nil {
+		return err
+	}
+
+	// close the destination:
+	defer destination.Close()
+
+	// convert the updated reference to data:
+	refData, err := app.referenceToContent(updatedReference)
+	if err != nil {
+		return err
+	}
+
+	// write the reference data on disk:
+	writtenAmount, err := destination.Write(refData)
+	if err != nil {
+		return err
+	}
+
+	if writtenAmount != len(refData) {
+		str := fmt.Sprintf("%d bytes were expected to be writte while writing the updated reference bytes, %d actually written", len(refData), writtenAmount)
+		return errors.New(str)
+	}
+
+	offset := int64(context.dataOffset)
+	for {
+		// read the file at offset:
+		contentBytes := make([]byte, app.readChunkSize)
+		amountRead, err := context.pConn.ReadAt(contentBytes, int64(offset))
+		if err != nil {
+			return err
+		}
+
+		if app.readChunkSize != uint(amountRead) {
+			str := fmt.Sprintf("%d bytes were expected to be read from source database, %d actually read", app.readChunkSize, amountRead)
+			return errors.New(str)
+		}
+
+		// write content on destination:
+		err = app.saveDataOnDisk(offset, contentBytes, destination)
+		if err != nil {
+			break
+		}
+
+		//update the offset:
+		offset += int64(amountRead)
+	}
+
 	return nil
 }
 
-func (app *application) saveDataOnDisk(data []byte, reference references.Reference, pConn *os.File) (references.Pointer, error) {
-	// find the next pointer for the commit:
-	from := reference.Next()
-
+func (app *application) saveDataOnDisk(offset int64, data []byte, pConn *os.File) error {
 	// seek the file at the from byte:
-	offset, err := pConn.Seek(from, 0)
+	seekOffset, err := pConn.Seek(offset, 0)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	if offset != from {
-		str := fmt.Sprintf("the offset was expected to be %d, %d returned after file seek", from, offset)
-		return nil, errors.New(str)
+	if seekOffset != offset {
+		str := fmt.Sprintf("the offset was expected to be %d, %d returned after file seek", offset, seekOffset)
+		return errors.New(str)
 	}
 
 	// write the data on disk:
 	amountWritten, err := pConn.Write(data)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	amountExpected := len(data)
 	if amountExpected != amountWritten {
 		str := fmt.Sprintf("%d bytes were expected to be written, %d actually written", amountExpected, amountWritten)
-		return nil, errors.New(str)
+		return errors.New(str)
 	}
 
-	// build the pointer:
-	pointer, err := app.referencePointerBuilder.Create().From(uint(from)).WithLength(uint(amountWritten)).Now()
-	if err != nil {
-		return nil, err
-	}
-
-	return pointer, nil
+	return nil
 }
 
-// Push retrieves the commits from peers and chain then main our commit properlyusing the given configuration
-func (app *application) Push(context uint, config configs.Config) error {
+// Push retrieves the commits from peers, then chain our commits to them using the given configuration
+func (app *application) Push(config configs.Config) error {
 	return nil
 }
 

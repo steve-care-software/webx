@@ -1,7 +1,7 @@
 package signatures
 
 import (
-	"github.com/steve-care-software/webx/blockchains/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 	kyber "go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/group/edwards25519"
 )
