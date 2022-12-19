@@ -1,25 +1,12 @@
 package references
 
 type reference struct {
-	content Content
+	content ContentKeys
 	commits Commits
 }
 
 func createReference(
-	content Content,
-) Reference {
-	return createReferenceInternally(content, nil)
-}
-
-func createReferenceWithCommits(
-	content Content,
-	commits Commits,
-) Reference {
-	return createReferenceInternally(content, commits)
-}
-
-func createReferenceInternally(
-	content Content,
+	content ContentKeys,
 	commits Commits,
 ) Reference {
 	out := reference{
@@ -35,14 +22,9 @@ func (obj *reference) Next() int64 {
 	return 0
 }
 
-// Content returns the content
-func (obj *reference) Content() Content {
+// ContentKeys returns the contentKeys
+func (obj *reference) ContentKeys() ContentKeys {
 	return obj.content
-}
-
-// HasCommits returns true if there is commits, false otherwise
-func (obj *reference) HasCommits() bool {
-	return obj.commits != nil
 }
 
 // Commits returns the commits, if any

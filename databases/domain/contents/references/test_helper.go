@@ -8,6 +8,28 @@ import (
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 )
 
+// NewReferenceForTests creates a new reference for tests
+func NewReferenceForTests() Reference {
+	contentKeys, err := NewContentKeysBuilder().Create().WithList([]ContentKey{
+		NewContentKeyForTests(),
+		NewContentKeyForTests(),
+		NewContentKeyForTests(),
+		NewContentKeyForTests(),
+		NewContentKeyForTests(),
+	}).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	commits := NewCommitsForTests(32)
+	ins, err := NewBuilder().Create().WithContentKeys(contentKeys).WithCommits(commits).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
 // NewCommitsForTests creates a new commits for tests
 func NewCommitsForTests(amount uint) Commits {
 	list := []Commit{}

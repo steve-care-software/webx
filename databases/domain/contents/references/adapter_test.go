@@ -6,50 +6,7 @@ import (
 )
 
 func TestAdapter_Success(t *testing.T) {
-	active, err := NewContentKeysBuilder().Create().WithList([]ContentKey{
-		NewContentKeyForTests(),
-		NewContentKeyForTests(),
-		NewContentKeyForTests(),
-		NewContentKeyForTests(),
-		NewContentKeyForTests(),
-	}).Now()
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	pendings, err := NewContentKeysBuilder().Create().WithList([]ContentKey{
-		NewContentKeyForTests(),
-		NewContentKeyForTests(),
-		NewContentKeyForTests(),
-		NewContentKeyForTests(),
-	}).Now()
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	deleted, err := NewContentKeysBuilder().Create().WithList([]ContentKey{
-		NewContentKeyForTests(),
-	}).Now()
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	contentIns, err := NewContentBuilder().Create().WithActive(active).WithPendings(pendings).WithDeleted(deleted).Now()
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	commits := NewCommitsForTests(32)
-	reference, err := NewBuilder().Create().WithContent(contentIns).WithCommits(commits).Now()
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
+	reference := NewReferenceForTests()
 	adapter := NewAdapter()
 	content, err := adapter.ToContent(reference)
 	if err != nil {

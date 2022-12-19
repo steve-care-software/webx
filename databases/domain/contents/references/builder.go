@@ -1,18 +1,16 @@
 package references
 
+import "errors"
+
 type builder struct {
-	contentFactory ContentFactory
-	content        Content
-	commits        Commits
+	contentKeys ContentKeys
+	commits     Commits
 }
 
-func createBuilder(
-	contentFactory ContentFactory,
-) Builder {
+func createBuilder() Builder {
 	out := builder{
-		contentFactory: contentFactory,
-		content:        nil,
-		commits:        nil,
+		contentKeys: nil,
+		commits:     nil,
 	}
 
 	return &out
@@ -20,14 +18,12 @@ func createBuilder(
 
 // Create initializes the builder
 func (app *builder) Create() Builder {
-	return createBuilder(
-		app.contentFactory,
-	)
+	return createBuilder()
 }
 
-// WithContent adds a content to the builder
-func (app *builder) WithContent(content Content) Builder {
-	app.content = content
+// WithContentKeys adds a contentKeys to the builder
+func (app *builder) WithContentKeys(contentKeys ContentKeys) Builder {
+	app.contentKeys = contentKeys
 	return app
 }
 
@@ -39,18 +35,13 @@ func (app *builder) WithCommits(commits Commits) Builder {
 
 // Now builds a new Reference instance
 func (app *builder) Now() (Reference, error) {
-	if app.content == nil {
-		content, err := app.contentFactory.Create()
-		if err != nil {
-			return nil, err
-		}
-
-		app.content = content
+	if app.contentKeys == nil {
+		return nil, errors.New("the ContentKeys is mandatory in order to build a Reference instance")
 	}
 
-	if app.commits != nil {
-		return createReferenceWithCommits(app.content, app.commits), nil
+	if app.commits == nil {
+		return nil, errors.New("the Commits is mandatory in order to build a Reference instance")
 	}
 
-	return createReference(app.content), nil
+	return createReference(app.contentKeys, app.commits), nil
 }

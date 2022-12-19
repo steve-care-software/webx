@@ -22,7 +22,7 @@ type Application interface {
 
 // Reference represents the reference application
 type Reference interface {
-	Content(context uint) (references.Content, error)
+	ContentKeys(context uint) (references.ContentKeys, error)
 	Commits(context uint) (references.Commits, error)
 }
 

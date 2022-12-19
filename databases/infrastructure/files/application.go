@@ -26,8 +26,6 @@ type application struct {
 	commitContentBuilder        commit_contents.Builder
 	referenceAdapter            references.Adapter
 	referenceBuilder            references.Builder
-	referenceContentFactory     references.ContentFactory
-	referenceContentBuilder     references.ContentBuilder
 	referenceContentKeysBuilder references.ContentKeysBuilder
 	referenceContentKeyBuilder  references.ContentKeyBuilder
 	referenceCommitsBuilder     references.CommitsBuilder
@@ -47,8 +45,6 @@ func createApplication(
 	commitContentBuilder commit_contents.Builder,
 	referenceAdapter references.Adapter,
 	referenceBuilder references.Builder,
-	referenceContentFactory references.ContentFactory,
-	referenceContentBuilder references.ContentBuilder,
 	referenceContentKeysBuilder references.ContentKeysBuilder,
 	referenceContentKeyBuilder references.ContentKeyBuilder,
 	referenceCommitsBuilder references.CommitsBuilder,
@@ -66,8 +62,6 @@ func createApplication(
 		commitContentBuilder:        commitContentBuilder,
 		referenceAdapter:            referenceAdapter,
 		referenceBuilder:            referenceBuilder,
-		referenceContentFactory:     referenceContentFactory,
-		referenceContentBuilder:     referenceContentBuilder,
 		referenceContentKeysBuilder: referenceContentKeysBuilder,
 		referenceContentKeyBuilder:  referenceContentKeyBuilder,
 		referenceCommitsBuilder:     referenceCommitsBuilder,
@@ -93,17 +87,12 @@ func (app *application) New(name string) error {
 		return errors.New(str)
 	}
 
-	content, err := app.referenceContentFactory.Create()
+	file, err := os.Create(path)
 	if err != nil {
 		return err
 	}
 
-	reference, err := app.referenceBuilder.Create().WithContent(content).Now()
-	if err != nil {
-		return err
-	}
-
-	return app.saveReferenceOnDisk(name, reference)
+	return file.Close()
 }
 
 func (app *application) saveReferenceOnDisk(name string, reference references.Reference) error {
@@ -161,35 +150,41 @@ func (app *application) Open(name string, height int) (*uint, error) {
 		return nil, err
 	}
 
-	if refAmount != expectedReferenceBytesLength {
-		str := fmt.Sprintf("%d bytes were expected to be read when reading the reference length bytes, %d actually read", expectedReferenceBytesLength, refAmount)
-		return nil, errors.New(str)
-	}
+	refLength := 0
+	var reference references.Reference
+	if refAmount > 0 {
+		if refAmount != expectedReferenceBytesLength {
+			str := fmt.Sprintf("%d bytes were expected to be read when reading the reference length bytes, %d actually read", expectedReferenceBytesLength, refAmount)
+			return nil, errors.New(str)
+		}
 
-	// convert the reference length to uint64:
-	refLength := binary.LittleEndian.Uint64(refLengthBytes)
+		// convert the reference length to uint64:
+		refLength := binary.LittleEndian.Uint64(refLengthBytes)
 
-	// read the reference data:
-	refAllBytes := []byte{}
-	offset := int64(refLength)
-	for {
-		refContentBytes := make([]byte, app.readChunkSize)
-		refContentAmount, err := pConn.ReadAt(refContentBytes, offset)
+		// read the reference data:
+		refAllBytes := []byte{}
+		offset := int64(refLength)
+		for {
+			refContentBytes := make([]byte, app.readChunkSize)
+			refContentAmount, err := pConn.ReadAt(refContentBytes, offset)
+			if err != nil {
+				return nil, err
+			}
+
+			refAllBytes = append(refAllBytes, refContentBytes...)
+			offset += int64(refContentAmount)
+			if refContentAmount != int(refLength) {
+				break
+			}
+		}
+
+		// convert the content to a reference instance:
+		refIns, err := app.referenceAdapter.ToReference(refAllBytes)
 		if err != nil {
 			return nil, err
 		}
 
-		refAllBytes = append(refAllBytes, refContentBytes...)
-		offset += int64(refContentAmount)
-		if refContentAmount != int(refLength) {
-			break
-		}
-	}
-
-	// convert the content to a reference instance:
-	reference, err := app.referenceAdapter.ToReference(refAllBytes)
-	if err != nil {
-		return nil, err
+		reference = refIns
 	}
 
 	// create a Lock instance on the path:
@@ -209,10 +204,15 @@ func (app *application) Open(name string, height int) (*uint, error) {
 	return &pContext.identifier, nil
 }
 
-// Content returns the content by context
-func (app *application) Content(context uint) (references.Content, error) {
+// ContentKeys returns the contentKeys by context
+func (app *application) ContentKeys(context uint) (references.ContentKeys, error) {
 	if pContext, ok := app.contexts[context]; ok {
-		return pContext.reference.Content(), nil
+		if pContext.reference == nil {
+			str := fmt.Sprintf("there is zero (0) ContentKey in the given context: %d", context)
+			return nil, errors.New(str)
+		}
+
+		return pContext.reference.ContentKeys(), nil
 	}
 
 	str := fmt.Sprintf("the given context (%d) does not exists and therefore cannot return the Content instance", context)
@@ -222,8 +222,8 @@ func (app *application) Content(context uint) (references.Content, error) {
 // Commits returns the commits on a context
 func (app *application) Commits(context uint) (references.Commits, error) {
 	if pContext, ok := app.contexts[context]; ok {
-		if !pContext.reference.HasCommits() {
-			str := fmt.Sprintf("the given context (%d) contains a reference that contains %d Commit instance", context, 0)
+		if pContext.reference == nil {
+			str := fmt.Sprintf("there is zero (0) Commit in the given context: %d", context)
 			return nil, errors.New(str)
 		}
 
@@ -268,17 +268,12 @@ func (app *application) ReadByHash(context uint, hash hash.Hash) ([]byte, error)
 }
 
 func (app *application) retrieveActiveContentKeyByHash(context uint, hash hash.Hash) (references.ContentKey, error) {
-	content, err := app.Content(context)
+	contentKeys, err := app.ContentKeys(context)
 	if err != nil {
 		return nil, err
 	}
 
-	if !content.HasActive() {
-		str := fmt.Sprintf("the ContentKey (hash: %s) could not be retrieved because the reference contains no active ContentKeys instance", hash.String())
-		return nil, errors.New(str)
-	}
-
-	return content.Active().Fetch(hash)
+	return contentKeys.Fetch(hash)
 }
 
 // ReadAll read pointers on a context
@@ -367,7 +362,7 @@ func (app *application) updateReference(context uint) (references.Reference, err
 	if pContext, ok := app.contexts[context]; ok {
 		// find the latest commit:
 		builder := app.commitBuilder.Create()
-		if pContext.reference.HasCommits() {
+		if pContext.reference != nil {
 			refCommit := pContext.reference.Commits().Latest()
 			latestCommit, err := app.retrieveCommitByCommitReference(context, refCommit)
 			if err != nil {
@@ -427,7 +422,7 @@ func (app *application) updateReference(context uint) (references.Reference, err
 
 		// save the pointers in the commit references:
 		commitsList := []references.Commit{}
-		if pContext.reference.HasCommits() {
+		if pContext.reference != nil {
 			commitsList = pContext.reference.Commits().List()
 		}
 
@@ -438,10 +433,9 @@ func (app *application) updateReference(context uint) (references.Reference, err
 		}
 
 		// get the pending content list:
-		pendingList := []references.ContentKey{}
-		content := pContext.reference.Content()
-		if content.HasPendings() {
-			pendingList = content.Pendings().List()
+		contentKeysList := []references.ContentKey{}
+		if pContext.reference != nil {
+			contentKeysList = pContext.reference.ContentKeys().List()
 		}
 
 		// save all content:
@@ -460,36 +454,20 @@ func (app *application) updateReference(context uint) (references.Reference, err
 				return nil, err
 			}
 
-			//save the content key to the pending:
-			pendingList = append(pendingList, contentKey)
+			//save the content key to the list:
+			contentKeysList = append(contentKeysList, contentKey)
 
 			// update the offset:
 			offset += dataLength
 		}
 
-		pendingContentKeys, err := app.referenceContentKeysBuilder.Create().WithList(pendingList).Now()
-		if err != nil {
-			return nil, err
-		}
-
-		updatedContentBuilder := app.referenceContentBuilder.Create().WithPendings(pendingContentKeys)
-		if content.HasActive() {
-			active := content.Active()
-			updatedContentBuilder.WithActive(active)
-		}
-
-		if content.HasDeleted() {
-			deleted := content.Deleted()
-			updatedContentBuilder.WithDeleted(deleted)
-		}
-
-		updatedContent, err := updatedContentBuilder.Now()
+		updatedContentKeys, err := app.referenceContentKeysBuilder.Create().WithList(contentKeysList).Now()
 		if err != nil {
 			return nil, err
 		}
 
 		return app.referenceBuilder.Create().
-			WithContent(updatedContent).
+			WithContentKeys(updatedContentKeys).
 			WithCommits(commits).
 			Now()
 	}

@@ -9,13 +9,14 @@ import (
 const pointerSize = 8 * 2
 const commitSize = hash.Size + pointerSize + 8
 const contentKeySize = hash.Size + pointerSize + 8 + hash.Size
+const minReferenceSize = contentKeySize + commitSize
 
 // NewAdapter creates a new adapter instance
 func NewAdapter() Adapter {
-	contentAdapter := NewContentAdapter()
+	contentKeysAdapter := NewContentKeysAdapter()
 	commitsAdapter := NewCommitsAdapter()
 	builder := NewBuilder()
-	return createAdapter(contentAdapter, commitsAdapter, builder)
+	return createAdapter(contentKeysAdapter, commitsAdapter, builder)
 }
 
 // NewFactory creates a new factory instance
@@ -26,26 +27,7 @@ func NewFactory() Factory {
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
-	contentFactory := NewContentFactory()
-	return createBuilder(contentFactory)
-}
-
-// NewContentAdapter creates a new content adapter
-func NewContentAdapter() ContentAdapter {
-	contentKeysAdapter := NewContentKeysAdapter()
-	builder := NewContentBuilder()
-	return createContentAdapter(contentKeysAdapter, builder)
-}
-
-// NewContentFactory creates a new content factory
-func NewContentFactory() ContentFactory {
-	builder := NewContentBuilder()
-	return createContentFactory(builder)
-}
-
-// NewContentBuilder creates a new content builder
-func NewContentBuilder() ContentBuilder {
-	return createContentBuilder()
+	return createBuilder()
 }
 
 // NewCommitsAdapter creates a new commits adapter
@@ -123,7 +105,7 @@ type Factory interface {
 // Builder represents a reference builder
 type Builder interface {
 	Create() Builder
-	WithContent(content Content) Builder
+	WithContentKeys(contentKeys ContentKeys) Builder
 	WithCommits(commits Commits) Builder
 	Now() (Reference, error)
 }
@@ -131,39 +113,8 @@ type Builder interface {
 // Reference represents the reference
 type Reference interface {
 	Next() int64
-	Content() Content
-	HasCommits() bool
+	ContentKeys() ContentKeys
 	Commits() Commits
-}
-
-// ContentFactory represents a content factory
-type ContentFactory interface {
-	Create() (Content, error)
-}
-
-// ContentAdapter represents a content adapter
-type ContentAdapter interface {
-	ToContent(ins Content) ([]byte, error)
-	ToInstance(content []byte) (Content, error)
-}
-
-// ContentBuilder represents a content builder
-type ContentBuilder interface {
-	Create() ContentBuilder
-	WithActive(active ContentKeys) ContentBuilder
-	WithPendings(pendings ContentKeys) ContentBuilder
-	WithDeleted(deleted ContentKeys) ContentBuilder
-	Now() (Content, error)
-}
-
-// Content represents the content reference
-type Content interface {
-	HasActive() bool
-	Active() ContentKeys
-	HasPendings() bool
-	Pendings() ContentKeys
-	HasDeleted() bool
-	Deleted() ContentKeys
 }
 
 // CommitsAdapter represents a commits adapter
