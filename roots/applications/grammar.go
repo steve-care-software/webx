@@ -38,12 +38,12 @@ func createGrammar(
 
 // Retrieve retrieves the grammar database instance
 func (app *grammar) Retrieve(context uint) (roots_grammar.Grammar, error) {
-	contentKeys, err := app.databaseApp.ContentKeys(context, GrammarDatabaseKind)
+	contentKeys, err := app.databaseApp.ContentKeys(context)
 	if err != nil {
 		return nil, err
 	}
 
-	list := contentKeys.List()
+	list := contentKeys.ListByKind(GrammarDatabaseKind)
 	if len(list) != 1 {
 		str := fmt.Sprintf("%d grammar databases were expected, %d returned", 1, len(list))
 		return nil, errors.New(str)

@@ -29,6 +29,20 @@ func (obj *contentKeys) List() []ContentKey {
 	return obj.list
 }
 
+// ListByKind returns the list by kind
+func (obj *contentKeys) ListByKind(kind uint) []ContentKey {
+	output := []ContentKey{}
+	for _, oneContentKey := range obj.list {
+		if oneContentKey.Kind() != kind {
+			continue
+		}
+
+		output = append(output, oneContentKey)
+	}
+
+	return output
+}
+
 // Fetch fetches a contentKey by hash
 func (obj *contentKeys) Fetch(hash hash.Hash) (ContentKey, error) {
 	contentKeyname := hash.String()

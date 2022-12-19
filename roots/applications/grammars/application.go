@@ -470,25 +470,15 @@ func (app *application) Scan(context uint, suites grammars.Suites) (grammars.Gra
 
 // ScanWithChannels executes a scan with channels
 func (app *application) ScanWithChannels(context uint, suites grammars.Suites, channels grammars.Channels) (grammars.Grammar, error) {
-	content, err := app.databaseApp.Content(context)
+	contentKeys, err := app.databaseApp.ContentKeys(context)
 	if err != nil {
 		return nil, err
 	}
 
-	if !content.HasActive() {
-		str := fmt.Sprintf("there is no token that matches the provided suites and channels and therefore no grammar could be returned, because the database contains %d active content", 0)
-		return nil, errors.New(str)
-	}
-
 	// for each contentKey:
 	var selected grammars.Grammar
-	list := content.Active().List()
+	list := contentKeys.ListByKind(KindGrammar)
 	for _, oneContentKey := range list {
-		// if the kind is not a token, continue:
-		if oneContentKey.Kind() != KindGrammar {
-			continue
-		}
-
 		// retrieve the token:
 		token, err := app.retrieveToken(context, oneContentKey.Hash())
 		if err != nil {

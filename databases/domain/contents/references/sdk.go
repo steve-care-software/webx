@@ -175,6 +175,7 @@ type ContentKeysBuilder interface {
 // ContentKeys represents content keys
 type ContentKeys interface {
 	List() []ContentKey
+	ListByKind(kind uint) []ContentKey
 	Fetch(hash hash.Hash) (ContentKey, error)
 }
 

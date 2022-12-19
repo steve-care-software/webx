@@ -8,7 +8,7 @@ import (
 )
 
 type application struct {
-	databaseApp         database_applications.Application
+	databaseApp           database_applications.Application
 	grammar               Grammar
 	program               Program
 	selector              Selector
@@ -31,7 +31,7 @@ func createApplication(
 	modules modules.Modules,
 ) Application {
 	out := application{
-		databaseApp:         databaseApp,
+		databaseApp:           databaseApp,
 		grammar:               grammar,
 		program:               program,
 		selector:              selector,
