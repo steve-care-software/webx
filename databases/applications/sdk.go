@@ -6,17 +6,6 @@ import (
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 )
 
-const (
-	// PendingContentFlag represents the pending content flag
-	PendingContentFlag uint8 = iota
-
-	// ActiveContentFlag represents the active content flag
-	ActiveContentFlag
-
-	// DeletedContentFlag represents the deleted content flag
-	DeletedContentFlag
-)
-
 // Builder represents an application builder
 type Builder interface {
 	Create() Builder
