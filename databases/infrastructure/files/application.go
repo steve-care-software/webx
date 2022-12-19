@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
@@ -23,6 +24,7 @@ type application struct {
 	commitContentBuilder        commit_contents.Builder
 	referenceAdapter            references.Adapter
 	referenceBuilder            references.Builder
+	referenceContentFactory     references.ContentFactory
 	referenceContentBuilder     references.ContentBuilder
 	referenceContentKeysBuilder references.ContentKeysBuilder
 	referenceContentKeyBuilder  references.ContentKeyBuilder
@@ -42,6 +44,7 @@ func createApplication(
 	commitContentBuilder commit_contents.Builder,
 	referenceAdapter references.Adapter,
 	referenceBuilder references.Builder,
+	referenceContentFactory references.ContentFactory,
 	referenceContentBuilder references.ContentBuilder,
 	referenceContentKeysBuilder references.ContentKeysBuilder,
 	referenceContentKeyBuilder references.ContentKeyBuilder,
@@ -59,6 +62,7 @@ func createApplication(
 		commitContentBuilder:        commitContentBuilder,
 		referenceAdapter:            referenceAdapter,
 		referenceBuilder:            referenceBuilder,
+		referenceContentFactory:     referenceContentFactory,
 		referenceContentBuilder:     referenceContentBuilder,
 		referenceContentKeysBuilder: referenceContentKeysBuilder,
 		referenceContentKeyBuilder:  referenceContentKeyBuilder,
@@ -73,6 +77,39 @@ func createApplication(
 	}
 
 	return &out
+}
+
+// New creates a new database
+func (app *application) New(name string) error {
+	path := filepath.Join(app.dirPath, name)
+	_, err := os.Stat(name)
+	if err == nil {
+		str := fmt.Sprintf("the database (name: %s) already exists and therefore cannot be created again", name)
+		return errors.New(str)
+	}
+
+	content, err := app.referenceContentFactory.Create()
+	if err != nil {
+		return err
+	}
+
+	reference, err := app.referenceBuilder.Create().WithContent(content).Now()
+	if err != nil {
+		return err
+	}
+
+	contentBytes, err := app.referenceAdapter.ToContent(reference)
+	if err != nil {
+		return err
+	}
+
+	bytesLength := make([]byte, expectedReferenceBytesLength)
+	binary.LittleEndian.PutUint64(bytesLength, uint64(len(contentBytes)))
+
+	data := []byte{}
+	data = append(data, bytesLength...)
+	data = append(data, contentBytes...)
+	return ioutil.WriteFile(path, data, filePermission)
 }
 
 // Delete deletes an existing database

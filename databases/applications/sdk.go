@@ -28,6 +28,7 @@ type Reference interface {
 
 // Database represents the database application
 type Database interface {
+	New(name string) error
 	Delete(name string) error
 	Open(name string, height int) (*uint, error)
 	Cancel(context uint) error
