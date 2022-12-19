@@ -1,9 +1,13 @@
 package configs
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represents the config builder
 type Builder interface {
 	Create() Builder
-	WithAmount(amount uint) Builder
 	WithRatios(ratios []float64) Builder
 	WithDefault(defValue uint) Builder
 	Now() (Config, error)
