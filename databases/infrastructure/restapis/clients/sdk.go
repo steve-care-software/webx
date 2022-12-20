@@ -10,6 +10,7 @@ const patternURI = "%s/%s"
 const rootURI = "/"
 const existsURI = "/exists"
 const connectionsURI = "/connections"
+const contextURI = "/context"
 
 // Builder represents the client database application builder
 type Builder interface {

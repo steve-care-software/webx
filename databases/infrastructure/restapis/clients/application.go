@@ -1,6 +1,7 @@
 package clients
 
 import (
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"net/http"
@@ -108,7 +109,24 @@ func (app *application) Connections() (connections.Connections, error) {
 
 // Open opens a context on a given database
 func (app *application) Open(name string) (*uint, error) {
-	return nil, nil
+	url := fmt.Sprintf(patternURI, app.baseURL.String(), contextURI)
+	resp, err := app.client.R().Post(url)
+	if err != nil {
+		return nil, err
+	}
+
+	bytes := resp.Body()
+	if resp.StatusCode() != http.StatusOK {
+		return nil, errors.New(string(bytes))
+	}
+
+	if len(bytes) != 8 {
+		str := fmt.Sprintf("the output was expected to contain 8 bytes, %d returned", len(bytes))
+		return nil, errors.New(str)
+	}
+
+	context := uint(binary.LittleEndian.Uint64(bytes))
+	return &context, nil
 }
 
 // ContentKeysByKind returns the contentKeys by context and kind
