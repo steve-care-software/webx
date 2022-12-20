@@ -2,6 +2,20 @@ package contents
 
 import "github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 
+const minContentSize = hash.Size + 8 + 1
+
+// NewAdapter creates a new adapter instance
+func NewAdapter() Adapter {
+	hashAdapter := hash.NewAdapter()
+	builder := NewBuilder()
+	return createAdapter(hashAdapter, builder)
+}
+
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Adapter represents a connection adapter
 type Adapter interface {
 	ToContent(ins Content) ([]byte, error)
