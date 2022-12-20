@@ -11,6 +11,8 @@ const rootURI = "/"
 const existsURI = "/exists"
 const connectionsURI = "/connections"
 const contextURI = "/context"
+const contentKeysByKindURI = "/content-keys/%d"
+const commitByHashURI = "/commits/%s"
 
 // Builder represents the client database application builder
 type Builder interface {

@@ -18,20 +18,23 @@ import (
 )
 
 type application struct {
-	connectionsAdapter connections.Adapter
-	baseURL            *url.URL
-	client             *resty.Client
+	connectionsAdapter          connections.Adapter
+	referenceContentKeysAdapter references.ContentKeysAdapter
+	baseURL                     *url.URL
+	client                      *resty.Client
 }
 
 func createApplication(
 	connectionsAdapter connections.Adapter,
+	referenceContentKeysAdapter references.ContentKeysAdapter,
 	baseURL *url.URL,
 	client *resty.Client,
 ) applications.Application {
 	out := application{
-		connectionsAdapter: connectionsAdapter,
-		baseURL:            baseURL,
-		client:             client,
+		connectionsAdapter:          connectionsAdapter,
+		referenceContentKeysAdapter: referenceContentKeysAdapter,
+		baseURL:                     baseURL,
+		client:                      client,
 	}
 
 	return &out
@@ -131,11 +134,19 @@ func (app *application) Open(name string) (*uint, error) {
 
 // ContentKeysByKind returns the contentKeys by context and kind
 func (app *application) ContentKeysByKind(context uint, kind uint) (references.ContentKeys, error) {
-	return nil, nil
-}
+	contentKeysURI := fmt.Sprintf(contentKeysByKindURI, kind)
+	url := fmt.Sprintf(patternURI, app.baseURL.String(), contentKeysURI)
+	resp, err := app.client.R().Get(url)
+	if err != nil {
+		return nil, err
+	}
 
-func (app *application) contentKeys(context uint) (references.ContentKeys, error) {
-	return nil, nil
+	bytes := resp.Body()
+	if resp.StatusCode() != http.StatusOK {
+		return nil, errors.New(string(bytes))
+	}
+
+	return app.referenceContentKeysAdapter.ToContentKeys(bytes)
 }
 
 // CommitByHash returns the commit by hash
