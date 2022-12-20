@@ -17,17 +17,20 @@ import (
 )
 
 type application struct {
-	baseURL *url.URL
-	client  *resty.Client
+	connectionsAdapter connections.Adapter
+	baseURL            *url.URL
+	client             *resty.Client
 }
 
 func createApplication(
+	connectionsAdapter connections.Adapter,
 	baseURL *url.URL,
 	client *resty.Client,
 ) applications.Application {
 	out := application{
-		baseURL: baseURL,
-		client:  client,
+		connectionsAdapter: connectionsAdapter,
+		baseURL:            baseURL,
+		client:             client,
 	}
 
 	return &out
@@ -90,7 +93,18 @@ func (app *application) Delete(name string) error {
 
 // Connections returns the active connections
 func (app *application) Connections() (connections.Connections, error) {
-	return nil, nil
+	url := fmt.Sprintf(patternURI, app.baseURL.String(), connectionsURI)
+	resp, err := app.client.R().Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	bytes := resp.Body()
+	if resp.StatusCode() != http.StatusOK {
+		return nil, errors.New(string(bytes))
+	}
+
+	return app.connectionsAdapter.ToConnections(bytes)
 }
 
 // Open opens a context at height, height is -1 if the head is requested

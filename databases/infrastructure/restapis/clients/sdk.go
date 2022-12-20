@@ -9,6 +9,7 @@ import (
 const patternURI = "%s/%s"
 const rootURI = "/"
 const existsURI = "/exists"
+const connectionsURI = "/connections"
 
 // Builder represents the client database application builder
 type Builder interface {
