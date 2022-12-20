@@ -3,13 +3,11 @@ package references
 import "errors"
 
 type contentContentKeysBuilder struct {
-	mp   map[string]ContentKey
 	list []ContentKey
 }
 
 func createContentKeysBuilder() ContentKeysBuilder {
 	out := contentContentKeysBuilder{
-		mp:   nil,
 		list: nil,
 	}
 

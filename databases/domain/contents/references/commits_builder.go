@@ -3,13 +3,11 @@ package references
 import "errors"
 
 type commitsBuilder struct {
-	mp   map[string]Commit
 	list []Commit
 }
 
 func createCommitsBuilder() CommitsBuilder {
 	out := commitsBuilder{
-		mp:   nil,
 		list: nil,
 	}
 

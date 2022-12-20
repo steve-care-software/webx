@@ -2,6 +2,16 @@ package contents
 
 import "github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewContentBuilder creates a new content builder
+func NewContentBuilder() ContentBuilder {
+	return createContentBuilder()
+}
+
 // Builder represents a contents builder
 type Builder interface {
 	Create() Builder
