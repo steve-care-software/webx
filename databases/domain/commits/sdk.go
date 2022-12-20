@@ -14,6 +14,12 @@ func NewBuilder(miningValue byte) Builder {
 	return createBuilder(hashAdapter, miningValue)
 }
 
+// Adapter represents a commit adapter
+type Adapter interface {
+	ToContent(ins Commit) ([]byte, error)
+	ToCommit(content []byte) (Commit, error)
+}
+
 // Builder represents a commit builder
 type Builder interface {
 	Create() Builder

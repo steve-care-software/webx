@@ -18,6 +18,7 @@ import (
 )
 
 type application struct {
+	commitAdapter               commits.Adapter
 	connectionsAdapter          connections.Adapter
 	referenceContentKeysAdapter references.ContentKeysAdapter
 	baseURL                     *url.URL
@@ -25,12 +26,14 @@ type application struct {
 }
 
 func createApplication(
+	commitAdapter commits.Adapter,
 	connectionsAdapter connections.Adapter,
 	referenceContentKeysAdapter references.ContentKeysAdapter,
 	baseURL *url.URL,
 	client *resty.Client,
 ) applications.Application {
 	out := application{
+		commitAdapter:               commitAdapter,
 		connectionsAdapter:          connectionsAdapter,
 		referenceContentKeysAdapter: referenceContentKeysAdapter,
 		baseURL:                     baseURL,
@@ -134,7 +137,7 @@ func (app *application) Open(name string) (*uint, error) {
 
 // ContentKeysByKind returns the contentKeys by context and kind
 func (app *application) ContentKeysByKind(context uint, kind uint) (references.ContentKeys, error) {
-	contentKeysURI := fmt.Sprintf(contentKeysByKindURI, kind)
+	contentKeysURI := fmt.Sprintf(contentKeysByKindURI, context, kind)
 	url := fmt.Sprintf(patternURI, app.baseURL.String(), contentKeysURI)
 	resp, err := app.client.R().Get(url)
 	if err != nil {
@@ -151,7 +154,19 @@ func (app *application) ContentKeysByKind(context uint, kind uint) (references.C
 
 // CommitByHash returns the commit by hash
 func (app *application) CommitByHash(context uint, hash hash.Hash) (commits.Commit, error) {
-	return nil, nil
+	commitURI := fmt.Sprintf(commitByHashURI, context, hash.String())
+	url := fmt.Sprintf(patternURI, app.baseURL.String(), commitURI)
+	resp, err := app.client.R().Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	bytes := resp.Body()
+	if resp.StatusCode() != http.StatusOK {
+		return nil, errors.New(string(bytes))
+	}
+
+	return app.commitAdapter.ToCommit(bytes)
 }
 
 // Histories returns the commits histories on a context
