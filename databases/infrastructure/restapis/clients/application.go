@@ -195,5 +195,16 @@ func (app *application) Push(name string, config configs.Config) error {
 
 // Close closes a context
 func (app *application) Close(context uint) error {
+	url := fmt.Sprintf(patternURI, app.baseURL.String(), contextURI)
+	resp, err := app.client.R().Delete(url)
+	if err != nil {
+		return err
+	}
+
+	bytes := resp.Body()
+	if resp.StatusCode() != http.StatusOK {
+		return errors.New(string(bytes))
+	}
+
 	return nil
 }
