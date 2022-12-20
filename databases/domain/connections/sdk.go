@@ -16,6 +16,12 @@ func NewConnectionBuilder() ConnectionBuilder {
 	return createConnectionBuilder()
 }
 
+// Adapter represents a connections adapter
+type Adapter interface {
+	ToContent(ins Connections) ([]byte, error)
+	ToConnections(content []byte) (Connections, error)
+}
+
 // Builder represents a connections builder
 type Builder interface {
 	Create() Builder
@@ -27,6 +33,12 @@ type Builder interface {
 type Connections interface {
 	List() []Connection
 	Fetch(identifier uint) (Connection, error)
+}
+
+// ConnectionAdapter represents a connection adapter
+type ConnectionAdapter interface {
+	ToContent(ins Connection) ([]byte, error)
+	ToConnection(content []byte) (Connection, error)
 }
 
 // ConnectionBuilder represents a connection builder

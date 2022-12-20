@@ -5,9 +5,9 @@ import (
 	"testing"
 )
 
-func TestAdapter_Success(t *testing.T) {
+func TestContentAdapter_Success(t *testing.T) {
 	contentIns := NewContentForTests(0, []byte("this is some data"))
-	adapter := NewAdapter()
+	adapter := NewContentAdapter()
 	content, err := adapter.ToContent(contentIns)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())

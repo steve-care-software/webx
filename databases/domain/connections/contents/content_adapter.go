@@ -8,25 +8,25 @@ import (
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 )
 
-type adapter struct {
-	hashAdapter hash.Adapter
-	builder     Builder
+type contentAdapter struct {
+	hashContentAdapter hash.Adapter
+	builder            ContentBuilder
 }
 
-func createAdapter(
-	hashAdapter hash.Adapter,
-	builder Builder,
-) Adapter {
-	out := adapter{
-		hashAdapter: hashAdapter,
-		builder:     builder,
+func createContentAdapter(
+	hashContentAdapter hash.Adapter,
+	builder ContentBuilder,
+) ContentAdapter {
+	out := contentAdapter{
+		hashContentAdapter: hashContentAdapter,
+		builder:            builder,
 	}
 
 	return &out
 }
 
 // ToContent converts content to bytes
-func (app *adapter) ToContent(ins Content) ([]byte, error) {
+func (app *contentAdapter) ToContent(ins Content) ([]byte, error) {
 	hashBytes := ins.Hash().Bytes()
 
 	kindBytes := make([]byte, 8)
@@ -40,14 +40,14 @@ func (app *adapter) ToContent(ins Content) ([]byte, error) {
 }
 
 // ToInstance converts bytes to a content instance
-func (app *adapter) ToInstance(content []byte) (Content, error) {
+func (app *contentAdapter) ToInstance(content []byte) (Content, error) {
 	contentLength := len(content)
 	if contentLength < minContentSize {
 		str := fmt.Sprintf("the content was expected to contain at least %d bytes in order to convert to a Content instance, %d provided", minContentSize, contentLength)
 		return nil, errors.New(str)
 	}
 
-	pHash, err := app.hashAdapter.FromBytes(content[:hash.Size])
+	pHash, err := app.hashContentAdapter.FromBytes(content[:hash.Size])
 	if err != nil {
 		return nil, err
 	}
