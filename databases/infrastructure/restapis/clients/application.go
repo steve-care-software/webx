@@ -44,12 +44,11 @@ func (app *application) Exists(name string) (bool, error) {
 		return false, err
 	}
 
+	bytes := resp.Body()
 	if resp.StatusCode() != http.StatusOK {
-		str := fmt.Sprintf("the status code (%d) was expected to be ok (%d), while executing the Exists method", resp.StatusCode(), http.StatusOK)
-		return false, errors.New(str)
+		return false, errors.New(string(bytes))
 	}
 
-	bytes := resp.Body()
 	if len(bytes) != 1 {
 		str := fmt.Sprintf("the output was expected to contain 1 byte, %d returned", len(bytes))
 		return false, errors.New(str)
