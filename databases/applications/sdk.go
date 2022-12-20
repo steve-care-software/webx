@@ -27,8 +27,7 @@ type Application interface {
 
 // Reference represents the reference application
 type Reference interface {
-	ContentKeys(context uint) (references.ContentKeys, error)
-	Commits(context uint) (references.Commits, error)
+	ContentKeysByKind(context uint, kind uint) (references.ContentKeys, error)
 	CommitByHash(context uint, hash hash.Hash) (commits.Commit, error)
 	Histories(context uint) (histories.Histories, error)
 }

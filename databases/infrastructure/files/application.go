@@ -316,8 +316,23 @@ func (app *application) retrieveReference(name string) (references.Reference, ui
 	return nil, 0, errors.New(str)
 }
 
-// ContentKeys returns the contentKeys by context
-func (app *application) ContentKeys(context uint) (references.ContentKeys, error) {
+// ContentKeysByKind returns the contentKeys by context and kind
+func (app *application) ContentKeysByKind(context uint, kind uint) (references.ContentKeys, error) {
+	contentKeys, err := app.contentKeys(context)
+	if err != nil {
+		return nil, err
+	}
+
+	list := contentKeys.ListByKind(kind)
+	if len(list) <= 0 {
+		str := fmt.Sprintf("there is no ContentKey instances for the given kind: %d", kind)
+		return nil, errors.New(str)
+	}
+
+	return app.referenceContentKeysBuilder.Create().WithList(list).Now()
+}
+
+func (app *application) contentKeys(context uint) (references.ContentKeys, error) {
 	if pContext, ok := app.contexts[context]; ok {
 		if pContext.reference == nil {
 			str := fmt.Sprintf("there is zero (0) ContentKey in the given context: %d", context)
@@ -331,24 +346,9 @@ func (app *application) ContentKeys(context uint) (references.ContentKeys, error
 	return nil, errors.New(str)
 }
 
-// Commits returns the commits on a context
-func (app *application) Commits(context uint) (references.Commits, error) {
-	if pContext, ok := app.contexts[context]; ok {
-		if pContext.reference == nil {
-			str := fmt.Sprintf("there is zero (0) Commit in the given context: %d", context)
-			return nil, errors.New(str)
-		}
-
-		return pContext.reference.Commits(), nil
-	}
-
-	str := fmt.Sprintf("the given context (%d) does not exists and therefore cannot return the Commits instance", context)
-	return nil, errors.New(str)
-}
-
 // CommitByHash returns the commit by hash
 func (app *application) CommitByHash(context uint, hash hash.Hash) (commits.Commit, error) {
-	commits, err := app.Commits(context)
+	commits, err := app.commits(context)
 	if err != nil {
 		return nil, err
 	}
@@ -363,7 +363,7 @@ func (app *application) CommitByHash(context uint, hash hash.Hash) (commits.Comm
 
 // Histories returns the commits histories on a context
 func (app *application) Histories(context uint) (histories.Histories, error) {
-	refCommits, err := app.Commits(context)
+	refCommits, err := app.commits(context)
 	if err != nil {
 		return nil, err
 	}
@@ -380,6 +380,20 @@ func (app *application) Histories(context uint) (histories.Histories, error) {
 	}
 
 	return app.commitHistoriesAdapter.ToHistories(commitsList)
+}
+
+func (app *application) commits(context uint) (references.Commits, error) {
+	if pContext, ok := app.contexts[context]; ok {
+		if pContext.reference == nil {
+			str := fmt.Sprintf("there is zero (0) Commit in the given context: %d", context)
+			return nil, errors.New(str)
+		}
+
+		return pContext.reference.Commits(), nil
+	}
+
+	str := fmt.Sprintf("the given context (%d) does not exists and therefore cannot return the Commits instance", context)
+	return nil, errors.New(str)
 }
 
 // Read reads a pointer on a context
@@ -416,7 +430,7 @@ func (app *application) ReadByHash(context uint, hash hash.Hash) ([]byte, error)
 }
 
 func (app *application) retrieveActiveContentKeyByHash(context uint, hash hash.Hash) (references.ContentKey, error) {
-	contentKeys, err := app.ContentKeys(context)
+	contentKeys, err := app.contentKeys(context)
 	if err != nil {
 		return nil, err
 	}

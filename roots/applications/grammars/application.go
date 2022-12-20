@@ -470,14 +470,14 @@ func (app *application) Scan(context uint, suites grammars.Suites) (grammars.Gra
 
 // ScanWithChannels executes a scan with channels
 func (app *application) ScanWithChannels(context uint, suites grammars.Suites, channels grammars.Channels) (grammars.Grammar, error) {
-	contentKeys, err := app.databaseApp.ContentKeys(context)
+	contentKeys, err := app.databaseApp.ContentKeysByKind(context, KindGrammar)
 	if err != nil {
 		return nil, err
 	}
 
 	// for each contentKey:
 	var selected grammars.Grammar
-	list := contentKeys.ListByKind(KindGrammar)
+	list := contentKeys.List()
 	for _, oneContentKey := range list {
 		// retrieve the token:
 		token, err := app.retrieveToken(context, oneContentKey.Hash())
