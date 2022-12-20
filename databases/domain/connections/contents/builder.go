@@ -37,8 +37,8 @@ func (app *builder) Now() (Contents, error) {
 
 	mp := map[string]Content{}
 	for _, oneContent := range app.list {
-		contentname := oneContent.Hash().String()
-		mp[contentname] = oneContent
+		name := oneContent.Hash().String()
+		mp[name] = oneContent
 	}
 
 	return createContents(mp, app.list), nil

@@ -6,6 +6,16 @@ import (
 	"github.com/steve-care-software/webx/databases/domain/connections/contents"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewConnectionBuilder creates a new connection builder
+func NewConnectionBuilder() ConnectionBuilder {
+	return createConnectionBuilder()
+}
+
 // Builder represents a connections builder
 type Builder interface {
 	Create() Builder
