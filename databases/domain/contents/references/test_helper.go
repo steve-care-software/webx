@@ -1,13 +1,11 @@
 package references
 
 import (
-	crypto_rand "crypto/rand"
 	"fmt"
-	"math/big"
 	"math/rand"
-	"net/url"
 	"time"
 
+	"github.com/steve-care-software/webx/databases/domain/contents/peers"
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 )
 
@@ -27,27 +25,7 @@ func NewReferenceForTests(maxPeerAmount uint) Reference {
 	commits := NewCommitsForTests(32)
 	builder := NewBuilder().Create().WithContentKeys(contentKeys).WithCommits(commits)
 
-	peersMap := map[string]*url.URL{}
-	for i := 0; i < int(maxPeerAmount); i++ {
-		str, err := generateRandomString(200)
-		if err != nil {
-			panic(err)
-		}
-
-		rawUrl := fmt.Sprintf("http://%s:8080/myuri/01", str)
-		peer, err := url.Parse(rawUrl)
-		if err != nil {
-			panic(err)
-		}
-
-		peersMap[rawUrl] = peer
-	}
-
-	peersList := []*url.URL{}
-	for _, onePeer := range peersMap {
-		peersList = append(peersList, onePeer)
-	}
-
+	peersList := peers.NewPeersForTests(maxPeerAmount)
 	if len(peersList) > 0 {
 		builder.WithPeers(peersList)
 	}
@@ -58,20 +36,6 @@ func NewReferenceForTests(maxPeerAmount uint) Reference {
 	}
 
 	return ins
-}
-
-func generateRandomString(n int) (string, error) {
-	const letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-"
-	ret := make([]byte, n)
-	for i := 0; i < n; i++ {
-		num, err := crypto_rand.Int(crypto_rand.Reader, big.NewInt(int64(len(letters))))
-		if err != nil {
-			return "", err
-		}
-		ret[i] = letters[num.Int64()]
-	}
-
-	return string(ret), nil
 }
 
 // NewCommitsForTests creates a new commits for tests

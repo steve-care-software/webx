@@ -4,6 +4,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/steve-care-software/webx/databases/domain/contents/peers"
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 )
 
@@ -14,10 +15,16 @@ const minReferenceSize = contentKeySize + commitSize
 
 // NewAdapter creates a new adapter instance
 func NewAdapter() Adapter {
+	peersAdapter := peers.NewAdapter()
 	contentKeysAdapter := NewContentKeysAdapter()
 	commitsAdapter := NewCommitsAdapter()
 	builder := NewBuilder()
-	return createAdapter(contentKeysAdapter, commitsAdapter, builder)
+	return createAdapter(
+		peersAdapter,
+		contentKeysAdapter,
+		commitsAdapter,
+		builder,
+	)
 }
 
 // NewFactory creates a new factory instance

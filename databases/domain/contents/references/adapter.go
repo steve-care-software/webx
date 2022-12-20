@@ -4,21 +4,25 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"net/url"
+
+	"github.com/steve-care-software/webx/databases/domain/contents/peers"
 )
 
 type adapter struct {
+	peersAdapter       peers.Adapter
 	contentKeysAdapter ContentKeysAdapter
 	commitsAdapter     CommitsAdapter
 	builder            Builder
 }
 
 func createAdapter(
+	peersAdapter peers.Adapter,
 	contentKeysAdapter ContentKeysAdapter,
 	commitsAdapter CommitsAdapter,
 	builder Builder,
 ) Adapter {
 	out := adapter{
+		peersAdapter:       peersAdapter,
 		contentKeysAdapter: contentKeysAdapter,
 		commitsAdapter:     commitsAdapter,
 		builder:            builder,
@@ -52,14 +56,9 @@ func (app *adapter) ToContent(ins Reference) ([]byte, error) {
 
 	if ins.HasPeers() {
 		peersList := ins.Peers()
-		peerBytes := []byte{}
-		for _, onePeer := range peersList {
-			singlePeerBytes := []byte(onePeer.String())
-			peersLength := make([]byte, 8)
-			binary.LittleEndian.PutUint64(peersLength, uint64(len(singlePeerBytes)))
-
-			peerBytes = append(peerBytes, []byte(peersLength)...)
-			peerBytes = append(peerBytes, []byte(singlePeerBytes)...)
+		peerBytes, err := app.peersAdapter.ToContent(peersList)
+		if err != nil {
+			return nil, err
 		}
 
 		output = append(output, peerBytes...)
@@ -105,28 +104,12 @@ func (app *adapter) ToReference(content []byte) (Reference, error) {
 	remaining := content[commitBytesDelimiter:]
 	builder := app.builder.Create().WithContentKeys(contentKeys).WithCommits(commits)
 	if len(remaining) > 0 {
-		peersList := []*url.URL{}
-		for {
-			if len(remaining) <= 0 {
-				break
-			}
-
-			length := binary.LittleEndian.Uint64(remaining[0:8])
-
-			delimiter := 8 + length
-			peerStr := string(remaining[length:delimiter])
-			peer, err := url.Parse(peerStr)
-			if err != nil {
-				return nil, err
-			}
-
-			peersList = append(peersList, peer)
-			remaining = remaining[delimiter:]
+		peersList, err := app.peersAdapter.ToPeers(remaining)
+		if err != nil {
+			return nil, err
 		}
 
-		if len(peersList) > 0 {
-			builder.WithPeers(peersList)
-		}
+		builder.WithPeers(peersList)
 	}
 
 	return builder.Now()
