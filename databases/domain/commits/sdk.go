@@ -40,5 +40,5 @@ type Commit interface {
 type Mine interface {
 	Result() hash.Hash
 	Proof() *big.Int
-	Difficulty() uint
+	Score() uint
 }

@@ -7,20 +7,20 @@ import (
 )
 
 type mine struct {
-	result     hash.Hash
-	pProof     *big.Int
-	difficulty uint
+	result hash.Hash
+	pProof *big.Int
+	score  uint
 }
 
 func createMine(
 	result hash.Hash,
 	pProof *big.Int,
-	difficulty uint,
+	score uint,
 ) Mine {
 	out := mine{
-		result:     result,
-		pProof:     pProof,
-		difficulty: difficulty,
+		result: result,
+		pProof: pProof,
+		score:  score,
 	}
 
 	return &out
@@ -36,7 +36,7 @@ func (obj *mine) Proof() *big.Int {
 	return obj.pProof
 }
 
-// Difficulty returns the difficulty
-func (obj *mine) Difficulty() uint {
-	return obj.difficulty
+// Score returns the score
+func (obj *mine) Score() uint {
+	return obj.score
 }

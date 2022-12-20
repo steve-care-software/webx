@@ -107,18 +107,18 @@ func (app *builder) Now() (Commit, error) {
 			return nil, err
 		}
 
-		difficulty := uint(0)
+		score := uint(0)
 		resultBytes := pResult.Bytes()
 		for _, oneByte := range resultBytes {
 			if oneByte == app.miningValue {
-				difficulty++
+				score++
 				continue
 			}
 
 			break
 		}
 
-		mine = createMine(*pResult, app.pProof, difficulty)
+		mine = createMine(*pResult, app.pProof, score)
 	}
 
 	if mine != nil && app.parent != nil {
