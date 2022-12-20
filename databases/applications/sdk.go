@@ -38,7 +38,7 @@ type Database interface {
 	New(name string) error
 	Delete(name string) error
 	Connections() (connections.Connections, error)
-	Open(name string, height int) (*uint, error)
+	Open(name string) (*uint, error)
 	Cancel(context uint) error
 	Commit(context uint) error
 	Share(context uint, peer *url.URL) error

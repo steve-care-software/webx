@@ -209,8 +209,8 @@ func (app *application) Connections() (connections.Connections, error) {
 		Now()
 }
 
-// Open opens a context at height, height is -1 if the head is requested
-func (app *application) Open(name string, height int) (*uint, error) {
+// Open opens a context on a given database
+func (app *application) Open(name string) (*uint, error) {
 	reference, offset, err := app.retrieveReference(name)
 	if err != nil {
 		return nil, err
@@ -860,7 +860,7 @@ func (app *application) Push(name string, config configs.Config) error {
 	}
 
 	// open a context:
-	pCurrentContext, err := app.Open(name, -1)
+	pCurrentContext, err := app.Open(name)
 	if err != nil {
 		return err
 	}
@@ -884,7 +884,7 @@ func (app *application) Push(name string, config configs.Config) error {
 				}
 
 				// open a context:
-				pContext, err := clientApp.Open(name, -1)
+				pContext, err := clientApp.Open(name)
 				if err != nil {
 					return err
 				}

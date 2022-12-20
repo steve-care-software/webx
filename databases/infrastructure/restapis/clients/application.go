@@ -106,8 +106,8 @@ func (app *application) Connections() (connections.Connections, error) {
 	return app.connectionsAdapter.ToConnections(bytes)
 }
 
-// Open opens a context at height, height is -1 if the head is requested
-func (app *application) Open(name string, height int) (*uint, error) {
+// Open opens a context on a given database
+func (app *application) Open(name string) (*uint, error) {
 	return nil, nil
 }
 
