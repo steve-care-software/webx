@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/juju/fslock"
+	"github.com/steve-care-software/webx/databases/domain/connections/contents"
 	"github.com/steve-care-software/webx/databases/domain/contents/references"
 )
 
@@ -15,6 +16,6 @@ type context struct {
 	pConn       *os.File
 	reference   references.Reference
 	dataOffset  uint
-	contentList []*content
+	contentList []contents.Content
 	peerList    []*url.URL
 }

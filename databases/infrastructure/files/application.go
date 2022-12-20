@@ -15,6 +15,8 @@ import (
 	"github.com/steve-care-software/webx/databases/applications"
 	"github.com/steve-care-software/webx/databases/domain/commits"
 	"github.com/steve-care-software/webx/databases/domain/configs"
+	"github.com/steve-care-software/webx/databases/domain/connections"
+	"github.com/steve-care-software/webx/databases/domain/connections/contents"
 	commit_contents "github.com/steve-care-software/webx/databases/domain/contents/commits"
 	"github.com/steve-care-software/webx/databases/domain/contents/references"
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
@@ -22,6 +24,10 @@ import (
 )
 
 type application struct {
+	connectionsBuilder          connections.Builder
+	connectionBuilder           connections.ConnectionBuilder
+	contentsBuilder             contents.Builder
+	contentBuilder              contents.ContentBuilder
 	commitBuilder               commits.Builder
 	commitContentAdapter        commit_contents.Adapter
 	commitContentBuilder        commit_contents.Builder
@@ -41,6 +47,10 @@ type application struct {
 }
 
 func createApplication(
+	connectionsBuilder connections.Builder,
+	connectionBuilder connections.ConnectionBuilder,
+	contentsBuilder contents.Builder,
+	contentBuilder contents.ContentBuilder,
 	commitBuilder commits.Builder,
 	commitContentAdapter commit_contents.Adapter,
 	commitContentBuilder commit_contents.Builder,
@@ -58,6 +68,10 @@ func createApplication(
 	readChunkSize uint,
 ) applications.Application {
 	out := application{
+		connectionsBuilder:          connectionsBuilder,
+		connectionBuilder:           connectionBuilder,
+		contentsBuilder:             contentsBuilder,
+		contentBuilder:              contentBuilder,
 		commitBuilder:               commitBuilder,
 		commitContentAdapter:        commitContentAdapter,
 		commitContentBuilder:        commitContentBuilder,
@@ -136,6 +150,43 @@ func (app *application) Delete(name string) error {
 	return os.Remove(path)
 }
 
+// Connections returns the active connections
+func (app *application) Connections() (connections.Connections, error) {
+	connectionsList := []connections.Connection{}
+	for _, oneContext := range app.contexts {
+		builder := app.connectionBuilder.Create().
+			WithIdentifier(oneContext.identifier).
+			WithName(oneContext.name)
+
+		if len(oneContext.contentList) > 0 {
+			contents, err := app.contentsBuilder.Create().
+				WithList(oneContext.contentList).
+				Now()
+
+			if err != nil {
+				return nil, err
+			}
+
+			builder.WithContents(contents)
+		}
+
+		if len(oneContext.peerList) > 0 {
+			builder.WithPeers(oneContext.peerList)
+		}
+
+		connection, err := builder.Now()
+		if err != nil {
+			return nil, err
+		}
+
+		connectionsList = append(connectionsList, connection)
+	}
+
+	return app.connectionsBuilder.Create().
+		WithList(connectionsList).
+		Now()
+}
+
 // Open opens a context at height, height is -1 if the head is requested
 func (app *application) Open(name string, height int) (*uint, error) {
 	path := filepath.Join(app.dirPath, name)
@@ -199,7 +250,7 @@ func (app *application) Open(name string, height int) (*uint, error) {
 		name:        name,
 		reference:   reference,
 		dataOffset:  uint(refLength),
-		contentList: []*content{},
+		contentList: []contents.Content{},
 		peerList:    []*url.URL{},
 	}
 
@@ -311,12 +362,13 @@ func (app *application) ReadAllByHashes(context uint, hashes []hash.Hash) ([][]b
 // Write writes data to a context
 func (app *application) Write(context uint, hash hash.Hash, data []byte, kind uint) error {
 	if pContext, ok := app.contexts[context]; ok {
-		pContext.contentList = append(pContext.contentList, &content{
-			hash: hash,
-			data: data,
-			kind: kind,
-		})
 
+		contentIns, err := app.contentBuilder.Create().WithHash(hash).WithData(data).WithKind(kind).Now()
+		if err != nil {
+			return err
+		}
+
+		pContext.contentList = append(pContext.contentList, contentIns)
 		app.contexts[context] = pContext
 		return nil
 	}
@@ -328,7 +380,7 @@ func (app *application) Write(context uint, hash hash.Hash, data []byte, kind ui
 // Cancel cancels a context
 func (app *application) Cancel(context uint) error {
 	if pContext, ok := app.contexts[context]; ok {
-		pContext.contentList = []*content{}
+		pContext.contentList = []contents.Content{}
 		app.contexts[context] = pContext
 		return nil
 	}
@@ -377,7 +429,7 @@ func (app *application) updateReference(context uint) (references.Reference, err
 		blocks := [][]byte{}
 		for _, oneContent := range pContext.contentList {
 			// add the hash in the blocks for the commit values:
-			blocks = append(blocks, oneContent.hash.Bytes())
+			blocks = append(blocks, oneContent.Hash().Bytes())
 		}
 
 		values, err := app.hashTreeBuilder.Create().WithBlocks(blocks).Now()
@@ -448,14 +500,14 @@ func (app *application) updateReference(context uint) (references.Reference, err
 		offset := commitFrom
 		for _, oneContent := range pContext.contentList {
 			// build the pointer:
-			dataLength := int64(len(oneContent.data))
+			dataLength := int64(len(oneContent.Data()))
 			contentKeyPointer, err := app.referencePointerBuilder.Create().From(uint(offset)).WithLength(uint(dataLength)).Now()
 			if err != nil {
 				return nil, err
 			}
 
 			// build the content key:
-			contentKey, err := app.referenceContentKeyBuilder.Create().WithHash(oneContent.hash).WithKind(oneContent.kind).WithContent(contentKeyPointer).WithCommit(commitHash).Now()
+			contentKey, err := app.referenceContentKeyBuilder.Create().WithHash(oneContent.Hash()).WithKind(oneContent.Kind()).WithContent(contentKeyPointer).WithCommit(commitHash).Now()
 			if err != nil {
 				return nil, err
 			}

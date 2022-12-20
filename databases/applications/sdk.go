@@ -4,6 +4,7 @@ import (
 	"net/url"
 
 	"github.com/steve-care-software/webx/databases/domain/configs"
+	"github.com/steve-care-software/webx/databases/domain/connections"
 	"github.com/steve-care-software/webx/databases/domain/contents/references"
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 )
@@ -32,6 +33,7 @@ type Reference interface {
 type Database interface {
 	New(name string) error
 	Delete(name string) error
+	Connections() (connections.Connections, error)
 	Open(name string, height int) (*uint, error)
 	Cancel(context uint) error
 	Commit(context uint) error
