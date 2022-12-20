@@ -11,6 +11,7 @@ type commit struct {
 	hash      hash.Hash
 	values    hashtrees.HashTree
 	createdOn time.Time
+	mine      Mine
 	parent    Commit
 }
 
@@ -19,7 +20,16 @@ func createCommit(
 	values hashtrees.HashTree,
 	createdOn time.Time,
 ) Commit {
-	return createCommitInternally(hash, values, createdOn, nil)
+	return createCommitInternally(hash, values, createdOn, nil, nil)
+}
+
+func createCommitWithMine(
+	hash hash.Hash,
+	values hashtrees.HashTree,
+	createdOn time.Time,
+	mine Mine,
+) Commit {
+	return createCommitInternally(hash, values, createdOn, mine, nil)
 }
 
 func createCommitWithParent(
@@ -28,19 +38,31 @@ func createCommitWithParent(
 	createdOn time.Time,
 	parent Commit,
 ) Commit {
-	return createCommitInternally(hash, values, createdOn, parent)
+	return createCommitInternally(hash, values, createdOn, nil, parent)
+}
+
+func createCommitWithMineAndParent(
+	hash hash.Hash,
+	values hashtrees.HashTree,
+	createdOn time.Time,
+	mine Mine,
+	parent Commit,
+) Commit {
+	return createCommitInternally(hash, values, createdOn, mine, parent)
 }
 
 func createCommitInternally(
 	hash hash.Hash,
 	values hashtrees.HashTree,
 	createdOn time.Time,
+	mine Mine,
 	parent Commit,
 ) Commit {
 	out := commit{
 		hash:      hash,
 		values:    values,
 		createdOn: createdOn,
+		mine:      mine,
 		parent:    parent,
 	}
 
@@ -70,6 +92,16 @@ func (obj *commit) Values() hashtrees.HashTree {
 // CreatedOn returns the creation time
 func (obj *commit) CreatedOn() time.Time {
 	return obj.createdOn
+}
+
+// HasMine returns true if there is a mine, false otherwise
+func (obj *commit) HasMine() bool {
+	return obj.mine != nil
+}
+
+// Mine returns the mine, if any
+func (obj *commit) Mine() Mine {
+	return obj.mine
 }
 
 // HasParent returns true if there is a parent, false otherwise

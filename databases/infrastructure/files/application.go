@@ -14,6 +14,7 @@ import (
 	"github.com/juju/fslock"
 	"github.com/steve-care-software/webx/databases/applications"
 	"github.com/steve-care-software/webx/databases/domain/commits"
+	"github.com/steve-care-software/webx/databases/domain/commits/histories"
 	"github.com/steve-care-software/webx/databases/domain/configs"
 	"github.com/steve-care-software/webx/databases/domain/connections"
 	"github.com/steve-care-software/webx/databases/domain/connections/contents"
@@ -21,13 +22,17 @@ import (
 	"github.com/steve-care-software/webx/databases/domain/contents/references"
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hashtrees"
+	"github.com/steve-care-software/webx/databases/infrastructure/restapis/clients"
 )
 
 type application struct {
+	clientApplicationBuilder    clients.Builder
 	connectionsBuilder          connections.Builder
 	connectionBuilder           connections.ConnectionBuilder
 	contentsBuilder             contents.Builder
 	contentBuilder              contents.ContentBuilder
+	commitHistoriesAdapter      histories.Adapter
+	commitHistoriesBuilder      histories.Builder
 	commitBuilder               commits.Builder
 	commitContentAdapter        commit_contents.Adapter
 	commitContentBuilder        commit_contents.Builder
@@ -47,10 +52,13 @@ type application struct {
 }
 
 func createApplication(
+	clientApplicationBuilder clients.Builder,
 	connectionsBuilder connections.Builder,
 	connectionBuilder connections.ConnectionBuilder,
 	contentsBuilder contents.Builder,
 	contentBuilder contents.ContentBuilder,
+	commitHistoriesAdapter histories.Adapter,
+	commitHistoriesBuilder histories.Builder,
 	commitBuilder commits.Builder,
 	commitContentAdapter commit_contents.Adapter,
 	commitContentBuilder commit_contents.Builder,
@@ -68,10 +76,13 @@ func createApplication(
 	readChunkSize uint,
 ) applications.Application {
 	out := application{
+		clientApplicationBuilder:    clientApplicationBuilder,
 		connectionsBuilder:          connectionsBuilder,
 		connectionBuilder:           connectionBuilder,
 		contentsBuilder:             contentsBuilder,
 		contentBuilder:              contentBuilder,
+		commitHistoriesAdapter:      commitHistoriesAdapter,
+		commitHistoriesBuilder:      commitHistoriesBuilder,
 		commitBuilder:               commitBuilder,
 		commitContentAdapter:        commitContentAdapter,
 		commitContentBuilder:        commitContentBuilder,
@@ -219,54 +230,16 @@ func (app *application) Connections() (connections.Connections, error) {
 
 // Open opens a context at height, height is -1 if the head is requested
 func (app *application) Open(name string, height int) (*uint, error) {
+	reference, offset, err := app.retrieveReference(name)
+	if err != nil {
+		return nil, err
+	}
+
+	// open the connection:
 	path := filepath.Join(app.dirPath, name)
 	pConn, err := os.Open(path)
 	if err != nil {
 		return nil, err
-	}
-
-	// read the reference length in bytes:
-	refLengthBytes := make([]byte, expectedReferenceBytesLength)
-	refAmount, err := pConn.Read(refLengthBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	refLength := 0
-	var reference references.Reference
-	if refAmount > 0 {
-		if refAmount != expectedReferenceBytesLength {
-			str := fmt.Sprintf("%d bytes were expected to be read when reading the reference length bytes, %d actually read", expectedReferenceBytesLength, refAmount)
-			return nil, errors.New(str)
-		}
-
-		// convert the reference length to uint64:
-		refLength := binary.LittleEndian.Uint64(refLengthBytes)
-
-		// read the reference data:
-		refAllBytes := []byte{}
-		offset := int64(refLength)
-		for {
-			refContentBytes := make([]byte, app.readChunkSize)
-			refContentAmount, err := pConn.ReadAt(refContentBytes, offset)
-			if err != nil {
-				return nil, err
-			}
-
-			refAllBytes = append(refAllBytes, refContentBytes...)
-			offset += int64(refContentAmount)
-			if refContentAmount != int(refLength) {
-				break
-			}
-		}
-
-		// convert the content to a reference instance:
-		refIns, err := app.referenceAdapter.ToReference(refAllBytes)
-		if err != nil {
-			return nil, err
-		}
-
-		reference = refIns
 	}
 
 	// create a Lock instance on the path:
@@ -279,12 +252,68 @@ func (app *application) Open(name string, height int) (*uint, error) {
 		pLock:       pLock,
 		name:        name,
 		reference:   reference,
-		dataOffset:  uint(refLength),
+		dataOffset:  offset,
 		contentList: []contents.Content{},
 		peerList:    []*url.URL{},
 	}
 
 	return &pContext.identifier, nil
+}
+
+func (app *application) retrieveReference(name string) (references.Reference, uint, error) {
+	path := filepath.Join(app.dirPath, name)
+	pConn, err := os.Open(path)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	defer pConn.Close()
+
+	// read the reference length in bytes:
+	refLengthBytes := make([]byte, expectedReferenceBytesLength)
+	refAmount, err := pConn.Read(refLengthBytes)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	if refAmount > 0 {
+		if refAmount != expectedReferenceBytesLength {
+			str := fmt.Sprintf("%d bytes were expected to be read when reading the reference length bytes, %d actually read", expectedReferenceBytesLength, refAmount)
+			return nil, 0, errors.New(str)
+		}
+
+		// convert the reference length to uint64:
+		refLength := binary.LittleEndian.Uint64(refLengthBytes)
+
+		// read the reference data:
+		refAllBytes := []byte{}
+		originalOffset := int64(refLength) + expectedReferenceBytesLength
+		offset := originalOffset
+		for {
+			refContentBytes := make([]byte, app.readChunkSize)
+			refContentAmount, err := pConn.ReadAt(refContentBytes, offset)
+			if err != nil {
+				return nil, 0, err
+			}
+
+			refAllBytes = append(refAllBytes, refContentBytes...)
+			offset += int64(refContentAmount)
+			if refContentAmount != int(refLength) {
+				break
+			}
+		}
+
+		// convert the content to a reference instance:
+		ins, err := app.referenceAdapter.ToReference(refAllBytes)
+		if err != nil {
+			return nil, 0, err
+		}
+
+		return ins, uint(originalOffset), nil
+	}
+
+	str := fmt.Sprintf("there is no reference in the provided database (name: %s)", name)
+	return nil, 0, errors.New(str)
 }
 
 // ContentKeys returns the contentKeys by context
@@ -315,6 +344,42 @@ func (app *application) Commits(context uint) (references.Commits, error) {
 
 	str := fmt.Sprintf("the given context (%d) does not exists and therefore cannot return the Commits instance", context)
 	return nil, errors.New(str)
+}
+
+// CommitByHash returns the commit by hash
+func (app *application) CommitByHash(context uint, hash hash.Hash) (commits.Commit, error) {
+	commits, err := app.Commits(context)
+	if err != nil {
+		return nil, err
+	}
+
+	refCommit, err := commits.Fetch(hash)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.retrieveCommitByCommitReference(context, refCommit)
+}
+
+// Histories returns the commits histories on a context
+func (app *application) Histories(context uint) (histories.Histories, error) {
+	refCommits, err := app.Commits(context)
+	if err != nil {
+		return nil, err
+	}
+
+	commitsList := []commits.Commit{}
+	refCommitsList := refCommits.List()
+	for _, oneRefCommit := range refCommitsList {
+		commit, err := app.retrieveCommitByCommitReference(context, oneRefCommit)
+		if err != nil {
+			return nil, err
+		}
+
+		commitsList = append(commitsList, commit)
+	}
+
+	return app.commitHistoriesAdapter.ToHistories(commitsList)
 }
 
 // Read reads a pointer on a context
@@ -806,8 +871,81 @@ func (app *application) Share(context uint, peer *url.URL) error {
 }
 
 // Push retrieves the commits from peers, then chain our commits to them using the given configuration
-func (app *application) Push(config configs.Config) error {
-	return nil
+func (app *application) Push(name string, config configs.Config) error {
+	// retrieve the reference from our database:
+	reference, _, err := app.retrieveReference(name)
+	if err != nil {
+		return err
+	}
+
+	// open a context:
+	pCurrentContext, err := app.Open(name, -1)
+	if err != nil {
+		return err
+	}
+
+	if currentContext, ok := app.contexts[*pCurrentContext]; ok {
+		// fetch the current history:
+		currentHistories, err := app.Histories(currentContext.identifier)
+		if err != nil {
+			return err
+		}
+
+		// loop in the peers, if any:
+		if reference.HasPeers() {
+			betterCommits := map[string]commits.Commit{}
+			peersList := reference.Peers()
+			for _, onePeer := range peersList {
+				// build the client application:
+				clientApp, err := app.clientApplicationBuilder.Create().WithServer(onePeer).Now()
+				if err != nil {
+					return err
+				}
+
+				// open a context:
+				pContext, err := clientApp.Open(name, -1)
+				if err != nil {
+					return err
+				}
+
+				// download the histories of our peer:
+				retHistories, err := clientApp.Histories(*pContext)
+				if err != nil {
+					return err
+				}
+
+				// compare with our current history:
+				toDownloadHistoryList, err := currentHistories.Compare(retHistories)
+				if err != nil {
+					return err
+				}
+
+				if len(toDownloadHistoryList) < 0 {
+					continue
+				}
+
+				// download the better commits, if needed:
+				for _, oneHistory := range toDownloadHistoryList {
+					commitHash := oneHistory.Commit()
+					keyname := commitHash.String()
+					if _, ok := betterCommits[keyname]; ok {
+						continue
+					}
+
+					commit, err := clientApp.CommitByHash(*pContext, commitHash)
+					if err != nil {
+						return err
+					}
+
+					betterCommits[keyname] = commit
+				}
+
+			}
+		}
+	}
+
+	str := fmt.Sprintf("the context (%d) was expected to be opened while executing the Push method", *pCurrentContext)
+	return errors.New(str)
 }
 
 // Close closes a context

@@ -3,6 +3,8 @@ package applications
 import (
 	"net/url"
 
+	"github.com/steve-care-software/webx/databases/domain/commits"
+	"github.com/steve-care-software/webx/databases/domain/commits/histories"
 	"github.com/steve-care-software/webx/databases/domain/configs"
 	"github.com/steve-care-software/webx/databases/domain/connections"
 	"github.com/steve-care-software/webx/databases/domain/contents/references"
@@ -27,6 +29,8 @@ type Application interface {
 type Reference interface {
 	ContentKeys(context uint) (references.ContentKeys, error)
 	Commits(context uint) (references.Commits, error)
+	CommitByHash(context uint, hash hash.Hash) (commits.Commit, error)
+	Histories(context uint) (histories.Histories, error)
 }
 
 // Database represents the database application
@@ -40,8 +44,8 @@ type Database interface {
 	Cancel(context uint) error
 	Commit(context uint) error
 	Share(context uint, peer *url.URL) error
-	Push(config configs.Config) error
 	Close(context uint) error
+	Push(name string, config configs.Config) error
 }
 
 // Content represents the content application
