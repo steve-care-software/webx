@@ -34,8 +34,7 @@ type Reference interface {
 
 // Database represents the database application
 type Database interface {
-	List() ([]string, error)
-	Exists(name string) bool
+	Exists(name string) (bool, error)
 	New(name string) error
 	Delete(name string) error
 	Connections() (connections.Connections, error)

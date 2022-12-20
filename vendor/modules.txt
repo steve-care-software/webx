@@ -1,3 +1,6 @@
+# github.com/go-resty/resty/v2 v2.7.0
+## explicit
+github.com/go-resty/resty/v2
 # github.com/juju/fslock v0.0.0-20160525022230-4d5c94c67b4b
 ## explicit
 github.com/juju/fslock
@@ -16,5 +19,7 @@ go.dedis.ch/kyber/v3/util/random
 go.dedis.ch/kyber/v3/xof/blake2xb
 # golang.org/x/crypto v0.0.0-20190123085648-057139ce5d2b
 golang.org/x/crypto/blake2b
-# golang.org/x/sys v0.0.0-20190124100055-b90733256f2e
+# golang.org/x/net v0.0.0-20211029224645-99673261e6eb
+golang.org/x/net/publicsuffix
+# golang.org/x/sys v0.0.0-20210423082822-04245dca01da
 golang.org/x/sys/cpu

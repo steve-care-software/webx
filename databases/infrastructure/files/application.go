@@ -104,34 +104,15 @@ func createApplication(
 	return &out
 }
 
-// List returns the current database names
-func (app *application) List() ([]string, error) {
-	files, err := ioutil.ReadDir(app.dirPath)
-	if err != nil {
-		return nil, err
-	}
-
-	list := []string{}
-	for _, file := range files {
-		if file.IsDir() {
-			continue
-		}
-
-		list = append(list, file.Name())
-	}
-
-	return list, nil
-}
-
 // Exists returns true if the database exists, false otherwise
-func (app *application) Exists(name string) bool {
+func (app *application) Exists(name string) (bool, error) {
 	path := filepath.Join(app.dirPath, name)
 	fileInfo, err := os.Stat(path)
 	if err == nil {
-		return !fileInfo.IsDir()
+		return !fileInfo.IsDir(), nil
 	}
 
-	return false
+	return false, nil
 }
 
 // New creates a new database
