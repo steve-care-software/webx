@@ -93,6 +93,17 @@ func createApplication(
 	return &out
 }
 
+// Exists returns true if the database exists, false otherwise
+func (app *application) Exists(name string) bool {
+	path := filepath.Join(app.dirPath, name)
+	fileInfo, err := os.Stat(path)
+	if err == nil {
+		return !fileInfo.IsDir()
+	}
+
+	return false
+}
+
 // New creates a new database
 func (app *application) New(name string) error {
 	path := filepath.Join(app.dirPath, name)
