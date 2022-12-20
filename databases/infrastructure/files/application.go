@@ -691,12 +691,7 @@ func (app *application) retrieveCommitByCommitReference(context uint, refCommit 
 	builder := app.commitBuilder.Create().WithValues(values).CreatedOn(createdOn)
 	if commitContent.HasParent() {
 		pParentHash := commitContent.Parent()
-		parentCommit, err := app.retrieveCommitByHash(context, *pParentHash)
-		if err != nil {
-			return nil, err
-		}
-
-		parent, err := app.retrieveCommitByCommitReference(context, parentCommit)
+		parent, err := app.CommitByHash(context, *pParentHash)
 		if err != nil {
 			return nil, err
 		}
@@ -705,15 +700,6 @@ func (app *application) retrieveCommitByCommitReference(context uint, refCommit 
 	}
 
 	return builder.Now()
-}
-
-func (app *application) retrieveCommitByHash(context uint, hash hash.Hash) (references.Commit, error) {
-	commit, err := app.Commits(context)
-	if err != nil {
-		return nil, err
-	}
-
-	return commit.Fetch(hash)
 }
 
 func (app *application) updateDatabaseOnDisk(context *context, updatedReference references.Reference) error {
