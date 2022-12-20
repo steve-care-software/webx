@@ -19,6 +19,7 @@ import (
 
 type application struct {
 	commitAdapter               commits.Adapter
+	historiesAdapter            histories.Adapter
 	connectionsAdapter          connections.Adapter
 	referenceContentKeysAdapter references.ContentKeysAdapter
 	baseURL                     *url.URL
@@ -27,6 +28,7 @@ type application struct {
 
 func createApplication(
 	commitAdapter commits.Adapter,
+	historiesAdapter histories.Adapter,
 	connectionsAdapter connections.Adapter,
 	referenceContentKeysAdapter references.ContentKeysAdapter,
 	baseURL *url.URL,
@@ -34,6 +36,7 @@ func createApplication(
 ) applications.Application {
 	out := application{
 		commitAdapter:               commitAdapter,
+		historiesAdapter:            historiesAdapter,
 		connectionsAdapter:          connectionsAdapter,
 		referenceContentKeysAdapter: referenceContentKeysAdapter,
 		baseURL:                     baseURL,
@@ -171,7 +174,19 @@ func (app *application) CommitByHash(context uint, hash hash.Hash) (commits.Comm
 
 // Histories returns the commits histories on a context
 func (app *application) Histories(context uint) (histories.Histories, error) {
-	return nil, nil
+	commitURI := fmt.Sprintf(commitsURI, context)
+	url := fmt.Sprintf(patternURI, app.baseURL.String(), commitURI)
+	resp, err := app.client.R().Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	bytes := resp.Body()
+	if resp.StatusCode() != http.StatusOK {
+		return nil, errors.New(string(bytes))
+	}
+
+	return app.historiesAdapter.ToHistories(bytes)
 }
 
 // Read reads a pointer on a context

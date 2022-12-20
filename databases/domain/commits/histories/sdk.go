@@ -24,7 +24,9 @@ func NewHistoryBuilder() HistoryBuilder {
 
 // Adapter represents an histories adapter
 type Adapter interface {
-	ToHistories(commits []commits.Commit) (Histories, error)
+	FromCommitsToHistories(commits []commits.Commit) (Histories, error)
+	ToContent(ins Histories) ([]byte, error)
+	ToHistories(content []byte) (Histories, error)
 }
 
 // Builder represents a histories builder

@@ -12,6 +12,7 @@ const existsURI = "/exists"
 const connectionsURI = "/connections"
 const contextURI = "/context"
 const contentKeysByKindURI = "/content-keys/%d/%d"
+const commitsURI = "/commits/%d"
 const commitByHashURI = "/commits/%d/%s"
 
 // Builder represents the client database application builder

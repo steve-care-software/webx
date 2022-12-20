@@ -19,8 +19,8 @@ func createAdapter(
 	return &out
 }
 
-// ToHistories converts commits to histories
-func (app *adapter) ToHistories(commits []commits.Commit) (Histories, error) {
+// FromCommitsToHistories converts commits to histories
+func (app *adapter) FromCommitsToHistories(commits []commits.Commit) (Histories, error) {
 	list := []History{}
 	for _, oneCommit := range commits {
 		score := uint(0)
@@ -38,4 +38,14 @@ func (app *adapter) ToHistories(commits []commits.Commit) (Histories, error) {
 	}
 
 	return app.builder.Create().WithList(list).Now()
+}
+
+// ToContent converts histories to content
+func (app *adapter) ToContent(ins Histories) ([]byte, error) {
+	return nil, nil
+}
+
+// ToHistories converts content to histories
+func (app *adapter) ToHistories(content []byte) (Histories, error) {
+	return nil, nil
 }
