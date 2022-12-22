@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -117,6 +116,13 @@ func (app *application) Exists(name string) (bool, error) {
 
 // New creates a new database
 func (app *application) New(name string) error {
+	if _, err := os.Stat(app.dirPath); errors.Is(err, os.ErrNotExist) {
+		err := os.MkdirAll(app.dirPath, filePermission)
+		if err != nil {
+			return err
+		}
+	}
+
 	path := filepath.Join(app.dirPath, name)
 	_, err := os.Stat(path)
 	if err == nil {
@@ -132,30 +138,6 @@ func (app *application) New(name string) error {
 	return file.Close()
 }
 
-func (app *application) saveReferenceOnDisk(name string, reference references.Reference) error {
-	path := filepath.Join(app.dirPath, name)
-	data, err := app.referenceToContent(reference)
-	if err != nil {
-		return err
-	}
-
-	return ioutil.WriteFile(path, data, filePermission)
-}
-
-func (app *application) referenceToContent(reference references.Reference) ([]byte, error) {
-	contentBytes, err := app.referenceAdapter.ToContent(reference)
-	if err != nil {
-		return nil, err
-	}
-
-	bytesLength := make([]byte, expectedReferenceBytesLength)
-	binary.LittleEndian.PutUint64(bytesLength, uint64(len(contentBytes)))
-
-	data := []byte{}
-	data = append(data, bytesLength...)
-	return append(data, contentBytes...), nil
-}
-
 // Delete deletes an existing database
 func (app *application) Delete(name string) error {
 	path := filepath.Join(app.dirPath, name)
@@ -164,7 +146,7 @@ func (app *application) Delete(name string) error {
 		return err
 	}
 
-	if !pInfo.IsDir() {
+	if pInfo.IsDir() {
 		str := fmt.Sprintf("the name (%s) was expected to be a file, not a directory", name)
 		return errors.New(str)
 	}
@@ -238,6 +220,7 @@ func (app *application) Open(name string) (*uint, error) {
 		peerList:    []*url.URL{},
 	}
 
+	app.contexts[pContext.identifier] = pContext
 	return &pContext.identifier, nil
 }
 
@@ -253,48 +236,43 @@ func (app *application) retrieveReference(name string) (references.Reference, ui
 	// read the reference length in bytes:
 	refLengthBytes := make([]byte, expectedReferenceBytesLength)
 	refAmount, err := pConn.Read(refLengthBytes)
-	if err != nil {
-		return nil, 0, err
+	if err != nil || refAmount > 0 {
+		return nil, 0, nil
 	}
 
-	if refAmount > 0 {
-		if refAmount != expectedReferenceBytesLength {
-			str := fmt.Sprintf("%d bytes were expected to be read when reading the reference length bytes, %d actually read", expectedReferenceBytesLength, refAmount)
-			return nil, 0, errors.New(str)
-		}
+	if refAmount != expectedReferenceBytesLength {
+		str := fmt.Sprintf("%d bytes were expected to be read when reading the reference length bytes, %d actually read", expectedReferenceBytesLength, refAmount)
+		return nil, 0, errors.New(str)
+	}
 
-		// convert the reference length to uint64:
-		refLength := binary.LittleEndian.Uint64(refLengthBytes)
+	// convert the reference length to uint64:
+	refLength := binary.LittleEndian.Uint64(refLengthBytes)
 
-		// read the reference data:
-		refAllBytes := []byte{}
-		originalOffset := int64(refLength) + expectedReferenceBytesLength
-		offset := originalOffset
-		for {
-			refContentBytes := make([]byte, app.readChunkSize)
-			refContentAmount, err := pConn.ReadAt(refContentBytes, offset)
-			if err != nil {
-				return nil, 0, err
-			}
-
-			refAllBytes = append(refAllBytes, refContentBytes...)
-			offset += int64(refContentAmount)
-			if refContentAmount != int(refLength) {
-				break
-			}
-		}
-
-		// convert the content to a reference instance:
-		ins, err := app.referenceAdapter.ToReference(refAllBytes)
+	// read the reference data:
+	refAllBytes := []byte{}
+	originalOffset := int64(refLength) + expectedReferenceBytesLength
+	offset := originalOffset
+	for {
+		refContentBytes := make([]byte, app.readChunkSize)
+		refContentAmount, err := pConn.ReadAt(refContentBytes, offset)
 		if err != nil {
 			return nil, 0, err
 		}
 
-		return ins, uint(originalOffset), nil
+		refAllBytes = append(refAllBytes, refContentBytes...)
+		offset += int64(refContentAmount)
+		if refContentAmount != int(refLength) {
+			break
+		}
 	}
 
-	str := fmt.Sprintf("there is no reference in the provided database (name: %s)", name)
-	return nil, 0, errors.New(str)
+	// convert the content to a reference instance:
+	ins, err := app.referenceAdapter.ToReference(refAllBytes)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return ins, uint(originalOffset), nil
 }
 
 // ContentKeysByKind returns the contentKeys by context and kind
@@ -360,7 +338,7 @@ func (app *application) Histories(context uint) (histories.Histories, error) {
 		commitsList = append(commitsList, commit)
 	}
 
-	return app.commitHistoriesAdapter.ToHistories(commitsList)
+	return app.commitHistoriesAdapter.FromCommitsToHistories(commitsList)
 }
 
 func (app *application) commits(context uint) (references.Commits, error) {
@@ -452,7 +430,6 @@ func (app *application) ReadAllByHashes(context uint, hashes []hash.Hash) ([][]b
 // Write writes data to a context
 func (app *application) Write(context uint, hash hash.Hash, data []byte, kind uint) error {
 	if pContext, ok := app.contexts[context]; ok {
-
 		contentIns, err := app.contentBuilder.Create().WithHash(hash).WithData(data).WithKind(kind).Now()
 		if err != nil {
 			return err
@@ -489,13 +466,16 @@ func (app *application) Commit(context uint) error {
 
 	if pContext, ok := app.contexts[context]; ok {
 		// update database on disk:
-		err := app.updateDatabaseOnDisk(pContext, updatedReference)
+		pConn, pOffset, err := app.updateDatabaseOnDisk(pContext, updatedReference)
 		if err != nil {
 			return err
 		}
 
-		// delete the context:
-		delete(app.contexts, context)
+		// update the file connection and reference:
+		app.contexts[context].reference = updatedReference
+		app.contexts[context].dataOffset = *pOffset
+		app.contexts[context].pConn = pConn
+		return nil
 	}
 
 	str := fmt.Sprintf("the given context (%d) does not exists and therefore cannot be comitted", context)
@@ -563,7 +543,7 @@ func (app *application) updateReference(context uint) (references.Reference, err
 		}
 
 		// build the commit reference:
-		refCommit, err := app.referenceCommitBuilder.Create().WithHash(commitHash).WithPointer(commitPointer).Now()
+		refCommit, err := app.referenceCommitBuilder.Create().WithHash(commitHash).WithPointer(commitPointer).CreatedOn(createdOn).Now()
 		if err != nil {
 			return nil, err
 		}
@@ -697,73 +677,90 @@ func (app *application) retrieveCommitByCommitReference(context uint, refCommit 
 	return builder.Now()
 }
 
-func (app *application) updateDatabaseOnDisk(context *context, updatedReference references.Reference) error {
+func (app *application) updateDatabaseOnDisk(context *context, updatedReference references.Reference) (*os.File, *uint, error) {
 	// create a lock on the file:
 	err := context.pLock.TryLock()
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
 
 	// release the lock on closing the method:
 	defer context.pLock.Unlock()
 
 	// write destination file:
-	err = app.writeDestinationOnDisk(context, updatedReference)
+	pOffset, err := app.writeDestinationOnDisk(context, updatedReference)
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
 
-	// rename the source database to a backup file:
+	// create the source path:
 	sourcePath := filepath.Join(app.dirPath, context.name)
-	backupPath := filepath.Join(sourcePath, app.bckExtension)
+
+	// create the backup path:
+	backupFile := fmt.Sprintf("%s%s%s", context.name, fileNameExtensionDelimiter, app.bckExtension)
+	backupPath := filepath.Join(app.dirPath, backupFile)
+
+	// rename the source database to a backup file:
 	backupPtr, err := os.Create(backupPath)
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
 
 	_, err = io.Copy(backupPtr, context.pConn)
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
 
 	// close the backup file:
 	err = backupPtr.Close()
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
 
 	// close the source connection:
 	err = context.pConn.Close()
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
 
 	// delete the source database:
 	err = os.Remove(sourcePath)
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
 
 	// rename the destination database to source:
-	destinationPath := filepath.Join(sourcePath, app.dstExtension)
+	destinationFile := fmt.Sprintf("%s%s%s", context.name, fileNameExtensionDelimiter, app.dstExtension)
+	destinationPath := filepath.Join(app.dirPath, destinationFile)
 	err = os.Rename(destinationPath, sourcePath)
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
 
 	// delete the backup file:
-	return os.Remove(backupPath)
+	err = os.Remove(backupPath)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// re-open the source connection:
+	pNewConn, err := os.Open(sourcePath)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return pNewConn, pOffset, nil
 }
 
-func (app *application) writeDestinationOnDisk(context *context, updatedReference references.Reference) error {
-	// build the path:
-	sourcePath := filepath.Join(app.dirPath, context.name)
-	destinationPath := filepath.Join(sourcePath, app.dstExtension)
+func (app *application) writeDestinationOnDisk(context *context, updatedReference references.Reference) (*uint, error) {
+	// destination path:
+	destinationFile := fmt.Sprintf("%s%s%s", context.name, fileNameExtensionDelimiter, app.dstExtension)
+	destinationPath := filepath.Join(app.dirPath, destinationFile)
 
 	// create the destination file:
 	destination, err := os.Create(destinationPath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// close the destination:
@@ -772,32 +769,33 @@ func (app *application) writeDestinationOnDisk(context *context, updatedReferenc
 	// convert the updated reference to data:
 	refData, err := app.referenceToContent(updatedReference)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// write the reference data on disk:
 	writtenAmount, err := destination.Write(refData)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if writtenAmount != len(refData) {
 		str := fmt.Sprintf("%d bytes were expected to be writte while writing the updated reference bytes, %d actually written", len(refData), writtenAmount)
-		return errors.New(str)
+		return nil, errors.New(str)
 	}
 
-	offset := int64(context.dataOffset)
+	offset := int64(context.dataOffset) + int64(len(refData)) + expectedReferenceBytesLength
+	dataOffset := offset
 	for {
 		// read the file at offset:
 		contentBytes := make([]byte, app.readChunkSize)
-		amountRead, err := context.pConn.ReadAt(contentBytes, int64(offset))
+		amountRead, err := context.pConn.ReadAt(contentBytes, int64(dataOffset))
 		if err != nil {
-			return err
+			break
 		}
 
 		if app.readChunkSize != uint(amountRead) {
 			str := fmt.Sprintf("%d bytes were expected to be read from source database, %d actually read", app.readChunkSize, amountRead)
-			return errors.New(str)
+			return nil, errors.New(str)
 		}
 
 		// write content on destination:
@@ -807,10 +805,37 @@ func (app *application) writeDestinationOnDisk(context *context, updatedReferenc
 		}
 
 		//update the offset:
-		offset += int64(amountRead)
+		dataOffset += int64(amountRead)
 	}
 
-	return nil
+	// write the data on disk:
+	for _, oneContent := range context.contentList {
+		contentBytes := oneContent.Data()
+		err = app.saveDataOnDisk(dataOffset, contentBytes, destination)
+		if err != nil {
+			break
+		}
+
+		// update the offset:
+		dataOffset += int64(len(contentBytes))
+	}
+
+	retOffset := uint(offset)
+	return &retOffset, nil
+}
+
+func (app *application) referenceToContent(reference references.Reference) ([]byte, error) {
+	contentBytes, err := app.referenceAdapter.ToContent(reference)
+	if err != nil {
+		return nil, err
+	}
+
+	bytesLength := make([]byte, expectedReferenceBytesLength)
+	binary.LittleEndian.PutUint64(bytesLength, uint64(len(contentBytes)))
+
+	data := []byte{}
+	data = append(data, bytesLength...)
+	return append(data, contentBytes...), nil
 }
 
 func (app *application) saveDataOnDisk(offset int64, data []byte, pConn *os.File) error {
@@ -938,6 +963,7 @@ func (app *application) Close(context uint) error {
 		}
 
 		delete(app.contexts, context)
+		return nil
 	}
 
 	str := fmt.Sprintf("the given context (%d) does not exists and therefore cannot be closed", context)
