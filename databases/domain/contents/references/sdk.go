@@ -11,7 +11,7 @@ import (
 )
 
 const pointerSize = 8 * 2
-const commitMinSize = hash.Size + 8 + 8 + hashtrees.MinHashtreeSize
+const commitMinSize = 8 + 8 + hashtrees.MinHashtreeSize
 const contentKeySize = hash.Size + pointerSize + 8 + hash.Size
 const minReferenceSize = contentKeySize + commitMinSize
 
@@ -135,7 +135,6 @@ type Builder interface {
 
 // Reference represents the reference
 type Reference interface {
-	Next() int64
 	ContentKeys() ContentKeys
 	Commits() Commits
 	HasPeers() bool
@@ -211,6 +210,7 @@ type ContentKeysBuilder interface {
 
 // ContentKeys represents content keys
 type ContentKeys interface {
+	Next() int64
 	List() []ContentKey
 	ListByKind(kind uint) []ContentKey
 	Fetch(hash hash.Hash) (ContentKey, error)

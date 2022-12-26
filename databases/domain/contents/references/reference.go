@@ -37,11 +37,6 @@ func createReferenceInternally(
 	return &out
 }
 
-// Next returns the next beginning index for a pointer
-func (obj *reference) Next() int64 {
-	return 0
-}
-
 // ContentKeys returns the contentKeys
 func (obj *reference) ContentKeys() ContentKeys {
 	return obj.contentKeys

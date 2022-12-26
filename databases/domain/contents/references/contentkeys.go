@@ -29,6 +29,20 @@ func (obj *contentKeys) List() []ContentKey {
 	return obj.list
 }
 
+// Next returns the next beginning index for a pointer
+func (obj *contentKeys) Next() int64 {
+	biggest := int64(0)
+	for _, oneContentKey := range obj.list {
+		pointer := oneContentKey.Content()
+		next := int64(pointer.From() + pointer.Length())
+		if biggest < next {
+			biggest = next
+		}
+	}
+
+	return biggest
+}
+
 // ListByKind returns the list by kind
 func (obj *contentKeys) ListByKind(kind uint) []ContentKey {
 	output := []ContentKey{}

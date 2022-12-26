@@ -178,6 +178,13 @@ func (app *application) Connections() (connections.Connections, error) {
 
 // Open opens a context on a given database
 func (app *application) Open(name string) (*uint, error) {
+	for _, oneContext := range app.contexts {
+		if oneContext.name == name {
+			str := fmt.Sprintf("there is already an open context for the provided name: %s", name)
+			return nil, errors.New(str)
+		}
+	}
+
 	reference, offset, err := app.retrieveReference(name)
 	if err != nil {
 		return nil, err
@@ -209,6 +216,14 @@ func (app *application) Open(name string) (*uint, error) {
 	return &pContext.identifier, nil
 }
 
+func (app *application) makeChunkSize(length uint) uint {
+	if app.readChunkSize > length {
+		return length
+	}
+
+	return app.readChunkSize
+}
+
 func (app *application) retrieveReference(name string) (references.Reference, uint, error) {
 	path := filepath.Join(app.dirPath, name)
 	pConn, err := os.Open(path)
@@ -220,8 +235,8 @@ func (app *application) retrieveReference(name string) (references.Reference, ui
 
 	// read the reference length in bytes:
 	refLengthBytes := make([]byte, expectedReferenceBytesLength)
-	refAmount, err := pConn.Read(refLengthBytes)
-	if err != nil || refAmount > 0 {
+	refAmount, err := pConn.ReadAt(refLengthBytes, 0)
+	if err != nil || refAmount <= 0 {
 		return nil, 0, nil
 	}
 
@@ -231,14 +246,24 @@ func (app *application) retrieveReference(name string) (references.Reference, ui
 	}
 
 	// convert the reference length to uint64:
-	refLength := binary.LittleEndian.Uint64(refLengthBytes)
+	refLength := int(binary.LittleEndian.Uint64(refLengthBytes))
 
 	// read the reference data:
 	refAllBytes := []byte{}
-	originalOffset := int64(refLength) + expectedReferenceBytesLength
-	offset := originalOffset
-	for {
-		refContentBytes := make([]byte, app.readChunkSize)
+	offset := int64(expectedReferenceBytesLength)
+
+	// setup the read chunk size:
+	chunkSize := int(app.makeChunkSize(uint(refLength)))
+	amount := int((refLength / chunkSize) + 1)
+	lastChunkSize := refLength - (chunkSize * (amount - 1))
+
+	for i := 0; i < amount; i++ {
+		readSize := chunkSize
+		if i+1 >= amount {
+			readSize = lastChunkSize
+		}
+
+		refContentBytes := make([]byte, readSize)
 		refContentAmount, err := pConn.ReadAt(refContentBytes, offset)
 		if err != nil {
 			return nil, 0, err
@@ -246,9 +271,6 @@ func (app *application) retrieveReference(name string) (references.Reference, ui
 
 		refAllBytes = append(refAllBytes, refContentBytes...)
 		offset += int64(refContentAmount)
-		if refContentAmount != int(refLength) {
-			break
-		}
 	}
 
 	// convert the content to a reference instance:
@@ -257,7 +279,7 @@ func (app *application) retrieveReference(name string) (references.Reference, ui
 		return nil, 0, err
 	}
 
-	return ins, uint(originalOffset), nil
+	return ins, uint(offset), nil
 }
 
 // ContentKeysByKind returns the contentKeys by context and kind
@@ -426,14 +448,14 @@ func (app *application) Commit(context uint) error {
 
 	if pContext, ok := app.contexts[context]; ok {
 		// update database on disk:
-		pConn, pOffset, err := app.updateDatabaseOnDisk(pContext, updatedReference)
+		pConn, pDataOffset, err := app.updateDatabaseOnFile(pContext, updatedReference)
 		if err != nil {
 			return err
 		}
 
 		// update the file connection and reference:
 		app.contexts[context].reference = updatedReference
-		app.contexts[context].dataOffset = *pOffset
+		app.contexts[context].dataOffset = *pDataOffset
 		app.contexts[context].pConn = pConn
 		return nil
 	}
@@ -488,6 +510,10 @@ func (app *application) updateReference(context uint) (references.Reference, err
 
 		// save all content:
 		offset := int64(0)
+		if pContext.reference != nil {
+			offset = pContext.reference.ContentKeys().Next()
+		}
+
 		commitHash := commit.Hash()
 		for _, oneContent := range pContext.contentList {
 			// build the pointer:
@@ -570,7 +596,7 @@ func (app *application) mergePeers(currentList []*url.URL, newList []*url.URL) (
 	return updatedList, nil
 }
 
-func (app *application) updateDatabaseOnDisk(context *context, updatedReference references.Reference) (*os.File, *uint, error) {
+func (app *application) updateDatabaseOnFile(context *context, updatedReference references.Reference) (*os.File, *uint, error) {
 	// create a lock on the file:
 	err := context.pLock.TryLock()
 	if err != nil {
@@ -580,8 +606,8 @@ func (app *application) updateDatabaseOnDisk(context *context, updatedReference 
 	// release the lock on closing the method:
 	defer context.pLock.Unlock()
 
-	// write destination file:
-	pOffset, err := app.writeDestinationOnDisk(context, updatedReference)
+	// write data on the destination file:
+	pDataOffset, err := app.writeDataAndReferenceOnDestinationFile(context, updatedReference)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -593,7 +619,7 @@ func (app *application) updateDatabaseOnDisk(context *context, updatedReference 
 	backupFile := fmt.Sprintf("%s%s%s", context.name, fileNameExtensionDelimiter, app.bckExtension)
 	backupPath := filepath.Join(app.dirPath, backupFile)
 
-	// rename the source database to a backup file:
+	// copy the source database to a backup file:
 	backupPtr, err := os.Create(backupPath)
 	if err != nil {
 		return nil, nil, err
@@ -642,10 +668,10 @@ func (app *application) updateDatabaseOnDisk(context *context, updatedReference 
 		return nil, nil, err
 	}
 
-	return pNewConn, pOffset, nil
+	return pNewConn, pDataOffset, nil
 }
 
-func (app *application) writeDestinationOnDisk(context *context, updatedReference references.Reference) (*uint, error) {
+func (app *application) writeDataAndReferenceOnDestinationFile(context *context, updatedReference references.Reference) (*uint, error) {
 	// destination path:
 	destinationFile := fmt.Sprintf("%s%s%s", context.name, fileNameExtensionDelimiter, app.dstExtension)
 	destinationPath := filepath.Join(app.dirPath, destinationFile)
@@ -676,45 +702,53 @@ func (app *application) writeDestinationOnDisk(context *context, updatedReferenc
 		return nil, errors.New(str)
 	}
 
-	offset := int64(context.dataOffset) + int64(len(refData)) + expectedReferenceBytesLength
-	dataOffset := offset
-	for {
-		// read the file at offset:
-		contentBytes := make([]byte, app.readChunkSize)
-		amountRead, err := context.pConn.ReadAt(contentBytes, int64(dataOffset))
-		if err != nil {
-			break
-		}
+	// decl;are the read and write offsets:
+	readOffset := int64(context.dataOffset)
+	writeOffset := int64(writtenAmount)
+	if context.reference != nil {
+		pInfo, _ := context.pConn.Stat()
+		contentSize := pInfo.Size() - int64(context.dataOffset)
+		chunkSize := app.makeChunkSize(uint(contentSize))
 
-		if app.readChunkSize != uint(amountRead) {
-			str := fmt.Sprintf("%d bytes were expected to be read from source database, %d actually read", app.readChunkSize, amountRead)
-			return nil, errors.New(str)
-		}
+		for {
+			// read the file at offset:
+			contentBytes := make([]byte, chunkSize)
+			amountRead, err := context.pConn.ReadAt(contentBytes, readOffset)
+			if err != nil {
+				break
+			}
 
-		// write content on destination:
-		err = app.saveDataOnDisk(offset, contentBytes, destination)
-		if err != nil {
-			break
-		}
+			if chunkSize != uint(amountRead) {
+				str := fmt.Sprintf("%d bytes were expected to be read from source database, %d actually read", chunkSize, amountRead)
+				return nil, errors.New(str)
+			}
 
-		//update the offset:
-		dataOffset += int64(amountRead)
+			// write content on destination:
+			err = app.saveDataOnDisk(writeOffset, contentBytes, destination)
+			if err != nil {
+				break
+			}
+
+			//update the offsets:
+			readOffset += int64(amountRead)
+			writeOffset += int64(amountRead)
+		}
 	}
 
 	// write the data on disk:
 	for _, oneContent := range context.contentList {
 		contentBytes := oneContent.Data()
-		err = app.saveDataOnDisk(dataOffset, contentBytes, destination)
+		err = app.saveDataOnDisk(writeOffset, contentBytes, destination)
 		if err != nil {
 			break
 		}
 
 		// update the offset:
-		dataOffset += int64(len(contentBytes))
+		writeOffset += int64(len(contentBytes))
 	}
 
-	retOffset := uint(offset)
-	return &retOffset, nil
+	dataOffset := uint(writtenAmount)
+	return &dataOffset, nil
 }
 
 func (app *application) referenceToContent(reference references.Reference) ([]byte, error) {

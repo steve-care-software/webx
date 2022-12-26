@@ -59,7 +59,7 @@ func TestAdapter_withOnePeer_Success(t *testing.T) {
 	}
 }
 
-func TestAdapter_withMultiplePeer_Success(t *testing.T) {
+func TestAdapter_withMultiplePeers_Success(t *testing.T) {
 	reference := NewReferenceForTests(123)
 	adapter := NewAdapter([]byte("0")[0])
 	content, err := adapter.ToContent(reference)
