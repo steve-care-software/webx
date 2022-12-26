@@ -221,13 +221,13 @@ func TestCreate_thenOpen_thenConnections_thenWrite_thenRead_Success(t *testing.T
 		return
 	}
 
-	pFourthContext, err := application.Open(name)
+	pThirdContext, err := application.Open(name)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
 	}
 
-	retFirstData, err := application.ReadByHash(*pFourthContext, *pHash)
+	retFirstData, err := application.ReadByHash(*pThirdContext, *pHash)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -235,6 +235,35 @@ func TestCreate_thenOpen_thenConnections_thenWrite_thenRead_Success(t *testing.T
 
 	if bytes.Compare(retFirstData, data) != 0 {
 		t.Errorf("the returned data is invalid")
+		return
+	}
+
+	connections, err := application.Connections()
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	connectionsList := connections.List()
+	if len(connectionsList) != 1 {
+		t.Errorf("%d connections were expected, %d returned", 1, len(connectionsList))
+		return
+	}
+
+	currentConnection, err := connections.Fetch(*pThirdContext)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if currentConnection.Name() != name {
+		t.Errorf("the current connection name was expected to be '%s', '%s' returned", name, currentConnection.Name())
+		return
+	}
+
+	err = application.Close(*pThirdContext)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
 	}
 }
