@@ -2,22 +2,34 @@ package references
 
 import (
 	"errors"
+	"fmt"
+	"math/big"
 	"time"
 
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/databases/domain/cryptography/hashtrees"
 )
 
 type commitBuilder struct {
-	pHash      *hash.Hash
-	pointer    Pointer
-	pCreatedOn *time.Time
+	hashAdapter hash.Adapter
+	values      hashtrees.HashTree
+	pParent     *hash.Hash
+	pProof      *big.Int
+	pCreatedOn  *time.Time
+	miningValue byte
 }
 
-func createCommitBuilder() CommitBuilder {
+func createCommitBuilder(
+	hashAdapter hash.Adapter,
+	miningValue byte,
+) CommitBuilder {
 	out := commitBuilder{
-		pHash:      nil,
-		pointer:    nil,
-		pCreatedOn: nil,
+		hashAdapter: hashAdapter,
+		values:      nil,
+		pParent:     nil,
+		pProof:      nil,
+		pCreatedOn:  nil,
+		miningValue: miningValue,
 	}
 
 	return &out
@@ -25,18 +37,27 @@ func createCommitBuilder() CommitBuilder {
 
 // Create initializes the builder
 func (app *commitBuilder) Create() CommitBuilder {
-	return createCommitBuilder()
+	return createCommitBuilder(
+		app.hashAdapter,
+		app.miningValue,
+	)
 }
 
-// WithHash adds an hash to the builder
-func (app *commitBuilder) WithHash(hash hash.Hash) CommitBuilder {
-	app.pHash = &hash
+// WithValues add values to the builder
+func (app *commitBuilder) WithValues(values hashtrees.HashTree) CommitBuilder {
+	app.values = values
 	return app
 }
 
-// WithPointer adds a pointer to the builder
-func (app *commitBuilder) WithPointer(pointer Pointer) CommitBuilder {
-	app.pointer = pointer
+// WithParent adds a parent to the builder
+func (app *commitBuilder) WithParent(parent hash.Hash) CommitBuilder {
+	app.pParent = &parent
+	return app
+}
+
+// WithProof adds a proof to the builder
+func (app *commitBuilder) WithProof(proof *big.Int) CommitBuilder {
+	app.pProof = proof
 	return app
 }
 
@@ -48,17 +69,69 @@ func (app *commitBuilder) CreatedOn(createdOn time.Time) CommitBuilder {
 
 // Now builds a new Commit instance
 func (app *commitBuilder) Now() (Commit, error) {
-	if app.pHash == nil {
-		return nil, errors.New("the hash is mandatory in order to build a Commit instance")
-	}
-
-	if app.pointer == nil {
-		return nil, errors.New("the pointer is mandatory in order to build a Commit instance")
+	if app.values == nil {
+		return nil, errors.New("the values is mandatory in order to build a Commit instance")
 	}
 
 	if app.pCreatedOn == nil {
 		return nil, errors.New("the creation time is mandatory in order to build a Commit instance")
 	}
 
-	return createCommit(*app.pHash, app.pointer, *app.pCreatedOn), nil
+	data := [][]byte{
+		app.values.Head().Bytes(),
+		[]byte(fmt.Sprintf("%d", app.pCreatedOn.UnixNano())),
+	}
+
+	if app.pParent != nil {
+		data = append(data, app.pParent.Bytes())
+	}
+
+	if app.pProof != nil {
+		data = append(data, app.pProof.Bytes())
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	var mine Mine
+	if app.pProof != nil {
+		// make the result hash:
+		pResult, err := app.hashAdapter.FromMultiBytes([][]byte{
+			pHash.Bytes(),
+			app.pProof.Bytes(),
+		})
+
+		if err != nil {
+			return nil, err
+		}
+
+		score := uint(0)
+		resultBytes := pResult.Bytes()
+		for _, oneByte := range resultBytes {
+			if oneByte == app.miningValue {
+				score++
+				continue
+			}
+
+			break
+		}
+
+		mine = createMine(*pResult, app.pProof, score)
+	}
+
+	if app.pParent != nil && mine != nil {
+		return createCommitWithParentAndMine(*pHash, app.values, *app.pCreatedOn, app.pParent, mine), nil
+	}
+
+	if app.pParent != nil {
+		return createCommitWithParent(*pHash, app.values, *app.pCreatedOn, app.pParent), nil
+	}
+
+	if mine != nil {
+		return createCommitWithMine(*pHash, app.values, *app.pCreatedOn, mine), nil
+	}
+
+	return createCommit(*pHash, app.values, *app.pCreatedOn), nil
 }

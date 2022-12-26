@@ -2,11 +2,8 @@ package files
 
 import (
 	"github.com/steve-care-software/webx/databases/applications"
-	"github.com/steve-care-software/webx/databases/domain/commits"
-	"github.com/steve-care-software/webx/databases/domain/commits/histories"
 	"github.com/steve-care-software/webx/databases/domain/connections"
 	"github.com/steve-care-software/webx/databases/domain/connections/contents"
-	commit_contents "github.com/steve-care-software/webx/databases/domain/contents/commits"
 	"github.com/steve-care-software/webx/databases/domain/contents/references"
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hashtrees"
 )
@@ -27,17 +24,13 @@ func NewApplication(
 	connectionBuilder := connections.NewConnectionBuilder()
 	contentsBuilder := contents.NewBuilder()
 	contentBuilder := contents.NewContentBuilder()
-	commitHistoriesAdapter := histories.NewAdapter()
-	commitHistoriesBuilder := histories.NewBuilder()
-	commitBuilder := commits.NewBuilder(miningValue)
-	commitContentAdapter := commit_contents.NewAdapter()
-	commitContentBuilder := commit_contents.NewBuilder()
-	referenceAdapter := references.NewAdapter()
+	referenceAdapter := references.NewAdapter(miningValue)
 	referenceBuilder := references.NewBuilder()
 	referenceContentKeysBuilder := references.NewContentKeysBuilder()
 	referenceContentKeyBuilder := references.NewContentKeyBuilder()
 	referenceCommitsBuilder := references.NewCommitsBuilder()
-	referenceCommitBuilder := references.NewCommitBuilder()
+	referenceCommitAdapter := references.NewCommitAdapter(miningValue)
+	referenceCommitBuilder := references.NewCommitBuilder(miningValue)
 	referencePointerBuilder := references.NewPointerBuilder()
 	hashTreeBuilder := hashtrees.NewBuilder()
 	return createApplication(
@@ -46,16 +39,12 @@ func NewApplication(
 		connectionBuilder,
 		contentsBuilder,
 		contentBuilder,
-		commitHistoriesAdapter,
-		commitHistoriesBuilder,
-		commitBuilder,
-		commitContentAdapter,
-		commitContentBuilder,
 		referenceAdapter,
 		referenceBuilder,
 		referenceContentKeysBuilder,
 		referenceContentKeyBuilder,
 		referenceCommitsBuilder,
+		referenceCommitAdapter,
 		referenceCommitBuilder,
 		referencePointerBuilder,
 		hashTreeBuilder,

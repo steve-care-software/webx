@@ -1,23 +1,27 @@
 package references
 
 import (
+	"math/big"
 	"net/url"
 	"time"
 
 	"github.com/steve-care-software/webx/databases/domain/contents/peers"
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/databases/domain/cryptography/hashtrees"
 )
 
 const pointerSize = 8 * 2
-const commitSize = hash.Size + pointerSize + 8
+const commitMinSize = hash.Size + 8 + 8 + hashtrees.MinHashtreeSize
 const contentKeySize = hash.Size + pointerSize + 8 + hash.Size
-const minReferenceSize = contentKeySize + commitSize
+const minReferenceSize = contentKeySize + commitMinSize
 
 // NewAdapter creates a new adapter instance
-func NewAdapter() Adapter {
+func NewAdapter(
+	miningValue byte,
+) Adapter {
 	peersAdapter := peers.NewAdapter()
 	contentKeysAdapter := NewContentKeysAdapter()
-	commitsAdapter := NewCommitsAdapter()
+	commitsAdapter := NewCommitsAdapter(miningValue)
 	builder := NewBuilder()
 	return createAdapter(
 		peersAdapter,
@@ -39,8 +43,10 @@ func NewBuilder() Builder {
 }
 
 // NewCommitsAdapter creates a new commits adapter
-func NewCommitsAdapter() CommitsAdapter {
-	adapter := NewCommitAdapter()
+func NewCommitsAdapter(
+	miningValue byte,
+) CommitsAdapter {
+	adapter := NewCommitAdapter(miningValue)
 	builder := NewCommitsBuilder()
 	return createCommitsAdapter(adapter, builder)
 }
@@ -51,16 +57,24 @@ func NewCommitsBuilder() CommitsBuilder {
 }
 
 // NewCommitAdapter creates a new commit adapter
-func NewCommitAdapter() CommitAdapter {
+func NewCommitAdapter(
+	miningValue byte,
+) CommitAdapter {
 	hashAdapter := hash.NewAdapter()
-	builder := NewCommitBuilder()
-	pointerAdapter := NewPointerAdapter()
-	return createCommitAdapter(hashAdapter, builder, pointerAdapter)
+	hashTreeAdapter := hashtrees.NewAdapter()
+	builder := NewCommitBuilder(miningValue)
+	return createCommitAdapter(hashAdapter, hashTreeAdapter, builder)
 }
 
 // NewCommitBuilder creates a new commit builder
-func NewCommitBuilder() CommitBuilder {
-	return createCommitBuilder()
+func NewCommitBuilder(
+	miningValue byte,
+) CommitBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createCommitBuilder(
+		hashAdapter,
+		miningValue,
+	)
 }
 
 // NewContentKeysAdapter creates a new content keys adapter
@@ -157,8 +171,9 @@ type CommitAdapter interface {
 // CommitBuilder represents a commit builder
 type CommitBuilder interface {
 	Create() CommitBuilder
-	WithHash(hash hash.Hash) CommitBuilder
-	WithPointer(pointer Pointer) CommitBuilder
+	WithValues(values hashtrees.HashTree) CommitBuilder
+	WithParent(parent hash.Hash) CommitBuilder
+	WithProof(proof *big.Int) CommitBuilder
 	CreatedOn(createdOn time.Time) CommitBuilder
 	Now() (Commit, error)
 }
@@ -166,8 +181,19 @@ type CommitBuilder interface {
 // Commit represents a commit
 type Commit interface {
 	Hash() hash.Hash
-	Pointer() Pointer
+	Values() hashtrees.HashTree
 	CreatedOn() time.Time
+	HasParent() bool
+	Parent() *hash.Hash
+	HasMine() bool
+	Mine() Mine
+}
+
+// Mine represents a mine
+type Mine interface {
+	Result() hash.Hash
+	Proof() *big.Int
+	Score() uint
 }
 
 // ContentKeysAdapter represents the content keys adapter

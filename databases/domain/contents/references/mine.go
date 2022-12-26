@@ -1,4 +1,4 @@
-package commits
+package references
 
 import (
 	"math/big"

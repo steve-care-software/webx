@@ -12,12 +12,9 @@ import (
 
 	"github.com/juju/fslock"
 	"github.com/steve-care-software/webx/databases/applications"
-	"github.com/steve-care-software/webx/databases/domain/commits"
-	"github.com/steve-care-software/webx/databases/domain/commits/histories"
 	"github.com/steve-care-software/webx/databases/domain/configs"
 	"github.com/steve-care-software/webx/databases/domain/connections"
 	"github.com/steve-care-software/webx/databases/domain/connections/contents"
-	commit_contents "github.com/steve-care-software/webx/databases/domain/contents/commits"
 	"github.com/steve-care-software/webx/databases/domain/contents/references"
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hashtrees"
@@ -30,16 +27,12 @@ type application struct {
 	connectionBuilder           connections.ConnectionBuilder
 	contentsBuilder             contents.Builder
 	contentBuilder              contents.ContentBuilder
-	commitHistoriesAdapter      histories.Adapter
-	commitHistoriesBuilder      histories.Builder
-	commitBuilder               commits.Builder
-	commitContentAdapter        commit_contents.Adapter
-	commitContentBuilder        commit_contents.Builder
 	referenceAdapter            references.Adapter
 	referenceBuilder            references.Builder
 	referenceContentKeysBuilder references.ContentKeysBuilder
 	referenceContentKeyBuilder  references.ContentKeyBuilder
 	referenceCommitsBuilder     references.CommitsBuilder
+	referenceCommitAdapter      references.CommitAdapter
 	referenceCommitBuilder      references.CommitBuilder
 	referencePointerBuilder     references.PointerBuilder
 	hashTreeBuilder             hashtrees.Builder
@@ -56,16 +49,12 @@ func createApplication(
 	connectionBuilder connections.ConnectionBuilder,
 	contentsBuilder contents.Builder,
 	contentBuilder contents.ContentBuilder,
-	commitHistoriesAdapter histories.Adapter,
-	commitHistoriesBuilder histories.Builder,
-	commitBuilder commits.Builder,
-	commitContentAdapter commit_contents.Adapter,
-	commitContentBuilder commit_contents.Builder,
 	referenceAdapter references.Adapter,
 	referenceBuilder references.Builder,
 	referenceContentKeysBuilder references.ContentKeysBuilder,
 	referenceContentKeyBuilder references.ContentKeyBuilder,
 	referenceCommitsBuilder references.CommitsBuilder,
+	referenceCommitAdapter references.CommitAdapter,
 	referenceCommitBuilder references.CommitBuilder,
 	referencePointerBuilder references.PointerBuilder,
 	hashTreeBuilder hashtrees.Builder,
@@ -80,16 +69,12 @@ func createApplication(
 		connectionBuilder:           connectionBuilder,
 		contentsBuilder:             contentsBuilder,
 		contentBuilder:              contentBuilder,
-		commitHistoriesAdapter:      commitHistoriesAdapter,
-		commitHistoriesBuilder:      commitHistoriesBuilder,
-		commitBuilder:               commitBuilder,
-		commitContentAdapter:        commitContentAdapter,
-		commitContentBuilder:        commitContentBuilder,
 		referenceAdapter:            referenceAdapter,
 		referenceBuilder:            referenceBuilder,
 		referenceContentKeysBuilder: referenceContentKeysBuilder,
 		referenceContentKeyBuilder:  referenceContentKeyBuilder,
 		referenceCommitsBuilder:     referenceCommitsBuilder,
+		referenceCommitAdapter:      referenceCommitAdapter,
 		referenceCommitBuilder:      referenceCommitBuilder,
 		referencePointerBuilder:     referencePointerBuilder,
 		hashTreeBuilder:             hashTreeBuilder,
@@ -306,42 +291,17 @@ func (app *application) contentKeys(context uint) (references.ContentKeys, error
 }
 
 // CommitByHash returns the commit by hash
-func (app *application) CommitByHash(context uint, hash hash.Hash) (commits.Commit, error) {
-	commits, err := app.commits(context)
+func (app *application) CommitByHash(context uint, hash hash.Hash) (references.Commit, error) {
+	commits, err := app.Commits(context)
 	if err != nil {
 		return nil, err
 	}
 
-	refCommit, err := commits.Fetch(hash)
-	if err != nil {
-		return nil, err
-	}
-
-	return app.retrieveCommitByCommitReference(context, refCommit)
+	return commits.Fetch(hash)
 }
 
-// Histories returns the commits histories on a context
-func (app *application) Histories(context uint) (histories.Histories, error) {
-	refCommits, err := app.commits(context)
-	if err != nil {
-		return nil, err
-	}
-
-	commitsList := []commits.Commit{}
-	refCommitsList := refCommits.List()
-	for _, oneRefCommit := range refCommitsList {
-		commit, err := app.retrieveCommitByCommitReference(context, oneRefCommit)
-		if err != nil {
-			return nil, err
-		}
-
-		commitsList = append(commitsList, commit)
-	}
-
-	return app.commitHistoriesAdapter.FromCommitsToHistories(commitsList)
-}
-
-func (app *application) commits(context uint) (references.Commits, error) {
+// Commits returns the commits on a context
+func (app *application) Commits(context uint) (references.Commits, error) {
 	if pContext, ok := app.contexts[context]; ok {
 		if pContext.reference == nil {
 			str := fmt.Sprintf("there is zero (0) Commit in the given context: %d", context)
@@ -485,15 +445,10 @@ func (app *application) Commit(context uint) error {
 func (app *application) updateReference(context uint) (references.Reference, error) {
 	if pContext, ok := app.contexts[context]; ok {
 		// find the latest commit:
-		builder := app.commitBuilder.Create()
+		builder := app.referenceCommitBuilder.Create()
 		if pContext.reference != nil {
 			refCommit := pContext.reference.Commits().Latest()
-			latestCommit, err := app.retrieveCommitByCommitReference(context, refCommit)
-			if err != nil {
-				return nil, err
-			}
-
-			builder.WithParent(latestCommit)
+			builder.WithParent(refCommit.Hash())
 		}
 
 		blocks := [][]byte{}
@@ -513,48 +468,13 @@ func (app *application) updateReference(context uint) (references.Reference, err
 			return nil, err
 		}
 
-		commitHash := commit.Hash()
-		commitValues := commit.Values()
-		commitContentBuilder := app.commitContentBuilder.Create().WithHash(commitHash).WithValues(commitValues)
-		if commit.HasParent() {
-			commitParent := commit.Parent().Hash()
-			commitContentBuilder.WithParent(commitParent)
-		}
-
-		commitContent, err := commitContentBuilder.Now()
-		if err != nil {
-			return nil, err
-		}
-
-		commitBytes, err := app.commitContentAdapter.ToContent(commitContent)
-		if err != nil {
-			return nil, err
-		}
-
-		// build the pointer:
-		commitFrom := int64(0)
-		if pContext.reference != nil {
-			commitFrom = pContext.reference.Next()
-		}
-
-		commitPointer, err := app.referencePointerBuilder.Create().From(uint(commitFrom)).WithLength(uint(len(commitBytes))).Now()
-		if err != nil {
-			return nil, err
-		}
-
-		// build the commit reference:
-		refCommit, err := app.referenceCommitBuilder.Create().WithHash(commitHash).WithPointer(commitPointer).CreatedOn(createdOn).Now()
-		if err != nil {
-			return nil, err
-		}
-
 		// save the pointers in the commit references:
 		commitsList := []references.Commit{}
 		if pContext.reference != nil {
 			commitsList = pContext.reference.Commits().List()
 		}
 
-		commitsList = append(commitsList, refCommit)
+		commitsList = append(commitsList, commit)
 		commits, err := app.referenceCommitsBuilder.Create().WithList(commitsList).Now()
 		if err != nil {
 			return nil, err
@@ -567,7 +487,8 @@ func (app *application) updateReference(context uint) (references.Reference, err
 		}
 
 		// save all content:
-		offset := commitFrom
+		offset := int64(0)
+		commitHash := commit.Hash()
 		for _, oneContent := range pContext.contentList {
 			// build the pointer:
 			dataLength := int64(len(oneContent.Data()))
@@ -647,34 +568,6 @@ func (app *application) mergePeers(currentList []*url.URL, newList []*url.URL) (
 	}
 
 	return updatedList, nil
-}
-
-func (app *application) retrieveCommitByCommitReference(context uint, refCommit references.Commit) (commits.Commit, error) {
-	pointer := refCommit.Pointer()
-	contentBytes, err := app.Read(context, pointer)
-	if err != nil {
-		return nil, err
-	}
-
-	commitContent, err := app.commitContentAdapter.ToCommit(contentBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	values := commitContent.Values()
-	createdOn := refCommit.CreatedOn()
-	builder := app.commitBuilder.Create().WithValues(values).CreatedOn(createdOn)
-	if commitContent.HasParent() {
-		pParentHash := commitContent.Parent()
-		parent, err := app.CommitByHash(context, *pParentHash)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithParent(parent)
-	}
-
-	return builder.Now()
 }
 
 func (app *application) updateDatabaseOnDisk(context *context, updatedReference references.Reference) (*os.File, *uint, error) {
@@ -879,7 +772,7 @@ func (app *application) Share(context uint, peer *url.URL) error {
 // Push retrieves the commits from peers, then chain our commits to them using the given configuration
 func (app *application) Push(name string, config configs.Config) error {
 	// retrieve the reference from our database:
-	reference, _, err := app.retrieveReference(name)
+	_, _, err := app.retrieveReference(name)
 	if err != nil {
 		return err
 	}
@@ -890,16 +783,16 @@ func (app *application) Push(name string, config configs.Config) error {
 		return err
 	}
 
-	if currentContext, ok := app.contexts[*pCurrentContext]; ok {
-		// fetch the current history:
-		currentHistories, err := app.Histories(currentContext.identifier)
+	/*if currentContext, ok := app.contexts[*pCurrentContext]; ok {
+		// fetch the current commits:
+		commits, err := app.Commits(currentContext.identifier)
 		if err != nil {
 			return err
 		}
 
 		// loop in the peers, if any:
 		if reference.HasPeers() {
-			betterCommits := map[string]commits.Commit{}
+			betterCommits := map[string]references.Commit{}
 			peersList := reference.Peers()
 			for _, onePeer := range peersList {
 				// build the client application:
@@ -915,13 +808,13 @@ func (app *application) Push(name string, config configs.Config) error {
 				}
 
 				// download the histories of our peer:
-				retHistories, err := clientApp.Histories(*pContext)
+				retClientCommits, err := clientApp.Commits(*pContext)
 				if err != nil {
 					return err
 				}
 
 				// compare with our current history:
-				toDownloadHistoryList, err := currentHistories.Compare(retHistories)
+				toDownloadHistoryList, err := commits.Compare(retClientCommits)
 				if err != nil {
 					return err
 				}
@@ -948,7 +841,7 @@ func (app *application) Push(name string, config configs.Config) error {
 
 			}
 		}
-	}
+	}*/
 
 	str := fmt.Sprintf("the context (%d) was expected to be opened while executing the Push method", *pCurrentContext)
 	return errors.New(str)

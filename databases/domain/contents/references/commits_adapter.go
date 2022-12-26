@@ -26,18 +26,17 @@ func createCommitsAdapter(
 // ToContent converts Commits to bytes
 func (app *commitsAdapter) ToContent(ins Commits) ([]byte, error) {
 	list := ins.List()
-	lengthBytes := make([]byte, 8)
-	binary.LittleEndian.PutUint64(lengthBytes, uint64(len(list)))
-
 	output := []byte{}
-	output = append(output, lengthBytes...)
-
 	for _, oneCommit := range list {
 		content, err := app.adapter.ToContent(oneCommit)
 		if err != nil {
 			return nil, err
 		}
 
+		lengthBytes := make([]byte, 8)
+		binary.LittleEndian.PutUint64(lengthBytes, uint64(len(content)))
+
+		output = append(output, lengthBytes...)
 		output = append(output, content...)
 	}
 
@@ -46,23 +45,30 @@ func (app *commitsAdapter) ToContent(ins Commits) ([]byte, error) {
 
 // ToCommits converts bytes to Commits
 func (app *commitsAdapter) ToCommits(content []byte) (Commits, error) {
-	smallest := 8 + commitSize
+	smallest := 8 + commitMinSize
 	if len(content) < smallest {
 		str := fmt.Sprintf("the content was expected to contain at least %d bytes in order to convert to a Commit instance, %d provided", smallest, len(content))
 		return nil, errors.New(str)
 	}
 
 	list := []Commit{}
-	length := int(binary.LittleEndian.Uint64(content[:8]))
-	for i := 0; i < length; i++ {
-		beginsOn := 8 + (i * commitSize)
-		endsOn := beginsOn + commitSize
-		ins, err := app.adapter.ToCommit(content[beginsOn:endsOn])
+	index := 0
+	for {
+		amount := len(content[index:])
+		if amount <= 0 {
+			break
+		}
+
+		lengthDelimiter := index + 8
+		length := int(binary.LittleEndian.Uint64(content[index:lengthDelimiter]))
+		contentDelimiter := lengthDelimiter + length
+		ins, err := app.adapter.ToCommit(content[lengthDelimiter:contentDelimiter])
 		if err != nil {
 			return nil, err
 		}
 
 		list = append(list, ins)
+		index = contentDelimiter
 	}
 
 	return app.builder.Create().WithList(list).Now()

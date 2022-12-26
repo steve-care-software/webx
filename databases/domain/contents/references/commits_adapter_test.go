@@ -7,7 +7,7 @@ import (
 
 func TestCommitsAdapter_Success(t *testing.T) {
 	commits := NewCommitsForTests(25)
-	adapter := NewCommitsAdapter()
+	adapter := NewCommitsAdapter([]byte("0")[0])
 	content, err := adapter.ToContent(commits)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())

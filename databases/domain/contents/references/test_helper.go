@@ -2,11 +2,13 @@ package references
 
 import (
 	"fmt"
+	"math/big"
 	"math/rand"
 	"time"
 
 	"github.com/steve-care-software/webx/databases/domain/contents/peers"
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/databases/domain/cryptography/hashtrees"
 )
 
 // NewReferenceForTests creates a new reference with peers for tests
@@ -55,17 +57,89 @@ func NewCommitsForTests(amount uint) Commits {
 
 // NewCommitForTests creates a new commit for tests
 func NewCommitForTests() Commit {
-	s1 := rand.NewSource(time.Now().UnixNano())
-	r1 := rand.New(s1)
-
-	pHash, err := hash.NewAdapter().FromBytes([]byte(fmt.Sprintf("this is some bytes: %d", r1.Int())))
+	values, err := hashtrees.NewBuilder().Create().WithBlocks([][]byte{
+		[]byte("first"),
+		[]byte("second"),
+		[]byte("third"),
+	}).Now()
 	if err != nil {
 		panic(err)
 	}
 
-	pointer := NewPointerForTests()
 	createdOn := time.Now().UTC()
-	ins, err := NewCommitBuilder().Create().WithHash(*pHash).WithPointer(pointer).CreatedOn(createdOn).Now()
+	ins, err := NewCommitBuilder([]byte("0")[0]).Create().WithValues(values).CreatedOn(createdOn).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewCommitWithParentForTests creates a new commit with parent for tests
+func NewCommitWithParentForTests() Commit {
+	values, err := hashtrees.NewBuilder().Create().WithBlocks([][]byte{
+		[]byte("first"),
+		[]byte("second"),
+		[]byte("third"),
+	}).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	pParentHash, err := hash.NewAdapter().FromBytes([]byte("this is a parent hash"))
+	if err != nil {
+		panic(err)
+	}
+
+	createdOn := time.Now().UTC()
+	ins, err := NewCommitBuilder([]byte("0")[0]).Create().WithValues(values).WithParent(*pParentHash).CreatedOn(createdOn).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewCommitWithProofForTests creates a new commit with proof for tests
+func NewCommitWithProofForTests() Commit {
+	values, err := hashtrees.NewBuilder().Create().WithBlocks([][]byte{
+		[]byte("first"),
+		[]byte("second"),
+		[]byte("third"),
+	}).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	pProof := big.NewInt(int64(4523453))
+	createdOn := time.Now().UTC()
+	ins, err := NewCommitBuilder([]byte("0")[0]).Create().WithValues(values).WithProof(pProof).CreatedOn(createdOn).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewCommitWithParentAndProofForTests creates a new commit with parent and proof for tests
+func NewCommitWithParentAndProofForTests() Commit {
+	values, err := hashtrees.NewBuilder().Create().WithBlocks([][]byte{
+		[]byte("first"),
+		[]byte("second"),
+		[]byte("third"),
+	}).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	pParentHash, err := hash.NewAdapter().FromBytes([]byte("this is a parent hash"))
+	if err != nil {
+		panic(err)
+	}
+
+	pProof := big.NewInt(int64(4523453))
+	createdOn := time.Now().UTC()
+	ins, err := NewCommitBuilder([]byte("0")[0]).Create().WithValues(values).WithParent(*pParentHash).WithProof(pProof).CreatedOn(createdOn).Now()
 	if err != nil {
 		panic(err)
 	}

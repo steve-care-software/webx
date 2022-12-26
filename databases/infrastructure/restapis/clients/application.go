@@ -9,8 +9,6 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/steve-care-software/webx/databases/applications"
-	"github.com/steve-care-software/webx/databases/domain/commits"
-	"github.com/steve-care-software/webx/databases/domain/commits/histories"
 	"github.com/steve-care-software/webx/databases/domain/configs"
 	"github.com/steve-care-software/webx/databases/domain/connections"
 	"github.com/steve-care-software/webx/databases/domain/contents/references"
@@ -18,8 +16,8 @@ import (
 )
 
 type application struct {
-	commitAdapter               commits.Adapter
-	historiesAdapter            histories.Adapter
+	commitsAdapter              references.CommitsAdapter
+	commitAdapter               references.CommitAdapter
 	connectionsAdapter          connections.Adapter
 	referenceContentKeysAdapter references.ContentKeysAdapter
 	baseURL                     *url.URL
@@ -27,16 +25,16 @@ type application struct {
 }
 
 func createApplication(
-	commitAdapter commits.Adapter,
-	historiesAdapter histories.Adapter,
+	commitsAdapter references.CommitsAdapter,
+	commitAdapter references.CommitAdapter,
 	connectionsAdapter connections.Adapter,
 	referenceContentKeysAdapter references.ContentKeysAdapter,
 	baseURL *url.URL,
 	client *resty.Client,
 ) applications.Application {
 	out := application{
+		commitsAdapter:              commitsAdapter,
 		commitAdapter:               commitAdapter,
-		historiesAdapter:            historiesAdapter,
 		connectionsAdapter:          connectionsAdapter,
 		referenceContentKeysAdapter: referenceContentKeysAdapter,
 		baseURL:                     baseURL,
@@ -156,7 +154,7 @@ func (app *application) ContentKeysByKind(context uint, kind uint) (references.C
 }
 
 // CommitByHash returns the commit by hash
-func (app *application) CommitByHash(context uint, hash hash.Hash) (commits.Commit, error) {
+func (app *application) CommitByHash(context uint, hash hash.Hash) (references.Commit, error) {
 	commitURI := fmt.Sprintf(commitByHashURI, context, hash.String())
 	url := fmt.Sprintf(patternURI, app.baseURL.String(), commitURI)
 	resp, err := app.client.R().Get(url)
@@ -172,8 +170,8 @@ func (app *application) CommitByHash(context uint, hash hash.Hash) (commits.Comm
 	return app.commitAdapter.ToCommit(bytes)
 }
 
-// Histories returns the commits histories on a context
-func (app *application) Histories(context uint) (histories.Histories, error) {
+// Commits returns the commits on a context
+func (app *application) Commits(context uint) (references.Commits, error) {
 	commitURI := fmt.Sprintf(commitsURI, context)
 	url := fmt.Sprintf(patternURI, app.baseURL.String(), commitURI)
 	resp, err := app.client.R().Get(url)
@@ -186,7 +184,7 @@ func (app *application) Histories(context uint) (histories.Histories, error) {
 		return nil, errors.New(string(bytes))
 	}
 
-	return app.historiesAdapter.ToHistories(bytes)
+	return app.commitsAdapter.ToCommits(bytes)
 }
 
 // Read reads a pointer on a context
