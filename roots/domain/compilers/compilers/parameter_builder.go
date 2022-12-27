@@ -3,7 +3,7 @@ package compilers
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/roots/domain/selectors/selectors"
+	"github.com/steve-care-software/webx/selectors/domain/selectors"
 )
 
 type parameterBuilder struct {

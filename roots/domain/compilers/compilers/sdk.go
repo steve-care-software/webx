@@ -2,7 +2,7 @@ package compilers
 
 import (
 	"github.com/steve-care-software/webx/roots/domain/programs/programs"
-	"github.com/steve-care-software/webx/roots/domain/selectors/selectors"
+	"github.com/steve-care-software/webx/selectors/domain/selectors"
 )
 
 // NewBuilder creates a new builder instance

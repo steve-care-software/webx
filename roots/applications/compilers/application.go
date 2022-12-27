@@ -6,15 +6,15 @@ import (
 
 	"github.com/steve-care-software/webx/databases/applications"
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
-	selector_applications "github.com/steve-care-software/webx/roots/applications/selectors"
 	"github.com/steve-care-software/webx/roots/domain/compilers/compilers"
 	"github.com/steve-care-software/webx/roots/domain/programs/programs"
 	"github.com/steve-care-software/webx/roots/domain/programs/programs/modules"
+	selector_applications "github.com/steve-care-software/webx/selectors/applications"
 )
 
 type application struct {
 	databaseApp         applications.Application
-	selectorSoftware    selector_applications.Software
+	selectorSoftware    selector_applications.Application
 	programBuilder      programs.Builder
 	instructionsBuilder programs.InstructionsBuilder
 	instructionBuilder  programs.InstructionBuilder
@@ -26,7 +26,7 @@ type application struct {
 
 func createApplication(
 	databaseApp applications.Application,
-	selectorSoftware selector_applications.Software,
+	selectorSoftware selector_applications.Application,
 	programBuilder programs.Builder,
 	instructionsBuilder programs.InstructionsBuilder,
 	instructionBuilder programs.InstructionBuilder,
