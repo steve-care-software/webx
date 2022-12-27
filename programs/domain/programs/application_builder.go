@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/roots/domain/programs/programs/modules"
+	"github.com/steve-care-software/webx/programs/domain/programs/modules"
 )
 
 type applicationBuilder struct {

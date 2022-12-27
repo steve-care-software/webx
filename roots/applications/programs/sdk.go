@@ -2,9 +2,9 @@ package programs
 
 import (
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
+	"github.com/steve-care-software/webx/programs/domain/programs"
+	"github.com/steve-care-software/webx/programs/domain/programs/modules"
 	grammars_application "github.com/steve-care-software/webx/roots/applications/grammars"
-	"github.com/steve-care-software/webx/roots/domain/programs/programs"
-	"github.com/steve-care-software/webx/roots/domain/programs/programs/modules"
 )
 
 const (
@@ -26,17 +26,6 @@ type ScanCallbackFn func(output map[string]interface{}) bool
 
 // Application represents a program application
 type Application interface {
-	Database
-	Software
-}
-
-// Software represents the program software application
-type Software interface {
-	Execute(input map[uint]interface{}, program programs.Program) (map[uint]interface{}, error)
-}
-
-// Database represents the program database application
-type Database interface {
 	Retrieve(context uint, hash hash.Hash, modules modules.Modules) (programs.Program, error)
 	Scan(context uint, input map[string]interface{}, callbackFn ScanCallbackFn) (programs.Program, error)
 	Insert(context uint, program programs.Program) error
