@@ -2,8 +2,8 @@ package grammars
 
 import (
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
-	"github.com/steve-care-software/webx/roots/domain/grammars/grammars/cardinalities"
-	"github.com/steve-care-software/webx/roots/domain/grammars/grammars/values"
+	"github.com/steve-care-software/webx/grammars/domain/grammars/cardinalities"
+	"github.com/steve-care-software/webx/grammars/domain/grammars/values"
 )
 
 const pointsPerValue = uint(1)

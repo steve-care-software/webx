@@ -5,18 +5,18 @@ import (
 	"fmt"
 
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
-	grammar_applications "github.com/steve-care-software/webx/roots/applications/grammars"
-	"github.com/steve-care-software/webx/roots/domain/grammars/grammars"
-	"github.com/steve-care-software/webx/roots/domain/grammars/trees"
+	grammar_applications "github.com/steve-care-software/webx/grammars/applications"
+	"github.com/steve-care-software/webx/grammars/domain/grammars"
+	"github.com/steve-care-software/webx/grammars/domain/trees"
 	"github.com/steve-care-software/webx/roots/domain/selectors/selectors"
 )
 
 type application struct {
-	grammarSoftware grammar_applications.Software
+	grammarSoftware grammar_applications.Application
 }
 
 func createApplication(
-	grammarSoftware grammar_applications.Software,
+	grammarSoftware grammar_applications.Application,
 ) Application {
 	out := application{
 		grammarSoftware: grammarSoftware,

@@ -83,6 +83,6 @@ func (app *grammar) Application(context uint) (grammar_applications.Application,
 	}
 
 	return app.grammarAppBuilder.Create().
-		WithBlockchain(databaseApp).
+		WithDatabase(databaseApp).
 		Now()
 }

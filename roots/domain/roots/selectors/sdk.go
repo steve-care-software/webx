@@ -3,7 +3,7 @@ package selectors
 import (
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/databases/domain/cryptography/hashtrees"
-	"github.com/steve-care-software/webx/roots/domain/grammars/grammars"
+	"github.com/steve-care-software/webx/grammars/domain/grammars"
 )
 
 // Builder represents a selectors builder

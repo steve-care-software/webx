@@ -3,7 +3,7 @@ package coverages
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/roots/domain/grammars/trees"
+	"github.com/steve-care-software/webx/grammars/domain/trees"
 )
 
 type resultBuilder struct {

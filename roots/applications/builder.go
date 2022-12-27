@@ -11,7 +11,7 @@ import (
 )
 
 type builder struct {
-	databaseAppBuilder  database_applications.Builder
+	databaseAppBuilder    database_applications.Builder
 	grammarAppBuilder     grammar_applications.Builder
 	grammarBuilder        roots_grammar.Builder
 	contentGrammarAdapter contents_grammar.Adapter
@@ -28,7 +28,7 @@ func createBuilder(
 	contentGrammarBuilder contents_grammar.Builder,
 ) Builder {
 	out := builder{
-		databaseAppBuilder:  databaseAppBuilder,
+		databaseAppBuilder:    databaseAppBuilder,
 		grammarAppBuilder:     grammarAppBuilder,
 		grammarBuilder:        grammarBuilder,
 		contentGrammarAdapter: contentGrammarAdapter,
