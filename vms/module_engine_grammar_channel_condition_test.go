@@ -6,7 +6,7 @@ import (
 	"github.com/steve-care-software/webx/grammars/domain/grammars"
 )
 
-func TestModule_newGrammarChannelCondition_withPrevious_withNext_Success(t *testing.T) {
+func TestModule_engineGrammarChannelCondition_withPrevious_withNext_Success(t *testing.T) {
 	script := `
         module @castToUint:1;;
         module @newGrammarSuite:12;;
@@ -141,7 +141,7 @@ func TestModule_newGrammarChannelCondition_withPrevious_withNext_Success(t *test
 	return
 }
 
-func TestModule_newGrammarChannelCondition_withPrevious__Success(t *testing.T) {
+func TestModule_engineGrammarChannelCondition_withPrevious__Success(t *testing.T) {
 	script := `
         module @castToUint:1;;
         module @newGrammarSuite:12;;
@@ -275,7 +275,7 @@ func TestModule_newGrammarChannelCondition_withPrevious__Success(t *testing.T) {
 	return
 }
 
-func TestModule_newGrammarChannelCondition_withNext_Success(t *testing.T) {
+func TestModule_engineGrammarChannelCondition_withNext_Success(t *testing.T) {
 	script := `
         module @castToUint:1;;
         module @newGrammarSuite:12;;
