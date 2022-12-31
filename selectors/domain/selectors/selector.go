@@ -1,16 +1,12 @@
 package selectors
 
-import "github.com/steve-care-software/webx/grammars/domain/grammars"
-
 type selector struct {
-	grammar grammars.Grammar
-	token   Token
-	inside  Inside
-	fn      SelectorFn
+	token  Token
+	inside Inside
+	fn     SelectorFn
 }
 
 func createSelector(
-	grammar grammars.Grammar,
 	token Token,
 	inside Inside,
 	fn SelectorFn,
@@ -22,11 +18,6 @@ func createSelector(
 	}
 
 	return &out
-}
-
-// Grammar returns the grammar
-func (obj *selector) Grammar() grammars.Grammar {
-	return obj.grammar
 }
 
 // Token returns the token

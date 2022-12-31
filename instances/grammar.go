@@ -412,7 +412,7 @@ func (app *grammar) alphaNumeric() grammars.Token {
 		"alphaNumeric",
 		app.blockFromlines([]grammars.Line{
 			app.lineFromElements([]grammars.Element{
-				app.elementFromToken(app.number(), app.cardinalityOnce()),
+				app.elementFromToken(app.anyNumber(), app.cardinalityOnce()),
 			}),
 			app.lineFromElements([]grammars.Element{
 				app.elementFromToken(app.upperCaseLetter(), app.cardinalityOnce()),
@@ -424,7 +424,7 @@ func (app *grammar) alphaNumeric() grammars.Token {
 	)
 }
 
-func (app *grammar) number() grammars.Token {
+func (app *grammar) anyNumber() grammars.Token {
 	characters := "0123456789"
 	return app.anyCharacterToken("number", characters)
 }

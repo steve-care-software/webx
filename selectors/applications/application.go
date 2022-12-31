@@ -4,23 +4,16 @@ import (
 	"errors"
 	"fmt"
 
-	grammar_applications "github.com/steve-care-software/webx/grammars/applications"
 	"github.com/steve-care-software/webx/grammars/domain/grammars"
 	"github.com/steve-care-software/webx/grammars/domain/trees"
 	"github.com/steve-care-software/webx/selectors/domain/selectors"
 )
 
 type application struct {
-	grammarSoftware grammar_applications.Application
 }
 
-func createApplication(
-	grammarSoftware grammar_applications.Application,
-) Application {
-	out := application{
-		grammarSoftware: grammarSoftware,
-	}
-
+func createApplication() Application {
+	out := application{}
 	return &out
 }
 
@@ -30,13 +23,7 @@ func (app *application) Matches(grammar grammars.Grammar, selector selectors.Sel
 }
 
 // Execute executes a selector on a data tree
-func (app *application) Execute(selector selectors.Selector, script []byte) (interface{}, bool, []byte, error) {
-	grammar := selector.Grammar()
-	treeIns, err := app.grammarSoftware.Execute(grammar, script)
-	if err != nil {
-		return nil, false, nil, err
-	}
-
+func (app *application) Execute(selector selectors.Selector, treeIns trees.Tree) (interface{}, bool, []byte, error) {
 	ins, isValid, err := app.selectorFetch(selector, treeIns, nil)
 	if err != nil {
 		return nil, false, nil, err

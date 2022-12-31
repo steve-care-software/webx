@@ -10,25 +10,25 @@ func TestGrammar_Success(t *testing.T) {
 	grammarApp := grammar_applications.NewApplication()
 	ins := NewGrammar()
 	script := `
-	        module @myModule;;
-			@myModule $myApp;;
+		module @myModule;;
+		@myModule $myApp;;
 
-			-> $myInput;;
-			<- $myOutput;;
+		-> $myInput;;
+		<- $myOutput;;
 
-			$constantVariable = this is a constant;;
-			$assignedVariable = $myInput;;
-			$instructions = {
-				-> $first;;
-				<- $output;;
+		$constantVariable = this is a constant;;
+		$assignedVariable = $myInput;;
+		$instructions = {
+			-> $first;;
+			<- $output;;
 
-				$output = $first;;
-			};;
+			$output = $first;;
+		};;
 
-			attach $myInput:$internal $myApp;;
+		attach $myInput:$internal $myApp;;
 
-			execute $myApp;;
-			$appExec = execute $myApp;;
+		execute $myApp;;
+		$appExec = execute $myApp;;
 		`
 
 	treeIns, err := grammarApp.Execute(ins, []byte(script))

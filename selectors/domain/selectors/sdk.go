@@ -1,7 +1,6 @@
 package selectors
 
 import (
-	"github.com/steve-care-software/webx/grammars/domain/grammars"
 	"github.com/steve-care-software/webx/grammars/domain/trees"
 )
 
@@ -60,7 +59,6 @@ func NewContentFnBuilder() ContentFnBuilder {
 // Builder represents a selector builder
 type Builder interface {
 	Create() Builder
-	WithGrammar(grammar grammars.Grammar) Builder
 	WithToken(token Token) Builder
 	WithInside(inside Inside) Builder
 	WithFn(fn SelectorFn) Builder
@@ -69,7 +67,6 @@ type Builder interface {
 
 // Selector represents a selector
 type Selector interface {
-	Grammar() grammars.Grammar
 	Token() Token
 	Inside() Inside
 	Fn() SelectorFn
