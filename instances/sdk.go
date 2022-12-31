@@ -14,21 +14,35 @@ import (
 
 // NewGrammar creates a new gramar instance
 func NewGrammar() grammars.Grammar {
+	builder := grammars.NewBuilder()
+	channelsBuilder := grammars.NewChannelsBuilder()
+	channelBuilder := grammars.NewChannelBuilder()
+	instanceBuilder := grammars.NewInstanceBuilder()
+	everythingBuilder := grammars.NewEverythingBuilder()
+	tokensBuilder := grammars.NewTokensBuilder()
+	tokenBuilder := grammars.NewTokenBuilder()
+	suitesBuilder := grammars.NewSuitesBuilder()
+	suiteBuilder := grammars.NewSuiteBuilder()
+	blockBuilder := grammars.NewBlockBuilder()
+	lineBuilder := grammars.NewLineBuilder()
+	elementBuilder := grammars.NewElementBuilder()
+	valueBuilder := grammar_values.NewBuilder()
+	cardinalityBuilder := cardinalities.NewBuilder()
 	grammarIns := createGrammar(
-		grammars.NewBuilder(),
-		grammars.NewChannelsBuilder(),
-		grammars.NewChannelBuilder(),
-		grammars.NewInstanceBuilder(),
-		grammars.NewEverythingBuilder(),
-		grammars.NewTokensBuilder(),
-		grammars.NewTokenBuilder(),
-		grammars.NewSuitesBuilder(),
-		grammars.NewSuiteBuilder(),
-		grammars.NewBlockBuilder(),
-		grammars.NewLineBuilder(),
-		grammars.NewElementBuilder(),
-		grammar_values.NewBuilder(),
-		cardinalities.NewBuilder(),
+		builder,
+		channelsBuilder,
+		channelBuilder,
+		instanceBuilder,
+		everythingBuilder,
+		tokensBuilder,
+		tokenBuilder,
+		suitesBuilder,
+		suiteBuilder,
+		blockBuilder,
+		lineBuilder,
+		elementBuilder,
+		valueBuilder,
+		cardinalityBuilder,
 	)
 
 	ins, err := grammarIns.Execute()
