@@ -26,12 +26,8 @@ func TestModule_engineGrammarCardinality_withMin_withoutMax_Success(t *testing.T
 		$output = execute $cardinalityApp;;
 	`
 
-	name := "roger"
 	virtualMachine := NewApplication()
-	output, remaining, err := virtualMachine.ParseThenInterpret([]interface{}{
-		name,
-	}, []byte(script))
-
+	output, remaining, err := virtualMachine.ParseThenInterpret([]interface{}{}, []byte(script))
 	if len(remaining) > 0 {
 		t.Errorf("the remaining data was expected to be empty: %s", remaining)
 		return
@@ -88,12 +84,8 @@ func TestModule_engineGrammarCardinality_withMin_withMax_Success(t *testing.T) {
 		$output = execute $cardinalityApp;;
 	`
 
-	name := "roger"
 	virtualMachine := NewApplication()
-	output, remaining, err := virtualMachine.ParseThenInterpret([]interface{}{
-		name,
-	}, []byte(script))
-
+	output, remaining, err := virtualMachine.ParseThenInterpret([]interface{}{}, []byte(script))
 	if len(remaining) > 0 {
 		t.Errorf("the remaining data was expected to be empty: %s", remaining)
 		return
