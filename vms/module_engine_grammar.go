@@ -247,8 +247,8 @@ func (app *moduleEngineGrammar) newGrammarEverything() modules.ExecuteFn {
 func (app *moduleEngineGrammar) newGrammarToken() modules.ExecuteFn {
 	return func(input map[uint]interface{}) (interface{}, error) {
 		builder := app.tokenBuilder.Create()
-		if name, ok := input[0]; ok {
-			builder.WithName(fmt.Sprintf("%s", name))
+		if name, ok := input[0].([]byte); ok {
+			builder.WithName(string(name))
 		}
 
 		if block, ok := input[1].(grammars.Block); ok {
