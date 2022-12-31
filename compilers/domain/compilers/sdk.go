@@ -1,7 +1,8 @@
 package compilers
 
 import (
-	"github.com/steve-care-software/webx/roots/domain/programs/programs"
+	"github.com/steve-care-software/webx/grammars/domain/grammars"
+	"github.com/steve-care-software/webx/programs/domain/programs"
 	"github.com/steve-care-software/webx/selectors/domain/selectors"
 )
 
@@ -60,6 +61,7 @@ type Executions interface {
 // ExecutionBuilder represents an execution builder
 type ExecutionBuilder interface {
 	Create() ExecutionBuilder
+	WithGrammar(grammar grammars.Grammar) ExecutionBuilder
 	WithParameters(parameters Parameters) ExecutionBuilder
 	WithProgram(program programs.Program) ExecutionBuilder
 	WithExecuteProgramModule(execProgramModule uint) ExecutionBuilder
@@ -68,6 +70,7 @@ type ExecutionBuilder interface {
 
 // Execution represents an instructions execution
 type Execution interface {
+	Grammar() grammars.Grammar
 	Parameters() Parameters
 	Program() programs.Program
 	ExecuteProgramModule() uint

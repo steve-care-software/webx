@@ -3,10 +3,12 @@ package compilers
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/roots/domain/programs/programs"
+	"github.com/steve-care-software/webx/grammars/domain/grammars"
+	"github.com/steve-care-software/webx/programs/domain/programs"
 )
 
 type executionBuilder struct {
+	grammar               grammars.Grammar
 	parameters            Parameters
 	program               programs.Program
 	pExecuteProgramModule *uint
@@ -14,6 +16,7 @@ type executionBuilder struct {
 
 func createExecutionBuilder() ExecutionBuilder {
 	out := executionBuilder{
+		grammar:               nil,
 		parameters:            nil,
 		program:               nil,
 		pExecuteProgramModule: nil,
@@ -25,6 +28,12 @@ func createExecutionBuilder() ExecutionBuilder {
 // Create initializes the builder
 func (app *executionBuilder) Create() ExecutionBuilder {
 	return createExecutionBuilder()
+}
+
+// WithGrammar adds a grammar to the builder
+func (app *executionBuilder) WithGrammar(grammar grammars.Grammar) ExecutionBuilder {
+	app.grammar = grammar
+	return app
 }
 
 // WithParameters add parameters to the builder
@@ -47,6 +56,10 @@ func (app *executionBuilder) WithExecuteProgramModule(execProgramModule uint) Ex
 
 // Now builds a new Execution instance
 func (app *executionBuilder) Now() (Execution, error) {
+	if app.grammar == nil {
+		return nil, errors.New("the grammar is mandatory in order to build an Execution instance")
+	}
+
 	if app.parameters == nil {
 		return nil, errors.New("the parameters is mandatory in order to build an Execution instance")
 	}
@@ -59,5 +72,5 @@ func (app *executionBuilder) Now() (Execution, error) {
 		return nil, errors.New("the executeProgramModule is mandatory in order to build an Execution instance")
 	}
 
-	return createExecution(app.parameters, app.program, *app.pExecuteProgramModule), nil
+	return createExecution(app.grammar, app.parameters, app.program, *app.pExecuteProgramModule), nil
 }
