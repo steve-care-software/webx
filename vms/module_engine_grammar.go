@@ -228,8 +228,8 @@ func (app *moduleEngineGrammar) newGrammarInstance() modules.ExecuteFn {
 func (app *moduleEngineGrammar) newGrammarEverything() modules.ExecuteFn {
 	return func(input map[uint]interface{}) (interface{}, error) {
 		builder := app.everythingBuilder.Create()
-		if name, ok := input[0]; ok {
-			builder.WithName(fmt.Sprintf("%s", name))
+		if name, ok := input[0].([]byte); ok {
+			builder.WithName(string(name))
 		}
 
 		if exception, ok := input[1].(grammars.Token); ok {
