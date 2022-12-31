@@ -7,7 +7,7 @@ import (
 	"github.com/steve-care-software/webx/grammars/domain/grammars/values"
 )
 
-func TestModule_engine_grammar_value_Success(t *testing.T) {
+func TestModule_engineGrammarValue_Success(t *testing.T) {
 	script := `
 		module @newGrammarValue:7;;
 		module @castToUint:1;;
