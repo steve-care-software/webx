@@ -1,4 +1,4 @@
-package instances
+package vms
 
 import (
 	grammar_applications "github.com/steve-care-software/webx/grammars/applications"
