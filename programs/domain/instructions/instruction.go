@@ -3,11 +3,12 @@ package instructions
 import (
 	"github.com/steve-care-software/webx/programs/domain/instructions/applications"
 	"github.com/steve-care-software/webx/programs/domain/instructions/attachments"
+	"github.com/steve-care-software/webx/programs/domain/instructions/modules"
 	"github.com/steve-care-software/webx/programs/domain/instructions/parameters"
 )
 
 type instruction struct {
-	module      []byte
+	module      modules.Module
 	application applications.Application
 	parameter   parameters.Parameter
 	assignment  Assignment
@@ -16,7 +17,7 @@ type instruction struct {
 }
 
 func createInstructionWithModule(
-	module []byte,
+	module modules.Module,
 ) Instruction {
 	return createInstructionInternally(module, nil, nil, nil, nil, nil)
 }
@@ -52,7 +53,7 @@ func createInstructionWithExecution(
 }
 
 func createInstructionInternally(
-	module []byte,
+	module modules.Module,
 	application applications.Application,
 	parameter parameters.Parameter,
 	assignment Assignment,
@@ -77,7 +78,7 @@ func (obj *instruction) IsModule() bool {
 }
 
 // Module returns the module, if any
-func (obj *instruction) Module() []byte {
+func (obj *instruction) Module() modules.Module {
 	return obj.module
 }
 

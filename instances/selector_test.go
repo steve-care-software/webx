@@ -16,7 +16,7 @@ func TestSelector_Success(t *testing.T) {
 	selectorApp := selector_application.NewApplication()
 
 	script := `
-        module @myModule;;
+        module @myModule:0;;
 		@myModule $myApp;;
 
 		-> $myInput;;
@@ -31,7 +31,7 @@ func TestSelector_Success(t *testing.T) {
 			$output = $first;;
 		};;
 
-		attach $myInput:$internal $myApp;;
+		attach $myInput:0 $myApp;;
 
 		execute $myApp;;
 		$appExec = execute $myApp;;
@@ -49,7 +49,7 @@ func TestSelector_Success(t *testing.T) {
 
 	instructionsIns, isValid, remaining, err := selectorApp.Execute(selectorIns, treeIns)
 	if err != nil {
-		t.Errorf("the error was expecte to be nil, error returned: %s", err.Error())
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
 	}
 
@@ -77,7 +77,8 @@ func TestSelector_Success(t *testing.T) {
 				return
 			}
 
-			name := string(ins.Module())
+			moduleIns := ins.Module()
+			name := string(moduleIns.Name())
 			if name != "myModule" {
 				t.Errorf("the module name was expected to be '%s', '%s' returned", "myModule", name)
 				return
@@ -90,7 +91,7 @@ func TestSelector_Success(t *testing.T) {
 				return
 			}
 
-			application := ins.Application()
+			/*application := ins.Application()
 			module := string(application.Module())
 			if module != "myModule" {
 				t.Errorf("the module name was expected to be '%s', '%s' returned", "myModule", module)
@@ -101,7 +102,7 @@ func TestSelector_Success(t *testing.T) {
 			if name != "myApp" {
 				t.Errorf("the parameter's name was expected to be '%s', '%s' returned", "myApp", name)
 				return
-			}
+			}*/
 
 			break
 		case 2:
@@ -229,9 +230,8 @@ func TestSelector_Success(t *testing.T) {
 				return
 			}
 
-			target := string(variable.Target())
-			if target != "internal" {
-				t.Errorf("the assignment's target variable was expected to be '%s', '%s' returned", "internal", target)
+			if variable.Target() != 0 {
+				t.Errorf("the assignment's target variable was expected to be '%d', '%d' returned", 0, variable.Target())
 				return
 			}
 

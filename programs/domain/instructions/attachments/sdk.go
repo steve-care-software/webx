@@ -28,12 +28,12 @@ type Attachment interface {
 type VariableBuilder interface {
 	Create() VariableBuilder
 	WithCurrent(current []byte) VariableBuilder
-	WithTarget(target []byte) VariableBuilder
+	WithTarget(target uint) VariableBuilder
 	Now() (Variable, error)
 }
 
 // Variable represents an attachment variable
 type Variable interface {
 	Current() []byte
-	Target() []byte
+	Target() uint
 }

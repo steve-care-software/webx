@@ -7,6 +7,7 @@ import (
 	"github.com/steve-care-software/webx/programs/domain/instructions"
 	"github.com/steve-care-software/webx/programs/domain/instructions/applications"
 	"github.com/steve-care-software/webx/programs/domain/instructions/attachments"
+	"github.com/steve-care-software/webx/programs/domain/instructions/modules"
 	"github.com/steve-care-software/webx/programs/domain/instructions/parameters"
 	"github.com/steve-care-software/webx/selectors/domain/selectors"
 )
@@ -56,6 +57,7 @@ func NewSelector() selectors.Selector {
 	instructionAttachmentVariableBuilder := attachments.NewVariableBuilder()
 	instructionAssignmentBuilder := instructions.NewAssignmentBuilder()
 	instructionValueBuilder := instructions.NewValueBuilder()
+	instructionModuleBuilder := modules.NewBuilder()
 	selectorIns := createSelector(
 		builder,
 		selectorFnBuilder,
@@ -73,6 +75,7 @@ func NewSelector() selectors.Selector {
 		instructionAttachmentVariableBuilder,
 		instructionAssignmentBuilder,
 		instructionValueBuilder,
+		instructionModuleBuilder,
 	)
 
 	ins, err := selectorIns.Execute()

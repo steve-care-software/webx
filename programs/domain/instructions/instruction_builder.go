@@ -5,11 +5,12 @@ import (
 
 	"github.com/steve-care-software/webx/programs/domain/instructions/applications"
 	"github.com/steve-care-software/webx/programs/domain/instructions/attachments"
+	"github.com/steve-care-software/webx/programs/domain/instructions/modules"
 	"github.com/steve-care-software/webx/programs/domain/instructions/parameters"
 )
 
 type instructionBuilder struct {
-	module      []byte
+	module      modules.Module
 	application applications.Application
 	parameter   parameters.Parameter
 	assignment  Assignment
@@ -36,7 +37,7 @@ func (app *instructionBuilder) Create() InstructionBuilder {
 }
 
 // WithModule adds a module to the builder
-func (app *instructionBuilder) WithModule(module []byte) InstructionBuilder {
+func (app *instructionBuilder) WithModule(module modules.Module) InstructionBuilder {
 	app.module = module
 	return app
 }

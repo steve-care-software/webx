@@ -3,6 +3,7 @@ package instructions
 import (
 	"github.com/steve-care-software/webx/programs/domain/instructions/applications"
 	"github.com/steve-care-software/webx/programs/domain/instructions/attachments"
+	"github.com/steve-care-software/webx/programs/domain/instructions/modules"
 	"github.com/steve-care-software/webx/programs/domain/instructions/parameters"
 )
 
@@ -44,7 +45,7 @@ type Instructions interface {
 // InstructionBuilder represents an instruction builder
 type InstructionBuilder interface {
 	Create() InstructionBuilder
-	WithModule(module []byte) InstructionBuilder
+	WithModule(module modules.Module) InstructionBuilder
 	WithApplication(application applications.Application) InstructionBuilder
 	WithParameter(parameter parameters.Parameter) InstructionBuilder
 	WithAssignment(assignment Assignment) InstructionBuilder
@@ -56,7 +57,7 @@ type InstructionBuilder interface {
 // Instruction represents an instruction
 type Instruction interface {
 	IsModule() bool
-	Module() []byte
+	Module() modules.Module
 	IsApplication() bool
 	Application() applications.Application
 	IsParameter() bool

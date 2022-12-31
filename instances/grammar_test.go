@@ -10,7 +10,7 @@ func TestGrammar_Success(t *testing.T) {
 	grammarApp := grammar_applications.NewApplication()
 	ins := NewGrammar()
 	script := `
-		module @myModule;;
+		module @myModule:0;;
 		@myModule $myApp;;
 
 		-> $myInput;;
@@ -25,7 +25,7 @@ func TestGrammar_Success(t *testing.T) {
 			$output = $first;;
 		};;
 
-		attach $myInput:$internal $myApp;;
+		attach $myInput:0 $myApp;;
 
 		execute $myApp;;
 		$appExec = execute $myApp;;

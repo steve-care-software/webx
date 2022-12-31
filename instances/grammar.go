@@ -176,8 +176,19 @@ func (app *grammar) attachment() grammars.Token {
 				app.elementFromToken(app.attachConstant(), app.cardinalityOnce()),
 				app.elementFromToken(app.variableReference(), app.cardinalityOnce()),
 				app.elementFromValue([]byte(":")[0]),
+				app.elementFromToken(app.attachmentTarget(), app.cardinalityOnce()),
 				app.elementFromToken(app.variableReference(), app.cardinalityOnce()),
-				app.elementFromToken(app.variableReference(), app.cardinalityOnce()),
+			}),
+		}),
+	)
+}
+
+func (app *grammar) attachmentTarget() grammars.Token {
+	return app.tokenFromBlock(
+		"attachmentTarget",
+		app.blockFromlines([]grammars.Line{
+			app.lineFromElements([]grammars.Element{
+				app.elementFromToken(app.number(), app.cardinalityOnce()),
 			}),
 		}),
 	)
@@ -364,6 +375,33 @@ func (app *grammar) moduleDeclaration() grammars.Token {
 			app.lineFromElements([]grammars.Element{
 				app.elementFromToken(app.moduleConstant(), app.cardinalityOnce()),
 				app.elementFromToken(app.moduleReference(), app.cardinalityOnce()),
+				app.elementFromToken(app.moduleIndex(), app.cardinalityOnce()),
+			}),
+		}),
+	)
+}
+
+func (app *grammar) moduleIndex() grammars.Token {
+	return app.tokenFromBlock(
+		"moduleIndex",
+		app.blockFromlines([]grammars.Line{
+			app.lineFromElements([]grammars.Element{
+				app.elementFromValue([]byte(":")[0]),
+				app.elementFromToken(app.number(), app.cardinalityOnce()),
+			}),
+		}),
+	)
+}
+
+func (app *grammar) number() grammars.Token {
+	return app.tokenFromBlock(
+		"number",
+		app.blockFromlines([]grammars.Line{
+			app.lineFromElements([]grammars.Element{
+				app.elementFromToken(
+					app.anyNumber(),
+					app.cardinality(1, nil),
+				),
 			}),
 		}),
 	)
@@ -426,7 +464,7 @@ func (app *grammar) alphaNumeric() grammars.Token {
 
 func (app *grammar) anyNumber() grammars.Token {
 	characters := "0123456789"
-	return app.anyCharacterToken("number", characters)
+	return app.anyCharacterToken("anyNumber", characters)
 }
 
 func (app *grammar) upperCaseLetter() grammars.Token {

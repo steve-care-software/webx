@@ -4,13 +4,13 @@ import "errors"
 
 type variableBuilder struct {
 	current []byte
-	target  []byte
+	pTarget *uint
 }
 
 func createVariableBuilder() VariableBuilder {
 	out := variableBuilder{
 		current: nil,
-		target:  nil,
+		pTarget: nil,
 	}
 
 	return &out
@@ -28,8 +28,8 @@ func (app *variableBuilder) WithCurrent(current []byte) VariableBuilder {
 }
 
 // WithTarget adds a target variable to the builder
-func (app *variableBuilder) WithTarget(target []byte) VariableBuilder {
-	app.target = target
+func (app *variableBuilder) WithTarget(target uint) VariableBuilder {
+	app.pTarget = &target
 	return app
 }
 
@@ -39,9 +39,9 @@ func (app *variableBuilder) Now() (Variable, error) {
 		return nil, errors.New("the current variable is mandatory in order to build a Variable instance")
 	}
 
-	if app.target == nil {
+	if app.pTarget == nil {
 		return nil, errors.New("the target variable is mandatory in order to build a Variable instance")
 	}
 
-	return createVariable(app.current, app.target), nil
+	return createVariable(app.current, *app.pTarget), nil
 }

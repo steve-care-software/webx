@@ -3,11 +3,13 @@ package instances
 import (
 	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/steve-care-software/webx/grammars/domain/trees"
 	"github.com/steve-care-software/webx/programs/domain/instructions"
 	"github.com/steve-care-software/webx/programs/domain/instructions/applications"
 	"github.com/steve-care-software/webx/programs/domain/instructions/attachments"
+	"github.com/steve-care-software/webx/programs/domain/instructions/modules"
 	"github.com/steve-care-software/webx/programs/domain/instructions/parameters"
 	"github.com/steve-care-software/webx/selectors/domain/selectors"
 )
@@ -29,6 +31,7 @@ type selector struct {
 	instructionAttachmentVariableBuilder attachments.VariableBuilder
 	instructionAssignmentBuilder         instructions.AssignmentBuilder
 	instructionValueBuilder              instructions.ValueBuilder
+	instructionModuleBuilder             modules.Builder
 }
 
 func createSelector(
@@ -48,6 +51,7 @@ func createSelector(
 	instructionAttachmentVariableBuilder attachments.VariableBuilder,
 	instructionAssignmentBuilder instructions.AssignmentBuilder,
 	instructionValueBuilder instructions.ValueBuilder,
+	instructionModuleBuilder modules.Builder,
 ) *selector {
 	out := selector{
 		builder:                              builder,
@@ -66,6 +70,7 @@ func createSelector(
 		instructionAttachmentVariableBuilder: instructionAttachmentVariableBuilder,
 		instructionAssignmentBuilder:         instructionAssignmentBuilder,
 		instructionValueBuilder:              instructionValueBuilder,
+		instructionModuleBuilder:             instructionModuleBuilder,
 	}
 
 	return &out
@@ -137,18 +142,30 @@ func (app *selector) attachment() selectors.Selector {
 			app.selectorWithSingleFn(
 				app.tokenWithContentIndex(
 					"attachment",
-					app.element("variableReference", 1),
+					app.element("attachmentTarget", 0),
 					0,
 				),
-				app.insideWithSelector(app.variableReference()),
+				app.insideWithSelector(
+					app.selectorWithSingleFn(
+						app.tokenWithContentIndex(
+							"attachmentTarget",
+							app.element("number", 0),
+							0,
+						),
+						app.fetchAllContentInside(),
+						func(instance interface{}) (interface{}, bool, error) {
+							return instance.([]byte), true, nil
+						},
+					),
+				),
 				func(instance interface{}) (interface{}, bool, error) {
-					return instance.([]byte), true, nil
+					return instance, true, nil
 				},
 			),
 			app.selectorWithSingleFn(
 				app.tokenWithContentIndex(
 					"attachment",
-					app.element("variableReference", 2),
+					app.element("variableReference", 1),
 					0,
 				),
 				app.insideWithSelector(app.variableReference()),
@@ -163,9 +180,14 @@ func (app *selector) attachment() selectors.Selector {
 				return nil, false, errors.New(str)
 			}
 
+			target, err := strconv.Atoi(string(instances[1].([]byte)))
+			if err != nil {
+				return nil, false, err
+			}
+
 			variable, err := app.instructionAttachmentVariableBuilder.Create().
 				WithCurrent(instances[0].([]byte)).
-				WithTarget(instances[1].([]byte)).
+				WithTarget(uint(target)).
 				Now()
 
 			if err != nil {
@@ -668,13 +690,13 @@ func (app *selector) variableReference() selectors.Selector {
 }
 
 func (app *selector) moduleDeclaration() selectors.Selector {
-	return app.selectorWithSingleFn(
+	return app.selectorWithMultiFn(
 		app.tokenWithContentIndex(
 			"instruction",
 			app.element("moduleDeclaration", 0),
 			0,
 		),
-		app.insideWithSelector(
+		app.insideWithSelectors([]selectors.Selector{
 			app.selectorWithSingleFn(
 				app.tokenWithContentIndex(
 					"moduleDeclaration",
@@ -683,24 +705,63 @@ func (app *selector) moduleDeclaration() selectors.Selector {
 				),
 				app.insideWithSelector(app.moduleReference()),
 				func(instance interface{}) (interface{}, bool, error) {
-					ins, err := app.instructionBuilder.Create().
-						WithModule(instance.([]byte)).
-						Now()
-
-					if err != nil {
-						return nil, false, err
-					}
-
-					return ins, true, nil
+					return instance, true, nil
 				},
 			),
-		),
-		func(instance interface{}) (interface{}, bool, error) {
-			if casted, ok := instance.(instructions.Instruction); ok {
-				return casted, true, nil
+
+			app.selectorWithSingleFn(
+				app.tokenWithContentIndex(
+					"moduleDeclaration",
+					app.element("moduleIndex", 0),
+					0,
+				),
+				app.insideWithSelector(
+					app.selectorWithSingleFn(
+						app.tokenWithContentIndex(
+							"moduleIndex",
+							app.element("number", 0),
+							0,
+						),
+						app.fetchAllContentInside(),
+						func(instance interface{}) (interface{}, bool, error) {
+							return instance.([]byte), true, nil
+						},
+					),
+				),
+				func(instance interface{}) (interface{}, bool, error) {
+					return instance, true, nil
+				},
+			),
+		}),
+		func(instances []interface{}) (interface{}, bool, error) {
+			if len(instances) != 2 {
+				str := fmt.Sprintf("%d elements were expected, %d returned", 2, len(instances))
+				return nil, false, errors.New(str)
 			}
 
-			return nil, false, errors.New("the instruction could not be casted properly")
+			index, err := strconv.Atoi(string(instances[1].([]byte)))
+			if err != nil {
+				return nil, false, nil
+			}
+
+			moduleIns, err := app.instructionModuleBuilder.Create().
+				WithName(instances[0].([]byte)).
+				WithIndex(uint(index)).
+				Now()
+
+			if err != nil {
+				return nil, false, err
+			}
+
+			ins, err := app.instructionBuilder.Create().
+				WithModule(moduleIns).
+				Now()
+
+			if err != nil {
+				return nil, false, err
+			}
+
+			return ins, true, nil
 		},
 	)
 }
