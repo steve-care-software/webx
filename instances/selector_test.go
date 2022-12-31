@@ -9,8 +9,8 @@ import (
 )
 
 func TestSelector_Success(t *testing.T) {
-	grammarIns := NewGrammar()
-	selectorIns := NewSelector()
+	grammarIns := newGrammar()
+	selectorIns := newSelector()
 
 	grammarApp := grammar_application.NewApplication()
 	selectorApp := selector_application.NewApplication()

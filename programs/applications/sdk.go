@@ -1,7 +1,6 @@
 package applications
 
 import (
-	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/programs/domain/instructions"
 	"github.com/steve-care-software/webx/programs/domain/programs"
 	"github.com/steve-care-software/webx/programs/domain/programs/modules"
@@ -21,7 +20,6 @@ func NewApplication(
 	attachmentsBuilder := programs.NewAttachmentsBuilder()
 	attachmentBuilder := programs.NewAttachmentBuilder()
 	valueBuilder := programs.NewValueBuilder()
-	hashAdapter := hash.NewAdapter()
 	return createApplication(
 		builder,
 		instructionsBuilder,
@@ -30,7 +28,6 @@ func NewApplication(
 		attachmentsBuilder,
 		attachmentBuilder,
 		valueBuilder,
-		hashAdapter,
 		nameBytesToStringFn,
 	)
 }
@@ -38,5 +35,5 @@ func NewApplication(
 // Application represents a program application
 type Application interface {
 	Compile(modules modules.Modules, instructions instructions.Instructions) (programs.Program, error)
-	Execute(input map[uint]interface{}, program programs.Program) (map[uint]interface{}, error)
+	Execute(input []interface{}, program programs.Program) ([]interface{}, error)
 }

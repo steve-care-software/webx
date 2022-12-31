@@ -8,7 +8,7 @@ import (
 
 func TestGrammar_Success(t *testing.T) {
 	grammarApp := grammar_applications.NewApplication()
-	ins := NewGrammar()
+	ins := newGrammar()
 	script := `
 		module @myModule:0;;
 		@myModule $myApp;;

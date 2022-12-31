@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 	"github.com/steve-care-software/webx/programs/domain/instructions"
 	instructions_application "github.com/steve-care-software/webx/programs/domain/instructions/applications"
 	"github.com/steve-care-software/webx/programs/domain/instructions/attachments"
@@ -22,7 +21,6 @@ type application struct {
 	attachmentsBuilder  programs.AttachmentsBuilder
 	attachmentBuilder   programs.AttachmentBuilder
 	valueBuilder        programs.ValueBuilder
-	hashAdapter         hash.Adapter
 	nameBytesToStringFn NameBytesToString
 }
 
@@ -34,7 +32,6 @@ func createApplication(
 	attachmentsBuilder programs.AttachmentsBuilder,
 	attachmentBuilder programs.AttachmentBuilder,
 	valueBuilder programs.ValueBuilder,
-	hashAdapter hash.Adapter,
 	nameBytesToStringFn NameBytesToString,
 ) Application {
 	out := application{
@@ -45,7 +42,6 @@ func createApplication(
 		attachmentsBuilder:  attachmentsBuilder,
 		attachmentBuilder:   attachmentBuilder,
 		valueBuilder:        valueBuilder,
-		hashAdapter:         hashAdapter,
 		nameBytesToStringFn: nameBytesToStringFn,
 	}
 	return &out
@@ -59,12 +55,14 @@ func (app *application) Compile(modulesIns modules.Modules, instructions instruc
 	inParameters := map[string]*parameter{}
 	inValues := map[string]programs.Value{}
 	inInstructions := []programs.Instruction{}
+	inOutput := []uint{}
 	for idx, oneInstruction := range list {
-		outModules, outApplications, outParameters, outValues, outInstructions, err := app.compileInstruction(
+		outModules, outApplications, outParameters, outOutput, outValues, outInstructions, err := app.compileInstruction(
 			oneInstruction,
 			inModules,
 			inApplications,
 			inParameters,
+			inOutput,
 			inValues,
 			inInstructions,
 			modulesIns,
@@ -78,17 +76,9 @@ func (app *application) Compile(modulesIns modules.Modules, instructions instruc
 		inModules = outModules
 		inApplications = outApplications
 		inParameters = outParameters
+		inOutput = outOutput
 		inValues = outValues
 		inInstructions = outInstructions
-	}
-
-	outputs := []uint{}
-	for _, parameter := range inParameters {
-		if parameter.parameter.IsInput() {
-			continue
-		}
-
-		outputs = append(outputs, parameter.index)
 	}
 
 	ins, err := app.instructionsBuilder.Create().WithList(inInstructions).Now()
@@ -97,8 +87,8 @@ func (app *application) Compile(modulesIns modules.Modules, instructions instruc
 	}
 
 	builder := app.builder.Create().WithInstructions(ins)
-	if len(outputs) > 0 {
-		builder.WithOutputs(outputs)
+	if len(inOutput) > 0 {
+		builder.WithOutputs(inOutput)
 	}
 
 	return builder.Now()
@@ -109,45 +99,46 @@ func (app *application) compileInstruction(
 	inModules map[string]modules.Module,
 	inApplications map[string]programs.Application,
 	inParameters map[string]*parameter,
+	inOutput []uint,
 	inValues map[string]programs.Value,
 	inInstructions []programs.Instruction,
 	allModules modules.Modules,
-) (map[string]modules.Module, map[string]programs.Application, map[string]*parameter, map[string]programs.Value, []programs.Instruction, error) {
+) (map[string]modules.Module, map[string]programs.Application, map[string]*parameter, []uint, map[string]programs.Value, []programs.Instruction, error) {
 	if instruction.IsModule() {
 		name := instruction.Module()
 		outModules, err := app.compileModule(name, inModules, allModules)
 		if err != nil {
-			return nil, nil, nil, nil, nil, err
+			return nil, nil, nil, nil, nil, nil, err
 		}
 
-		return outModules, inApplications, inParameters, inValues, inInstructions, nil
+		return outModules, inApplications, inParameters, inOutput, inValues, inInstructions, nil
 	}
 
 	if instruction.IsApplication() {
 		insApp := instruction.Application()
 		outApplications, err := app.compileApplication(insApp, inModules, inApplications)
 		if err != nil {
-			return nil, nil, nil, nil, nil, err
+			return nil, nil, nil, nil, nil, nil, err
 		}
 
-		return inModules, outApplications, inParameters, inValues, inInstructions, nil
+		return inModules, outApplications, inParameters, inOutput, inValues, inInstructions, nil
 	}
 
 	if instruction.IsParameter() {
 		insParameter := instruction.Parameter()
 		outParameters, err := app.compileParameter(insParameter, inParameters)
 		if err != nil {
-			return nil, nil, nil, nil, nil, err
+			return nil, nil, nil, nil, nil, nil, err
 		}
 
-		return inModules, inApplications, outParameters, inValues, inInstructions, nil
+		return inModules, inApplications, outParameters, inOutput, inValues, inInstructions, nil
 	}
 
 	if instruction.IsAssignment() {
 		assignment := instruction.Assignment()
 		valueIns, err := app.compileValue(assignment, inParameters, inApplications, allModules)
 		if err != nil {
-			return nil, nil, nil, nil, nil, err
+			return nil, nil, nil, nil, nil, nil, err
 		}
 
 		variableName := assignment.Variable()
@@ -156,36 +147,59 @@ func (app *application) compileInstruction(
 		outValues := inValues
 		outValues[variableNameStr] = valueIns
 
-		return inModules, inApplications, inParameters, outValues, inInstructions, nil
+		ins, err := app.instructionBuilder.Create().WithValue(valueIns).Now()
+		if err != nil {
+			return nil, nil, nil, nil, nil, nil, err
+		}
+
+		outOutput := inOutput
+		if param, ok := inParameters[variableNameStr]; ok {
+			if !param.parameter.IsInput() {
+				outOutput = append(outOutput, uint(len(inInstructions)))
+			}
+		}
+
+		outInstructions := append(inInstructions, ins)
+		return inModules, inApplications, inParameters, outOutput, outValues, outInstructions, nil
 	}
 
 	if instruction.IsAttachment() {
 		attachment := instruction.Attachment()
 		outApplications, err := app.compileAttachment(attachment, inParameters, inValues, inApplications, allModules)
 		if err != nil {
-			return nil, nil, nil, nil, nil, err
+			return nil, nil, nil, nil, nil, nil, err
 		}
 
-		return inModules, outApplications, inParameters, inValues, inInstructions, nil
+		return inModules, outApplications, inParameters, inOutput, inValues, inInstructions, nil
 	}
 
 	execution := instruction.Execution()
-	executionNameStr := app.nameBytesToStringFn(execution)
-	instructionBuilder := app.instructionBuilder.Create()
-	if executedApp, ok := inApplications[executionNameStr]; ok {
-		instructionBuilder.WithExecution(executedApp)
-	} else {
-		str := fmt.Sprintf("the application's execution (name: %s) is invalid because the application is undefined", executionNameStr)
-		return nil, nil, nil, nil, nil, errors.New(str)
-	}
-
-	ins, err := instructionBuilder.Now()
+	outInstructions, err := app.compileExecution(execution, inApplications, inInstructions)
 	if err != nil {
-		return nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, err
 	}
 
-	inInstructions = append(inInstructions, ins)
-	return inModules, inApplications, inParameters, inValues, inInstructions, nil
+	return inModules, inApplications, inParameters, inOutput, inValues, outInstructions, nil
+}
+
+func (app *application) compileExecution(
+	execution []byte,
+	inApplications map[string]programs.Application,
+	inInstructions []programs.Instruction,
+) ([]programs.Instruction, error) {
+	executionNameStr := app.nameBytesToStringFn(execution)
+	if _, ok := inApplications[executionNameStr]; !ok {
+		str := fmt.Sprintf("the application's execution (name: %s) is invalid because the application is undefined", executionNameStr)
+		return nil, errors.New(str)
+	}
+
+	ins, err := app.instructionBuilder.Create().WithExecution(inApplications[executionNameStr]).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	outInstructions := append(inInstructions, ins)
+	return outInstructions, nil
 }
 
 func (app *application) compileAttachment(
@@ -250,11 +264,11 @@ func (app *application) compileAttachmentValue(
 
 	if parameter, ok := inParameters[currentNameStr]; ok {
 		if !parameter.parameter.IsInput() {
-			str := fmt.Sprintf("the output variable (name: %s, index: %d) cannot be used in attachment", currentNameStr, parameter.index)
+			str := fmt.Sprintf("the output variable (name: %s, parameter index: %d) cannot be used in attachment", currentNameStr, parameter.allParameterIndex)
 			return nil, errors.New(str)
 		}
 
-		return app.valueBuilder.Create().WithInput(parameter.index).Now()
+		return app.valueBuilder.Create().WithInput(parameter.inputParameterIndex).Now()
 	}
 
 	str := fmt.Sprintf("the current variable (name: %s) is undeclared and therefore cannot be used in an attachment", currentNameStr)
@@ -281,7 +295,7 @@ func (app *application) compileValue(
 				return nil, errors.New(str)
 			}
 
-			builder.WithInput(parameter.index)
+			builder.WithInput(parameter.inputParameterIndex)
 		} else {
 			str := fmt.Sprintf("the assignment (name: %s) is using an undefined parameter (name: %s) as value", variableNameStr, assignedVariableNameStr)
 			return nil, errors.New(str)
@@ -328,9 +342,19 @@ func (app *application) compileParameter(
 		return nil, errors.New(str)
 	}
 
+	inputParameterIndex := uint(0)
+	for _, oneParameter := range inParameters {
+		if !oneParameter.parameter.IsInput() {
+			continue
+		}
+
+		inputParameterIndex++
+	}
+
 	inParameters[parameterNameStr] = &parameter{
-		index:     uint(len(inParameters)),
-		parameter: parameterIns,
+		allParameterIndex:   uint(len(inParameters)),
+		inputParameterIndex: inputParameterIndex,
+		parameter:           parameterIns,
 	}
 
 	return inParameters, nil
@@ -388,22 +412,19 @@ func (app *application) compileModule(
 }
 
 // Execute executes a program
-func (app *application) Execute(input map[uint]interface{}, program programs.Program) (map[uint]interface{}, error) {
+func (app *application) Execute(input []interface{}, program programs.Program) ([]interface{}, error) {
 	valueHashes := map[string]interface{}{}
 	valueIndexes := map[uint]interface{}{}
 	instructions := program.Instructions().List()
 	for idx, oneInstruction := range instructions {
 		if oneInstruction.IsValue() {
 			value := oneInstruction.Value()
-			valueHash := value.Hash().String()
-
 			ins, err := app.executeValue(input, valueHashes, value)
 			if err != nil {
-				str := fmt.Sprintf("there was an error while executing an assignment (index: %d. value's hash: %s): %s", idx, valueHash, err.Error())
+				str := fmt.Sprintf("there was an error while executing an assignment (index: %d): %s", idx, err.Error())
 				return nil, errors.New(str)
 			}
 
-			valueHashes[valueHash] = ins
 			valueIndexes[uint(idx)] = ins
 			continue
 		}
@@ -411,19 +432,19 @@ func (app *application) Execute(input map[uint]interface{}, program programs.Pro
 		execution := oneInstruction.Execution()
 		_, err := app.execute(input, valueHashes, execution)
 		if err != nil {
-			hash := execution.Hash().String()
-			index := execution.Index()
-			str := fmt.Sprintf("there was an error while executing an application (index: %d, application's hash: %s, application's index: %d): %s", idx, hash, index, err.Error())
+			appIndex := execution.Index()
+			moduleIndex := execution.Module().Index()
+			str := fmt.Sprintf("there was an error while executing an application (module: %d, application: %d, instruction: %d): %s", moduleIndex, appIndex, idx, err.Error())
 			return nil, errors.New(str)
 		}
 	}
 
-	filtered := map[uint]interface{}{}
+	filtered := []interface{}{}
 	if program.HasOutputs() {
 		outputs := program.Outputs()
 		for _, oneOutput := range outputs {
 			if ins, ok := valueIndexes[oneOutput]; ok {
-				filtered[oneOutput] = ins
+				filtered = append(filtered, ins)
 				continue
 			}
 
@@ -435,16 +456,16 @@ func (app *application) Execute(input map[uint]interface{}, program programs.Pro
 	return filtered, nil
 }
 
-func (app *application) executeValue(input map[uint]interface{}, values map[string]interface{}, value programs.Value) (interface{}, error) {
+func (app *application) executeValue(input []interface{}, values map[string]interface{}, value programs.Value) (interface{}, error) {
 	content := value.Content()
 	if content.IsInput() {
 		pInputIndex := content.Input()
-		if ins, ok := input[*pInputIndex]; ok {
-			return ins, nil
+		if *pInputIndex >= uint(len(input)) {
+			str := fmt.Sprintf("the requested input variable (index: %d) is undefined", *pInputIndex)
+			return nil, errors.New(str)
 		}
 
-		str := fmt.Sprintf("the requested input variable (index: %d) is undefined", *pInputIndex)
-		return nil, errors.New(str)
+		return input[*pInputIndex], nil
 	}
 
 	if content.IsConstant() {
@@ -465,7 +486,7 @@ func (app *application) executeValue(input map[uint]interface{}, values map[stri
 	return app.execute(input, values, execution)
 }
 
-func (app *application) execute(input map[uint]interface{}, values map[string]interface{}, execution programs.Application) (interface{}, error) {
+func (app *application) execute(input []interface{}, values map[string]interface{}, execution programs.Application) (interface{}, error) {
 	module := execution.Module()
 	parameters := map[uint]interface{}{}
 	if execution.HasAttachments() {
