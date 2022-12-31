@@ -198,8 +198,8 @@ func (app *moduleEngineGrammar) newGrammarChannelCondition() modules.ExecuteFn {
 func (app *moduleEngineGrammar) newGrammarExternal() modules.ExecuteFn {
 	return func(input map[uint]interface{}) (interface{}, error) {
 		builder := app.externalBuilder.Create()
-		if name, ok := input[0]; ok {
-			builder.WithName(fmt.Sprintf("%s", name))
+		if name, ok := input[0].([]byte); ok {
+			builder.WithName(string(name))
 		}
 
 		if grammar, ok := input[1].(grammars.Grammar); ok {
