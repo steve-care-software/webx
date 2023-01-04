@@ -1183,9 +1183,7 @@ attach $cardinalityMandatorySingle:0 $elementApp;;
 attach $valueLetterUpperCaseZ:1 $elementApp;;
 $elementSingleLetterUpperCaseZ = execute $elementApp;;
 
-/*
-    Any number Token:
-*/
+// [0-9] any number token:
 attach $elementSingleNumberZero:0 $listApp;;
 attach $elementSingleNumberOne:1 $listApp;;
 attach $elementSingleNumberTwo:2 $listApp;;
