@@ -32,8 +32,14 @@ const (
 	// ModuleCastToFloat64 represents the castToFloat32 module
 	ModuleCastToFloat64
 
-	// ModuleContainerMapWithKeynames represents the containerMapWithKeynames module
-	ModuleContainerMapWithKeynames
+	// ModuleContainerMapFetchValueFromUintKeyname represents the containerMapFetchValueFromUintKeyname module
+	ModuleContainerMapFetchValueFromUintKeyname
+
+	// ModuleContainerMapFetchValueFromStringKeyname represents the containerMapFetchValueFromStringKeyname module
+	ModuleContainerMapFetchValueFromStringKeyname
+
+	// ModuleContainerListFetchValue represents the containerListFetchValue module
+	ModuleContainerListFetchValue
 
 	// ModuleContainerList represents the containerList module
 	ModuleContainerList
@@ -83,21 +89,68 @@ const (
 	// ModuleEngineGrammar represents the engineGrammar module
 	ModuleEngineGrammar
 
-	// ModuleEngineExecuteGrammar represents the engineExecuteGrammar module
-	ModuleEngineExecuteGrammar
+	// ModuleEngineGrammarExecute represents the engineGrammarExecute module
+	ModuleEngineGrammarExecute
+
+	// ModuleEngineInterpreterParseThenExecute represents the engineInterpreterParseThenExecute module
+	ModuleEngineInterpreterParseThenExecute
+
+	// ModuleEngineInterpreterResultIsValid represents the engineInterpreterResultIsValid module
+	ModuleEngineInterpreterResultIsValid
+
+	// ModuleEngineInterpreterResultHasValues represents the engineInterpreterResultHasValues module
+	ModuleEngineInterpreterResultHasValues
+
+	// ModuleEngineInterpreterResultValues represents the engineInterpreterResultValues module
+	ModuleEngineInterpreterResultValues
+
+	// ModuleEngineInterpreterHasRemaining represents the engineInterpreterHasRemaining module
+	ModuleEngineInterpreterHasRemaining
+
+	// ModuleEngineInterpreterRemaining represents the engineInterpreterRemaining module
+	ModuleEngineInterpreterRemaining
+
+	// ModuleEngineSelectorFetcher represents the engineSelectorFetcher module
+	ModuleEngineSelectorFetcher
+
+	// ModuleEngineSelectorFetchers represents the engineSelectorFetchers module
+	ModuleEngineSelectorFetchers
+
+	// ModuleEngineSelectorContentFn represents the engineSelectorContentFn module
+	ModuleEngineSelectorContentFn
+
+	// ModuleEngineSelectorInside represents the engineSelectorInside module
+	ModuleEngineSelectorInside
+
+	// ModuleEngineSelectorElement represents the engineSelectorElement module
+	ModuleEngineSelectorElement
+
+	// ModuleEngineSelectorToken represents the engineSelectorToken module
+	ModuleEngineSelectorToken
+
+	// ModuleEngineSelectorSelectorFn represents the engineSelectorSelectorFn module
+	ModuleEngineSelectorSelectorFn
+
+	// ModuleEngineSelector represents the engineSelector module
+	ModuleEngineSelector
+
+	// ModuleEngineExecute represents the engineSelectorExecute module
+	ModuleEngineExecute
+
+	// ModuleEngineCompilerExecute represents the engineCompilerExecute module
+	ModuleEngineCompilerExecute
 )
 
 // NewApplication creates a new virtual machine application
-func NewApplication() interpreter_applications.Application {
+func NewApplication(modulesFn interpreter_applications.FetchModulesFn) interpreter_applications.Application {
 	interpreterAppBuilder := interpreter_applications.NewBuilder(func(name []byte) string {
 		return string(name)
 	})
 
-	modules := newModules()
 	grammar := newGrammar()
 	selector := newSelector()
 	interpreterApp, err := interpreterAppBuilder.Create().
-		WithModules(modules).
+		WithModulesFn(modulesFn).
 		WithGrammar(grammar).
 		WithSelector(selector).
 		Now()
@@ -109,7 +162,50 @@ func NewApplication() interpreter_applications.Application {
 	return interpreterApp
 }
 
-func newModules() modules.Modules {
+func newModules(moduleFuncs map[uint]modules.ExecuteFn) modules.Modules {
+	// build the modules list:
+	modulesList := []modules.Module{}
+	moduleBuilder := modules.NewModuleBuilder()
+	for idx, oneFunc := range moduleFuncs {
+		ins, err := moduleBuilder.Create().WithIndex(uint(idx)).WithFunc(oneFunc).Now()
+		if err != nil {
+			panic(err)
+		}
+
+		modulesList = append(modulesList, ins)
+	}
+
+	modulesIns, err := modules.NewBuilder().Create().WithList(modulesList).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return modulesIns
+}
+
+func newInterpreterModulesFuncs() map[uint]modules.ExecuteFn {
+	// create the interpreter
+	interpreterApp := NewApplication(func() (modules.Modules, error) {
+		moduleFuncs := newInterpreterModulesFuncs()
+		return newModules(moduleFuncs), nil
+	})
+
+	// create the interpreter module funcs:
+	interpreterFnsMap := createModuleInterpreter(interpreterApp).Execute()
+	allModules := map[uint]modules.ExecuteFn{}
+	for idx, fn := range interpreterFnsMap {
+		allModules[idx] = fn
+	}
+
+	moduleFnsMap := newModulesFuncs()
+	for idx, fn := range moduleFnsMap {
+		allModules[idx] = fn
+	}
+
+	return allModules
+}
+
+func newModulesFuncs() map[uint]modules.ExecuteFn {
 	// create the cast module funcs:
 	castFnsMap := createModuleCast().Execute()
 
@@ -166,24 +262,7 @@ func newModules() modules.Modules {
 		moduleFuncs[idx] = fn
 	}
 
-	// build the modules list:
-	modulesList := []modules.Module{}
-	moduleBuilder := modules.NewModuleBuilder()
-	for idx, oneFunc := range moduleFuncs {
-		ins, err := moduleBuilder.Create().WithIndex(uint(idx)).WithFunc(oneFunc).Now()
-		if err != nil {
-			panic(err)
-		}
-
-		modulesList = append(modulesList, ins)
-	}
-
-	modulesIns, err := modules.NewBuilder().Create().WithList(modulesList).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return modulesIns
+	return moduleFuncs
 }
 
 func newGrammar() grammars.Grammar {

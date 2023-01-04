@@ -5,33 +5,36 @@ import (
 
 	grammars_application "github.com/steve-care-software/webx/grammars/applications"
 	"github.com/steve-care-software/webx/grammars/domain/grammars"
+	"github.com/steve-care-software/webx/interpreters/domain/results"
 	programs_application "github.com/steve-care-software/webx/programs/applications"
-	"github.com/steve-care-software/webx/programs/domain/programs/modules"
 	selectors_application "github.com/steve-care-software/webx/selectors/applications"
 	"github.com/steve-care-software/webx/selectors/domain/selectors"
 )
 
 type builder struct {
-	grammarApp  grammars_application.Application
-	selectorApp selectors_application.Application
-	programApp  programs_application.Application
-	grammarIns  grammars.Grammar
-	selectorIns selectors.Selector
-	modules     modules.Modules
+	resultBuilder results.Builder
+	grammarApp    grammars_application.Application
+	selectorApp   selectors_application.Application
+	programApp    programs_application.Application
+	grammarIns    grammars.Grammar
+	selectorIns   selectors.Selector
+	modulesFn     FetchModulesFn
 }
 
 func createBuilder(
+	resultBuilder results.Builder,
 	grammarApp grammars_application.Application,
 	selectorApp selectors_application.Application,
 	programApp programs_application.Application,
 ) Builder {
 	out := builder{
-		grammarApp:  grammarApp,
-		selectorApp: selectorApp,
-		programApp:  programApp,
-		grammarIns:  nil,
-		selectorIns: nil,
-		modules:     nil,
+		resultBuilder: resultBuilder,
+		grammarApp:    grammarApp,
+		selectorApp:   selectorApp,
+		programApp:    programApp,
+		grammarIns:    nil,
+		selectorIns:   nil,
+		modulesFn:     nil,
 	}
 
 	return &out
@@ -40,6 +43,7 @@ func createBuilder(
 // Create initializes the builder
 func (app *builder) Create() Builder {
 	return createBuilder(
+		app.resultBuilder,
 		app.grammarApp,
 		app.selectorApp,
 		app.programApp,
@@ -58,9 +62,9 @@ func (app *builder) WithSelector(selector selectors.Selector) Builder {
 	return app
 }
 
-// WithModules add modules to the builder
-func (app *builder) WithModules(modules modules.Modules) Builder {
-	app.modules = modules
+// WithModulesFn add modules func to the builder
+func (app *builder) WithModulesFn(modulesFn FetchModulesFn) Builder {
+	app.modulesFn = modulesFn
 	return app
 }
 
@@ -74,16 +78,17 @@ func (app *builder) Now() (Application, error) {
 		return nil, errors.New("the selector instance is mandatory in order to build an Application instance")
 	}
 
-	if app.modules == nil {
-		return nil, errors.New("the modules instance is mandatory in order to build an Application instance")
+	if app.modulesFn == nil {
+		return nil, errors.New("the modules's Func is mandatory in order to build an Application instance")
 	}
 
 	return createApplication(
+		app.resultBuilder,
 		app.grammarApp,
 		app.selectorApp,
 		app.programApp,
 		app.grammarIns,
 		app.selectorIns,
-		app.modules,
+		app.modulesFn,
 	), nil
 }

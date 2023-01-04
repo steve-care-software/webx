@@ -91,7 +91,7 @@ func (app *moduleEngineGrammar) grammar() map[uint]modules.ExecuteFn {
 	channel := app.newGrammarChannel()
 	channels := app.newGrammarChannels()
 	grammar := app.newGrammar()
-	executeGrammar := app.newGrammar()
+	grammarExecute := app.grammarExecute()
 	return map[uint]modules.ExecuteFn{
 		ModuleEngineGrammarValue:            value,
 		ModuleEngineGrammarCardinality:      cardinality,
@@ -108,11 +108,11 @@ func (app *moduleEngineGrammar) grammar() map[uint]modules.ExecuteFn {
 		ModuleEngineGrammarChannel:          channel,
 		ModuleEngineGrammarChannels:         channels,
 		ModuleEngineGrammar:                 grammar,
-		ModuleEngineExecuteGrammar:          executeGrammar,
+		ModuleEngineGrammarExecute:          grammarExecute,
 	}
 }
 
-func (app *moduleEngineGrammar) executeGrammar() modules.ExecuteFn {
+func (app *moduleEngineGrammar) grammarExecute() modules.ExecuteFn {
 	return func(input map[uint]interface{}) (interface{}, error) {
 		if grammar, ok := input[0].(grammars.Grammar); ok {
 			if data, ok := input[1].([]byte); ok {
@@ -382,10 +382,6 @@ func (app *moduleEngineGrammar) newGrammarElement() modules.ExecuteFn {
 func (app *moduleEngineGrammar) newGrammarCardinality() modules.ExecuteFn {
 	return func(input map[uint]interface{}) (interface{}, error) {
 		if min, ok := input[0].(uint); ok {
-			if min <= 0 {
-				return nil, errors.New("the minimum cannot be smaller or equal than 0")
-			}
-
 			builder := app.cardinalityBuilder.Create().WithMin(min)
 			if max, ok := input[1].(uint); ok {
 				if max < 0 {

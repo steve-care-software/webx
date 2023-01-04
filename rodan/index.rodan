@@ -1,0 +1,1210 @@
+module @castToUint:1;;
+module @grammarValue:9;;
+module @grammarCardinality:10;;
+module @grammarElement:11;;
+module @grammarLine:12;;
+module @grammarBlock:13;;
+module @grammarToken:16;;
+module @interpreterParseThenExecute:25;;
+module @interpreterResultValues:28;;
+module @containerListFetchValue:7;;
+module @containerList:8;;
+
+<- $output;;
+
+// declare the applications:
+@castToUint $castToUintApp;;
+@grammarValue $grammarValueApp;;
+@grammarCardinality $cardinalityApp;;
+@grammarElement $elementApp;;
+@grammarLine $lineApp;;
+@grammarBlock $blockApp;;
+@grammarToken $tokenApp;;
+@containerList $listApp;;
+@containerListFetchValue $fetchValueFromList;;
+@interpreterParseThenExecute $execApp;;
+@interpreterResultValues $execResultValues;;
+
+$anyNumberTokenScript =
+    module @containerList:8\;;
+    module @grammarLine:12\;;
+    module @grammarBlock:13\;;
+    module @grammarToken:16\;;
+
+    -> $numberZero\;;
+    -> $numberOne\;;
+    -> $numberTwo\;;
+    -> $numberThree\;;
+    -> $numberFour\;;
+    -> $numberFive\;;
+    -> $numberSix\;;
+    -> $numberSeven\;;
+    -> $numberHeight\;;
+    -> $numberNine\;;
+    <- $output\;;
+
+    // declare the applications:
+    @containerList $listApp\;;
+    @grammarLine $lineApp\;;
+    @grammarBlock $blockApp\;;
+    @grammarToken $tokenApp\;;
+
+    attach $numberZero:0 $listApp\;;
+    $numberZero = execute $listApp\;;
+    attach $numberZero:0 $lineApp\;;
+    $lineZero = execute $lineApp\;;
+
+    attach $numberOne:0 $listApp\;;
+    $numberOne = execute $listApp\;;
+    attach $numberOne:0 $lineApp\;;
+    $lineOne = execute $lineApp\;;
+
+    attach $numberTwo:0 $listApp\;;
+    $numberTwo = execute $listApp\;;
+    attach $numberTwo:0 $lineApp\;;
+    $lineTwo = execute $lineApp\;;
+
+    attach $numberThree:0 $listApp\;;
+    $numberThree = execute $listApp\;;
+    attach $numberThree:0 $lineApp\;;
+    $lineThree = execute $lineApp\;;
+
+    attach $numberFour:0 $listApp\;;
+    $numberFour = execute $listApp\;;
+    attach $numberFour:0 $lineApp\;;
+    $lineFour = execute $lineApp\;;
+
+    attach $numberFive:0 $listApp\;;
+    $numberFive = execute $listApp\;;
+    attach $numberFive:0 $lineApp\;;
+    $lineFive = execute $lineApp\;;
+
+    attach $numberSix:0 $listApp\;;
+    $numberSix = execute $listApp\;;
+    attach $numberSix:0 $lineApp\;;
+    $lineSix = execute $lineApp\;;
+
+    attach $numberSeven:0 $listApp\;;
+    $numberSeven = execute $listApp\;;
+    attach $numberSeven:0 $lineApp\;;
+    $lineSeven = execute $lineApp\;;
+
+    attach $numberHeight:0 $listApp\;;
+    $numberHeight = execute $listApp\;;
+    attach $numberHeight:0 $lineApp\;;
+    $lineHeight = execute $lineApp\;;
+
+    attach $numberNine:0 $listApp\;;
+    $numberNine = execute $listApp\;;
+    attach $numberNine:0 $lineApp\;;
+    $lineNine = execute $lineApp\;;
+
+    attach $lineZero:0 $listApp\;;
+    attach $lineOne:1 $listApp\;;
+    attach $lineTwo:2 $listApp\;;
+    attach $lineThree:3 $listApp\;;
+    attach $lineFour:4 $listApp\;;
+    attach $lineFive:5 $listApp\;;
+    attach $lineSix:6 $listApp\;;
+    attach $lineSeven:7 $listApp\;;
+    attach $lineHeight:8 $listApp\;;
+    attach $lineNine:9 $listApp\;;
+    $lines = execute $listApp\;;
+
+    attach $lines:0 $blockApp\;;
+    $block = execute $blockApp\;;
+
+    $name = anyNumber\;;
+    attach $name:0 $tokenApp\;;
+    attach $block:1 $tokenApp\;;
+    $output = execute $tokenApp\;;
+;;
+
+// first index:
+$firstIndexStr = 0;;
+attach $firstIndexStr:0 $castToUintApp;;
+$firstIndex = execute $castToUintApp;;
+
+// @ value:
+$name = commercialA;;
+$number = 64;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueCommercialA = execute $grammarValueApp;;
+
+// - value:
+$name = hyphen;;
+$number = 45;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueHyphen = execute $grammarValueApp;;
+
+// ; value:
+$name = semiColon;;
+$number = 59;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueSemiColon = execute $grammarValueApp;;
+
+// [ value:
+$name = openSquareBracket;;
+$number = 91;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueOpenSquareBracket = execute $grammarValueApp;;
+
+// ] value:
+$name = closeSquareBracket;;
+$number = 93;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueCloseSquareBracket = execute $grammarValueApp;;
+
+// : value:
+$name = colon;;
+$number = 58;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueColon = execute $grammarValueApp;;
+
+// | value:
+$name = pipe;;
+$number = 124;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valuePipe = execute $grammarValueApp;;
+
+// [ value:
+$name = openBracket;;
+$number = 123;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueOpenBracket = execute $grammarValueApp;;
+
+// ] value:
+$name = closeBracket;;
+$number = 125;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueCloseBracket = execute $grammarValueApp;;
+
+// # value:
+$name = hashTag;;
+$number = 35;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueHashTag = execute $grammarValueApp;;
+
+// ! value:
+$name = exclamationPoint;;
+$number = 33;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueExclamationPoint = execute $grammarValueApp;;
+
+// 0 value:
+$name = numberZero;;
+$number = 48;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueNumberZero = execute $grammarValueApp;;
+
+// 1 value:
+$name = numberOne;;
+$number = 49;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueNumberOne = execute $grammarValueApp;;
+
+// 2 value:
+$name = numberTwo;;
+$number = 50;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueNumberTwo = execute $grammarValueApp;;
+
+// 3 value:
+$name = numberThree;;
+$number = 51;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueNumberThree = execute $grammarValueApp;;
+
+// 4 value:
+$name = numberFour;;
+$number = 52;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueNumberFour = execute $grammarValueApp;;
+
+// 5 value:
+$name = numberFive;;
+$number = 53;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueNumberFive = execute $grammarValueApp;;
+
+// 6 value:
+$name = numberSix;;
+$number = 54;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueNumberSix = execute $grammarValueApp;;
+
+// 7 value:
+$name = numberSeven;;
+$number = 55;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueNumberSeven = execute $grammarValueApp;;
+
+// 8 value:
+$name = numberHeight;;
+$number = 56;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueNumberHeight = execute $grammarValueApp;;
+
+// 9 value:
+$name = numberNine;;
+$number = 57;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueNumberNine = execute $grammarValueApp;;
+
+// a value:
+$name = letterLowerCaseA;;
+$number = 97;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseA = execute $grammarValueApp;;
+
+// b value:
+$name = letterLowerCaseB;;
+$number = 98;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseB = execute $grammarValueApp;;
+
+// c value:
+$name = letterLowerCaseC;;
+$number = 99;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseC = execute $grammarValueApp;;
+
+// d value:
+$name = letterLowerCaseD;;
+$number = 100;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseD = execute $grammarValueApp;;
+
+// e value:
+$name = letterLowerCaseE;;
+$number = 101;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseE = execute $grammarValueApp;;
+
+// f value:
+$name = letterLowerCaseF;;
+$number = 102;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseF = execute $grammarValueApp;;
+
+// g value:
+$name = letterLowerCaseG;;
+$number = 103;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseG = execute $grammarValueApp;;
+
+// h value:
+$name = letterLowerCaseH;;
+$number = 104;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseH = execute $grammarValueApp;;
+
+// i value:
+$name = letterLowerCaseI;;
+$number = 105;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseI = execute $grammarValueApp;;
+
+// j value:
+$name = letterLowerCaseJ;;
+$number = 106;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseJ = execute $grammarValueApp;;
+
+// k value:
+$name = letterLowerCaseK;;
+$number = 107;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseK = execute $grammarValueApp;;
+
+// l value:
+$name = letterLowerCaseL;;
+$number = 108;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseL = execute $grammarValueApp;;
+
+// m value:
+$name = letterLowerCaseM;;
+$number = 109;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseM = execute $grammarValueApp;;
+
+// n value:
+$name = letterLowerCaseN;;
+$number = 110;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseN = execute $grammarValueApp;;
+
+// o value:
+$name = letterLowerCaseO;;
+$number = 111;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseO = execute $grammarValueApp;;
+
+// p value:
+$name = letterLowerCaseP;;
+$number = 112;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseP = execute $grammarValueApp;;
+
+// q value:
+$name = letterLowerCaseQ;;
+$number = 113;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseQ = execute $grammarValueApp;;
+
+// r value:
+$name = letterLowerCaseR;;
+$number = 114;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseR = execute $grammarValueApp;;
+
+// s value:
+$name = letterLowerCaseS;;
+$number = 115;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseS = execute $grammarValueApp;;
+
+// t value:
+$name = letterLowerCaseT;;
+$number = 116;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseT = execute $grammarValueApp;;
+
+// u value:
+$name = letterLowerCaseU;;
+$number = 117;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseU = execute $grammarValueApp;;
+
+// v value:
+$name = letterLowerCaseV;;
+$number = 118;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseV = execute $grammarValueApp;;
+
+// w value:
+$name = letterLowerCaseW;;
+$number = 119;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseW = execute $grammarValueApp;;
+
+// x value:
+$name = letterLowerCaseX;;
+$number = 120;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseX = execute $grammarValueApp;;
+
+// y value:
+$name = letterLowerCaseY;;
+$number = 121;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseY = execute $grammarValueApp;;
+
+// z value:
+$name = letterLowerCaseZ;;
+$number = 122;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterLowerCaseZ = execute $grammarValueApp;;
+
+// A value:
+$name = letterUpperCaseA;;
+$number = 65;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseA = execute $grammarValueApp;;
+
+// B value:
+$name = letterUpperCaseB;;
+$number = 66;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseB = execute $grammarValueApp;;
+
+// C value:
+$name = letterUpperCaseC;;
+$number = 67;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseC = execute $grammarValueApp;;
+
+// D value:
+$name = letterUpperCaseD;;
+$number = 68;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseD = execute $grammarValueApp;;
+
+// E value:
+$name = letterUpperCaseE;;
+$number = 69;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseE = execute $grammarValueApp;;
+
+// F value:
+$name = letterUpperCaseF;;
+$number = 70;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseF = execute $grammarValueApp;;
+
+// G value:
+$name = letterUpperCaseG;;
+$number = 71;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseG = execute $grammarValueApp;;
+
+// H value:
+$name = letterUpperCaseH;;
+$number = 72;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseH = execute $grammarValueApp;;
+
+// I value:
+$name = letterUpperCaseI;;
+$number = 73;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseI = execute $grammarValueApp;;
+
+// J value:
+$name = letterUpperCaseJ;;
+$number = 74;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseJ = execute $grammarValueApp;;
+
+// K value:
+$name = letterUpperCaseK;;
+$number = 75;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseK = execute $grammarValueApp;;
+
+// L value:
+$name = letterUpperCaseL;;
+$number = 76;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseL = execute $grammarValueApp;;
+
+// M value:
+$name = letterUpperCaseM;;
+$number = 77;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseM = execute $grammarValueApp;;
+
+// N value:
+$name = letterUpperCaseN;;
+$number = 78;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseN = execute $grammarValueApp;;
+
+// O value:
+$name = letterUpperCaseO;;
+$number = 79;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseO = execute $grammarValueApp;;
+
+// P value:
+$name = letterUpperCaseP;;
+$number = 80;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseP = execute $grammarValueApp;;
+
+// Q value:
+$name = letterUpperCaseQ;;
+$number = 81;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseQ = execute $grammarValueApp;;
+
+// R value:
+$name = letterUpperCaseR;;
+$number = 82;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseR = execute $grammarValueApp;;
+
+// S value:
+$name = letterUpperCaseS;;
+$number = 83;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseS = execute $grammarValueApp;;
+
+// T value:
+$name = letterUpperCaseT;;
+$number = 84;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseT = execute $grammarValueApp;;
+
+// U value:
+$name = letterUpperCaseU;;
+$number = 85;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseU = execute $grammarValueApp;;
+
+// V value:
+$name = letterUpperCaseV;;
+$number = 86;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseV = execute $grammarValueApp;;
+
+// W value:
+$name = letterUpperCaseW;;
+$number = 87;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseW = execute $grammarValueApp;;
+
+// X value:
+$name = letterUpperCaseX;;
+$number = 88;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseX = execute $grammarValueApp;;
+
+// Y value:
+$name = letterUpperCaseY;;
+$number = 89;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseY = execute $grammarValueApp;;
+
+// Z value:
+$name = letterUpperCaseZ;;
+$number = 90;;
+attach $number:0 $castToUintApp;;
+$castedNumber = execute $castToUintApp;;
+attach $castedNumber:0 $grammarValueApp;;
+attach $name:1 $grammarValueApp;;
+$valueLetterUpperCaseZ = execute $grammarValueApp;;
+
+// * (optional multiple) cardinality [0,]
+$min = 0;;
+attach $min:0 $castToUintApp;;
+$castedMin = execute $castToUintApp;;
+attach $castedMin:0 $cardinalityApp;;
+$cardinalityOptionalMultiple = execute $cardinalityApp;;
+
+// + (mandatory multiple) cardinality [1,]
+$min = 1;;
+attach $min:0 $castToUintApp;;
+$castedMin = execute $castToUintApp;;
+attach $castedMin:0 $cardinalityApp;;
+$cardinalityMandatoryMultiple = execute $cardinalityApp;;
+
+// ? (optional single) cardinality [0,1]
+$min = 0;;
+$max = 1;;
+attach $min:0 $castToUintApp;;
+$castedMin = execute $castToUintApp;;
+attach $max:0 $castToUintApp;;
+$castedMax = execute $castToUintApp;;
+attach $castedMin:0 $cardinalityApp;;
+attach $castedMax:1 $cardinalityApp;;
+$cardinalityOptionalSingle = execute $cardinalityApp;;
+
+// (mandatory single) cardinality [1,1]
+$min = 1;;
+$max = 1;;
+attach $min:0 $castToUintApp;;
+$castedMin = execute $castToUintApp;;
+attach $max:0 $castToUintApp;;
+$castedMax = execute $castToUintApp;;
+attach $castedMin:0 $cardinalityApp;;
+attach $castedMax:1 $cardinalityApp;;
+$cardinalityMandatorySingle = execute $cardinalityApp;;
+
+// @ element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueCommercialA:1 $elementApp;;
+$elementSingleCommercialA = execute $elementApp;;
+
+// - element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueHyphen:1 $elementApp;;
+$elementSingleHyphen = execute $elementApp;;
+
+// ; element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueSemiColon:1 $elementApp;;
+$elementSingleSemiColon = execute $elementApp;;
+
+// [ element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueOpenSquareBracket:1 $elementApp;;
+$elementSingleOpenSquareBracket = execute $elementApp;;
+
+// ] element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueCloseSquareBracket:1 $elementApp;;
+$elementSingleCloseSquareBracket = execute $elementApp;;
+
+// : element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueColon:1 $elementApp;;
+$elementSingleColon = execute $elementApp;;
+
+// | element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valuePipe:1 $elementApp;;
+$elementSinglePipe = execute $elementApp;;
+
+// [ element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueOpenBracket:1 $elementApp;;
+$elementSingleOpenBracket = execute $elementApp;;
+
+// ] element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueCloseBracket:1 $elementApp;;
+$elementSingleCloseBracket = execute $elementApp;;
+
+// # element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueHashTag:1 $elementApp;;
+$elementSingleHashTag = execute $elementApp;;
+
+// ! element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueExclamationPoint:1 $elementApp;;
+$elementSingleExclamationPoint = execute $elementApp;;
+
+// 0 element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueNumberZero:1 $elementApp;;
+$elementSingleNumberZero = execute $elementApp;;
+
+// 1 element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueNumberOne:1 $elementApp;;
+$elementSingleNumberOne = execute $elementApp;;
+
+// 2 element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueNumberTwo:1 $elementApp;;
+$elementSingleNumberTwo = execute $elementApp;;
+
+// 3 element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueNumberThree:1 $elementApp;;
+$elementSingleNumberThree = execute $elementApp;;
+
+// 4 element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueNumberFour:1 $elementApp;;
+$elementSingleNumberFour = execute $elementApp;;
+
+// 5 element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueNumberFive:1 $elementApp;;
+$elementSingleNumberFive = execute $elementApp;;
+
+// 6 element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueNumberSix:1 $elementApp;;
+$elementSingleNumberSix = execute $elementApp;;
+
+// 7 element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueNumberSeven:1 $elementApp;;
+$elementSingleNumberSeven = execute $elementApp;;
+
+// 8 element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueNumberHeight:1 $elementApp;;
+$elementSingleNumberHeight = execute $elementApp;;
+
+// 9 element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueNumberNine:1 $elementApp;;
+$elementSingleNumberNine = execute $elementApp;;
+
+// a element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseA:1 $elementApp;;
+$elementSingleLetterLowerCaseA = execute $elementApp;;
+
+// b element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseB:1 $elementApp;;
+$elementSingleLetterLowerCaseB = execute $elementApp;;
+
+// c element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseC:1 $elementApp;;
+$elementSingleLetterLowerCaseC = execute $elementApp;;
+
+// d element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseD:1 $elementApp;;
+$elementSingleLetterLowerCaseD = execute $elementApp;;
+
+// e element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseE:1 $elementApp;;
+$elementSingleLetterLowerCaseE = execute $elementApp;;
+
+// f element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseF:1 $elementApp;;
+$elementSingleLetterLowerCaseF = execute $elementApp;;
+
+// g element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseG:1 $elementApp;;
+$elementSingleLetterLowerCaseG = execute $elementApp;;
+
+// h element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseH:1 $elementApp;;
+$elementSingleLetterLowerCaseH = execute $elementApp;;
+
+// i element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseI:1 $elementApp;;
+$elementSingleLetterLowerCaseI = execute $elementApp;;
+
+// j element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseJ:1 $elementApp;;
+$elementSingleLetterLowerCaseJ = execute $elementApp;;
+
+// k element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseK:1 $elementApp;;
+$elementSingleLetterLowerCaseK = execute $elementApp;;
+
+// l element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseL:1 $elementApp;;
+$elementSingleLetterLowerCaseL = execute $elementApp;;
+
+// m element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseM:1 $elementApp;;
+$elementSingleLetterLowerCaseM = execute $elementApp;;
+
+// n element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseN:1 $elementApp;;
+$elementSingleLetterLowerCaseN = execute $elementApp;;
+
+// o element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseO:1 $elementApp;;
+$elementSingleLetterLowerCaseO = execute $elementApp;;
+
+// p element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseP:1 $elementApp;;
+$elementSingleLetterLowerCaseP = execute $elementApp;;
+
+// q element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseQ:1 $elementApp;;
+$elementSingleLetterLowerCaseQ = execute $elementApp;;
+
+// r element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseR:1 $elementApp;;
+$elementSingleLetterLowerCaseR = execute $elementApp;;
+
+// s element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseS:1 $elementApp;;
+$elementSingleLetterLowerCaseS = execute $elementApp;;
+
+// t element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseT:1 $elementApp;;
+$elementSingleLetterLowerCaseT = execute $elementApp;;
+
+// u element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseU:1 $elementApp;;
+$elementSingleLetterLowerCaseU = execute $elementApp;;
+
+// v element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseV:1 $elementApp;;
+$elementSingleLetterLowerCaseV = execute $elementApp;;
+
+// w element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseW:1 $elementApp;;
+$elementSingleLetterLowerCaseW = execute $elementApp;;
+
+// x element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseX:1 $elementApp;;
+$elementSingleLetterLowerCaseX = execute $elementApp;;
+
+// y element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseY:1 $elementApp;;
+$elementSingleLetterLowerCaseY = execute $elementApp;;
+
+// z element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterLowerCaseZ:1 $elementApp;;
+$elementSingleLetterLowerCaseZ = execute $elementApp;;
+
+// A element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseA:1 $elementApp;;
+$elementSingleLetterUpperCaseA = execute $elementApp;;
+
+// B element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseB:1 $elementApp;;
+$elementSingleLetterUpperCaseB = execute $elementApp;;
+
+// C element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseC:1 $elementApp;;
+$elementSingleLetterUpperCaseC = execute $elementApp;;
+
+// D element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseD:1 $elementApp;;
+$elementSingleLetterUpperCaseD = execute $elementApp;;
+
+// E element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseE:1 $elementApp;;
+$elementSingleLetterUpperCaseE = execute $elementApp;;
+
+// F element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseF:1 $elementApp;;
+$elementSingleLetterUpperCaseF = execute $elementApp;;
+
+// G element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseG:1 $elementApp;;
+$elementSingleLetterUpperCaseG = execute $elementApp;;
+
+// H element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseH:1 $elementApp;;
+$elementSingleLetterUpperCaseH = execute $elementApp;;
+
+// I element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseI:1 $elementApp;;
+$elementSingleLetterUpperCaseI = execute $elementApp;;
+
+// J element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseJ:1 $elementApp;;
+$elementSingleLetterUpperCaseJ = execute $elementApp;;
+
+// K element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseK:1 $elementApp;;
+$elementSingleLetterUpperCaseK = execute $elementApp;;
+
+// L element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseL:1 $elementApp;;
+$elementSingleLetterUpperCaseL = execute $elementApp;;
+
+// M element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseM:1 $elementApp;;
+$elementSingleLetterUpperCaseM = execute $elementApp;;
+
+// N element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseN:1 $elementApp;;
+$elementSingleLetterUpperCaseN = execute $elementApp;;
+
+// O element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseO:1 $elementApp;;
+$elementSingleLetterUpperCaseO = execute $elementApp;;
+
+// P element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseP:1 $elementApp;;
+$elementSingleLetterUpperCaseP = execute $elementApp;;
+
+// Q element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseQ:1 $elementApp;;
+$elementSingleLetterUpperCaseQ = execute $elementApp;;
+
+// R element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseR:1 $elementApp;;
+$elementSingleLetterUpperCaseR = execute $elementApp;;
+
+// S element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseS:1 $elementApp;;
+$elementSingleLetterUpperCaseS = execute $elementApp;;
+
+// T element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseT:1 $elementApp;;
+$elementSingleLetterUpperCaseT = execute $elementApp;;
+
+// U element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseU:1 $elementApp;;
+$elementSingleLetterUpperCaseU = execute $elementApp;;
+
+// V element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseV:1 $elementApp;;
+$elementSingleLetterUpperCaseV = execute $elementApp;;
+
+// W element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseW:1 $elementApp;;
+$elementSingleLetterUpperCaseW = execute $elementApp;;
+
+// X element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseX:1 $elementApp;;
+$elementSingleLetterUpperCaseX = execute $elementApp;;
+
+// Y element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseY:1 $elementApp;;
+$elementSingleLetterUpperCaseY = execute $elementApp;;
+
+// Z element single:
+attach $cardinalityMandatorySingle:0 $elementApp;;
+attach $valueLetterUpperCaseZ:1 $elementApp;;
+$elementSingleLetterUpperCaseZ = execute $elementApp;;
+
+/*
+    Any number Token:
+*/
+attach $elementSingleNumberZero:0 $listApp;;
+attach $elementSingleNumberOne:1 $listApp;;
+attach $elementSingleNumberTwo:2 $listApp;;
+attach $elementSingleNumberThree:3 $listApp;;
+attach $elementSingleNumberFour:4 $listApp;;
+attach $elementSingleNumberFive:5 $listApp;;
+attach $elementSingleNumberSix:6 $listApp;;
+attach $elementSingleNumberSeven:7 $listApp;;
+attach $elementSingleNumberHeight:8 $listApp;;
+attach $elementSingleNumberNine:9 $listApp;;
+$anyNumberParams = execute $listApp;;
+
+attach $anyNumberParams:0 $execApp;;
+attach $anyNumberTokenScript:1 $execApp;;
+$anyNumberTokenResult = execute $execApp;;
+
+attach $anyNumberTokenResult:0 $execResultValues;;
+$anyNumberTokenResultValues = execute $execResultValues;;
+
+attach $firstIndex:0 $fetchValueFromList;;
+attach $anyNumberTokenResultValues:1 $fetchValueFromList;;
+$output = execute $fetchValueFromList;;

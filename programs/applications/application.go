@@ -375,7 +375,7 @@ func (app *application) compileApplication(
 	module := application.Module()
 	moduleNameStr := app.nameBytesToStringFn(module)
 	if _, ok := inModules[moduleNameStr]; !ok {
-		str := fmt.Sprintf("the module (name: %string) is undefined but used in the application declaration (name: %s)", moduleNameStr, appNameStr)
+		str := fmt.Sprintf("the module (name: %s) is undefined but used in the application declaration (name: %s)", moduleNameStr, appNameStr)
 		return nil, errors.New(str)
 	}
 
