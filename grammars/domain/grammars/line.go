@@ -3,17 +3,17 @@ package grammars
 import "github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 
 type line struct {
-	hash     hash.Hash
-	elements []Element
+	hash       hash.Hash
+	containers []Container
 }
 
 func createLine(
 	hash hash.Hash,
-	elements []Element,
+	containers []Container,
 ) Line {
 	out := line{
-		hash:     hash,
-		elements: elements,
+		hash:       hash,
+		containers: containers,
 	}
 
 	return &out
@@ -27,14 +27,14 @@ func (obj *line) Hash() hash.Hash {
 // Points returns the amount of points a line contains
 func (obj *line) Points() uint {
 	amount := uint(0)
-	for _, oneElement := range obj.elements {
-		amount += oneElement.Points()
+	for _, oneContainer := range obj.containers {
+		amount += oneContainer.Points()
 	}
 
 	return amount
 }
 
-// Elements returns the elements
-func (obj *line) Elements() []Element {
-	return obj.elements
+// Containers returns the containers
+func (obj *line) Containers() []Container {
+	return obj.containers
 }

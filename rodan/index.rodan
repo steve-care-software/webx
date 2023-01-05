@@ -2,11 +2,12 @@ module @castToUint:1;;
 module @grammarValue:9;;
 module @grammarCardinality:10;;
 module @grammarElement:11;;
-module @grammarLine:12;;
-module @grammarBlock:13;;
-module @grammarToken:16;;
-module @interpreterParseThenExecute:25;;
-module @interpreterResultValues:28;;
+module @grammarContainer:12;;
+module @grammarLine:13;;
+module @grammarBlock:14;;
+module @grammarToken:17;;
+module @interpreterParseThenExecute:26;;
+module @interpreterResultValues:29;;
 module @containerListFetchValue:7;;
 module @containerList:8;;
 
@@ -17,6 +18,7 @@ module @containerList:8;;
 @grammarValue $grammarValueApp;;
 @grammarCardinality $cardinalityApp;;
 @grammarElement $elementApp;;
+@grammarContainer $containerApp;;
 @grammarLine $lineApp;;
 @grammarBlock $blockApp;;
 @grammarToken $tokenApp;;
@@ -27,9 +29,9 @@ module @containerList:8;;
 
 $anyNumberTokenScript =
     module @containerList:8\;;
-    module @grammarLine:12\;;
-    module @grammarBlock:13\;;
-    module @grammarToken:16\;;
+    module @grammarLine:13\;;
+    module @grammarBlock:14\;;
+    module @grammarToken:17\;;
 
     -> $numberZero\;;
     -> $numberOne\;;
@@ -1181,28 +1183,4 @@ $elementSingleLetterUpperCaseY = execute $elementApp;;
 // Z element single:
 attach $cardinalityMandatorySingle:0 $elementApp;;
 attach $valueLetterUpperCaseZ:1 $elementApp;;
-$elementSingleLetterUpperCaseZ = execute $elementApp;;
-
-// [0-9] any number token:
-attach $elementSingleNumberZero:0 $listApp;;
-attach $elementSingleNumberOne:1 $listApp;;
-attach $elementSingleNumberTwo:2 $listApp;;
-attach $elementSingleNumberThree:3 $listApp;;
-attach $elementSingleNumberFour:4 $listApp;;
-attach $elementSingleNumberFive:5 $listApp;;
-attach $elementSingleNumberSix:6 $listApp;;
-attach $elementSingleNumberSeven:7 $listApp;;
-attach $elementSingleNumberHeight:8 $listApp;;
-attach $elementSingleNumberNine:9 $listApp;;
-$anyNumberParams = execute $listApp;;
-
-attach $anyNumberParams:0 $execApp;;
-attach $anyNumberTokenScript:1 $execApp;;
-$anyNumberTokenResult = execute $execApp;;
-
-attach $anyNumberTokenResult:0 $execResultValues;;
-$anyNumberTokenResultValues = execute $execResultValues;;
-
-attach $firstIndex:0 $fetchValueFromList;;
-attach $anyNumberTokenResultValues:1 $fetchValueFromList;;
-$output = execute $fetchValueFromList;;
+$output = execute $elementApp;;

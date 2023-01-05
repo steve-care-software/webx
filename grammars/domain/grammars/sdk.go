@@ -85,10 +85,27 @@ func NewLineBuilder() LineBuilder {
 	return createLineBuilder(hashAdapter)
 }
 
+// NewContainerBuilder creates a new container instance
+func NewContainerBuilder() ContainerBuilder {
+	return createContainerBuilder()
+}
+
 // NewElementBuilder creates a new element builder
 func NewElementBuilder() ElementBuilder {
 	hashAdapter := hash.NewAdapter()
 	return createElementBuilder(hashAdapter)
+}
+
+// NewComposeBuilder creates a new compose builder instance
+func NewComposeBuilder() ComposeBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createComposeBuilder(hashAdapter)
+}
+
+// NewComposeElementBuilder creates a new composeElement builder
+func NewComposeElementBuilder() ComposeElementBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createComposeElementBuilder(hashAdapter)
 }
 
 // Builder represents a grammar builder
@@ -257,8 +274,8 @@ type Suites interface {
 // SuiteBuilder represents a suite builder
 type SuiteBuilder interface {
 	Create() SuiteBuilder
-	WithValid(valid []byte) SuiteBuilder
-	WithInvalid(invalid []byte) SuiteBuilder
+	WithValid(valid Compose) SuiteBuilder
+	WithInvalid(invalid Compose) SuiteBuilder
 	Now() (Suite, error)
 }
 
@@ -266,7 +283,7 @@ type SuiteBuilder interface {
 type Suite interface {
 	Hash() hash.Hash
 	IsValid() bool
-	Content() []byte
+	Content() Compose
 }
 
 // BlockBuilder represents a block builder
@@ -286,7 +303,7 @@ type Block interface {
 // LineBuilder represents a line builder
 type LineBuilder interface {
 	Create() LineBuilder
-	WithElements(elements []Element) LineBuilder
+	WithContainers(containers []Container) LineBuilder
 	Now() (Line, error)
 }
 
@@ -294,7 +311,25 @@ type LineBuilder interface {
 type Line interface {
 	Hash() hash.Hash
 	Points() uint
-	Elements() []Element
+	Containers() []Container
+}
+
+// ContainerBuilder represents a container builder
+type ContainerBuilder interface {
+	Create() ContainerBuilder
+	WithElement(element Element) ContainerBuilder
+	WithCompose(compose Compose) ContainerBuilder
+	Now() (Container, error)
+}
+
+// Container represents a container
+type Container interface {
+	Hash() hash.Hash
+	Points() uint
+	IsElement() bool
+	Element() Element
+	IsCompose() bool
+	Compose() Compose
 }
 
 // ElementBuilder represents an element builder
@@ -328,4 +363,34 @@ type ElementContent interface {
 	Instance() Instance
 	IsRecursive() bool
 	Recursive() string
+}
+
+// ComposeBuilder represents a compose builder
+type ComposeBuilder interface {
+	Create() ComposeBuilder
+	WithList(list []ComposeElement) ComposeBuilder
+	Now() (Compose, error)
+}
+
+// Compose represents a compose
+type Compose interface {
+	Hash() hash.Hash
+	Points() uint
+	List() []ComposeElement
+}
+
+// ComposeElementBuilder represents a compose element builder
+type ComposeElementBuilder interface {
+	Create() ComposeElementBuilder
+	WithValue(value values.Value) ComposeElementBuilder
+	WithOccurences(occurences uint) ComposeElementBuilder
+	Now() (ComposeElement, error)
+}
+
+// ComposeElement represents a compose element
+type ComposeElement interface {
+	Hash() hash.Hash
+	Points() uint
+	Value() values.Value
+	Occurences() uint
 }

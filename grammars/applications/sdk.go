@@ -44,6 +44,7 @@ func NewApplication() Application {
 
 // Application represents a grammar application
 type Application interface {
+	Compose(token grammars.Token) ([]byte, error)
 	Execute(grammar grammars.Grammar, values []byte) (trees.Tree, error)
 	Coverages(grammar grammars.Grammar) (coverages.Coverages, error)
 	Covered(coverages coverages.Coverages) (map[string]map[uint]map[uint]string, error)

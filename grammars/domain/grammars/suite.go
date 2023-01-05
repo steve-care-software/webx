@@ -5,19 +5,19 @@ import "github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 type suite struct {
 	hash    hash.Hash
 	isValid bool
-	content []byte
+	content Compose
 }
 
 func createSuiteWithValid(
 	hash hash.Hash,
-	valid []byte,
+	valid Compose,
 ) Suite {
 	return createSuiteInternally(hash, true, valid)
 }
 
 func createSuiteWithInvalid(
 	hash hash.Hash,
-	invalid []byte,
+	invalid Compose,
 ) Suite {
 	return createSuiteInternally(hash, false, invalid)
 }
@@ -25,7 +25,7 @@ func createSuiteWithInvalid(
 func createSuiteInternally(
 	hash hash.Hash,
 	isValid bool,
-	content []byte,
+	content Compose,
 ) Suite {
 	out := suite{
 		hash:    hash,
@@ -47,6 +47,6 @@ func (obj *suite) IsValid() bool {
 }
 
 // Content returns the the content
-func (obj *suite) Content() []byte {
+func (obj *suite) Content() Compose {
 	return obj.content
 }

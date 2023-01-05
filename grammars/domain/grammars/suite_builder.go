@@ -8,8 +8,8 @@ import (
 
 type suiteBuilder struct {
 	hashAdapter hash.Adapter
-	valid       []byte
-	invalid     []byte
+	valid       Compose
+	invalid     Compose
 }
 
 func createSuiteBuilder(
@@ -32,13 +32,13 @@ func (app *suiteBuilder) Create() SuiteBuilder {
 }
 
 // WithValid add valid bytes to the builder
-func (app *suiteBuilder) WithValid(valid []byte) SuiteBuilder {
+func (app *suiteBuilder) WithValid(valid Compose) SuiteBuilder {
 	app.valid = valid
 	return app
 }
 
 // WithInvalid add invalid bytes to the builder
-func (app *suiteBuilder) WithInvalid(invalid []byte) SuiteBuilder {
+func (app *suiteBuilder) WithInvalid(invalid Compose) SuiteBuilder {
 	app.invalid = invalid
 	return app
 }
@@ -56,11 +56,11 @@ func (app *suiteBuilder) Now() (Suite, error) {
 	}
 
 	if app.valid != nil {
-		data = append(data, app.valid)
+		data = append(data, app.valid.Hash().Bytes())
 	}
 
 	if app.invalid != nil {
-		data = append(data, app.invalid)
+		data = append(data, app.invalid.Hash().Bytes())
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes(data)

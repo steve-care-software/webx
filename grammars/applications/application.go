@@ -7,6 +7,7 @@ import (
 
 	"github.com/steve-care-software/webx/grammars/domain/grammars"
 	"github.com/steve-care-software/webx/grammars/domain/grammars/coverages"
+	"github.com/steve-care-software/webx/grammars/domain/grammars/values"
 	"github.com/steve-care-software/webx/grammars/domain/trees"
 )
 
@@ -64,6 +65,48 @@ func createApplication(
 	}
 
 	return &out
+}
+
+// Compose composes a grammar
+func (app *application) Compose(token grammars.Token) ([]byte, error) {
+	lines := token.Block().Lines()
+	if len(lines) > 1 {
+		str := fmt.Sprintf("the token (name: %s) contains %d lines, %d line were expected in order to execute a Compose request", token.Name(), len(lines), 1)
+		return nil, errors.New(str)
+	}
+
+	output := []byte{}
+	containers := lines[0].Containers()
+	for idx, oneContainer := range containers {
+		if oneContainer.IsElement() {
+			str := fmt.Sprintf("the token (name: %s) contains a Container (index: %d) that is an Element at line (index: %d) and therefore cannot be used to execute a Compose request", token.Name(), idx, 0)
+			return nil, errors.New(str)
+		}
+
+		compose := oneContainer.Compose()
+		data, err := app.composeCompose(compose)
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, data...)
+	}
+
+	return output, nil
+}
+
+func (app *application) composeCompose(compose grammars.Compose) ([]byte, error) {
+	output := []byte{}
+	elements := compose.List()
+	for _, oneElement := range elements {
+		number := oneElement.Value().Number()
+		occurences := int(oneElement.Occurences())
+		for i := 0; i < occurences; i++ {
+			output = append(output, number)
+		}
+	}
+
+	return output, nil
 }
 
 // Execute executes grammar on data
@@ -189,9 +232,13 @@ func (app *application) coveragesToken(token grammars.Token, channels grammars.C
 	list := []coverages.Coverage{}
 	lines := token.Block().Lines()
 	for _, oneLine := range lines {
-		elements := oneLine.Elements()
-		for _, oneElement := range elements {
-			content := oneElement.Content()
+		containers := oneLine.Containers()
+		for _, oneContainer := range containers {
+			if oneContainer.IsCompose() {
+				continue
+			}
+
+			content := oneContainer.Element().Content()
 			if content.IsExternal() {
 				grammar := content.External().Grammar()
 				coverages, err := app.Coverages(grammar)
@@ -243,7 +290,6 @@ func (app *application) coveragesToken(token grammars.Token, channels grammars.C
 					}
 				}
 			}
-
 		}
 	}
 
@@ -269,7 +315,12 @@ func (app *application) coveragesToken(token grammars.Token, channels grammars.C
 }
 
 func (app *application) coverageTokenSuite(token grammars.Token, channels grammars.Channels, suite grammars.Suite) (coverages.Execution, error) {
-	input := suite.Content()
+	content := suite.Content()
+	input, err := app.composeCompose(content)
+	if err != nil {
+		return nil, err
+	}
+
 	tree, _, err := app.token(token, map[string]*stack{}, nil, channels, false, []byte{}, input)
 	if err != nil {
 		return nil, err
@@ -331,9 +382,14 @@ func (app *application) findElementsFromToken(token grammars.Token, pElements *m
 			elements[tokenName][castedIdx] = map[uint]string{}
 		}
 
-		elementsList := oneLine.Elements()
-		for elIdx, oneElement := range elementsList {
-			castedElIdx := uint(elIdx)
+		containersList := oneLine.Containers()
+		for containerIdx, oneContainer := range containersList {
+			if oneContainer.IsCompose() {
+				continue
+			}
+
+			oneElement := oneContainer.Element()
+			castedElIdx := uint(containerIdx)
 			elements[tokenName][castedIdx][castedElIdx] = oneElement.Name()
 
 			content := oneElement.Content()
@@ -372,7 +428,6 @@ func (app *application) findElementsFromToken(token grammars.Token, pElements *m
 					}
 				}
 			}
-
 		}
 	}
 
@@ -681,11 +736,58 @@ func (app *application) block(token grammars.Token, stackMap map[string]*stack, 
 
 func (app *application) line(tokenName string, stackMap map[string]*stack, line grammars.Line, index uint, escape grammars.Token, channels grammars.Channels, isReverse bool, prevData []byte, currentData []byte) (trees.Line, []byte, map[string]*stack, error) {
 	list := []trees.Element{}
-	grElements := line.Elements()
+	grContainers := line.Containers()
 	remaining := currentData
 	previousData := prevData
 	currentStack := stackMap
-	for _, oneElement := range grElements {
+	for _, oneContainer := range grContainers {
+		if oneContainer.IsCompose() {
+			contentsList := []trees.Content{}
+			compose := oneContainer.Compose()
+			elementsList := compose.List()
+			for _, oneElement := range elementsList {
+				grValue := oneElement.Value()
+				value, rem, retStack, err := app.elementValue(tokenName, grValue, stackMap, escape, channels, isReverse, prevData, remaining)
+				if err != nil {
+					return nil, nil, nil, err
+				}
+
+				contentBuilder := app.treeContentBuilder.Create()
+				if value != nil {
+					contentBuilder.WithValue(value)
+				}
+
+				contentIns, err := contentBuilder.Now()
+				if err != nil {
+					return nil, nil, nil, err
+				}
+
+				contentsList := []trees.Content{}
+				occurences := int(oneElement.Occurences())
+				for i := 0; i < occurences; i++ {
+					contentsList = append(contentsList, contentIns)
+				}
+
+				currentStack = retStack
+				previousData = remaining
+				remaining = rem
+			}
+
+			contents, err := app.treeContentsBuilder.Create().WithList(contentsList).Now()
+			if err != nil {
+				return nil, nil, nil, err
+			}
+
+			elementIns, err := app.treeElementBuilder.Create().WithContents(contents).Now()
+			if err != nil {
+				return nil, nil, nil, err
+			}
+
+			list = append(list, elementIns)
+			continue
+		}
+
+		oneElement := oneContainer.Element()
 		contentsList := []trees.Content{}
 		cardinality := oneElement.Cardinality()
 		pMax := cardinality.Max()
@@ -842,6 +944,16 @@ func (app *application) elementContent(tokenName string, content grammars.Elemen
 		return nil, nil, nil, nil, errors.New("there must be at least 1 value in the given data in order to have an element match, 0 provided")
 	}
 
+	grValue := content.Value()
+	value, remaining, retStack, err := app.elementValue(tokenName, grValue, stackMap, escape, channels, isReverse, prevData, currentData)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+
+	return value, nil, remaining, retStack, nil
+}
+
+func (app *application) elementValue(tokenName string, value values.Value, stackMap map[string]*stack, escape grammars.Token, channels grammars.Channels, isReverse bool, prevData []byte, currentData []byte) (trees.Value, []byte, map[string]*stack, error) {
 	remaining := currentData
 	builder := app.treeValueBuilder.Create()
 	if channels != nil {
@@ -853,20 +965,20 @@ func (app *application) elementContent(tokenName string, content grammars.Elemen
 	}
 
 	if len(remaining) < 1 {
-		return nil, nil, nil, nil, errors.New("there must be at least 1 value in the given data in order to have an element match, 0 provided")
+		return nil, nil, nil, errors.New("there must be at least 1 value in the given data in order to have an element match, 0 provided")
 	}
 
-	number := content.Value().Number()
+	number := value.Number()
 	if number == remaining[0] {
 		ins, err := builder.WithContent(remaining[0]).Now()
 		if err != nil {
-			return nil, nil, nil, nil, err
+			return nil, nil, nil, err
 		}
 
-		return ins, nil, remaining[1:], stackMap, nil
+		return ins, remaining[1:], stackMap, nil
 	}
 
-	return nil, nil, nil, nil, nil
+	return nil, nil, nil, nil
 }
 
 func (app *application) instance(instance grammars.Instance, stackMap map[string]*stack, escape grammars.Token, channels grammars.Channels, isReverse bool, prevData []byte, currentData []byte) (trees.Tree, map[string]*stack, error) {

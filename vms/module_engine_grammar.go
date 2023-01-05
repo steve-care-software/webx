@@ -25,6 +25,7 @@ type moduleEngineGrammar struct {
 	suiteBuilder            grammars.SuiteBuilder
 	blockBuilder            grammars.BlockBuilder
 	lineBuilder             grammars.LineBuilder
+	containerBuilder        grammars.ContainerBuilder
 	elementBuilder          grammars.ElementBuilder
 	cardinalityBuilder      cardinalities.Builder
 	valueBuilder            values.Builder
@@ -44,6 +45,7 @@ func createModuleEngineGrammar(
 	suiteBuilder grammars.SuiteBuilder,
 	blockBuilder grammars.BlockBuilder,
 	lineBuilder grammars.LineBuilder,
+	containerBuilder grammars.ContainerBuilder,
 	elementBuilder grammars.ElementBuilder,
 	cardinalityBuilder cardinalities.Builder,
 	valueBuilder values.Builder,
@@ -62,6 +64,7 @@ func createModuleEngineGrammar(
 		suiteBuilder:            suiteBuilder,
 		blockBuilder:            blockBuilder,
 		lineBuilder:             lineBuilder,
+		containerBuilder:        containerBuilder,
 		elementBuilder:          elementBuilder,
 		cardinalityBuilder:      cardinalityBuilder,
 		valueBuilder:            valueBuilder,
@@ -79,6 +82,7 @@ func (app *moduleEngineGrammar) grammar() map[uint]modules.ExecuteFn {
 	value := app.newGrammarValue()
 	cardinality := app.newGrammarCardinality()
 	element := app.newGrammarElement()
+	container := app.newGrammarContainer()
 	line := app.newGrammarLine()
 	block := app.newGrammarBlock()
 	suite := app.newGrammarSuite()
@@ -96,6 +100,7 @@ func (app *moduleEngineGrammar) grammar() map[uint]modules.ExecuteFn {
 		ModuleEngineGrammarValue:            value,
 		ModuleEngineGrammarCardinality:      cardinality,
 		ModuleEngineGrammarElement:          element,
+		ModuleEngineGrammarContainer:        container,
 		ModuleEngineGrammarLine:             line,
 		ModuleEngineGrammarBlock:            block,
 		ModuleEngineGrammarSuite:            suite,
@@ -288,24 +293,12 @@ func (app *moduleEngineGrammar) newGrammarSuites() modules.ExecuteFn {
 func (app *moduleEngineGrammar) newGrammarSuite() modules.ExecuteFn {
 	return func(input map[uint]interface{}) (interface{}, error) {
 		builder := app.suiteBuilder.Create()
-		if valid, ok := input[0]; ok {
-			if casted, ok := valid.(string); ok {
-				builder.WithValid([]byte(casted))
-			}
-
-			if casted, ok := valid.([]byte); ok {
-				builder.WithValid(casted)
-			}
+		if valid, ok := input[0].(grammars.Compose); ok {
+			builder.WithValid(valid)
 		}
 
-		if invalid, ok := input[1]; ok {
-			if casted, ok := invalid.(string); ok {
-				builder.WithInvalid([]byte(casted))
-			}
-
-			if casted, ok := invalid.([]byte); ok {
-				builder.WithInvalid(casted)
-			}
+		if invalid, ok := input[1].(grammars.Compose); ok {
+			builder.WithInvalid(invalid)
 		}
 
 		return builder.Now()
@@ -337,22 +330,37 @@ func (app *moduleEngineGrammar) newGrammarBlock() modules.ExecuteFn {
 func (app *moduleEngineGrammar) newGrammarLine() modules.ExecuteFn {
 	return func(input map[uint]interface{}) (interface{}, error) {
 		if elementsList, ok := input[0].([]interface{}); ok {
-			list := []grammars.Element{}
-			for index, oneElement := range elementsList {
-				if casted, ok := oneElement.(grammars.Element); ok {
+			list := []grammars.Container{}
+			for index, oneContainer := range elementsList {
+				if casted, ok := oneContainer.(grammars.Container); ok {
 					list = append(list, casted)
 					continue
 				}
 
-				str := fmt.Sprintf("the value at index: %d was expected to be an Element instance", index)
+				str := fmt.Sprintf("the value at index: %d was expected to be a Container instance", index)
 				return nil, errors.New(str)
 			}
 
-			return app.lineBuilder.Create().WithElements(list).Now()
+			return app.lineBuilder.Create().WithContainers(list).Now()
 		}
 
 		str := fmt.Sprintf("the elements was expected to be valid and contain a list")
 		return nil, errors.New(str)
+	}
+}
+
+func (app *moduleEngineGrammar) newGrammarContainer() modules.ExecuteFn {
+	return func(input map[uint]interface{}) (interface{}, error) {
+		builder := app.containerBuilder.Create()
+		if element, ok := input[0].(grammars.Element); ok {
+			builder.WithElement(element)
+		}
+
+		if compose, ok := input[1].(grammars.Compose); ok {
+			builder.WithCompose(compose)
+		}
+
+		return builder.Now()
 	}
 }
 

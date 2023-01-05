@@ -53,6 +53,9 @@ const (
 	// ModuleEngineGrammarElement represents the engineGrammarElement module
 	ModuleEngineGrammarElement
 
+	// ModuleEngineGrammarContainer represents the engineGrammarContainer module
+	ModuleEngineGrammarContainer
+
 	// ModuleEngineGrammarLine represents the engineGrammarLine module
 	ModuleEngineGrammarLine
 
@@ -226,6 +229,7 @@ func newModulesFuncs() map[uint]modules.ExecuteFn {
 	grammarSuiteBuilder := grammars.NewSuiteBuilder()
 	grammarBlockBuilder := grammars.NewBlockBuilder()
 	grammarLineBuilder := grammars.NewLineBuilder()
+	grammarContainerBuilder := grammars.NewContainerBuilder()
 	grammarElementBuilder := grammars.NewElementBuilder()
 	grammarCardinalityBuilder := cardinalities.NewBuilder()
 	grammarValueBuilder := values.NewBuilder()
@@ -243,6 +247,7 @@ func newModulesFuncs() map[uint]modules.ExecuteFn {
 		grammarSuiteBuilder,
 		grammarBlockBuilder,
 		grammarLineBuilder,
+		grammarContainerBuilder,
 		grammarElementBuilder,
 		grammarCardinalityBuilder,
 		grammarValueBuilder,
@@ -277,6 +282,7 @@ func newGrammar() grammars.Grammar {
 	suiteBuilder := grammars.NewSuiteBuilder()
 	blockBuilder := grammars.NewBlockBuilder()
 	lineBuilder := grammars.NewLineBuilder()
+	containerBuilder := grammars.NewContainerBuilder()
 	elementBuilder := grammars.NewElementBuilder()
 	valueBuilder := grammar_values.NewBuilder()
 	cardinalityBuilder := cardinalities.NewBuilder()
@@ -292,6 +298,7 @@ func newGrammar() grammars.Grammar {
 		suiteBuilder,
 		blockBuilder,
 		lineBuilder,
+		containerBuilder,
 		elementBuilder,
 		valueBuilder,
 		cardinalityBuilder,

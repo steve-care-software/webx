@@ -8,7 +8,7 @@ import (
 
 type lineBuilder struct {
 	hashAdapter hash.Adapter
-	elements    []Element
+	containers  []Container
 }
 
 func createLineBuilder(
@@ -16,7 +16,7 @@ func createLineBuilder(
 ) LineBuilder {
 	out := lineBuilder{
 		hashAdapter: hashAdapter,
-		elements:    nil,
+		containers:  nil,
 	}
 
 	return &out
@@ -29,25 +29,25 @@ func (app *lineBuilder) Create() LineBuilder {
 	)
 }
 
-// WithElements add elements to the builder
-func (app *lineBuilder) WithElements(elements []Element) LineBuilder {
-	app.elements = elements
+// WithContainers add containers to the builder
+func (app *lineBuilder) WithContainers(containers []Container) LineBuilder {
+	app.containers = containers
 	return app
 }
 
 // Now builds a new Line instance
 func (app *lineBuilder) Now() (Line, error) {
-	if app.elements != nil && len(app.elements) <= 0 {
-		app.elements = nil
+	if app.containers != nil && len(app.containers) <= 0 {
+		app.containers = nil
 	}
 
-	if app.elements == nil {
-		return nil, errors.New("there must be at least 1 Element in order to build a Line instance")
+	if app.containers == nil {
+		return nil, errors.New("there must be at least 1 Container in order to build a Line instance")
 	}
 
 	data := [][]byte{}
-	for _, oneElement := range app.elements {
-		data = append(data, oneElement.Hash().Bytes())
+	for _, oneContainer := range app.containers {
+		data = append(data, oneContainer.Hash().Bytes())
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes(data)
@@ -55,5 +55,5 @@ func (app *lineBuilder) Now() (Line, error) {
 		return nil, err
 	}
 
-	return createLine(*pHash, app.elements), nil
+	return createLine(*pHash, app.containers), nil
 }

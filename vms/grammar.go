@@ -20,6 +20,7 @@ type grammar struct {
 	suiteBuilder       grammars.SuiteBuilder
 	blockBuilder       grammars.BlockBuilder
 	lineBuilder        grammars.LineBuilder
+	containerBuilder   grammars.ContainerBuilder
 	elementBuilder     grammars.ElementBuilder
 	valueBuilder       grammar_values.Builder
 	cardinalityBuilder cardinalities.Builder
@@ -37,6 +38,7 @@ func createGrammar(
 	suiteBuilder grammars.SuiteBuilder,
 	blockBuilder grammars.BlockBuilder,
 	lineBuilder grammars.LineBuilder,
+	containerBuilder grammars.ContainerBuilder,
 	elementBuilder grammars.ElementBuilder,
 	valueBuilder grammar_values.Builder,
 	cardinalityBuilder cardinalities.Builder,
@@ -53,6 +55,7 @@ func createGrammar(
 		suiteBuilder:       suiteBuilder,
 		blockBuilder:       blockBuilder,
 		lineBuilder:        lineBuilder,
+		containerBuilder:   containerBuilder,
 		elementBuilder:     elementBuilder,
 		valueBuilder:       valueBuilder,
 		cardinalityBuilder: cardinalityBuilder,
@@ -549,8 +552,22 @@ func (app *grammar) blockFromlines(lines []grammars.Line) grammars.Block {
 }
 
 func (app *grammar) lineFromElements(elements []grammars.Element) grammars.Line {
+	containers := []grammars.Container{}
+	for _, oneElement := range elements {
+		container, err := app.containerBuilder.Create().WithElement(oneElement).Now()
+		if err != nil {
+			panic(err)
+		}
+
+		containers = append(containers, container)
+	}
+
+	return app.lineFromContainers(containers)
+}
+
+func (app *grammar) lineFromContainers(containers []grammars.Container) grammars.Line {
 	line, err := app.lineBuilder.Create().
-		WithElements(elements).
+		WithContainers(containers).
 		Now()
 
 	if err != nil {

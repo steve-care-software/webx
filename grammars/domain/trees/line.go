@@ -75,7 +75,7 @@ func (obj *line) IsSuccessful() bool {
 		return false
 	}
 
-	requested := obj.grammar.Elements()
+	requested := obj.grammar.Containers()
 	elements := obj.elements.List()
 	for _, oneElement := range elements {
 		if !oneElement.IsSuccessful() {

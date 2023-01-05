@@ -2,7 +2,7 @@ package values
 
 import "github.com/steve-care-software/webx/databases/domain/cryptography/hash"
 
-// NewBuilder creates a new builder instance
+// NewBuilder creates a new value builder instance
 func NewBuilder() Builder {
 	hashAdapter := hash.NewAdapter()
 	return createBuilder(hashAdapter)
