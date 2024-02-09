@@ -1,6 +1,6 @@
 package links
 
-import "github.com/steve-care-software/identity/domain/hash"
+import "github.com/steve-care-software/datastencil/domain/hash"
 
 type conditionValue struct {
 	hash      hash.Hash

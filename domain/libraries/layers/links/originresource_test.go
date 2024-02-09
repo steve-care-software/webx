@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/steve-care-software/identity/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
 func TestOriginResource_Success(t *testing.T) {

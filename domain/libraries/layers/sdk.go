@@ -1,7 +1,7 @@
 package layers
 
 import (
-	"github.com/steve-care-software/identity/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
 // NewBuilder creates a new builder instance
@@ -88,54 +88,6 @@ func NewExecutionBuilder() ExecutionBuilder {
 func NewBytesBuilder() BytesBuilder {
 	hashAdapter := hash.NewAdapter()
 	return createBytesBuilder(
-		hashAdapter,
-	)
-}
-
-// NewIdentityBuilder creates a new identity builder
-func NewIdentityBuilder() IdentityBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createIdentityBuilder(
-		hashAdapter,
-	)
-}
-
-// NewEncryptorBuilder creates a new encryptor builder
-func NewEncryptorBuilder() EncryptorBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createEncryptorBuilder(
-		hashAdapter,
-	)
-}
-
-// NewSignerBuilder creates a new signer builder
-func NewSignerBuilder() SignerBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createSignerBuilder(
-		hashAdapter,
-	)
-}
-
-// NewSignatureVerifyBuilder creates a new signature verify builder
-func NewSignatureVerifyBuilder() SignatureVerifyBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createSignatureVerifyBuilder(
-		hashAdapter,
-	)
-}
-
-// NewVoteVerifyBuilder creates a new vote verify builder
-func NewVoteVerifyBuilder() VoteVerifyBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createVoteVerifyBuilder(
-		hashAdapter,
-	)
-}
-
-// NewVoteBuilder creates a new vote builder
-func NewVoteBuilder() VoteBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createVoteBuilder(
 		hashAdapter,
 	)
 }
@@ -295,7 +247,6 @@ type Assignment interface {
 type AssignableBuilder interface {
 	Create() AssignableBuilder
 	WithBytes(bytes Bytes) AssignableBuilder
-	WithIdentity(identity Identity) AssignableBuilder
 	WithExecution(execution Execution) AssignableBuilder
 	Now() (Assignable, error)
 }
@@ -305,8 +256,6 @@ type Assignable interface {
 	Hash() hash.Hash
 	IsBytes() bool
 	Bytes() Bytes
-	IsIdentity() bool
-	Identity() Identity
 	IsExecution() bool
 	Execution() Execution
 }
@@ -362,121 +311,4 @@ type Bytes interface {
 	Compare() []string
 	IsHashBytes() bool
 	HashBytes() string
-}
-
-// IdentityBuilder represents an identity builder
-type IdentityBuilder interface {
-	Create() IdentityBuilder
-	WithSigner(signer Signer) IdentityBuilder
-	WithEncryptor(encryptor Encryptor) IdentityBuilder
-	Now() (Identity, error)
-}
-
-// Identity represents the assignable identity
-type Identity interface {
-	Hash() hash.Hash
-	IsSigner() bool
-	Signer() Signer
-	IsEncryptor() bool
-	Encryptor() Encryptor
-}
-
-// EncryptorBuilder represents an encryptor builder
-type EncryptorBuilder interface {
-	Create() EncryptorBuilder
-	WithDecrypt(decrypt string) EncryptorBuilder
-	WithEncrypt(encrypt string) EncryptorBuilder
-	IsPublicKey() EncryptorBuilder
-	Now() (Encryptor, error)
-}
-
-// Encryptor represents encryptor
-type Encryptor interface {
-	Hash() hash.Hash
-	IsDecrypt() bool
-	Decrypt() string
-	IsEncrypt() bool
-	Encrypt() string
-	IsPublicKey() bool
-}
-
-// SignerBuilder represents a signer builder
-type SignerBuilder interface {
-	Create() SignerBuilder
-	WithSign(sign string) SignerBuilder
-	WithVote(vote Vote) SignerBuilder
-	WithGenerateSignerPublicKey(genPubKey uint) SignerBuilder
-	WithHashPublicKeys(hashPubKeys string) SignerBuilder
-	WithVoteVerify(voteVerify VoteVerify) SignerBuilder
-	WithSignatureVerify(sigVerify SignatureVerify) SignerBuilder
-	WithBytes(bytes string) SignerBuilder
-	IsPublicKey() SignerBuilder
-	Now() (Signer, error)
-}
-
-// Signer represents the signer identity assignable
-type Signer interface {
-	Hash() hash.Hash
-	IsSign() bool
-	Sign() string
-	IsVote() bool
-	Vote() Vote
-	IsGenerateSignerPublicKeys() bool
-	GenerateSignerPublicKeys() uint
-	IsHashPublicKeys() bool
-	HashPublicKeys() string
-	IsVoteVerify() bool
-	VoteVerify() VoteVerify
-	IsSignatureVerify() bool
-	SignatureVerify() SignatureVerify
-	IsBytes() bool
-	Bytes() string
-	IsPublicKey() bool
-}
-
-// SignatureVerifyBuilder represents a signature verify builder
-type SignatureVerifyBuilder interface {
-	Create() SignatureVerifyBuilder
-	WithSignature(signature string) SignatureVerifyBuilder
-	WithMessage(message string) SignatureVerifyBuilder
-	Now() (SignatureVerify, error)
-}
-
-// SignatureVerify represents a signature verify
-type SignatureVerify interface {
-	Hash() hash.Hash
-	Signature() string
-	Message() string
-}
-
-// VoteVerifyBuilder represents a vote verify builder
-type VoteVerifyBuilder interface {
-	Create() VoteVerifyBuilder
-	WithVote(vote string) VoteVerifyBuilder
-	WithMessage(msg string) VoteVerifyBuilder
-	WithHashedRing(hashedRing string) VoteVerifyBuilder
-	Now() (VoteVerify, error)
-}
-
-// VoteVerify represents a vote verify
-type VoteVerify interface {
-	Hash() hash.Hash
-	Vote() string
-	Message() string
-	HashedRing() string
-}
-
-// VoteBuilder represents a vote builder
-type VoteBuilder interface {
-	Create() VoteBuilder
-	WithRing(ring string) VoteBuilder
-	WithMessage(message string) VoteBuilder
-	Now() (Vote, error)
-}
-
-// Vote represents a vote
-type Vote interface {
-	Hash() hash.Hash
-	Ring() string
-	Message() string
 }

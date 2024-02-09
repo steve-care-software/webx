@@ -5,28 +5,17 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/steve-care-software/datastencil/domain/commands"
+	"github.com/steve-care-software/datastencil/domain/commands/results"
+	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/links"
-	"github.com/steve-care-software/datastencil/domain/receipts"
-	"github.com/steve-care-software/datastencil/domain/receipts/commands"
-	"github.com/steve-care-software/datastencil/domain/receipts/commands/results"
 	"github.com/steve-care-software/datastencil/domain/stacks"
-	accounts_applications "github.com/steve-care-software/identity/applications"
-	"github.com/steve-care-software/identity/domain/accounts"
-	account_encryptors "github.com/steve-care-software/identity/domain/accounts/encryptors"
-	"github.com/steve-care-software/identity/domain/accounts/signers"
-	account_signers "github.com/steve-care-software/identity/domain/accounts/signers"
-	"github.com/steve-care-software/identity/domain/credentials"
-	"github.com/steve-care-software/identity/domain/hash"
 )
 
 type application struct {
-	accountApplication accounts_applications.Application
 	hashAdapter        hash.Adapter
-	signerFactory      signers.Factory
-	signerVoteAdapter  signers.VoteAdapter
-	receiptBuilder     receipts.ReceiptBuilder
 	commandsBuilder    commands.Builder
 	commandBuilder     commands.CommandBuilder
 	resultBuilder      results.Builder
@@ -39,15 +28,10 @@ type application struct {
 	assignmentsBuilder stacks.AssignmentsBuilder
 	assignmentBuilder  stacks.AssignmentBuilder
 	assignableBuilder  stacks.AssignableBuilder
-	credentials        credentials.Credentials
 }
 
 func createApplication(
-	accountApplication accounts_applications.Application,
 	hashAdapter hash.Adapter,
-	signerFactory signers.Factory,
-	signerVoteAdapter signers.VoteAdapter,
-	receiptBuilder receipts.ReceiptBuilder,
 	commandsBuilder commands.Builder,
 	commandBuilder commands.CommandBuilder,
 	resultBuilder results.Builder,
@@ -60,14 +44,9 @@ func createApplication(
 	assignmentsBuilder stacks.AssignmentsBuilder,
 	assignmentBuilder stacks.AssignmentBuilder,
 	assignableBuilder stacks.AssignableBuilder,
-	credentials credentials.Credentials,
 ) Application {
 	out := application{
-		accountApplication: accountApplication,
 		hashAdapter:        hashAdapter,
-		signerFactory:      signerFactory,
-		signerVoteAdapter:  signerVoteAdapter,
-		receiptBuilder:     receiptBuilder,
 		commandsBuilder:    commandsBuilder,
 		commandBuilder:     commandBuilder,
 		resultBuilder:      resultBuilder,
@@ -80,38 +59,15 @@ func createApplication(
 		assignmentsBuilder: assignmentsBuilder,
 		assignmentBuilder:  assignmentBuilder,
 		assignableBuilder:  assignableBuilder,
-		credentials:        credentials,
 	}
 
 	return &out
 }
 
 // Execute executes the logic application
-func (app *application) Execute(input []byte, layer layers.Layer, library libraries.Library, context receipts.Receipt) (receipts.Receipt, error) {
-	// authenticate:
-	currentAccount, err := app.accountApplication.Retrieve(app.credentials)
-	if err != nil {
-		return nil, err
-	}
-
-	// execute:
-	return app.authenticatedExecute(
-		currentAccount,
-		input, layer,
-		library,
-		context,
-	)
-}
-
-func (app *application) authenticatedExecute(
-	currentAccount accounts.Account,
-	input []byte,
-	layer layers.Layer,
-	library libraries.Library,
-	context receipts.Receipt,
-) (receipts.Receipt, error) {
+func (app *application) Execute(input []byte, layer layers.Layer, library libraries.Library, context commands.Commands) (commands.Commands, error) {
 	// execute the layer:
-	retReceipt, err := app.executeLayer(currentAccount, input, layer, library, context)
+	retCommands, err := app.executeLayer(input, layer, library, context)
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +76,7 @@ func (app *application) authenticatedExecute(
 	if library.HasLinks() {
 		// build the list of executed layers:
 		layerHashes := []hash.Hash{}
-		commandsList := retReceipt.Commands().List()
+		commandsList := retCommands.List()
 		for _, oneCommand := range commandsList {
 			layerHashes = append(layerHashes, oneCommand.Layer().Hash())
 		}
@@ -128,29 +84,27 @@ func (app *application) authenticatedExecute(
 		link, err := library.Links().FetchByExecutedLayers(layerHashes)
 		if err != nil {
 			// no link to execute:
-			return retReceipt, nil
+			return retCommands, nil
 		}
 
 		// execute the link:
 		return app.executeLink(
-			currentAccount,
 			link,
 			library,
-			retReceipt,
+			retCommands,
 		)
 	}
 
 	// execute the link:
-	return retReceipt, nil
+	return retCommands, nil
 }
 
 func (app *application) executeLink(
-	currentAccount accounts.Account,
 	link links.Link,
 	library libraries.Library,
-	previousReceipt receipts.Receipt,
-) (receipts.Receipt, error) {
-	previousResult := previousReceipt.Commands().Last().Result()
+	previousCommands commands.Commands,
+) (commands.Commands, error) {
+	previousResult := previousCommands.Last().Result()
 	if previousResult.IsFailure() {
 		hash := link.Hash().String()
 		str := fmt.Sprintf("the link (hash: %s) cannot execute because the previous result failed", hash)
@@ -158,11 +112,10 @@ func (app *application) executeLink(
 	}
 
 	previousSuccess := previousResult.Success()
-	currentContext := previousReceipt
+	currentContext := previousCommands
 	elementsList := link.Elements().List()
 	for _, oneElement := range elementsList {
 		retReceipt, retSuccess, err := app.executeLinkElement(
-			currentAccount,
 			oneElement,
 			library,
 			previousSuccess,
@@ -181,12 +134,11 @@ func (app *application) executeLink(
 }
 
 func (app *application) executeLinkElement(
-	currentAccount accounts.Account,
 	element links.Element,
 	library libraries.Library,
 	previousSuccess results.Success,
-	context receipts.Receipt,
-) (receipts.Receipt, results.Success, error) {
+	context commands.Commands,
+) (commands.Commands, results.Success, error) {
 	// execute the layer:
 	layerHash := element.Layer()
 	layer, err := library.Layers().Fetch(layerHash)
@@ -195,25 +147,25 @@ func (app *application) executeLinkElement(
 	}
 
 	input := previousSuccess.Bytes()
-	retReceipt, err := app.authenticatedExecute(currentAccount, input, layer, library, context)
+	retCommands, err := app.Execute(input, layer, library, context)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	retSuccess := app.fetchSuccess(context, retReceipt)
+	retSuccess := app.fetchSuccess(context, retCommands)
 	if !element.HasCondition() {
-		return retReceipt, retSuccess, nil
+		return retCommands, retSuccess, nil
 	}
 
-	result := retReceipt.Commands().Last().Result()
+	result := retCommands.Last().Result()
 	if result.IsSuccess() {
-		return retReceipt, retSuccess, nil
+		return retCommands, retSuccess, nil
 	}
 
 	condition := element.Condition()
 	failure := result.Failure()
 	if app.matchLinkCondition(condition, failure) {
-		return retReceipt, previousSuccess, nil
+		return retCommands, previousSuccess, nil
 	}
 
 	str := fmt.Sprintf("the layer (hash: %s) did not execute successfully and the link condition did not match", layerHash)
@@ -221,15 +173,15 @@ func (app *application) executeLinkElement(
 }
 
 func (app *application) fetchSuccess(
-	previous receipts.Receipt,
-	current receipts.Receipt,
+	previous commands.Commands,
+	current commands.Commands,
 ) results.Success {
-	result := current.Commands().Last().Result()
+	result := current.Last().Result()
 	if result.IsSuccess() {
 		return result.Success()
 	}
 
-	return previous.Commands().Last().Result().Success()
+	return previous.Last().Result().Success()
 }
 
 func (app *application) matchLinkCondition(
@@ -268,12 +220,11 @@ func (app *application) matchLinkConditionResource(
 }
 
 func (app *application) executeLayer(
-	currentAccount accounts.Account,
 	input []byte,
 	layer layers.Layer,
 	library libraries.Library,
-	context receipts.Receipt,
-) (receipts.Receipt, error) {
+	context commands.Commands,
+) (commands.Commands, error) {
 	assignable, err := app.assignableBuilder.Create().WithBytes(input).Now()
 	if err != nil {
 		return nil, err
@@ -312,8 +263,7 @@ func (app *application) executeLayer(
 	}
 
 	instructions := layer.Instructions()
-	retStack, retFailure, retReceipt, err := app.executeInstructions(
-		currentAccount,
+	retStack, retFailure, retCommands, err := app.executeInstructions(
 		library,
 		context,
 		layer,
@@ -325,27 +275,24 @@ func (app *application) executeLayer(
 		return nil, err
 	}
 
-	signer := currentAccount.Signer()
-	return app.generateReceipt(
-		signer,
+	return app.generateCommands(
 		input,
 		layer,
 		retStack,
 		retFailure,
-		retReceipt,
+		retCommands,
 		nil,
 	)
 }
 
-func (app *application) generateReceipt(
-	currentSigner signers.Signer,
+func (app *application) generateCommands(
 	input []byte,
 	layer layers.Layer,
 	stack stacks.Stack,
 	failure results.Failure,
-	receipt receipts.Receipt,
+	commands commands.Commands,
 	parent commands.Link,
-) (receipts.Receipt, error) {
+) (commands.Commands, error) {
 	commandBuilder := app.commandBuilder.Create().WithInput(input).WithLayer(layer)
 	if failure != nil {
 		retResult, err := app.resultBuilder.Create().
@@ -397,40 +344,26 @@ func (app *application) generateReceipt(
 		return nil, err
 	}
 
-	commandsList := receipt.Commands().List()
+	commandsList := commands.List()
 	commandsList = append(commandsList, newCommand)
-	commands, err := app.commandsBuilder.Create().WithList(commandsList).Now()
-	if err != nil {
-		return nil, err
-	}
-
-	msg := commands.Hash().Bytes()
-	signature, err := currentSigner.Sign(msg)
-	if err != nil {
-		return nil, err
-	}
-
-	return app.receiptBuilder.Create().
-		WithCommands(commands).
-		WithSignature(signature).
+	return app.commandsBuilder.Create().
+		WithList(commandsList).
 		Now()
 }
 
 func (app *application) executeInstructions(
-	currentAccount accounts.Account,
 	library libraries.Library,
-	receipts receipts.Receipt,
+	commands commands.Commands,
 	currentLayer layers.Layer,
 	stack stacks.Stack,
 	instructions layers.Instructions,
-) (stacks.Stack, results.Failure, receipts.Receipt, error) {
+) (stacks.Stack, results.Failure, commands.Commands, error) {
 	var currentFailure results.Failure
 	currentStack := stack
-	currentContext := receipts
+	currentContext := commands
 	list := instructions.List()
 	for _, oneInstruction := range list {
-		stop, retStack, retFailure, retUpdatedReceipts, err := app.executeInstruction(
-			currentAccount,
+		stop, retStack, retFailure, retUpdatedCommands, err := app.executeInstruction(
 			library,
 			currentContext,
 			currentLayer,
@@ -447,7 +380,7 @@ func (app *application) executeInstructions(
 		}
 
 		currentStack = retStack
-		currentContext = retUpdatedReceipts
+		currentContext = retUpdatedCommands
 
 		if retFailure != nil {
 			currentFailure = retFailure
@@ -459,13 +392,12 @@ func (app *application) executeInstructions(
 }
 
 func (app *application) executeInstruction(
-	currentAccount accounts.Account,
 	library libraries.Library,
-	currentContext receipts.Receipt,
+	currentContext commands.Commands,
 	currentLayer layers.Layer,
 	stack stacks.Stack,
 	instruction layers.Instruction,
-) (bool, stacks.Stack, results.Failure, receipts.Receipt, error) {
+) (bool, stacks.Stack, results.Failure, commands.Commands, error) {
 	headFrame := stack.Head()
 	if instruction.IsStop() {
 		return true, stack, nil, currentContext, nil
@@ -483,8 +415,7 @@ func (app *application) executeInstruction(
 
 	if instruction.IsCondition() {
 		condition := instruction.Condition()
-		retStack, retFailure, retReceipts, err := app.executeCondition(
-			currentAccount,
+		retStack, retFailure, retCommands, err := app.executeCondition(
 			library,
 			currentContext,
 			currentLayer,
@@ -496,12 +427,11 @@ func (app *application) executeInstruction(
 			return false, nil, nil, nil, err
 		}
 
-		return false, retStack, retFailure, retReceipts, nil
+		return false, retStack, retFailure, retCommands, nil
 	}
 
 	assignment := instruction.Assignment()
-	retFrame, retFailure, retReceipts, err := app.executeAssignment(
-		currentAccount,
+	retFrame, retFailure, retCommands, err := app.executeAssignment(
 		library,
 		currentContext,
 		currentLayer,
@@ -531,7 +461,7 @@ func (app *application) executeInstruction(
 		return false, nil, nil, nil, err
 	}
 
-	return false, updatedStack, retFailure, retReceipts, nil
+	return false, updatedStack, retFailure, retCommands, nil
 }
 
 func (app *application) executeRaiseError(code uint) (results.Failure, error) {
@@ -548,13 +478,12 @@ func (app *application) executeRaiseError(code uint) (results.Failure, error) {
 }
 
 func (app *application) executeCondition(
-	currentAccount accounts.Account,
 	library libraries.Library,
-	currentContext receipts.Receipt,
+	currentContext commands.Commands,
 	currentLayer layers.Layer,
 	stack stacks.Stack,
 	condition layers.Condition,
-) (stacks.Stack, results.Failure, receipts.Receipt, error) {
+) (stacks.Stack, results.Failure, commands.Commands, error) {
 	variable := condition.Variable()
 	boolValue, err := stack.Head().FetchBool(variable)
 	if err != nil {
@@ -564,7 +493,6 @@ func (app *application) executeCondition(
 	if boolValue {
 		instructions := condition.Instructions()
 		return app.executeInstructions(
-			currentAccount,
 			library,
 			currentContext,
 			currentLayer,
@@ -577,16 +505,14 @@ func (app *application) executeCondition(
 }
 
 func (app *application) executeAssignment(
-	currentAccount accounts.Account,
 	library libraries.Library,
-	currentContext receipts.Receipt,
+	currentContext commands.Commands,
 	currentLayer layers.Layer,
 	frame stacks.Frame,
 	assignment layers.Assignment,
-) (stacks.Frame, results.Failure, receipts.Receipt, error) {
+) (stacks.Frame, results.Failure, commands.Commands, error) {
 	assignable := assignment.Assignable()
 	retAssignable, failure, receipts, err := app.executeAssignable(
-		currentAccount,
 		library,
 		currentContext,
 		currentLayer,
@@ -634,13 +560,12 @@ func (app *application) executeAssignment(
 }
 
 func (app *application) executeAssignable(
-	currentAccount accounts.Account,
 	library libraries.Library,
-	currentContext receipts.Receipt,
+	currentContext commands.Commands,
 	currentLayer layers.Layer,
 	frame stacks.Frame,
 	assignable layers.Assignable,
-) (stacks.Assignable, results.Failure, receipts.Receipt, error) {
+) (stacks.Assignable, results.Failure, commands.Commands, error) {
 	if assignable.IsBytes() {
 		bytesIns := assignable.Bytes()
 		retAssignable, err := app.executeBytes(
@@ -655,24 +580,8 @@ func (app *application) executeAssignable(
 		return retAssignable, nil, currentContext, nil
 	}
 
-	if assignable.IsIdentity() {
-		identity := assignable.Identity()
-		retAssignable, err := app.executeIdentity(
-			currentAccount,
-			frame,
-			identity,
-		)
-
-		if err != nil {
-			return nil, nil, nil, err
-		}
-
-		return retAssignable, nil, currentContext, nil
-	}
-
 	execution := assignable.Execution()
 	return app.executeExecution(
-		currentAccount,
 		library,
 		currentContext,
 		currentLayer,
@@ -682,13 +591,12 @@ func (app *application) executeAssignable(
 }
 
 func (app *application) executeExecution(
-	currentAccount accounts.Account,
 	library libraries.Library,
-	currentContext receipts.Receipt,
+	currentContext commands.Commands,
 	currentLayer layers.Layer,
 	frame stacks.Frame,
 	execution layers.Execution,
-) (stacks.Assignable, results.Failure, receipts.Receipt, error) {
+) (stacks.Assignable, results.Failure, commands.Commands, error) {
 	inputVariable := execution.Input()
 	input, err := frame.FetchBytes(inputVariable)
 	if err != nil {
@@ -711,8 +619,7 @@ func (app *application) executeExecution(
 		layerToExecute = layer
 	}
 
-	retReceipt, err := app.authenticatedExecute(
-		currentAccount,
+	retCommands, err := app.Execute(
 		input,
 		layerToExecute,
 		library,
@@ -723,7 +630,7 @@ func (app *application) executeExecution(
 		return nil, nil, nil, err
 	}
 
-	result := retReceipt.Commands().Last().Result()
+	result := retCommands.Last().Result()
 	if result.IsSuccess() {
 		data := result.Success().Bytes()
 		retAssignable, err := app.assignableBuilder.Create().
@@ -734,376 +641,11 @@ func (app *application) executeExecution(
 			return nil, nil, nil, err
 		}
 
-		return retAssignable, nil, retReceipt, nil
+		return retAssignable, nil, retCommands, nil
 	}
 
 	failure := result.Failure()
-	return nil, failure, retReceipt, nil
-}
-
-func (app *application) executeIdentity(
-	currentAccount accounts.Account,
-	frame stacks.Frame,
-	identity layers.Identity,
-) (stacks.Assignable, error) {
-	if identity.IsSigner() {
-		signer := identity.Signer()
-		accountSigner := currentAccount.Signer()
-		return app.executeSigner(
-			accountSigner,
-			frame,
-			signer,
-		)
-	}
-
-	encryptor := identity.Encryptor()
-	accountEncryptor := currentAccount.Encryptor()
-	return app.executeEncryptor(
-		accountEncryptor,
-		frame,
-		encryptor,
-	)
-}
-
-func (app *application) executeSigner(
-	accountSigner account_signers.Signer,
-	frame stacks.Frame,
-	signer layers.Signer,
-) (stacks.Assignable, error) {
-	if signer.IsBytes() {
-		variable := signer.Bytes()
-		return app.executeSignerBytes(
-			accountSigner,
-			frame,
-			variable,
-		)
-	}
-
-	if signer.IsPublicKey() {
-		pubKey := accountSigner.PublicKey()
-		return app.assignableBuilder.Create().
-			WithSignerPublicKey(pubKey).
-			Now()
-	}
-
-	if signer.IsVoteVerify() {
-		voteVerify := signer.VoteVerify()
-		return app.executeVoteVerify(
-			frame,
-			voteVerify,
-		)
-	}
-
-	if signer.IsSignatureVerify() {
-		signatureVerify := signer.SignatureVerify()
-		return app.executeSignatureVerify(
-			accountSigner,
-			frame,
-			signatureVerify,
-		)
-	}
-
-	if signer.IsGenerateSignerPublicKeys() {
-		amount := signer.GenerateSignerPublicKeys()
-		return app.executeGenerateSignerPublicKeys(
-			amount,
-		)
-	}
-
-	if signer.IsHashPublicKeys() {
-		variable := signer.HashPublicKeys()
-		return app.executeHashPublicKeys(
-			frame,
-			variable,
-		)
-	}
-
-	if signer.IsVote() {
-		vote := signer.Vote()
-		return app.executeVote(
-			accountSigner,
-			frame,
-			vote,
-		)
-	}
-
-	sign := signer.Sign()
-	return app.executeSign(
-		accountSigner,
-		frame,
-		sign,
-	)
-}
-
-func (app *application) executeSign(
-	accountSigner account_signers.Signer,
-	frame stacks.Frame,
-	msgVariable string,
-) (stacks.Assignable, error) {
-	msg, err := frame.FetchBytes(msgVariable)
-	if err != nil {
-		return nil, err
-	}
-
-	sig, err := accountSigner.Sign(msg)
-	if err != nil {
-		return nil, err
-	}
-
-	return app.assignableBuilder.Create().
-		WithSignature(sig).
-		Now()
-}
-
-func (app *application) executeVote(
-	accountSigner account_signers.Signer,
-	frame stacks.Frame,
-	signerVote layers.Vote,
-) (stacks.Assignable, error) {
-	ringVariable := signerVote.Ring()
-	ring, err := frame.FetchSignerPublicKeys(ringVariable)
-	if err != nil {
-		return nil, err
-	}
-
-	msgRef := signerVote.Message()
-	msg, err := frame.FetchBytes(msgRef)
-	if err != nil {
-		return nil, err
-	}
-
-	vote, err := accountSigner.Vote(msg, ring)
-	if err != nil {
-		return nil, err
-	}
-
-	return app.assignableBuilder.Create().
-		WithVote(vote).
-		Now()
-}
-
-func (app *application) executeGenerateSignerPublicKeys(
-	amount uint,
-) (stacks.Assignable, error) {
-	list := []signers.PublicKey{}
-	castedAmount := int(amount)
-	for i := 0; i < castedAmount; i++ {
-		signer := app.signerFactory.Create()
-		pubKey := signer.PublicKey()
-		list = append(list, pubKey)
-	}
-
-	return app.assignableBuilder.Create().
-		WithSignerPublicKeys(list).
-		Now()
-}
-
-func (app *application) executeHashPublicKeys(
-	frame stacks.Frame,
-	variable string,
-) (stacks.Assignable, error) {
-	pubKeys, err := frame.FetchSignerPublicKeys(variable)
-	if err != nil {
-		return nil, err
-	}
-
-	hashList := []hash.Hash{}
-	for _, onePubKey := range pubKeys {
-		bytes, err := onePubKey.Bytes()
-		if err != nil {
-			return nil, err
-		}
-
-		pHash, err := app.hashAdapter.FromBytes(bytes)
-		if err != nil {
-			return nil, err
-		}
-
-		hashList = append(hashList, *pHash)
-	}
-
-	return app.assignableBuilder.Create().
-		WithHashList(hashList).
-		Now()
-}
-
-func (app *application) executeVoteVerify(
-	frame stacks.Frame,
-	voteVerify layers.VoteVerify,
-) (stacks.Assignable, error) {
-	voteVariable := voteVerify.Vote()
-	vote, err := frame.FetchVote(voteVariable)
-	if err != nil {
-		return nil, err
-	}
-
-	hashedRingVariable := voteVerify.HashedRing()
-	hashedRing, err := frame.FetchHashList(hashedRingVariable)
-	if err != nil {
-		return nil, err
-	}
-
-	msgRef := voteVerify.Message()
-	msg, err := frame.FetchBytes(msgRef)
-	if err != nil {
-		return nil, err
-	}
-
-	isValid, err := app.signerVoteAdapter.ToVerification(vote, msg, hashedRing)
-	if err != nil {
-		return nil, err
-	}
-
-	return app.assignableBuilder.Create().
-		WithBool(isValid).
-		Now()
-}
-
-func (app *application) executeSignatureVerify(
-	accountSigner account_signers.Signer,
-	frame stacks.Frame,
-	signatureVerify layers.SignatureVerify,
-) (stacks.Assignable, error) {
-	sigVariable := signatureVerify.Signature()
-	sig, err := frame.FetchSignature(sigVariable)
-	if err != nil {
-		return nil, err
-	}
-
-	msgRef := signatureVerify.Message()
-	msg, err := frame.FetchBytes(msgRef)
-	if err != nil {
-		return nil, err
-	}
-
-	sigPubKey, err := sig.PublicKey(msg)
-	if err != nil {
-		return nil, err
-	}
-
-	isValid := accountSigner.PublicKey().Equals(sigPubKey) && sig.Verify()
-	return app.assignableBuilder.Create().
-		WithBool(isValid).
-		Now()
-}
-
-func (app *application) executeSignerBytes(
-	accountSigner account_signers.Signer,
-	frame stacks.Frame,
-	variable string,
-) (stacks.Assignable, error) {
-	assignable, err := frame.Fetch(variable)
-	if err != nil {
-		return nil, err
-	}
-
-	isValid := false
-	builder := app.assignableBuilder.Create()
-	if assignable.IsSignature() {
-		data, err := assignable.Signature().Bytes()
-		if err != nil {
-			return nil, err
-		}
-
-		isValid = true
-		builder.WithBytes(data)
-	}
-
-	if assignable.IsVote() {
-		data, err := assignable.Vote().Bytes()
-		if err != nil {
-			return nil, err
-		}
-
-		isValid = true
-		builder.WithBytes(data)
-	}
-
-	if assignable.IsSignerPublicKey() {
-		data, err := assignable.SignerPublicKey().Bytes()
-		if err != nil {
-			return nil, err
-		}
-
-		isValid = true
-		builder.WithBytes(data)
-	}
-
-	if !isValid {
-		str := fmt.Sprintf("the variable (name: %s) does NOT hold a value that can be converted to bytes (signature, vote, publicKeys)", variable)
-		return nil, errors.New(str)
-	}
-
-	return builder.Now()
-}
-
-func (app *application) executeEncryptor(
-	accountEncryptor account_encryptors.Encryptor,
-	frame stacks.Frame,
-	encryptor layers.Encryptor,
-) (stacks.Assignable, error) {
-	if encryptor.IsDecrypt() {
-		reference := encryptor.Decrypt()
-		return app.executeDecrypt(
-			accountEncryptor,
-			frame,
-			reference,
-		)
-	}
-
-	if encryptor.IsEncrypt() {
-		reference := encryptor.Encrypt()
-		return app.executeEncrypt(
-			accountEncryptor.Public(),
-			frame,
-			reference,
-		)
-	}
-
-	pubKey := accountEncryptor.Public()
-	return app.assignableBuilder.Create().
-		WithEncryptorPublicKey(pubKey).
-		Now()
-}
-
-func (app *application) executeDecrypt(
-	encryptor account_encryptors.Encryptor,
-	frame stacks.Frame,
-	variable string,
-) (stacks.Assignable, error) {
-	cipher, err := frame.FetchBytes(variable)
-	if err != nil {
-		return nil, err
-	}
-
-	data, err := encryptor.Decrypt(cipher)
-	if err != nil {
-		return nil, err
-	}
-
-	return app.assignableBuilder.Create().
-		WithBytes(data).
-		Now()
-}
-
-func (app *application) executeEncrypt(
-	pubKey account_encryptors.PublicKey,
-	frame stacks.Frame,
-	variable string,
-) (stacks.Assignable, error) {
-	msg, err := frame.FetchBytes(variable)
-	if err != nil {
-		return nil, err
-	}
-
-	cipher, err := pubKey.Encrypt(msg)
-	if err != nil {
-		return nil, err
-	}
-
-	return app.assignableBuilder.Create().
-		WithBytes(cipher).
-		Now()
+	return nil, failure, retCommands, nil
 }
 
 func (app *application) executeBytes(frame stacks.Frame, bytesIns layers.Bytes) (stacks.Assignable, error) {

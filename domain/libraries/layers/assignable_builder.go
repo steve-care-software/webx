@@ -3,13 +3,12 @@ package layers
 import (
 	"errors"
 
-	"github.com/steve-care-software/identity/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
 type assignableBuilder struct {
 	hashAdapter hash.Adapter
 	bytes       Bytes
-	identity    Identity
 	execution   Execution
 }
 
@@ -19,7 +18,6 @@ func createAssignableBuilder(
 	out := assignableBuilder{
 		hashAdapter: hashAdapter,
 		bytes:       nil,
-		identity:    nil,
 		execution:   nil,
 	}
 
@@ -39,12 +37,6 @@ func (app *assignableBuilder) WithBytes(bytes Bytes) AssignableBuilder {
 	return app
 }
 
-// WithIdentity add identity to the builder
-func (app *assignableBuilder) WithIdentity(identity Identity) AssignableBuilder {
-	app.identity = identity
-	return app
-}
-
 // WithExecution adds an execution to the builder
 func (app *assignableBuilder) WithExecution(execution Execution) AssignableBuilder {
 	app.execution = execution
@@ -57,11 +49,6 @@ func (app *assignableBuilder) Now() (Assignable, error) {
 	if app.bytes != nil {
 		data = append(data, []byte("bytes"))
 		data = append(data, app.bytes.Hash().Bytes())
-	}
-
-	if app.identity != nil {
-		data = append(data, []byte("identity"))
-		data = append(data, app.identity.Hash().Bytes())
 	}
 
 	if app.execution != nil {
@@ -82,9 +69,5 @@ func (app *assignableBuilder) Now() (Assignable, error) {
 		return createAssignableWithBytes(*pHash, app.bytes), nil
 	}
 
-	if app.execution != nil {
-		return createAssignableWithexecution(*pHash, app.execution), nil
-	}
-
-	return createAssignableWithIdentity(*pHash, app.identity), nil
+	return createAssignableWithexecution(*pHash, app.execution), nil
 }

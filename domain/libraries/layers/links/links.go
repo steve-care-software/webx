@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/steve-care-software/identity/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
 type links struct {

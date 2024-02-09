@@ -1,9 +1,7 @@
 package stacks
 
 import (
-	"github.com/steve-care-software/identity/domain/accounts/encryptors"
-	"github.com/steve-care-software/identity/domain/accounts/signers"
-	"github.com/steve-care-software/identity/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
 // NewBuilder creates a new builder
@@ -82,10 +80,6 @@ type FrameBuilder interface {
 type Frame interface {
 	Fetch(name string) (Assignable, error)
 	FetchBool(name string) (bool, error)
-	FetchSignerPublicKeys(name string) ([]signers.PublicKey, error)
-	FetchVote(name string) (signers.Vote, error)
-	FetchSignature(name string) (signers.Signature, error)
-	FetchHashList(name string) ([]hash.Hash, error)
 	FetchHash(name string) (hash.Hash, error)
 	FetchBytes(name string) ([]byte, error)
 	HasAssignments() bool
@@ -124,12 +118,6 @@ type AssignableBuilder interface {
 	Create() AssignableBuilder
 	WithBool(boolValue bool) AssignableBuilder
 	WithBytes(bytes []byte) AssignableBuilder
-	WithEncryptorPublicKey(encryptorPublicKey encryptors.PublicKey) AssignableBuilder
-	WithSignerPublicKey(signerPublicKey signers.PublicKey) AssignableBuilder
-	WithSignerPublicKeys(signerPubKeys []signers.PublicKey) AssignableBuilder
-	WithSignature(signature signers.Signature) AssignableBuilder
-	WithVote(vote signers.Vote) AssignableBuilder
-	WithHashList(hashList []hash.Hash) AssignableBuilder
 	WithHash(hash hash.Hash) AssignableBuilder
 	Now() (Assignable, error)
 }
@@ -140,18 +128,6 @@ type Assignable interface {
 	Bool() *bool
 	IsBytes() bool
 	Bytes() []byte
-	IsEncryptorPublicKey() bool
-	EncryptorPublicKey() encryptors.PublicKey
-	IsSignerPublicKey() bool
-	SignerPublicKey() signers.PublicKey
-	IsSignerPublicKeys() bool
-	SignerPublicKeys() []signers.PublicKey
-	IsSignature() bool
-	Signature() signers.Signature
-	IsVote() bool
-	Vote() signers.Vote
-	IsHashList() bool
-	HashList() []hash.Hash
 	IsHash() bool
 	Hash() hash.Hash
 }

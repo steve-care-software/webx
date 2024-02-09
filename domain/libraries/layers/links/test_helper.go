@@ -1,6 +1,6 @@
 package links
 
-import "github.com/steve-care-software/identity/domain/hash"
+import "github.com/steve-care-software/datastencil/domain/hash"
 
 // NewLinksForTests creates a new links for tests
 func NewLinksForTests(list []Link) Links {

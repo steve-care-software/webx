@@ -4,8 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/steve-care-software/identity/domain/accounts/signers"
-	"github.com/steve-care-software/identity/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
 type frame struct {
@@ -60,66 +59,6 @@ func (obj *frame) FetchBool(name string) (bool, error) {
 
 	pBool := assignable.Bool()
 	return *pBool, nil
-}
-
-// FetchSignerPublicKeys fetches signerPublicKeys by name
-func (obj *frame) FetchSignerPublicKeys(name string) ([]signers.PublicKey, error) {
-	assignable, err := obj.Fetch(name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !assignable.IsSignerPublicKeys() {
-		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a []signers.PublicKey", name)
-		return nil, errors.New(str)
-	}
-
-	return assignable.SignerPublicKeys(), nil
-}
-
-// FetchVote fetches a vote by name
-func (obj *frame) FetchVote(name string) (signers.Vote, error) {
-	assignable, err := obj.Fetch(name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !assignable.IsVote() {
-		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a Vote", name)
-		return nil, errors.New(str)
-	}
-
-	return assignable.Vote(), nil
-}
-
-// FetchSignature fetches a signature by name
-func (obj *frame) FetchSignature(name string) (signers.Signature, error) {
-	assignable, err := obj.Fetch(name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !assignable.IsSignature() {
-		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a Signature", name)
-		return nil, errors.New(str)
-	}
-
-	return assignable.Signature(), nil
-}
-
-// FetchHashList fetches an hashList by name
-func (obj *frame) FetchHashList(name string) ([]hash.Hash, error) {
-	assignable, err := obj.Fetch(name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !assignable.IsHashList() {
-		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a []hash.Hash", name)
-		return nil, errors.New(str)
-	}
-
-	return assignable.HashList(), nil
 }
 
 // FetchHash fetches an hash by name

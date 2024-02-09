@@ -3,7 +3,7 @@ package links
 import (
 	"testing"
 
-	"github.com/steve-care-software/identity/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
 func TestElements_Success(t *testing.T) {

@@ -1,7 +1,7 @@
 package links
 
 import (
-	"github.com/steve-care-software/identity/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
 // NewBuilder creates a new builder instance

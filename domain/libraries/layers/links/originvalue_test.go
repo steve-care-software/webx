@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/steve-care-software/identity/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
 func TestOriginValue_withResource_Success(t *testing.T) {

@@ -1,11 +1,10 @@
 package layers
 
-import "github.com/steve-care-software/identity/domain/hash"
+import "github.com/steve-care-software/datastencil/domain/hash"
 
 type assignable struct {
 	hash      hash.Hash
 	bytes     Bytes
-	identity  Identity
 	execution Execution
 }
 
@@ -13,33 +12,24 @@ func createAssignableWithBytes(
 	hash hash.Hash,
 	bytes Bytes,
 ) Assignable {
-	return createAssignableInternally(hash, bytes, nil, nil)
-}
-
-func createAssignableWithIdentity(
-	hash hash.Hash,
-	identity Identity,
-) Assignable {
-	return createAssignableInternally(hash, nil, identity, nil)
+	return createAssignableInternally(hash, bytes, nil)
 }
 
 func createAssignableWithexecution(
 	hash hash.Hash,
 	execution Execution,
 ) Assignable {
-	return createAssignableInternally(hash, nil, nil, execution)
+	return createAssignableInternally(hash, nil, execution)
 }
 
 func createAssignableInternally(
 	hash hash.Hash,
 	bytes Bytes,
-	identity Identity,
 	execution Execution,
 ) Assignable {
 	out := assignable{
 		hash:      hash,
 		bytes:     bytes,
-		identity:  identity,
 		execution: execution,
 	}
 
@@ -59,16 +49,6 @@ func (obj *assignable) IsBytes() bool {
 // Bytes returns the bytes, if any
 func (obj *assignable) Bytes() Bytes {
 	return obj.bytes
-}
-
-// IsIdentity returns true if there is identity, false otherwise
-func (obj *assignable) IsIdentity() bool {
-	return obj.identity != nil
-}
-
-// Identity returns the identity, if any
-func (obj *assignable) Identity() Identity {
-	return obj.identity
 }
 
 // IsExecution returns true if there is execution, false otherwise

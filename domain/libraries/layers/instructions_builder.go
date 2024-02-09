@@ -1,7 +1,7 @@
 package layers
 
 import (
-	"github.com/steve-care-software/identity/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
 type instructionsBuilder struct {

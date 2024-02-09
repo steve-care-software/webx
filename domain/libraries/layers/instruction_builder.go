@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/steve-care-software/identity/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
 type instructionBuilder struct {
