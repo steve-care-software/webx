@@ -14,6 +14,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the library adapter
+type Adapter interface {
+	ToData(ins Library) ([]byte, error)
+	ToInstance(data []byte) (Library, error)
+}
+
 // Builder represents the library builder
 type Builder interface {
 	Create() Builder
@@ -28,4 +34,9 @@ type Library interface {
 	Layers() layers.Layers
 	HasLinks() bool
 	Links() links.Links
+}
+
+// Repository represents the library repository
+type Repository interface {
+	Retrieve(path []string) (Library, error)
 }

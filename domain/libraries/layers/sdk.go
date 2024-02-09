@@ -140,6 +140,12 @@ func NewVoteBuilder() VoteBuilder {
 	)
 }
 
+// Adapter represents the layers adapter
+type Adapter interface {
+	ToData(ins Layers) ([]byte, error)
+	ToInstance(data []byte) (Layers, error)
+}
+
 // Builder represents the layers builder
 type Builder interface {
 	Create() Builder
@@ -152,6 +158,17 @@ type Layers interface {
 	Hash() hash.Hash
 	List() []Layer
 	Fetch(hash hash.Hash) (Layer, error)
+}
+
+// Repository represents the layers repository
+type Repository interface {
+	Retrieve(path []string) (Layers, error)
+}
+
+// LayerAdapter represents the layer adapter
+type LayerAdapter interface {
+	ToData(ins Layer) ([]byte, error)
+	ToInstance(data []byte) (Layer, error)
 }
 
 // LayerBuilder represents a layer builder
@@ -169,6 +186,11 @@ type Layer interface {
 	Instructions() Instructions
 	Output() Output
 	Input() string
+}
+
+// LayerRepository represents the layer repository
+type LayerRepository interface {
+	Retrieve(path []string) (Layer, error)
 }
 
 // OutputBuilder represents an output builder

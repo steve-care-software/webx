@@ -92,6 +92,12 @@ func NewOperatorBuilder() OperatorBuilder {
 	)
 }
 
+// Adapter represents the links adapter
+type Adapter interface {
+	ToData(ins Links) ([]byte, error)
+	ToInstance(data []byte) (Links, error)
+}
+
 // Builder represents the links builder
 type Builder interface {
 	Create() Builder
@@ -107,6 +113,17 @@ type Links interface {
 	FetchByExecutedLayers(layerHashes []hash.Hash) (Link, error)
 }
 
+// Repository represents the links repository
+type Repository interface {
+	Retrieve(path []string) (Links, error)
+}
+
+// LinkAdapter represents the link adapter
+type LinkAdapter interface {
+	ToData(ins Link) ([]byte, error)
+	ToInstance(data []byte) (Link, error)
+}
+
 // LinkBuilder represents a link builder
 type LinkBuilder interface {
 	Create() LinkBuilder
@@ -120,6 +137,11 @@ type Link interface {
 	Hash() hash.Hash
 	Origin() Origin
 	Elements() Elements
+}
+
+// LinkRepository represents the link repository
+type LinkRepository interface {
+	Retrieve(path []string) (Link, error)
 }
 
 // ElementsBuilder represents elements builder
