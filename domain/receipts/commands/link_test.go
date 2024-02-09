@@ -4,10 +4,10 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/steve-care-software/identity/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/links"
 	"github.com/steve-care-software/datastencil/domain/receipts/commands/results"
+	"github.com/steve-care-software/identity/domain/hash"
 )
 
 func TestLink_Success(t *testing.T) {
@@ -39,6 +39,7 @@ func TestLink_Success(t *testing.T) {
 				"myVariable",
 				layers.NewKindWithContinueForTests(),
 			),
+			"someInput",
 		),
 		results.NewResultWithSuccessForTests(
 			results.NewSuccessForTests(
@@ -97,6 +98,7 @@ func TestLink_withoutInput_returnsError(t *testing.T) {
 				"myVariable",
 				layers.NewKindWithContinueForTests(),
 			),
+			"someInput",
 		),
 		results.NewResultWithSuccessForTests(
 			results.NewSuccessForTests(
@@ -125,6 +127,7 @@ func TestLink_withoutLink_returnsError(t *testing.T) {
 				"myVariable",
 				layers.NewKindWithContinueForTests(),
 			),
+			"someInput",
 		),
 		results.NewResultWithSuccessForTests(
 			results.NewSuccessForTests(

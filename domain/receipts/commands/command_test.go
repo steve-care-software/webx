@@ -4,10 +4,10 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/steve-care-software/identity/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/links"
 	"github.com/steve-care-software/datastencil/domain/receipts/commands/results"
+	"github.com/steve-care-software/identity/domain/hash"
 )
 
 func TestCommand_Success(t *testing.T) {
@@ -20,6 +20,7 @@ func TestCommand_Success(t *testing.T) {
 			"myVariable",
 			layers.NewKindWithContinueForTests(),
 		),
+		"someInput",
 	)
 
 	result := results.NewResultWithSuccessForTests(
@@ -69,6 +70,7 @@ func TestCommand_withParent_Success(t *testing.T) {
 			"myVariable",
 			layers.NewKindWithContinueForTests(),
 		),
+		"someInput",
 	)
 
 	result := results.NewResultWithSuccessForTests(
@@ -106,6 +108,7 @@ func TestCommand_withParent_Success(t *testing.T) {
 					"myVariable",
 					layers.NewKindWithContinueForTests(),
 				),
+				"someInput",
 			),
 			results.NewResultWithSuccessForTests(
 				results.NewSuccessForTests(
@@ -162,6 +165,7 @@ func TestCommand_withoutInput_returnsError(t *testing.T) {
 			"myVariable",
 			layers.NewKindWithContinueForTests(),
 		),
+		"someInput",
 	)
 
 	result := results.NewResultWithSuccessForTests(
@@ -187,6 +191,7 @@ func TestCommand_withEmptyInput_returnsError(t *testing.T) {
 			"myVariable",
 			layers.NewKindWithContinueForTests(),
 		),
+		"someInput",
 	)
 
 	result := results.NewResultWithSuccessForTests(
@@ -229,6 +234,7 @@ func TestCommand_withoutResult_returnsError(t *testing.T) {
 			"myVariable",
 			layers.NewKindWithContinueForTests(),
 		),
+		"someInput",
 	)
 
 	_, err := NewCommandBuilder().Create().WithInput(input).WithLayer(layer).Now()

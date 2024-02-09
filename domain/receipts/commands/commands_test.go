@@ -20,6 +20,7 @@ func TestCommands_Success(t *testing.T) {
 					"myVariable",
 					layers.NewKindWithContinueForTests(),
 				),
+				"someInput",
 			),
 			results.NewResultWithSuccessForTests(
 				results.NewSuccessForTests(

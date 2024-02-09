@@ -1,10 +1,10 @@
 package commands
 
 import (
-	"github.com/steve-care-software/identity/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/links"
 	"github.com/steve-care-software/datastencil/domain/receipts/commands/results"
+	"github.com/steve-care-software/identity/domain/hash"
 )
 
 // NewBuilder creates a new builder instance

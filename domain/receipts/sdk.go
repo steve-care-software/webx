@@ -1,9 +1,9 @@
 package receipts
 
 import (
+	"github.com/steve-care-software/datastencil/domain/receipts/commands"
 	"github.com/steve-care-software/identity/domain/accounts/signers"
 	"github.com/steve-care-software/identity/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/receipts/commands"
 )
 
 // NewReceiptBuilder creates a new builder instance

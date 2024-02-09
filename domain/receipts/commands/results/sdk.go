@@ -1,8 +1,8 @@
 package results
 
 import (
-	"github.com/steve-care-software/identity/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/identity/domain/hash"
 )
 
 const (
