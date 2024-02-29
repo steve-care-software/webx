@@ -1,8 +1,8 @@
 package libraries
 
 import (
-	"github.com/steve-care-software/datastencil/domain/libraries/layers"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/links"
+	"github.com/steve-care-software/datastencil/infrastructure/jsons/structs/libraries/layers"
+	"github.com/steve-care-software/datastencil/infrastructure/jsons/structs/libraries/layers/links"
 )
 
 // Library represents a library

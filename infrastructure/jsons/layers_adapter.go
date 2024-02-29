@@ -26,7 +26,7 @@ func createLayersAdapter(
 
 // ToData convert layers to bytes
 func (app *layersAdapter) ToData(ins layers.Layers) ([]byte, error) {
-	str := app.toStructLinks(ins)
+	str := app.toStructLayers(ins)
 	data, err := json.Marshal(str)
 	if err != nil {
 		return nil, err
@@ -60,7 +60,7 @@ func (app *layersAdapter) toInstanceLayers(list []structs.Layer) (layers.Layers,
 	return app.builder.Create().WithList(output).Now()
 }
 
-func (app *layersAdapter) toStructLinks(ins layers.Layers) []structs.Layer {
+func (app *layersAdapter) toStructLayers(ins layers.Layers) []structs.Layer {
 	list := ins.List()
 	output := []structs.Layer{}
 	for _, oneLayer := range list {
