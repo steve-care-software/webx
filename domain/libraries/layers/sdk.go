@@ -76,6 +76,14 @@ func NewAssignableBuilder() AssignableBuilder {
 	)
 }
 
+// NewConstantBuilder creates a new constant builder
+func NewConstantBuilder() ConstantBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createConstantBuilder(
+		hashAdapter,
+	)
+}
+
 // NewExecutionBuilder creates a new execution builder
 func NewExecutionBuilder() ExecutionBuilder {
 	hashAdapter := hash.NewAdapter()

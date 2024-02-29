@@ -8,6 +8,20 @@ type constant struct {
 	data      []byte
 }
 
+func createConstantWithBool(
+	hash hash.Hash,
+	boolValue *bool,
+) Constant {
+	return createConstantInternally(hash, boolValue, nil)
+}
+
+func createConstantWithData(
+	hash hash.Hash,
+	data []byte,
+) Constant {
+	return createConstantInternally(hash, nil, data)
+}
+
 func createConstantInternally(
 	hash hash.Hash,
 	boolValue *bool,
