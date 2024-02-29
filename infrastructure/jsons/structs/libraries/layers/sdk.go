@@ -9,7 +9,7 @@ type Layer struct {
 
 // Output represents an output
 type Output struct {
-	Variable bool   `json:"variable"`
+	Variable string `json:"variable"`
 	Kind     Kind   `json:"kind"`
 	Execute  string `json:"execute"`
 }
