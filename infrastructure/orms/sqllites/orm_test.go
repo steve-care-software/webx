@@ -36,30 +36,32 @@ func TestOrm_Success(t *testing.T) {
 	}
 
 	// build resources:
-	instances := []testInstance{
-		{
-			path: []string{
-				"bytes",
+	instances := map[string][]testInstance{
+		"bytes": {
+			{
+				path: []string{
+					"bytes",
+				},
+				instance: layers.NewBytesWithHashBytesForTests("myInput"),
 			},
-			instance: layers.NewBytesWithHashBytesForTests("myInput"),
-		},
-		{
-			path: []string{
-				"bytes",
+			{
+				path: []string{
+					"bytes",
+				},
+				instance: layers.NewBytesWithCompareForTests([]string{
+					"first",
+					"second",
+				}),
 			},
-			instance: layers.NewBytesWithCompareForTests([]string{
-				"first",
-				"second",
-			}),
-		},
-		{
-			path: []string{
-				"bytes",
+			{
+				path: []string{
+					"bytes",
+				},
+				instance: layers.NewBytesWithJoinForTests([]string{
+					"first",
+					"second",
+				}),
 			},
-			instance: layers.NewBytesWithJoinForTests([]string{
-				"first",
-				"second",
-			}),
 		},
 	}
 
@@ -70,48 +72,49 @@ func TestOrm_Success(t *testing.T) {
 	}
 
 	repository := NewOrmRepository(skeleton, pDB)
-	for idx, oneInstance := range instances {
-		pTx, err := pDB.Begin()
-		if err != nil {
-			t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-			return
-		}
+	for name, oneSection := range instances {
+		for idx, oneInstance := range oneSection {
+			pTx, err := pDB.Begin()
+			if err != nil {
+				t.Errorf("section: %s: the error was expected to be nil, error returned: %s", name, err.Error())
+				return
+			}
 
-		// create the service:
-		service := NewOrmService(skeleton, pDB, pTx)
+			// create the service:
+			service := NewOrmService(skeleton, pDB, pTx)
 
-		// init our service:
-		err = service.Init()
-		if err != nil {
-			t.Errorf("index: %d, the error was expected to be nil, error returned: %s", idx, err.Error())
-			return
-		}
+			// init our service:
+			err = service.Init()
+			if err != nil {
+				t.Errorf("section: %s: index: %d, the error was expected to be nil, error returned: %s", name, idx, err.Error())
+				return
+			}
 
-		// insert instance:
-		err = service.Insert(oneInstance.instance, oneInstance.path)
+			// insert instance:
+			err = service.Insert(oneInstance.instance, oneInstance.path)
+			if err != nil {
+				t.Errorf("section: %s: index: %d, the error was expected to be nil, error returned: %s", name, idx, err.Error())
+				return
+			}
 
-		if err != nil {
-			t.Errorf("index: %d, the error was expected to be nil, error returned: %s", idx, err.Error())
-			return
-		}
+			// commit:
+			err = pTx.Commit()
+			if err != nil {
+				t.Errorf("section: %s: index: %d, the error was expected to be nil, error returned: %s", name, idx, err.Error())
+				return
+			}
 
-		// commit:
-		err = pTx.Commit()
-		if err != nil {
-			t.Errorf("index: %d, the error was expected to be nil, error returned: %s", idx, err.Error())
-			return
-		}
+			insHash := oneInstance.instance.Hash()
+			retInstance, err := repository.Retrieve(oneInstance.path, insHash)
+			if err != nil {
+				t.Errorf("section: %s: index: %d, the error was expected to be nil, error returned: %s", name, idx, err.Error())
+				return
+			}
 
-		insHash := oneInstance.instance.Hash()
-		retInstance, err := repository.Retrieve(oneInstance.path, insHash)
-		if err != nil {
-			t.Errorf("index: %d, the error was expected to be nil, error returned: %s", idx, err.Error())
-			return
-		}
-
-		if !bytes.Equal(retInstance.Hash().Bytes(), insHash.Bytes()) {
-			t.Errorf("index: %d, the returned insatnce is invalid", idx)
-			return
+			if !bytes.Equal(retInstance.Hash().Bytes(), insHash.Bytes()) {
+				t.Errorf("section: %s: index: %d, the returned insatnce is invalid", name, idx)
+				return
+			}
 		}
 	}
 }
