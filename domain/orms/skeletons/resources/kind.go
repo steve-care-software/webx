@@ -1,15 +1,15 @@
 package resources
 
 type kind struct {
-	pNative    *uint8
+	native     Native
 	reference  []string
 	connection string
 }
 
 func createKindWithNative(
-	pNative *uint8,
+	native Native,
 ) Kind {
-	return createKindInternally(pNative, nil, "")
+	return createKindInternally(native, nil, "")
 }
 
 func createKindWithReference(
@@ -25,12 +25,12 @@ func createKindWithConnection(
 }
 
 func createKindInternally(
-	pNative *uint8,
+	native Native,
 	reference []string,
 	connection string,
 ) Kind {
 	out := kind{
-		pNative:    pNative,
+		native:     native,
 		reference:  reference,
 		connection: connection,
 	}
@@ -40,12 +40,12 @@ func createKindInternally(
 
 // IsNative returns true if there is a native, false otherwise
 func (obj *kind) IsNative() bool {
-	return obj.pNative != nil
+	return obj.native != nil
 }
 
 // Native returns the native, if any
-func (obj *kind) Native() *uint8 {
-	return obj.pNative
+func (obj *kind) Native() Native {
+	return obj.native
 }
 
 // IsReference returns true if there is a reference, false otherwise

@@ -28,9 +28,15 @@ type field struct {
 }
 
 type kind struct {
-	pNative     *uint8
+	pSingle     *uint8
+	pList       *list
 	pForeignKey *foreignKey
 	pConnection *connection
+}
+
+type list struct {
+	value     uint8
+	delimiter string
 }
 
 type foreignKey struct {
@@ -230,7 +236,38 @@ func (app *ormService) fetchFieldValue(
 		return nil, errors.New(str)
 	}
 
-	return retValue, nil
+	native := kind.Native()
+	if native.IsSingle() {
+		return retValue, nil
+	}
+
+	output := []byte{}
+	list := native.List()
+	value := list.Value()
+	delimiter := list.Delimiter()
+	if value == resources.NativeString {
+		if casted, ok := retValue.([]string); ok {
+			for _, oneElement := range casted {
+				output = append(output, []byte(oneElement)...)
+				output = append(output, []byte(delimiter)...)
+			}
+
+			return output, nil
+		}
+
+		return errors.New("the field value was expected to contain a list of []string"), nil
+	}
+
+	if value == resources.NativeInteger {
+		panic(errors.New("fetchFieldValue: finish the integer transformation in orm service"))
+	}
+
+	if value == resources.NativeFloat {
+		panic(errors.New("fetchFieldValue: finish the float transformation in orm service"))
+	}
+
+	panic(errors.New("fetchFieldValue: finish the byte transformation in orm service"))
+
 }
 
 func (app *ormService) callMethodsOnInstanceReturnOneValue(
@@ -410,7 +447,11 @@ func (app *ormService) writeSchemaTableFieldKind(
 		return app.writeSchemaTableFieldKind(kind.pForeignKey.localField.kind)
 	}
 
-	return app.writeSchemaTableFieldKindNative(*kind.pNative), nil
+	if kind.pList != nil {
+		return app.writeSchemaTableFieldKindNative(resources.NativeBytes), nil
+	}
+
+	return app.writeSchemaTableFieldKindNative(*kind.pSingle), nil
 }
 
 func (app *ormService) writeSchemaConnectionTables(
@@ -696,8 +737,19 @@ func (app *ormService) generateFieldKind(
 	}
 
 	if kindIns.IsNative() {
-		pNative := kindIns.Native()
-		output.pNative = pNative
+		native := kindIns.Native()
+		if native.IsSingle() {
+			pValue := native.Single()
+			output.pSingle = pValue
+		}
+
+		if native.IsList() {
+			nativeList := native.List()
+			output.pList = &list{
+				value:     nativeList.Value(),
+				delimiter: nativeList.Delimiter(),
+			}
+		}
 	}
 
 	return &output, nil

@@ -3,14 +3,14 @@ package resources
 import "errors"
 
 type kindBuilder struct {
-	pNative    *uint8
+	native     Native
 	reference  []string
 	connection string
 }
 
 func createKindBuilder() KindBuilder {
 	out := kindBuilder{
-		pNative:    nil,
+		native:     nil,
 		reference:  nil,
 		connection: "",
 	}
@@ -24,8 +24,8 @@ func (app *kindBuilder) Create() KindBuilder {
 }
 
 // WithNative adds a native to the builder
-func (app *kindBuilder) WithNative(native uint8) KindBuilder {
-	app.pNative = &native
+func (app *kindBuilder) WithNative(native Native) KindBuilder {
+	app.native = native
 	return app
 }
 
@@ -47,8 +47,8 @@ func (app *kindBuilder) Now() (Kind, error) {
 		app.reference = nil
 	}
 
-	if app.pNative != nil {
-		return createKindWithNative(app.pNative), nil
+	if app.native != nil {
+		return createKindWithNative(app.native), nil
 	}
 
 	if app.reference != nil {

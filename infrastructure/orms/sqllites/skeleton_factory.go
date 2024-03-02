@@ -13,6 +13,8 @@ type skeletonFactory struct {
 	fieldsBuilder          resources.FieldsBuilder
 	fieldBuilder           resources.FieldBuilder
 	kindBuilder            resources.KindBuilder
+	nativeBuilder          resources.NativeBuilder
+	listBuilder            resources.ListBuilder
 	connectionsBuilder     connections.Builder
 	connectionBuilder      connections.ConnectionBuilder
 	connectionFieldBuilder connections.FieldBuilder
@@ -25,6 +27,8 @@ func createSkeletonFactory(
 	fieldsBuilder resources.FieldsBuilder,
 	fieldBuilder resources.FieldBuilder,
 	kindBuilder resources.KindBuilder,
+	nativeBuilder resources.NativeBuilder,
+	listBuilder resources.ListBuilder,
 	connectionsBuilder connections.Builder,
 	connectionBuilder connections.ConnectionBuilder,
 	connectionFieldBuilder connections.FieldBuilder,
@@ -36,6 +40,8 @@ func createSkeletonFactory(
 		fieldsBuilder:          fieldsBuilder,
 		fieldBuilder:           fieldBuilder,
 		kindBuilder:            kindBuilder,
+		nativeBuilder:          nativeBuilder,
+		listBuilder:            listBuilder,
 		connectionsBuilder:     connectionsBuilder,
 		connectionBuilder:      connectionBuilder,
 		connectionFieldBuilder: connectionFieldBuilder,
@@ -56,268 +62,59 @@ func (app *skeletonFactory) Create() (skeletons.Skeleton, error) {
 
 func (app *skeletonFactory) concreteResources() resources.Resources {
 	return app.resources([]resources.Resource{
-		app.concreteResource(),
-		app.concreteDashboard(),
+		app.concreteLibrary(),
 	})
 }
 
-func (app *skeletonFactory) concreteResource() resources.Resource {
-	return app.resourceWithChildren(
-		"resource",
-		app.field(
-			"hash",
-			[]string{"Hash", "Bytes"},
-			app.kindWithNative(
-				resources.NativeBytes,
-			),
-		),
-		app.fields([]resources.Field{
-			app.fieldWithBuilder(
-				"token",
-				[]string{"Token"},
-				app.kindWithReference([]string{
-					"resource",
-					"token",
-				}),
-				"WithToken",
-			),
-			app.fieldWithBuilder(
-				"signature",
-				[]string{"Signature", "Bytes"},
-				app.kindWithNative(resources.NativeBytes),
-				"WithSignature",
-			),
-		}),
-		"Create",
-		"Now",
-		app.resources([]resources.Resource{
-			app.concreteResourceToken(),
-		}),
-	)
-}
-
-func (app *skeletonFactory) concreteResourceToken() resources.Resource {
-	return app.resourceWithChildren(
-		"token",
-		app.field(
-			"hash",
-			[]string{"Hash", "Bytes"},
-			app.kindWithNative(
-				resources.NativeBytes,
-			),
-		),
-		app.fields([]resources.Field{
-			app.fieldWithBuilder(
-				"content",
-				[]string{"Content"},
-				app.kindWithReference([]string{
-					"resource",
-					"token",
-					"content",
-				}),
-				"WithContent",
-			),
-			app.fieldWithBuilder(
-				"created_on",
-				[]string{"CreatedOn", "Unix"},
-				app.kindWithNative(resources.NativeInteger),
-				"CreatedOn",
-			),
-		}),
-		"Create",
-		"Now",
-		app.resources([]resources.Resource{
-			app.resourceWithChildren(
-				"content",
-				app.field(
-					"hash",
-					[]string{"Hash", "Bytes"},
-					app.kindWithNative(
-						resources.NativeBytes,
-					),
-				),
-				app.fields([]resources.Field{
-					app.fieldWithBuilderAndCondition(
-						"dashboard",
-						[]string{"Dashboard"},
-						app.kindWithReference([]string{
-							"resource",
-							"token",
-							"content",
-							"dashboard",
-						}),
-						"WithDashboard",
-						"IsDashboard",
-					),
-				}),
-				"Create",
-				"Now",
-				app.resources([]resources.Resource{
-					app.concreteResourceTokenDashboard(),
-				}),
-			),
-		}),
-	)
-}
-
-func (app *skeletonFactory) concreteResourceTokenDashboard() resources.Resource {
+func (app *skeletonFactory) concreteLibrary() resources.Resource {
 	return app.resource(
-		"dashboard",
+		"bytes",
 		app.field(
 			"hash",
 			[]string{"Hash", "Bytes"},
 			app.kindWithNative(
-				resources.NativeBytes,
-			),
-		),
-		app.fields([]resources.Field{
-			app.fieldWithBuilderAndCondition(
-				"dashboard",
-				[]string{"Dashboard"},
-				app.kindWithReference([]string{
-					"dashboard",
-				}),
-				"WithDashboard",
-				"IsDashboard",
-			),
-			app.fieldWithBuilderAndCondition(
-				"widget",
-				[]string{"Widget"},
-				app.kindWithReference([]string{
-					"dashboard",
-					"widget",
-				}),
-				"WithWidget",
-				"IsWidget",
-			),
-			app.fieldWithBuilderAndCondition(
-				"viewport",
-				[]string{"Viewport"},
-				app.kindWithReference([]string{
-					"dashboard",
-					"widget",
-					"viewport",
-				}),
-				"WithViewport",
-				"IsViewport",
-			),
-		}),
-		"Create",
-		"Now",
-	)
-}
-
-func (app *skeletonFactory) concreteDashboard() resources.Resource {
-	return app.resourceWithChildren(
-		"dashboard",
-		app.field(
-			"hash",
-			[]string{"Hash", "Bytes"},
-			app.kindWithNative(
-				resources.NativeBytes,
-			),
-		),
-		app.fields([]resources.Field{
-			app.fieldWithBuilder(
-				"title",
-				[]string{"Title"},
-				app.kindWithNative(
-					resources.NativeString,
+				app.nativeWithSingle(
+					resources.NativeBytes,
 				),
-				"WithTitle",
 			),
-			app.fieldWithBuilder(
-				"widgets",
-				[]string{"Widgets", "List"},
-				app.kindWithConnection("dashboard_widgets"),
-				"WithWidgets",
+		),
+		app.fields([]resources.Field{
+			app.fieldWithBuilderAndCondition(
+				"joins",
+				[]string{"Join"},
+				app.kindWithNative(
+					app.nativeWithList(
+						app.list(resources.NativeString, "_"),
+					),
+				),
+				"WithJoin",
+				"IsJoin",
 			),
-		}),
-		"Create",
-		"Now",
-		app.resources([]resources.Resource{
-			app.resourceWithChildren(
-				"widget",
-				app.field(
-					"hash",
-					[]string{"Hash", "Bytes"},
-					app.kindWithNative(
+			app.fieldWithBuilderAndCondition(
+				"compares",
+				[]string{"Compare"},
+				app.kindWithNative(
+					app.nativeWithList(
+						app.list(resources.NativeString, "_"),
+					),
+				),
+				"WithCompare",
+				"IsCompare",
+			),
+			app.fieldWithBuilderAndCondition(
+				"hash_bytes",
+				[]string{"HashBytes"},
+				app.kindWithNative(
+					app.nativeWithSingle(
 						resources.NativeBytes,
 					),
 				),
-				app.fields([]resources.Field{
-					app.fieldWithBuilder(
-						"title",
-						[]string{"Title"},
-						app.kindWithNative(
-							resources.NativeString,
-						),
-						"WithTitle",
-					),
-					app.fieldWithBuilder(
-						"program",
-						[]string{"Program", "Bytes"},
-						app.kindWithNative(
-							resources.NativeBytes,
-						),
-						"WithProgram",
-					),
-					app.fieldWithBuilder(
-						"input",
-						[]string{"Input"},
-						app.kindWithNative(
-							resources.NativeBytes,
-						),
-						"WithInput",
-					),
-					app.fieldWithBuilderAndCondition(
-						"viewport",
-						[]string{"Viewport"},
-						app.kindWithReference([]string{
-							"dashboard",
-							"widget",
-							"viewport",
-						}),
-						"WithViewport",
-						"HasViewport",
-					),
-				}),
-				"Create",
-				"Now",
-				app.resources([]resources.Resource{
-					app.resource(
-						"viewport",
-						app.field(
-							"hash",
-							[]string{"Hash", "Bytes"},
-							app.kindWithNative(
-								resources.NativeBytes,
-							),
-						),
-						app.fields([]resources.Field{
-							app.fieldWithBuilder(
-								"row",
-								[]string{"Row"},
-								app.kindWithNative(
-									resources.NativeInteger,
-								),
-								"WithRow",
-							),
-							app.fieldWithBuilder(
-								"height",
-								[]string{"Height"},
-								app.kindWithNative(
-									resources.NativeInteger,
-								),
-								"WithHeight",
-							),
-						}),
-						"Create",
-						"Now",
-					),
-				}),
+				"WithHashBytes",
+				"IsHashBytes",
 			),
 		}),
+		"Create",
+		"Now",
 	)
 }
 
@@ -570,10 +367,54 @@ func (app *skeletonFactory) kindWithReference(
 }
 
 func (app *skeletonFactory) kindWithNative(
-	native uint8,
+	native resources.Native,
 ) resources.Kind {
 	ins, err := app.kindBuilder.Create().
 		WithNative(native).
+		Now()
+
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+func (app *skeletonFactory) nativeWithSingle(
+	single uint8,
+) resources.Native {
+	ins, err := app.nativeBuilder.Create().
+		WithSingle(single).
+		Now()
+
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+func (app *skeletonFactory) nativeWithList(
+	list resources.List,
+) resources.Native {
+	ins, err := app.nativeBuilder.Create().
+		WithList(list).
+		Now()
+
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+func (app *skeletonFactory) list(
+	value uint8,
+	delimiter string,
+) resources.List {
+	ins, err := app.listBuilder.Create().
+		WithValue(value).
+		WithDelimiter(delimiter).
 		Now()
 
 	if err != nil {

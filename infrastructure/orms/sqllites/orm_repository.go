@@ -1,6 +1,7 @@
 package sqllites
 
 import (
+	"bytes"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -92,18 +93,18 @@ func (app *ormRepository) retrieveByResourceAndHash(
 			}
 
 			pValue := values[idx].(*interface{})
+			kind := oneField.Kind()
 			builder := oneField.Builder()
-			retValue, err = app.callMethodWithParamsOnInstanceReturnOneValue(
+			retValue, err = app.callMethodWithParamAndKindOnInstanceReturnOneValue(
 				retValue,
 				builder,
-				[]interface{}{
-					*pValue,
-				},
+				*pValue,
+				kind,
 				&errorStr,
 			)
 
 			if errorStr != "" {
-				str := fmt.Sprintf("there was an error while executing the field method (name: %s) on the builder (name: %s)", builder, table)
+				str := fmt.Sprintf("there was an error while executing the field method (name: %s) on the builder (name: %s): %s", builder, table, errorStr)
 				return nil, errors.New(str)
 			}
 
@@ -111,6 +112,10 @@ func (app *ormRepository) retrieveByResourceAndHash(
 				return nil, err
 			}
 
+			if retValue == nil {
+				str := fmt.Sprintf("the field (name: %s) returned nil when calling its builder method (name: %s) on table: %s", oneField.Name(), oneField.Builder(), table)
+				return nil, errors.New(str)
+			}
 		}
 
 		trigger := resource.Trigger()
@@ -122,7 +127,7 @@ func (app *ormRepository) retrieveByResourceAndHash(
 		)
 
 		if errorStr != "" {
-			str := fmt.Sprintf("there was an error while executing the triggere method (name: %s) on the builder (name: %s)", trigger, table)
+			str := fmt.Sprintf("there was an error while executing the trigger method (name: %s) on the builder (name: %s): %s", trigger, table, errorStr)
 			return nil, errors.New(str)
 		}
 
@@ -193,15 +198,22 @@ func (app *ormRepository) retrieveFieldValuesByHash(
 
 func (app *ormRepository) generateValueFromKind(
 	kind resources.Kind,
-	resources resources.Resources,
+	resourcesIns resources.Resources,
 ) (interface{}, error) {
 	if kind.IsNative() {
-		pNative := kind.Native()
-		return app.generateValueFromNative(*pNative), nil
+		native := kind.Native()
+		if native.IsSingle() {
+			pValue := native.Single()
+			return app.generateValueFromNative(*pValue), nil
+		}
+
+		if native.IsList() {
+			return app.generateValueFromNative(resources.NativeBytes), nil
+		}
 	}
 
 	reference := kind.Reference()
-	return app.generateValueFromReference(reference, resources)
+	return app.generateValueFromReference(reference, resourcesIns)
 }
 
 func (app *ormRepository) generateValueFromReference(
@@ -218,8 +230,13 @@ func (app *ormRepository) generateValueFromReference(
 		return nil, errors.New("the key was expected to contain a native key")
 	}
 
-	pNative := kind.Native()
-	return app.generateValueFromNative(*pNative), nil
+	native := kind.Native()
+	if native.IsSingle() {
+		pValue := native.Single()
+		return app.generateValueFromNative(*pValue), nil
+	}
+
+	panic(errors.New("finish the list in repository: generateValueFromReference"))
 }
 
 func (app *ormRepository) generateValueFromNative(kind uint8) interface{} {
@@ -242,6 +259,69 @@ func (app *ormRepository) generateValueFromNative(kind uint8) interface{} {
 	return value
 }
 
+func (app *ormRepository) callMethodWithParamAndKindOnInstanceReturnOneValue(
+	ins interface{},
+	method string,
+	param interface{},
+	kind resources.Kind,
+	pErrorStr *string,
+) (interface{}, error) {
+	if param == nil {
+		return ins, nil
+	}
+
+	if kind.IsNative() {
+		native := kind.Native()
+		if native.IsList() {
+			if casted, ok := param.([]byte); ok {
+				list := native.List()
+				delimiter := list.Delimiter()
+				listValue := list.Value()
+				if listValue == resources.NativeString {
+					output := []string{}
+					bytesList := bytes.Split(casted, []byte(delimiter))
+					for _, oneBytes := range bytesList {
+						output = append(output, string(oneBytes))
+					}
+
+					return app.callMethodWithParamsOnInstanceReturnOneValue(
+						ins,
+						method,
+						[]interface{}{
+							output,
+						},
+						pErrorStr,
+					)
+				}
+
+				if listValue == resources.NativeBytes {
+					panic(errors.New("retrieveByResourceAndHash -> finish bytes in ormRepository"))
+				}
+
+				if listValue == resources.NativeInteger {
+					panic(errors.New("retrieveByResourceAndHash -> finish integer in ormRepository"))
+				}
+
+				if listValue == resources.NativeFloat {
+					panic(errors.New("retrieveByResourceAndHash -> finish float in ormRepository"))
+				}
+			}
+
+			// error
+			return nil, errors.New("invalid casting")
+		}
+	}
+
+	return app.callMethodWithParamsOnInstanceReturnOneValue(
+		ins,
+		method,
+		[]interface{}{
+			param,
+		},
+		pErrorStr,
+	)
+}
+
 func (app *ormRepository) callMethodWithParamsOnInstanceReturnOneValue(
 	ins interface{},
 	method string,
@@ -262,7 +342,12 @@ func (app *ormRepository) callMethodWithParamsOnInstanceReturnOneValue(
 		return nil, errors.New(str)
 	}
 
-	methodAmountArguments := methodName.Type().NumIn()
+	retType := methodName.Type()
+	if retType == nil {
+		return nil, errors.New("the type was expected to be mandatory")
+	}
+
+	methodAmountArguments := retType.NumIn()
 	if methodAmountArguments != len(params) {
 		str := fmt.Sprintf("the methodName (%s) was expected to contain %d arguments, but it contains %d arguments in reality", method, len(params), methodAmountArguments)
 		return nil, errors.New(str)
@@ -272,7 +357,7 @@ func (app *ormRepository) callMethodWithParamsOnInstanceReturnOneValue(
 	if params != nil && len(params) > 0 {
 		for _, oneParam := range params {
 
-			expectedType := methodName.Type().In(0)
+			expectedType := retType.In(0)
 			value := reflect.ValueOf(oneParam)
 			currentType := value.Type()
 

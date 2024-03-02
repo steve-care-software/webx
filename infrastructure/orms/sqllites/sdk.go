@@ -6,7 +6,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/orms"
 	"github.com/steve-care-software/datastencil/domain/orms/skeletons"
 	"github.com/steve-care-software/datastencil/domain/orms/skeletons/connections"
@@ -24,7 +24,7 @@ func NewOrmRepository(
 ) orms.Repository {
 	hashAdapter := hash.NewAdapter()
 	builders := map[string]interface{}{
-		"libraries_layers_links": links.NewOperatorBuilder(),
+		"bytes": layers.NewBytesBuilder(),
 	}
 
 	return createOrmRepository(
@@ -58,6 +58,8 @@ func NewSkeletonFactory() skeletons.Factory {
 	fieldsBuilder := resources.NewFieldsBuilder()
 	fieldBuilder := resources.NewFieldBuilder()
 	kindBuilder := resources.NewKindBuilder()
+	nativeBuilder := resources.NewNativeBuilder()
+	listBuilder := resources.NewListBuilder()
 	connectionsBuilder := connections.NewBuilder()
 	connectionBuilder := connections.NewConnectionBuilder()
 	connectionFieldBuilder := connections.NewFieldBuilder()
@@ -68,6 +70,8 @@ func NewSkeletonFactory() skeletons.Factory {
 		fieldsBuilder,
 		fieldBuilder,
 		kindBuilder,
+		nativeBuilder,
+		listBuilder,
 		connectionsBuilder,
 		connectionBuilder,
 		connectionFieldBuilder,

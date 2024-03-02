@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/orms"
 )
 
@@ -39,11 +39,27 @@ func TestOrm_Success(t *testing.T) {
 	instances := []testInstance{
 		{
 			path: []string{
-				"libraries",
-				"layers",
-				"links",
+				"bytes",
 			},
-			instance: links.NewOperatorWithAndForTests(),
+			instance: layers.NewBytesWithHashBytesForTests("myInput"),
+		},
+		{
+			path: []string{
+				"bytes",
+			},
+			instance: layers.NewBytesWithCompareForTests([]string{
+				"first",
+				"second",
+			}),
+		},
+		{
+			path: []string{
+				"bytes",
+			},
+			instance: layers.NewBytesWithJoinForTests([]string{
+				"first",
+				"second",
+			}),
 		},
 	}
 
