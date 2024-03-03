@@ -103,26 +103,58 @@ func (app *ormRepository) retrieveByResourceAndHash(
 
 			kind := oneField.Kind()
 			builder := oneField.Builder()
-			retValue, err = app.callMethodWithParamAndKindOnInstanceReturnOneValue(
-				retValue,
-				builder,
-				value,
-				kind,
-				&errorStr,
-			)
+			builderMethod := builder.Method()
+			if !builder.ContainsParam() {
 
-			if errorStr != "" {
-				str := fmt.Sprintf("there was an error while executing the field method (name: %s) on the builder (name: %s): %s", builder, table, errorStr)
-				return nil, errors.New(str)
-			}
+				if boolValue, ok := value.(int64); ok {
+					// if the value is false, skip the method call
+					if boolValue == 0 {
+						continue
+					}
+				}
 
-			if err != nil {
-				return nil, err
-			}
+				retValue, err = app.callMethodWithParamsOnInstanceReturnOneValue(
+					retValue,
+					builderMethod,
+					[]interface{}{},
+					&errorStr,
+				)
 
-			if retValue == nil {
-				str := fmt.Sprintf("the field (name: %s) returned nil when calling its builder method (name: %s) on table: %s", oneField.Name(), oneField.Builder(), table)
-				return nil, errors.New(str)
+				if errorStr != "" {
+					str := fmt.Sprintf("there was an error while executing the field method (name: %s) on the builder (name: %s): %s", builder, table, errorStr)
+					return nil, errors.New(str)
+				}
+
+				if err != nil {
+					return nil, err
+				}
+
+				if retValue == nil {
+					str := fmt.Sprintf("the field (name: %s) returned nil when calling its builder method (name: %s) on table: %s", oneField.Name(), oneField.Builder(), table)
+					return nil, errors.New(str)
+				}
+			} else {
+				retValue, err = app.callMethodWithParamAndKindOnInstanceReturnOneValue(
+					retValue,
+					builderMethod,
+					value,
+					kind,
+					&errorStr,
+				)
+
+				if errorStr != "" {
+					str := fmt.Sprintf("there was an error while executing the field method (name: %s) on the builder (name: %s): %s", builder, table, errorStr)
+					return nil, errors.New(str)
+				}
+
+				if err != nil {
+					return nil, err
+				}
+
+				if retValue == nil {
+					str := fmt.Sprintf("the field (name: %s) returned nil when calling its builder method (name: %s) on table: %s", oneField.Name(), oneField.Builder(), table)
+					return nil, errors.New(str)
+				}
 			}
 		}
 

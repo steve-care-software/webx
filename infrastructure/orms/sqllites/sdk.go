@@ -24,10 +24,13 @@ func NewOrmRepository(
 ) orms.Repository {
 	hashAdapter := hash.NewAdapter()
 	builders := map[string]interface{}{
-		"instruction":                             layers.NewInstructionBuilder(),
-		"instruction_assignment":                  layers.NewAssignmentBuilder(),
-		"instruction_assignment_assignable":       layers.NewAssignableBuilder(),
-		"instruction_assignment_assignable_bytes": layers.NewBytesBuilder(),
+		"layer":                        layers.NewLayerBuilder(),
+		"layer_output":                 layers.NewOutputBuilder(),
+		"layer_output_kind":            layers.NewKindBuilder(),
+		"layer_instruction":            layers.NewInstructionBuilder(),
+		"layer_instruction_assignment": layers.NewAssignmentBuilder(),
+		"layer_instruction_assignment_assignable":       layers.NewAssignableBuilder(),
+		"layer_instruction_assignment_assignable_bytes": layers.NewBytesBuilder(),
 	}
 
 	return createOrmRepository(
@@ -62,6 +65,7 @@ func NewSkeletonFactory() skeletons.Factory {
 	resourceBuilder := resources.NewResourceBuilder()
 	fieldsBuilder := resources.NewFieldsBuilder()
 	fieldBuilder := resources.NewFieldBuilder()
+	builderInstructionBuilder := resources.NewBuilderInstructionBuilder()
 	kindBuilder := resources.NewKindBuilder()
 	nativeBuilder := resources.NewNativeBuilder()
 	listBuilder := resources.NewListBuilder()
@@ -74,6 +78,7 @@ func NewSkeletonFactory() skeletons.Factory {
 		resourceBuilder,
 		fieldsBuilder,
 		fieldBuilder,
+		builderInstructionBuilder,
 		kindBuilder,
 		nativeBuilder,
 		listBuilder,

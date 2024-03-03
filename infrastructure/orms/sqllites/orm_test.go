@@ -37,9 +37,75 @@ func TestOrm_Success(t *testing.T) {
 
 	// build resources:
 	instances := map[string][]testInstance{
+		"layer": {
+			{
+				path: []string{
+					"layer",
+				},
+				instance: layers.NewLayerForTests(
+					layers.NewInstructionsForTests([]layers.Instruction{
+						layers.NewInstructionWithAssignmentForTests(
+							layers.NewAssignmentForTests(
+								"myName",
+								layers.NewAssignableWithBytesForTests(
+									layers.NewBytesWithHashBytesForTests("myInput"),
+								),
+							),
+						),
+					}),
+					layers.NewOutputForTests(
+						"myVariable",
+						layers.NewKindWithContinueForTests(),
+					),
+					"some input",
+				),
+			},
+		},
+		"output": {
+			{
+				path: []string{
+					"layer",
+					"output",
+				},
+				instance: layers.NewOutputForTests(
+					"myVariable",
+					layers.NewKindWithContinueForTests(),
+				),
+			},
+			{
+				path: []string{
+					"layer",
+					"output",
+				},
+				instance: layers.NewOutputWithExecuteForTests(
+					"myVariable",
+					layers.NewKindWithContinueForTests(),
+					"some command to execute",
+				),
+			},
+		},
+		"kind": {
+			{
+				path: []string{
+					"layer",
+					"output",
+					"kind",
+				},
+				instance: layers.NewKindWithContinueForTests(),
+			},
+			{
+				path: []string{
+					"layer",
+					"output",
+					"kind",
+				},
+				instance: layers.NewKindWithPromptForTests(),
+			},
+		},
 		"instruction": {
 			{
 				path: []string{
+					"layer",
 					"instruction",
 				},
 				instance: layers.NewInstructionWithAssignmentForTests(
@@ -55,6 +121,7 @@ func TestOrm_Success(t *testing.T) {
 		"assignment": {
 			{
 				path: []string{
+					"layer",
 					"instruction",
 					"assignment",
 				},
@@ -69,6 +136,7 @@ func TestOrm_Success(t *testing.T) {
 		"assignable": {
 			{
 				path: []string{
+					"layer",
 					"instruction",
 					"assignment",
 					"assignable",
@@ -81,6 +149,7 @@ func TestOrm_Success(t *testing.T) {
 		"bytes": {
 			{
 				path: []string{
+					"layer",
 					"instruction",
 					"assignment",
 					"assignable",
@@ -90,6 +159,7 @@ func TestOrm_Success(t *testing.T) {
 			},
 			{
 				path: []string{
+					"layer",
 					"instruction",
 					"assignment",
 					"assignable",
@@ -102,6 +172,7 @@ func TestOrm_Success(t *testing.T) {
 			},
 			{
 				path: []string{
+					"layer",
 					"instruction",
 					"assignment",
 					"assignable",
@@ -162,7 +233,7 @@ func TestOrm_Success(t *testing.T) {
 			}
 
 			if !bytes.Equal(retInstance.Hash().Bytes(), insHash.Bytes()) {
-				t.Errorf("section: %s: index: %d, the returned insatnce is invalid", name, idx)
+				t.Errorf("section: %s: index: %d, the returned instance is invalid", name, idx)
 				return
 			}
 		}

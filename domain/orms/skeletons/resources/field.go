@@ -6,7 +6,7 @@ type field struct {
 	kind      Kind
 	canBeNil  bool
 	condition string
-	builder   string
+	builder   BuilderInstruction
 }
 
 func createField(
@@ -15,7 +15,7 @@ func createField(
 	kind Kind,
 	canBeNil bool,
 ) Field {
-	return createFieldInternally(name, retriever, kind, canBeNil, "", "")
+	return createFieldInternally(name, retriever, kind, canBeNil, "", nil)
 }
 
 func createFieldWithCondition(
@@ -25,7 +25,7 @@ func createFieldWithCondition(
 	canBeNil bool,
 	condition string,
 ) Field {
-	return createFieldInternally(name, retriever, kind, canBeNil, condition, "")
+	return createFieldInternally(name, retriever, kind, canBeNil, condition, nil)
 }
 
 func createFieldWithBuilder(
@@ -33,7 +33,7 @@ func createFieldWithBuilder(
 	retriever []string,
 	kind Kind,
 	canBeNil bool,
-	builder string,
+	builder BuilderInstruction,
 ) Field {
 	return createFieldInternally(name, retriever, kind, canBeNil, "", builder)
 }
@@ -44,7 +44,7 @@ func createFieldWithConditionAndBuilder(
 	kind Kind,
 	canBeNil bool,
 	condition string,
-	builder string,
+	builder BuilderInstruction,
 ) Field {
 	return createFieldInternally(name, retriever, kind, canBeNil, condition, builder)
 }
@@ -55,7 +55,7 @@ func createFieldInternally(
 	kind Kind,
 	canBeNil bool,
 	condition string,
-	builder string,
+	builder BuilderInstruction,
 ) Field {
 	out := field{
 		name:      name,
@@ -101,10 +101,10 @@ func (obj *field) Condition() string {
 
 // HasBuilder returns true if there is a builder, false otherwise
 func (obj *field) HasBuilder() bool {
-	return obj.builder != ""
+	return obj.builder != nil
 }
 
 // Builder returns the builder
-func (obj *field) Builder() string {
+func (obj *field) Builder() BuilderInstruction {
 	return obj.builder
 }

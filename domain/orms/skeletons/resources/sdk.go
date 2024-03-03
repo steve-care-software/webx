@@ -34,6 +34,11 @@ func NewFieldBuilder() FieldBuilder {
 	return createFieldBuilder()
 }
 
+// NewBuilderInstructionBuilder creates a new builder instruction builder
+func NewBuilderInstructionBuilder() BuilderInstructionBuilder {
+	return createBuilderInstructionBuilder()
+}
+
 // NewKindBuilder creates a new kind builder
 func NewKindBuilder() KindBuilder {
 	return createKindBuilder()
@@ -104,7 +109,7 @@ type FieldBuilder interface {
 	Create() FieldBuilder
 	WithName(name string) FieldBuilder
 	WithRetriever(retriever []string) FieldBuilder
-	WithBuilder(builder string) FieldBuilder
+	WithBuilder(builder BuilderInstruction) FieldBuilder
 	WithCondition(condition string) FieldBuilder
 	WithKind(kind Kind) FieldBuilder
 	Now() (Field, error)
@@ -118,7 +123,21 @@ type Field interface {
 	HasCondition() bool
 	Condition() string
 	HasBuilder() bool
-	Builder() string
+	Builder() BuilderInstruction
+}
+
+// BuilderInstructionBuilder represents a builder instruction builder
+type BuilderInstructionBuilder interface {
+	Create() BuilderInstructionBuilder
+	WithMethod(method string) BuilderInstructionBuilder
+	ContainsParam() BuilderInstructionBuilder
+	Now() (BuilderInstruction, error)
+}
+
+// BuilderInstruction represents a builder instruction
+type BuilderInstruction interface {
+	Method() string
+	ContainsParam() bool
 }
 
 // KindBuilder represents a kind builder

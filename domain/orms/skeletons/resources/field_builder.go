@@ -5,7 +5,7 @@ import "errors"
 type fieldBuilder struct {
 	name      string
 	retriever []string
-	builder   string
+	builder   BuilderInstruction
 	condition string
 	kind      Kind
 	canBeNil  bool
@@ -15,7 +15,7 @@ func createFieldBuilder() FieldBuilder {
 	out := fieldBuilder{
 		name:      "",
 		retriever: nil,
-		builder:   "",
+		builder:   nil,
 		condition: "",
 		kind:      nil,
 		canBeNil:  false,
@@ -42,7 +42,7 @@ func (app *fieldBuilder) WithRetriever(retriever []string) FieldBuilder {
 }
 
 // WithBuilder adds a builder to the builder
-func (app *fieldBuilder) WithBuilder(builder string) FieldBuilder {
+func (app *fieldBuilder) WithBuilder(builder BuilderInstruction) FieldBuilder {
 	app.builder = builder
 	return app
 }
@@ -83,7 +83,7 @@ func (app *fieldBuilder) Now() (Field, error) {
 		return nil, errors.New("the kind is mandatory in order to build a Field instance")
 	}
 
-	if app.builder != "" && app.condition != "" {
+	if app.builder != nil && app.condition != "" {
 		return createFieldWithConditionAndBuilder(
 			app.name,
 			app.retriever,
@@ -94,7 +94,7 @@ func (app *fieldBuilder) Now() (Field, error) {
 		), nil
 	}
 
-	if app.builder != "" {
+	if app.builder != nil {
 		return createFieldWithBuilder(
 			app.name,
 			app.retriever,

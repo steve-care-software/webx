@@ -7,17 +7,18 @@ import (
 )
 
 type skeletonFactory struct {
-	builder                skeletons.Builder
-	resourcesBuilder       resources.Builder
-	resourceBuilder        resources.ResourceBuilder
-	fieldsBuilder          resources.FieldsBuilder
-	fieldBuilder           resources.FieldBuilder
-	kindBuilder            resources.KindBuilder
-	nativeBuilder          resources.NativeBuilder
-	listBuilder            resources.ListBuilder
-	connectionsBuilder     connections.Builder
-	connectionBuilder      connections.ConnectionBuilder
-	connectionFieldBuilder connections.FieldBuilder
+	builder                   skeletons.Builder
+	resourcesBuilder          resources.Builder
+	resourceBuilder           resources.ResourceBuilder
+	fieldsBuilder             resources.FieldsBuilder
+	fieldBuilder              resources.FieldBuilder
+	builderInstructionBuilder resources.BuilderInstructionBuilder
+	kindBuilder               resources.KindBuilder
+	nativeBuilder             resources.NativeBuilder
+	listBuilder               resources.ListBuilder
+	connectionsBuilder        connections.Builder
+	connectionBuilder         connections.ConnectionBuilder
+	connectionFieldBuilder    connections.FieldBuilder
 }
 
 func createSkeletonFactory(
@@ -26,6 +27,7 @@ func createSkeletonFactory(
 	resourceBuilder resources.ResourceBuilder,
 	fieldsBuilder resources.FieldsBuilder,
 	fieldBuilder resources.FieldBuilder,
+	builderInstructionBuilder resources.BuilderInstructionBuilder,
 	kindBuilder resources.KindBuilder,
 	nativeBuilder resources.NativeBuilder,
 	listBuilder resources.ListBuilder,
@@ -34,17 +36,18 @@ func createSkeletonFactory(
 	connectionFieldBuilder connections.FieldBuilder,
 ) skeletons.Factory {
 	out := skeletonFactory{
-		builder:                builder,
-		resourcesBuilder:       resourcesBuilder,
-		resourceBuilder:        resourceBuilder,
-		fieldsBuilder:          fieldsBuilder,
-		fieldBuilder:           fieldBuilder,
-		kindBuilder:            kindBuilder,
-		nativeBuilder:          nativeBuilder,
-		listBuilder:            listBuilder,
-		connectionsBuilder:     connectionsBuilder,
-		connectionBuilder:      connectionBuilder,
-		connectionFieldBuilder: connectionFieldBuilder,
+		builder:                   builder,
+		resourcesBuilder:          resourcesBuilder,
+		resourceBuilder:           resourceBuilder,
+		fieldsBuilder:             fieldsBuilder,
+		fieldBuilder:              fieldBuilder,
+		builderInstructionBuilder: builderInstructionBuilder,
+		kindBuilder:               kindBuilder,
+		nativeBuilder:             nativeBuilder,
+		listBuilder:               listBuilder,
+		connectionsBuilder:        connectionsBuilder,
+		connectionBuilder:         connectionBuilder,
+		connectionFieldBuilder:    connectionFieldBuilder,
 	}
 
 	return &out
@@ -67,6 +70,158 @@ func (app *skeletonFactory) concreteResources() resources.Resources {
 }
 
 func (app *skeletonFactory) concreteLibrary() resources.Resource {
+	return app.concreteLibraryLayer()
+}
+
+func (app *skeletonFactory) concreteLibraryLayer() resources.Resource {
+	return app.resourceWithChildren(
+		"layer",
+		app.field(
+			"hash",
+			[]string{"Hash", "Bytes"},
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.fieldWithBuilder(
+				"output",
+				[]string{"Output"},
+				app.kindWithReference([]string{
+					"layer",
+					"output",
+				}),
+				app.builderInstructionWithContainsParams(
+					"WithOutput",
+				),
+			),
+			app.fieldWithBuilder(
+				"input",
+				[]string{"Input"},
+				app.kindWithNative(
+					app.nativeWithSingle(
+						resources.NativeString,
+					),
+				),
+				app.builderInstructionWithContainsParams(
+					"WithInput",
+				),
+			),
+		}),
+		"Create",
+		"Now",
+		app.resources([]resources.Resource{
+			app.concreteLibraryLayerOutput(),
+			app.concreteLibraryLayerInstruction(),
+		}),
+	)
+}
+
+func (app *skeletonFactory) concreteLibraryLayerOutput() resources.Resource {
+	return app.resourceWithChildren(
+		"output",
+		app.field(
+			"hash",
+			[]string{"Hash", "Bytes"},
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.fieldWithBuilder(
+				"variable",
+				[]string{"Variable"},
+				app.kindWithNative(
+					app.nativeWithSingle(
+						resources.NativeString,
+					),
+				),
+				app.builderInstructionWithContainsParams(
+					"WithVariable",
+				),
+			),
+			app.fieldWithBuilder(
+				"kind",
+				[]string{"Kind"},
+				app.kindWithReference([]string{
+					"layer",
+					"output",
+					"kind",
+				}),
+				app.builderInstructionWithContainsParams(
+					"WithKind",
+				),
+			),
+			app.fieldWithBuilderAndCondition(
+				"execute",
+				[]string{"Execute"},
+				app.kindWithNative(
+					app.nativeWithSingle(
+						resources.NativeString,
+					),
+				),
+				app.builderInstructionWithContainsParams(
+					"WithExecute",
+				),
+				"HasExecute",
+			),
+		}),
+		"Create",
+		"Now",
+		app.resources([]resources.Resource{
+			app.concreteLibraryLayerKind(),
+		}),
+	)
+}
+
+func (app *skeletonFactory) concreteLibraryLayerKind() resources.Resource {
+	return app.resource(
+		"kind",
+		app.field(
+			"hash",
+			[]string{"Hash", "Bytes"},
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.fieldWithBuilder(
+				"prompt",
+				[]string{"IsPrompt"},
+				app.kindWithNative(
+					app.nativeWithSingle(
+						resources.NativeInteger,
+					),
+				),
+				app.builderInstruction(
+					"IsPrompt",
+				),
+			),
+			app.fieldWithBuilder(
+				"continue",
+				[]string{"IsContinue"},
+				app.kindWithNative(
+					app.nativeWithSingle(
+						resources.NativeInteger,
+					),
+				),
+				app.builderInstruction(
+					"IsContinue",
+				),
+			),
+		}),
+		"Create",
+		"Now",
+	)
+}
+
+func (app *skeletonFactory) concreteLibraryLayerInstruction() resources.Resource {
 	return app.resourceWithChildren(
 		"instruction",
 		app.field(
@@ -83,10 +238,13 @@ func (app *skeletonFactory) concreteLibrary() resources.Resource {
 				"assignment",
 				[]string{"Assignment"},
 				app.kindWithReference([]string{
+					"layer",
 					"instruction",
 					"assignment",
 				}),
-				"WithAssignment",
+				app.builderInstructionWithContainsParams(
+					"WithAssignment",
+				),
 			),
 		}),
 		"Create",
@@ -118,17 +276,22 @@ func (app *skeletonFactory) concreteLibraryLayerAssignment() resources.Resource 
 						resources.NativeString,
 					),
 				),
-				"WithName",
+				app.builderInstructionWithContainsParams(
+					"WithName",
+				),
 			),
 			app.fieldWithBuilder(
 				"assignable",
 				[]string{"Assignable"},
 				app.kindWithReference([]string{
+					"layer",
 					"instruction",
 					"assignment",
 					"assignable",
 				}),
-				"WithAssignable",
+				app.builderInstructionWithContainsParams(
+					"WithAssignable",
+				),
 			),
 		}),
 		"Create",
@@ -156,12 +319,15 @@ func (app *skeletonFactory) createLibraryLayerAssignable() resources.Resource {
 				"bytes",
 				[]string{"Bytes"},
 				app.kindWithReference([]string{
+					"layer",
 					"instruction",
 					"assignment",
 					"assignable",
 					"bytes",
 				}),
-				"WithBytes",
+				app.builderInstructionWithContainsParams(
+					"WithBytes",
+				),
 				"IsBytes",
 			),
 		}),
@@ -194,7 +360,9 @@ func (app *skeletonFactory) createLibraryLayerBytes() resources.Resource {
 						app.list(resources.NativeString, "_"),
 					),
 				),
-				"WithJoin",
+				app.builderInstructionWithContainsParams(
+					"WithJoin",
+				),
 				"IsJoin",
 			),
 			app.fieldWithBuilderAndCondition(
@@ -205,7 +373,9 @@ func (app *skeletonFactory) createLibraryLayerBytes() resources.Resource {
 						app.list(resources.NativeString, "_"),
 					),
 				),
-				"WithCompare",
+				app.builderInstructionWithContainsParams(
+					"WithCompare",
+				),
 				"IsCompare",
 			),
 			app.fieldWithBuilderAndCondition(
@@ -216,7 +386,9 @@ func (app *skeletonFactory) createLibraryLayerBytes() resources.Resource {
 						resources.NativeBytes,
 					),
 				),
-				"WithHashBytes",
+				app.builderInstructionWithContainsParams(
+					"WithHashBytes",
+				),
 				"IsHashBytes",
 			),
 		}),
@@ -228,18 +400,18 @@ func (app *skeletonFactory) createLibraryLayerBytes() resources.Resource {
 func (app *skeletonFactory) concreteConnections() connections.Connections {
 	return app.connections([]connections.Connection{
 		app.connection(
-			"dashboard_widgets",
+			"layer_instructions",
 			app.connectionField(
-				"dashboard",
+				"layer",
 				[]string{
-					"dashboard",
+					"layer",
 				},
 			),
 			app.connectionField(
-				"widget",
+				"instruction",
 				[]string{
-					"dashboard",
-					"widget",
+					"layer",
+					"instruction",
 				},
 			),
 		),
@@ -387,7 +559,7 @@ func (app *skeletonFactory) fieldWithBuilder(
 	name string,
 	retriever []string,
 	kind resources.Kind,
-	builderMethod string,
+	builderMethod resources.BuilderInstruction,
 ) resources.Field {
 	ins, err := app.fieldBuilder.Create().
 		WithName(name).
@@ -427,7 +599,7 @@ func (app *skeletonFactory) fieldWithBuilderAndCondition(
 	name string,
 	retriever []string,
 	kind resources.Kind,
-	builderMethod string,
+	builderMethod resources.BuilderInstruction,
 	condition string,
 ) resources.Field {
 	ins, err := app.fieldBuilder.Create().
@@ -436,6 +608,35 @@ func (app *skeletonFactory) fieldWithBuilderAndCondition(
 		WithBuilder(builderMethod).
 		WithCondition(condition).
 		WithKind(kind).
+		Now()
+
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+func (app *skeletonFactory) builderInstruction(
+	method string,
+) resources.BuilderInstruction {
+	ins, err := app.builderInstructionBuilder.Create().
+		WithMethod(method).
+		Now()
+
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+func (app *skeletonFactory) builderInstructionWithContainsParams(
+	method string,
+) resources.BuilderInstruction {
+	ins, err := app.builderInstructionBuilder.Create().
+		WithMethod(method).
+		ContainsParam().
 		Now()
 
 	if err != nil {
