@@ -92,13 +92,21 @@ func (app *ormRepository) retrieveByResourceAndHash(
 				continue
 			}
 
-			pValue := values[idx].(*interface{})
+			var value interface{}
+			if pInstance, ok := values[idx].(*orms.Instance); ok {
+				value = *pInstance
+			}
+
+			if pValue, ok := values[idx].(*interface{}); ok {
+				value = *pValue
+			}
+
 			kind := oneField.Kind()
 			builder := oneField.Builder()
 			retValue, err = app.callMethodWithParamAndKindOnInstanceReturnOneValue(
 				retValue,
 				builder,
-				*pValue,
+				value,
 				kind,
 				&errorStr,
 			)
@@ -167,9 +175,10 @@ func (app *ormRepository) retrieveFieldValuesByHash(
 		return nil, errors.New(str)
 	}
 
+	indexes := []int{}
 	values := []interface{}{}
 	fieldList := fields.List()
-	for _, oneField := range fieldList {
+	for idx, oneField := range fieldList {
 		kind := oneField.Kind()
 		if kind.IsConnection() {
 			continue
@@ -181,6 +190,7 @@ func (app *ormRepository) retrieveFieldValuesByHash(
 		}
 
 		values = append(values, &retValue)
+		indexes = append(indexes, idx)
 	}
 
 	err = rows.Scan(values...)
@@ -191,6 +201,39 @@ func (app *ormRepository) retrieveFieldValuesByHash(
 	err = rows.Err()
 	if err != nil {
 		return nil, err
+	}
+
+	for idx, oneIndex := range indexes {
+		oneField := fieldList[oneIndex]
+		kind := oneField.Kind()
+		if kind.IsConnection() {
+			continue
+		}
+
+		if kind.IsReference() {
+			if pIns, ok := values[idx].(*interface{}); ok {
+				insValue := *pIns
+				if bytes, ok := insValue.([]byte); ok {
+					pHash, err := app.hashAdapter.FromBytes(bytes)
+					if err != nil {
+						return nil, err
+					}
+
+					reference := kind.Reference()
+					retInstance, err := app.Retrieve(reference, *pHash)
+					if err != nil {
+						return nil, err
+					}
+
+					values[idx] = &retInstance
+					continue
+				}
+
+				return nil, errors.New("the reference type was expected to contain bytes")
+			}
+
+			return nil, errors.New("the reference type was expected to contain bytes")
+		}
 	}
 
 	return values, nil

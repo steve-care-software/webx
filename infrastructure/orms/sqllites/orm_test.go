@@ -37,15 +37,27 @@ func TestOrm_Success(t *testing.T) {
 
 	// build resources:
 	instances := map[string][]testInstance{
+		"assignables": {
+			{
+				path: []string{
+					"assignables",
+				},
+				instance: layers.NewAssignableWithBytesForTests(
+					layers.NewBytesWithHashBytesForTests("myInput"),
+				),
+			},
+		},
 		"bytes": {
 			{
 				path: []string{
+					"assignables",
 					"bytes",
 				},
 				instance: layers.NewBytesWithHashBytesForTests("myInput"),
 			},
 			{
 				path: []string{
+					"assignables",
 					"bytes",
 				},
 				instance: layers.NewBytesWithCompareForTests([]string{
@@ -55,6 +67,7 @@ func TestOrm_Success(t *testing.T) {
 			},
 			{
 				path: []string{
+					"assignables",
 					"bytes",
 				},
 				instance: layers.NewBytesWithJoinForTests([]string{
@@ -81,7 +94,7 @@ func TestOrm_Success(t *testing.T) {
 			}
 
 			// create the service:
-			service := NewOrmService(skeleton, pDB, pTx)
+			service := NewOrmService(repository, skeleton, pDB, pTx)
 
 			// init our service:
 			err = service.Init()

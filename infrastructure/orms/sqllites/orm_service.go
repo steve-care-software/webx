@@ -52,6 +52,7 @@ type connection struct {
 }
 
 type ormService struct {
+	repository  orms.Repository
 	hashAdapter hash.Adapter
 	skeleton    skeletons.Skeleton
 	dbPtr       *sql.DB
@@ -59,12 +60,14 @@ type ormService struct {
 }
 
 func createOrmService(
+	repository orms.Repository,
 	hashAdapter hash.Adapter,
 	skeleton skeletons.Skeleton,
 	dbPtr *sql.DB,
 	txPtr *sql.Tx,
 ) orms.Service {
 	out := ormService{
+		repository:  repository,
 		hashAdapter: hashAdapter,
 		skeleton:    skeleton,
 		dbPtr:       dbPtr,
@@ -202,7 +205,7 @@ func (app *ormService) fetchFieldValue(
 
 	kind := field.Kind()
 	if kind.IsReference() {
-		refPath := kind.Reference()
+		/*refPath := kind.Reference()
 		resource, err := allResources.FetchByPath(refPath)
 		if err != nil {
 			return nil, err
@@ -219,9 +222,31 @@ func (app *ormService) fetchFieldValue(
 		if errorStr != "" {
 			str := fmt.Sprintf("there was an error while calling the key retriever (%s) on the field (name: %s): %s", strings.Join(keyRetriever, ","), field.Name(), err.Error())
 			return nil, errors.New(str)
+		}*/
+
+		errorStr := ""
+		instanceRetriever := field.Retriever()
+		retIns, err := app.callMethodsOnInstanceReturnOneValue(ins, instanceRetriever, &errorStr)
+		if err != nil {
+			return nil, err
 		}
 
-		return retValue, nil
+		if errorStr != "" {
+			str := fmt.Sprintf("there was an error while calling the retriever (%s) on the field (name: %s): %s", strings.Join(instanceRetriever, ","), field.Name(), err.Error())
+			return nil, errors.New(str)
+		}
+
+		if instance, ok := retIns.(orms.Instance); ok {
+			refPath := kind.Reference()
+			err = app.Insert(instance, refPath)
+			if err != nil {
+				return nil, err
+			}
+
+			return instance.Hash().Bytes(), nil
+		}
+
+		return nil, errors.New("the reference was expected to contain an hash")
 	}
 
 	errorStr := ""

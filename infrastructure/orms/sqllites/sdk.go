@@ -24,7 +24,8 @@ func NewOrmRepository(
 ) orms.Repository {
 	hashAdapter := hash.NewAdapter()
 	builders := map[string]interface{}{
-		"bytes": layers.NewBytesBuilder(),
+		"assignables":       layers.NewAssignableBuilder(),
+		"assignables_bytes": layers.NewBytesBuilder(),
 	}
 
 	return createOrmRepository(
@@ -37,12 +38,14 @@ func NewOrmRepository(
 
 // NewOrmService creates a new orm service
 func NewOrmService(
+	repository orms.Repository,
 	skeleton skeletons.Skeleton,
 	dbPtr *sql.DB,
 	txPtr *sql.Tx,
 ) orms.Service {
 	hashAdapter := hash.NewAdapter()
 	return createOrmService(
+		repository,
 		hashAdapter,
 		skeleton,
 		dbPtr,
