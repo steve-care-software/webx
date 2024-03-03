@@ -205,25 +205,6 @@ func (app *ormService) fetchFieldValue(
 
 	kind := field.Kind()
 	if kind.IsReference() {
-		/*refPath := kind.Reference()
-		resource, err := allResources.FetchByPath(refPath)
-		if err != nil {
-			return nil, err
-		}
-
-		errorStr := ""
-		keyRetriever := resource.Key().Retriever()
-		retValue, err := app.callMethodsOnInstanceReturnOneValue(ins, keyRetriever, &errorStr)
-
-		if err != nil {
-			return nil, err
-		}
-
-		if errorStr != "" {
-			str := fmt.Sprintf("there was an error while calling the key retriever (%s) on the field (name: %s): %s", strings.Join(keyRetriever, ","), field.Name(), err.Error())
-			return nil, errors.New(str)
-		}*/
-
 		errorStr := ""
 		instanceRetriever := field.Retriever()
 		retIns, err := app.callMethodsOnInstanceReturnOneValue(ins, instanceRetriever, &errorStr)
