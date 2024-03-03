@@ -192,7 +192,7 @@ func (app *ormService) fetchFieldValue(
 		}
 
 		if errorStr != "" {
-			str := fmt.Sprintf("there was an error while calling the condition (%s) on the field (name: %s): %s", condition, field.Name(), err.Error())
+			str := fmt.Sprintf("there was an error while calling the condition (%s) on the field (name: %s): %s", condition, field.Name(), errorStr)
 			return nil, errors.New(str)
 		}
 

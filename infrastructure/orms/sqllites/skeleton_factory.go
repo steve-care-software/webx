@@ -68,6 +68,47 @@ func (app *skeletonFactory) concreteResources() resources.Resources {
 
 func (app *skeletonFactory) concreteLibrary() resources.Resource {
 	return app.resourceWithChildren(
+		"assignments",
+		app.field(
+			"hash",
+			[]string{"Hash", "Bytes"},
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.fieldWithBuilder(
+				"name",
+				[]string{"Name"},
+				app.kindWithNative(
+					app.nativeWithSingle(
+						resources.NativeString,
+					),
+				),
+				"WithName",
+			),
+			app.fieldWithBuilder(
+				"assignable",
+				[]string{"Assignable"},
+				app.kindWithReference([]string{
+					"assignments",
+					"assignables",
+				}),
+				"WithAssignable",
+			),
+		}),
+		"Create",
+		"Now",
+		app.resources([]resources.Resource{
+			app.createLibraryLayerAssignable(),
+		}),
+	)
+}
+
+func (app *skeletonFactory) createLibraryLayerAssignable() resources.Resource {
+	return app.resourceWithChildren(
 		"assignables",
 		app.field(
 			"hash",
@@ -83,6 +124,7 @@ func (app *skeletonFactory) concreteLibrary() resources.Resource {
 				"bytes",
 				[]string{"Bytes"},
 				app.kindWithReference([]string{
+					"assignments",
 					"assignables",
 					"bytes",
 				}),
@@ -93,56 +135,60 @@ func (app *skeletonFactory) concreteLibrary() resources.Resource {
 		"Create",
 		"Now",
 		app.resources([]resources.Resource{
-			app.resource(
-				"bytes",
-				app.field(
-					"hash",
-					[]string{"Hash", "Bytes"},
-					app.kindWithNative(
-						app.nativeWithSingle(
-							resources.NativeBytes,
-						),
+			app.createLibraryLayerBytes(),
+		}),
+	)
+}
+
+func (app *skeletonFactory) createLibraryLayerBytes() resources.Resource {
+	return app.resource(
+		"bytes",
+		app.field(
+			"hash",
+			[]string{"Hash", "Bytes"},
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.fieldWithBuilderAndCondition(
+				"joins",
+				[]string{"Join"},
+				app.kindWithNative(
+					app.nativeWithList(
+						app.list(resources.NativeString, "_"),
 					),
 				),
-				app.fields([]resources.Field{
-					app.fieldWithBuilderAndCondition(
-						"joins",
-						[]string{"Join"},
-						app.kindWithNative(
-							app.nativeWithList(
-								app.list(resources.NativeString, "_"),
-							),
-						),
-						"WithJoin",
-						"IsJoin",
+				"WithJoin",
+				"IsJoin",
+			),
+			app.fieldWithBuilderAndCondition(
+				"compares",
+				[]string{"Compare"},
+				app.kindWithNative(
+					app.nativeWithList(
+						app.list(resources.NativeString, "_"),
 					),
-					app.fieldWithBuilderAndCondition(
-						"compares",
-						[]string{"Compare"},
-						app.kindWithNative(
-							app.nativeWithList(
-								app.list(resources.NativeString, "_"),
-							),
-						),
-						"WithCompare",
-						"IsCompare",
+				),
+				"WithCompare",
+				"IsCompare",
+			),
+			app.fieldWithBuilderAndCondition(
+				"hash_bytes",
+				[]string{"HashBytes"},
+				app.kindWithNative(
+					app.nativeWithSingle(
+						resources.NativeBytes,
 					),
-					app.fieldWithBuilderAndCondition(
-						"hash_bytes",
-						[]string{"HashBytes"},
-						app.kindWithNative(
-							app.nativeWithSingle(
-								resources.NativeBytes,
-							),
-						),
-						"WithHashBytes",
-						"IsHashBytes",
-					),
-				}),
-				"Create",
-				"Now",
+				),
+				"WithHashBytes",
+				"IsHashBytes",
 			),
 		}),
+		"Create",
+		"Now",
 	)
 }
 

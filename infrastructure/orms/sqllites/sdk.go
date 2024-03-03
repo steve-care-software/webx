@@ -24,8 +24,9 @@ func NewOrmRepository(
 ) orms.Repository {
 	hashAdapter := hash.NewAdapter()
 	builders := map[string]interface{}{
-		"assignables":       layers.NewAssignableBuilder(),
-		"assignables_bytes": layers.NewBytesBuilder(),
+		"assignments":                   layers.NewAssignmentBuilder(),
+		"assignments_assignables":       layers.NewAssignableBuilder(),
+		"assignments_assignables_bytes": layers.NewBytesBuilder(),
 	}
 
 	return createOrmRepository(
