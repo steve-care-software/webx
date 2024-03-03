@@ -37,10 +37,26 @@ func TestOrm_Success(t *testing.T) {
 
 	// build resources:
 	instances := map[string][]testInstance{
-		"assignments": {
+		"instruction": {
 			{
 				path: []string{
-					"assignments",
+					"instruction",
+				},
+				instance: layers.NewInstructionWithAssignmentForTests(
+					layers.NewAssignmentForTests(
+						"myName",
+						layers.NewAssignableWithBytesForTests(
+							layers.NewBytesWithHashBytesForTests("myInput"),
+						),
+					),
+				),
+			},
+		},
+		"assignment": {
+			{
+				path: []string{
+					"instruction",
+					"assignment",
 				},
 				instance: layers.NewAssignmentForTests(
 					"myName",
@@ -50,11 +66,12 @@ func TestOrm_Success(t *testing.T) {
 				),
 			},
 		},
-		"assignables": {
+		"assignable": {
 			{
 				path: []string{
-					"assignments",
-					"assignables",
+					"instruction",
+					"assignment",
+					"assignable",
 				},
 				instance: layers.NewAssignableWithBytesForTests(
 					layers.NewBytesWithHashBytesForTests("myInput"),
@@ -64,16 +81,18 @@ func TestOrm_Success(t *testing.T) {
 		"bytes": {
 			{
 				path: []string{
-					"assignments",
-					"assignables",
+					"instruction",
+					"assignment",
+					"assignable",
 					"bytes",
 				},
 				instance: layers.NewBytesWithHashBytesForTests("myInput"),
 			},
 			{
 				path: []string{
-					"assignments",
-					"assignables",
+					"instruction",
+					"assignment",
+					"assignable",
 					"bytes",
 				},
 				instance: layers.NewBytesWithCompareForTests([]string{
@@ -83,8 +102,9 @@ func TestOrm_Success(t *testing.T) {
 			},
 			{
 				path: []string{
-					"assignments",
-					"assignables",
+					"instruction",
+					"assignment",
+					"assignable",
 					"bytes",
 				},
 				instance: layers.NewBytesWithJoinForTests([]string{

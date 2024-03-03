@@ -68,7 +68,38 @@ func (app *skeletonFactory) concreteResources() resources.Resources {
 
 func (app *skeletonFactory) concreteLibrary() resources.Resource {
 	return app.resourceWithChildren(
-		"assignments",
+		"instruction",
+		app.field(
+			"hash",
+			[]string{"Hash", "Bytes"},
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.fieldWithBuilder(
+				"assignment",
+				[]string{"Assignment"},
+				app.kindWithReference([]string{
+					"instruction",
+					"assignment",
+				}),
+				"WithAssignment",
+			),
+		}),
+		"Create",
+		"Now",
+		app.resources([]resources.Resource{
+			app.concreteLibraryLayerAssignment(),
+		}),
+	)
+}
+
+func (app *skeletonFactory) concreteLibraryLayerAssignment() resources.Resource {
+	return app.resourceWithChildren(
+		"assignment",
 		app.field(
 			"hash",
 			[]string{"Hash", "Bytes"},
@@ -93,8 +124,9 @@ func (app *skeletonFactory) concreteLibrary() resources.Resource {
 				"assignable",
 				[]string{"Assignable"},
 				app.kindWithReference([]string{
-					"assignments",
-					"assignables",
+					"instruction",
+					"assignment",
+					"assignable",
 				}),
 				"WithAssignable",
 			),
@@ -109,7 +141,7 @@ func (app *skeletonFactory) concreteLibrary() resources.Resource {
 
 func (app *skeletonFactory) createLibraryLayerAssignable() resources.Resource {
 	return app.resourceWithChildren(
-		"assignables",
+		"assignable",
 		app.field(
 			"hash",
 			[]string{"Hash", "Bytes"},
@@ -124,8 +156,9 @@ func (app *skeletonFactory) createLibraryLayerAssignable() resources.Resource {
 				"bytes",
 				[]string{"Bytes"},
 				app.kindWithReference([]string{
-					"assignments",
-					"assignables",
+					"instruction",
+					"assignment",
+					"assignable",
 					"bytes",
 				}),
 				"WithBytes",
