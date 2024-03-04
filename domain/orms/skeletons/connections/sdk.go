@@ -1,5 +1,7 @@
 package connections
 
+import "github.com/steve-care-software/datastencil/domain/orms/skeletons/resources"
+
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
 	return createBuilder()
@@ -26,6 +28,7 @@ type Builder interface {
 type Connections interface {
 	List() []Connection
 	Fetch(name string) (Connection, error)
+	FetchByPaths(from []string, to []string) (Connection, error)
 }
 
 // ConnectionBuilder represents a connection builder
@@ -42,6 +45,20 @@ type Connection interface {
 	Name() string
 	From() Field
 	To() Field
+}
+
+// ElementBuilder represents an element builder
+type ElementBuilder interface {
+	Create() ElementBuilder
+	WithField(field Field) ElementBuilder
+	WithResource(resource resources.Resource) ElementBuilder
+	Now() (Element, error)
+}
+
+// Element represents an elemnt
+type Element interface {
+	Field() Field
+	//Resource() resources.Resource
 }
 
 // FieldBuilder represents a field builder

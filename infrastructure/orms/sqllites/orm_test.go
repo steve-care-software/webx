@@ -11,14 +11,10 @@ import (
 	"github.com/steve-care-software/datastencil/domain/orms"
 )
 
-type instanceExec struct {
-	name     string
-	insatnce orms.Instance
-}
-
 type testInstance struct {
-	path     []string
-	instance orms.Instance
+	path         []string
+	instance     orms.Instance
+	dependencies []testInstance
 }
 
 func TestOrm_Success(t *testing.T) {
@@ -59,6 +55,22 @@ func TestOrm_Success(t *testing.T) {
 					),
 					"some input",
 				),
+				dependencies: []testInstance{
+					{
+						path: []string{
+							"layer",
+							"instruction",
+						},
+						instance: layers.NewInstructionWithAssignmentForTests(
+							layers.NewAssignmentForTests(
+								"myName",
+								layers.NewAssignableWithBytesForTests(
+									layers.NewBytesWithHashBytesForTests("myInput"),
+								),
+							),
+						),
+					},
+				},
 			},
 		},
 		"output": {
@@ -209,6 +221,17 @@ func TestOrm_Success(t *testing.T) {
 			if err != nil {
 				t.Errorf("section: %s: index: %d, the error was expected to be nil, error returned: %s", name, idx, err.Error())
 				return
+			}
+
+			// if there is dependencies, insert them:
+			if oneInstance.dependencies != nil && len(oneInstance.dependencies) > 0 {
+				for _, oneDependency := range oneInstance.dependencies {
+					err = service.Insert(oneDependency.instance, oneDependency.path)
+					if err != nil {
+						t.Errorf("section: %s: index: %d, the error was expected to be nil, error returned: %s", name, idx, err.Error())
+						return
+					}
+				}
 			}
 
 			// insert instance:

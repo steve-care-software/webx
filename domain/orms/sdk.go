@@ -21,6 +21,9 @@ type RepositoryBuilder interface {
 type Repository interface {
 	// Retrieve retrieves an instance by path and hash
 	Retrieve(path []string, hash hash.Hash) (Instance, error)
+
+	// List retrieves a list of to hashes
+	List(fromPath []string, toPath []string, fromHash hash.Hash) ([]hash.Hash, error)
 }
 
 // ServiceBuilder represents the service builder

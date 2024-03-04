@@ -3,20 +3,24 @@ package connections
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 type connections struct {
-	mp   map[string]Connection
-	list []Connection
+	mpByPaths map[string]Connection
+	mp        map[string]Connection
+	list      []Connection
 }
 
 func createConnections(
+	mpByPaths map[string]Connection,
 	mp map[string]Connection,
 	list []Connection,
 ) Connections {
 	out := connections{
-		mp:   mp,
-		list: list,
+		mpByPaths: mpByPaths,
+		mp:        mp,
+		list:      list,
 	}
 
 	return &out
@@ -34,5 +38,18 @@ func (obj *connections) Fetch(name string) (Connection, error) {
 	}
 
 	str := fmt.Sprintf("there is no Connection named '%s'", name)
+	return nil, errors.New(str)
+}
+
+// FetchByPaths fetches by paths
+func (obj *connections) FetchByPaths(from []string, to []string) (Connection, error) {
+	keyname := createKeynameFromPaths(from, to)
+	if ins, ok := obj.mpByPaths[keyname]; ok {
+		return ins, nil
+	}
+
+	fromStr := strings.Join(from, "/")
+	toStr := strings.Join(to, "/")
+	str := fmt.Sprintf("there is no Connection related to the provided paths (from: %s, to: %s)", fromStr, toStr)
 	return nil, errors.New(str)
 }

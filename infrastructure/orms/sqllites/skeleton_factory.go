@@ -87,6 +87,14 @@ func (app *skeletonFactory) concreteLibraryLayer() resources.Resource {
 		),
 		app.fields([]resources.Field{
 			app.fieldWithBuilder(
+				"instructions",
+				[]string{"Instructions"},
+				app.kindWithConnection("layer_instructions"),
+				app.builderInstructionWithContainsParams(
+					"WithInstructions",
+				),
+			),
+			app.fieldWithBuilder(
 				"output",
 				[]string{"Output"},
 				app.kindWithReference([]string{

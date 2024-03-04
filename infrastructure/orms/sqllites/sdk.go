@@ -2,6 +2,7 @@ package sqllites
 
 import (
 	"database/sql"
+	"errors"
 
 	_ "github.com/mattn/go-sqlite3"
 
@@ -12,6 +13,9 @@ import (
 	"github.com/steve-care-software/datastencil/domain/orms/skeletons/connections"
 	"github.com/steve-care-software/datastencil/domain/orms/skeletons/resources"
 )
+
+type toHashesFn func(input interface{}) ([]hash.Hash, error)
+type toListInstance func(input []interface{}) (orms.Instance, error)
 
 const resourceNameDelimiter = "_"
 const endOfLine = "\n"
@@ -33,9 +37,23 @@ func NewOrmRepository(
 		"layer_instruction_assignment_assignable_bytes": layers.NewBytesBuilder(),
 	}
 
+	listInstances := map[string]toListInstance{
+		"layer_instructions": func(input []interface{}) (orms.Instance, error) {
+			output := []layers.Instruction{}
+			for _, oneIns := range input {
+				output = append(output, oneIns.(layers.Instruction))
+			}
+
+			return layers.NewInstructionsBuilder().Create().
+				WithList(output).
+				Now()
+		},
+	}
+
 	return createOrmRepository(
 		hashAdapter,
 		builders,
+		listInstances,
 		skeleton,
 		dbPtr,
 	)
@@ -48,8 +66,25 @@ func NewOrmService(
 	dbPtr *sql.DB,
 	txPtr *sql.Tx,
 ) orms.Service {
+	toHashFns := map[string]toHashesFn{
+		"instruction": func(input interface{}) ([]hash.Hash, error) {
+			if ins, ok := input.(layers.Instructions); ok {
+				output := []hash.Hash{}
+				list := ins.List()
+				for _, oneInstruction := range list {
+					output = append(output, oneInstruction.Hash())
+				}
+
+				return output, nil
+			}
+
+			return nil, errors.New("the input was expected to contain an Instructions instance")
+		},
+	}
+
 	hashAdapter := hash.NewAdapter()
 	return createOrmService(
+		toHashFns,
 		repository,
 		hashAdapter,
 		skeleton,

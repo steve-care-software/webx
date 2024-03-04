@@ -3,6 +3,7 @@ package connections
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 type builder struct {
@@ -49,5 +50,18 @@ func (app *builder) Now() (Connections, error) {
 		mp[name] = oneConnection
 	}
 
-	return createConnections(mp, app.list), nil
+	mpByPaths := map[string]Connection{}
+	for _, oneConnection := range app.list {
+		from := oneConnection.From().Path()
+		to := oneConnection.To().Path()
+		keyname := createKeynameFromPaths(from, to)
+		if idx, ok := mpByPaths[keyname]; ok {
+			str := fmt.Sprintf("the Connection (index: %d, from: %s, to: %s) already exists", idx, strings.Join(from, "/"), strings.Join(to, "/"))
+			return nil, errors.New(str)
+		}
+
+		mpByPaths[keyname] = oneConnection
+	}
+
+	return createConnections(mpByPaths, mp, app.list), nil
 }

@@ -52,6 +52,7 @@ type connection struct {
 }
 
 type ormService struct {
+	toHashFns   map[string]toHashesFn
 	repository  orms.Repository
 	hashAdapter hash.Adapter
 	skeleton    skeletons.Skeleton
@@ -60,6 +61,7 @@ type ormService struct {
 }
 
 func createOrmService(
+	toHashFns map[string]toHashesFn,
 	repository orms.Repository,
 	hashAdapter hash.Adapter,
 	skeleton skeletons.Skeleton,
@@ -67,6 +69,7 @@ func createOrmService(
 	txPtr *sql.Tx,
 ) orms.Service {
 	out := ormService{
+		toHashFns:   toHashFns,
 		repository:  repository,
 		hashAdapter: hashAdapter,
 		skeleton:    skeleton,
@@ -107,8 +110,9 @@ func (app *ormService) Insert(ins orms.Instance, path []string) error {
 		return err
 	}
 
+	connections := app.skeleton.Connections()
 	tableName := strings.Join(path, resourceNameDelimiter)
-	return app.insertResource(tableName, ins, resource, allResources)
+	return app.insertResource(tableName, ins, resource, allResources, connections)
 }
 
 func (app *ormService) insertResource(
@@ -116,24 +120,33 @@ func (app *ormService) insertResource(
 	ins orms.Instance,
 	resource resources.Resource,
 	allResources resources.Resources,
+	allConnections connections.Connections,
 ) error {
 	key := resource.Key()
-	keyValue, err := app.fetchFieldValue(ins, key, allResources)
+	keyName, keyValue, err := app.fetchFieldValue(ins, key, allResources, allConnections)
 	if err != nil {
 		return err
 	}
 
 	fields := resource.Fields()
-	fieldValues, err := app.fetchFieldsValueList(ins, fields, allResources)
+	fieldValues, err := app.fetchFieldsValueList(ins, fields, allResources, allConnections)
 	if err != nil {
 		return err
 	}
 
 	allFieldNames := []string{
-		key.Name(),
+		keyName,
 	}
 
-	allFieldNames = append(allFieldNames, fields.Names()...)
+	allFieldValues := []interface{}{
+		keyValue,
+	}
+
+	for name, value := range fieldValues {
+		allFieldNames = append(allFieldNames, name)
+		allFieldValues = append(allFieldValues, value)
+	}
+
 	fieldValuePlaceHolders := []string{}
 	for range allFieldNames {
 		fieldValuePlaceHolders = append(fieldValuePlaceHolders, "?")
@@ -142,12 +155,6 @@ func (app *ormService) insertResource(
 	fieldNamesStr := strings.Join(allFieldNames, ",")
 	fieldValuePlaceHoldersStr := strings.Join(fieldValuePlaceHolders, ",")
 	queryStr := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", tableName, fieldNamesStr, fieldValuePlaceHoldersStr)
-
-	allFieldValues := []interface{}{
-		keyValue,
-	}
-
-	allFieldValues = append(allFieldValues, fieldValues...)
 	_, err = app.txPtr.Exec(queryStr, allFieldValues...)
 	if err != nil {
 		return err
@@ -160,16 +167,21 @@ func (app *ormService) fetchFieldsValueList(
 	ins orms.Instance,
 	fields resources.Fields,
 	allResources resources.Resources,
-) ([]interface{}, error) {
-	output := []interface{}{}
+	allConnections connections.Connections,
+) (map[string]interface{}, error) {
+	output := map[string]interface{}{}
 	list := fields.List()
 	for _, oneField := range list {
-		retValue, err := app.fetchFieldValue(ins, oneField, allResources)
+		retName, retValue, err := app.fetchFieldValue(ins, oneField, allResources, allConnections)
 		if err != nil {
 			return nil, err
 		}
 
-		output = append(output, retValue)
+		if oneField.Kind().IsConnection() {
+			continue
+		}
+
+		output[retName] = retValue
 	}
 
 	return output, nil
@@ -179,7 +191,9 @@ func (app *ormService) fetchFieldValue(
 	ins orms.Instance,
 	field resources.Field,
 	allResources resources.Resources,
-) (interface{}, error) {
+	allConnections connections.Connections,
+) (string, interface{}, error) {
+	fieldName := field.Name()
 	if field.HasCondition() {
 		errorStr := ""
 		condition := field.Condition()
@@ -188,63 +202,126 @@ func (app *ormService) fetchFieldValue(
 		}, &errorStr)
 
 		if err != nil {
-			return nil, err
+			return "", nil, err
 		}
 
 		if errorStr != "" {
-			str := fmt.Sprintf("there was an error while calling the condition (%s) on the field (name: %s): %s", condition, field.Name(), errorStr)
-			return nil, errors.New(str)
+			str := fmt.Sprintf("there was an error while calling the condition (%s) on the field (name: %s): %s", condition, fieldName, errorStr)
+			return "", nil, errors.New(str)
 		}
 
 		if boolValue, ok := retConditionValue.(bool); ok {
 			if !boolValue {
-				return nil, nil
+				return fieldName, nil, nil
 			}
 		}
 	}
 
 	kind := field.Kind()
+	if kind.IsConnection() {
+		errorStr := ""
+		instanceRetriever := field.Retriever()
+		retIns, err := app.callMethodsOnInstanceReturnOneValue(ins, instanceRetriever, &errorStr)
+		if err != nil {
+			return "", nil, err
+		}
+
+		if errorStr != "" {
+			str := fmt.Sprintf("there was an error while calling the retriever (%s) on the field (name: %s): %s", strings.Join(instanceRetriever, ","), fieldName, errorStr)
+			return "", nil, errors.New(str)
+		}
+
+		connectionName := kind.Connection()
+		if allConnections == nil {
+			str := fmt.Sprintf("the field (name: %s) contains a connection (name: %s) but the skeleton contains no connections", fieldName, connectionName)
+			return "", nil, errors.New(str)
+		}
+
+		connection, err := allConnections.Fetch(connectionName)
+		if err != nil {
+			return "", nil, err
+		}
+
+		from := connection.From()
+		fromPath := from.Path()
+		fromName := from.Name()
+		to := connection.To()
+		toName := to.Name()
+		toPath := to.Path()
+
+		tableName := createConnectionTableName(
+			fromPath,
+			toPath,
+		)
+
+		fromHash := ins.Hash().Bytes()
+		queryStr := fmt.Sprintf("INSERT INTO %s (%s, %s) VALUES(?, ?)", tableName, fromName, toName)
+		if toHashesFn, ok := app.toHashFns[toName]; ok {
+			retElementHashList, err := toHashesFn(retIns)
+			if err != nil {
+				return "", nil, err
+			}
+
+			for _, oneHash := range retElementHashList {
+				values := []interface{}{
+					fromHash,
+					oneHash.Bytes(),
+				}
+
+				_, err = app.txPtr.Exec(queryStr, values...)
+				if err != nil {
+					return "", nil, err
+				}
+			}
+
+			return "", nil, nil
+		}
+
+		str := fmt.Sprintf("the connection's to (name: %s) does not have a toHash method declared", toName)
+		return "", nil, errors.New(str)
+	}
+
 	if kind.IsReference() {
 		errorStr := ""
 		instanceRetriever := field.Retriever()
 		retIns, err := app.callMethodsOnInstanceReturnOneValue(ins, instanceRetriever, &errorStr)
 		if err != nil {
-			return nil, err
+			return "", nil, err
 		}
 
 		if errorStr != "" {
-			str := fmt.Sprintf("there was an error while calling the retriever (%s) on the field (name: %s): %s", strings.Join(instanceRetriever, ","), field.Name(), errorStr)
-			return nil, errors.New(str)
+			str := fmt.Sprintf("there was an error while calling the retriever (%s) on the field (name: %s): %s", strings.Join(instanceRetriever, ","), fieldName, errorStr)
+			return "", nil, errors.New(str)
 		}
 
 		if instance, ok := retIns.(orms.Instance); ok {
 			refPath := kind.Reference()
 			err = app.Insert(instance, refPath)
 			if err != nil {
-				return nil, err
+				return "", nil, err
 			}
 
-			return instance.Hash().Bytes(), nil
+			return fieldName, instance.Hash().Bytes(), nil
 		}
 
-		return nil, errors.New("the reference was expected to contain an hash")
+		return "", nil, errors.New("the reference was expected to contain an hash")
 	}
 
 	errorStr := ""
 	retriever := field.Retriever()
 	retValue, err := app.callMethodsOnInstanceReturnOneValue(ins, retriever, &errorStr)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
 
 	if errorStr != "" {
-		str := fmt.Sprintf("there was an error while calling the retriever (%s) on the field (name: %s): %s", strings.Join(retriever, ","), field.Name(), err.Error())
-		return nil, errors.New(str)
+		str := fmt.Sprintf("there was an error while calling the retriever (%s) on the field (name: %s): %s", strings.Join(retriever, ","), fieldName, err.Error())
+		return "", nil, errors.New(str)
 	}
 
 	native := kind.Native()
 	if native.IsSingle() {
-		return retValue, nil
+		return fieldName, retValue, nil
 	}
 
 	output := []byte{}
@@ -258,10 +335,10 @@ func (app *ormService) fetchFieldValue(
 				output = append(output, []byte(delimiter)...)
 			}
 
-			return output, nil
+			return fieldName, output, nil
 		}
 
-		return errors.New("the field value was expected to contain a list of []string"), nil
+		return "", errors.New("the field value was expected to contain a list of []string"), nil
 	}
 
 	if value == resources.NativeInteger {
@@ -364,7 +441,6 @@ func (app *ormService) writeSchemaTable(
 
 	dropTableStr := fmt.Sprintf("DROP TABLE IF EXISTS %s;", tableName)
 	createTableStr := fmt.Sprintf("CREATE TABLE %s (%s%s%s);", tableName, endOfLine, fieldsStr, endOfLine)
-
 	childrenSchemaStr := ""
 	if len(table.children) > 0 {
 		retChildrenSchema, err := app.writeSchema(table.children, tableName)
@@ -769,19 +845,13 @@ func (app *ormService) createConnection(
 	from := connectionIns.From()
 	fromName := from.Name()
 	fromPath := from.Path()
-	fromTableName := strings.Join(fromPath, resourceNameDelimiter)
 
-	to := connectionIns.To()
-	toName := to.Name()
-	toPath := to.Path()
-	toTableName := strings.Join(toPath, resourceNameDelimiter)
-
-	tableName := strings.Join(
-		[]string{
-			fromTableName,
-			toTableName,
-		},
-		connectionNameDelimiter,
+	toField := connectionIns.To()
+	toName := toField.Name()
+	toPath := toField.Path()
+	tableName := createConnectionTableName(
+		fromPath,
+		toPath,
 	)
 
 	pFrom, err := app.createForeignKey(resources, fromPath, fromName, connections)

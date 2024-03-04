@@ -101,7 +101,6 @@ type FieldsBuilder interface {
 // Fields represents fields
 type Fields interface {
 	List() []Field
-	Names() []string
 }
 
 // FieldBuilder represents a field builder
