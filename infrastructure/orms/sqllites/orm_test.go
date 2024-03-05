@@ -31,9 +31,253 @@ func TestOrm_Success(t *testing.T) {
 		return
 	}
 
+	/*pHash, err := hash.NewAdapter().FromBytes([]byte("this is some data"))
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}*/
+
 	// build resources:
 	instances := map[string][]testInstance{
-		"layer": {
+		/*"library_link_origin": {
+			{
+				path: []string{
+					"library",
+					"link",
+					"origin",
+				},
+				instance: links.NewOriginForTests(
+					links.NewOriginResourceForTests(
+						*pHash,
+					),
+					links.NewOperatorWithAndForTests(),
+					links.NewOriginValueWithResourceForTests(
+						links.NewOriginResourceForTests(
+							*pHash,
+						),
+					),
+				),
+				dependencies: []testInstance{
+					{
+						path: []string{
+							"library",
+							"link",
+							"origin",
+							"resource",
+						},
+						instance: links.NewOriginResourceForTests(
+							*pHash,
+						),
+					},
+					{
+						path: []string{
+							"library",
+							"link",
+							"origin",
+							"operator",
+						},
+						instance: links.NewOperatorWithAndForTests(),
+					},
+					{
+						path: []string{
+							"library",
+							"link",
+							"origin",
+							"resource",
+						},
+						instance: links.NewOriginValueWithResourceForTests(
+							links.NewOriginResourceForTests(
+								*pHash,
+							),
+						),
+						dependencies: []testInstance{
+							{
+								path: []string{
+									"library",
+									"link",
+									"origin",
+									"resource",
+								},
+								instance: links.NewOriginResourceForTests(
+									*pHash,
+								),
+							},
+						},
+					},
+				},
+			},
+		},
+		"library_link_origin_value": {
+			{
+				path: []string{
+					"library",
+					"link",
+					"origin",
+					"resource",
+				},
+				instance: links.NewOriginValueWithResourceForTests(
+					links.NewOriginResourceForTests(
+						*pHash,
+					),
+				),
+				dependencies: []testInstance{
+					{
+						path: []string{
+							"library",
+							"link",
+							"origin",
+							"resource",
+						},
+						instance: links.NewOriginResourceForTests(
+							*pHash,
+						),
+					},
+				},
+			},
+			{
+				path: []string{
+					"library",
+					"link",
+					"origin",
+					"resource",
+				},
+				instance: links.NewOriginValueWithOriginForTests(
+					links.NewOriginForTests(
+						links.NewOriginResourceForTests(
+							*pHash,
+						),
+						links.NewOperatorWithAndForTests(),
+						links.NewOriginValueWithResourceForTests(
+							links.NewOriginResourceForTests(
+								*pHash,
+							),
+						),
+					),
+				),
+				dependencies: []testInstance{
+					{
+						path: []string{
+							"library",
+							"link",
+							"origin",
+						},
+						instance: links.NewOriginForTests(
+							links.NewOriginResourceForTests(
+								*pHash,
+							),
+							links.NewOperatorWithAndForTests(),
+							links.NewOriginValueWithResourceForTests(
+								links.NewOriginResourceForTests(
+									*pHash,
+								),
+							),
+						),
+						dependencies: []testInstance{
+							{
+								path: []string{
+									"library",
+									"link",
+									"origin",
+									"resource",
+								},
+								instance: links.NewOriginResourceForTests(
+									*pHash,
+								),
+							},
+							{
+								path: []string{
+									"library",
+									"link",
+									"origin",
+									"operator",
+								},
+								instance: links.NewOperatorWithAndForTests(),
+							},
+							{
+								path: []string{
+									"library",
+									"link",
+									"origin",
+									"resource",
+								},
+								instance: links.NewOriginValueWithResourceForTests(
+									links.NewOriginResourceForTests(
+										*pHash,
+									),
+								),
+								dependencies: []testInstance{
+									{
+										path: []string{
+											"library",
+											"link",
+											"origin",
+											"resource",
+										},
+										instance: links.NewOriginResourceForTests(
+											*pHash,
+										),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"library_link_origin_resource": {
+			{
+				path: []string{
+					"library",
+					"link",
+					"origin",
+					"resource",
+				},
+				instance: links.NewOriginResourceForTests(
+					*pHash,
+				),
+			},
+			{
+				path: []string{
+					"library",
+					"link",
+					"origin",
+					"resource",
+				},
+				instance: links.NewOriginResourceWithIsMandatoryForTests(
+					*pHash,
+				),
+			},
+		},
+		"library_link_origin_operator": {
+			{
+				path: []string{
+					"library",
+					"link",
+					"origin",
+					"operator",
+				},
+				instance: links.NewOperatorWithAndForTests(),
+			},
+			{
+				path: []string{
+					"library",
+					"link",
+					"origin",
+					"operator",
+				},
+				instance: links.NewOperatorWithOrForTests(),
+			},
+			{
+				path: []string{
+					"library",
+					"link",
+					"origin",
+					"operator",
+				},
+				instance: links.NewOperatorWithXOrForTests(),
+			},
+		},*/
+		"library_layer": {
 			{
 				path: []string{
 					"library",
@@ -75,7 +319,7 @@ func TestOrm_Success(t *testing.T) {
 				},
 			},
 		},
-		"output": {
+		"library_layer_output": {
 			{
 				path: []string{
 					"library",
@@ -100,7 +344,7 @@ func TestOrm_Success(t *testing.T) {
 				),
 			},
 		},
-		"kind": {
+		"library_layer_output_kind": {
 			{
 				path: []string{
 					"library",
@@ -120,7 +364,7 @@ func TestOrm_Success(t *testing.T) {
 				instance: layers.NewKindWithPromptForTests(),
 			},
 		},
-		"instruction": {
+		"library_layer_instruction": {
 			{
 				path: []string{
 					"library",
@@ -137,7 +381,7 @@ func TestOrm_Success(t *testing.T) {
 				),
 			},
 		},
-		"assignment": {
+		"library_layer_instruction_assignment": {
 			{
 				path: []string{
 					"library",
@@ -153,7 +397,7 @@ func TestOrm_Success(t *testing.T) {
 				),
 			},
 		},
-		"assignable": {
+		"library_layer_instruction_assignment_assignable": {
 			{
 				path: []string{
 					"library",
@@ -167,7 +411,7 @@ func TestOrm_Success(t *testing.T) {
 				),
 			},
 		},
-		"bytes": {
+		"library_layer_instruction_assignment_assignable_bytes": {
 			{
 				path: []string{
 					"library",

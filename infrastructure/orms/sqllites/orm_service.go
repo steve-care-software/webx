@@ -52,16 +52,16 @@ type connection struct {
 }
 
 type ormService struct {
-	toHashFns   map[string]toHashesFn
-	repository  orms.Repository
-	hashAdapter hash.Adapter
-	skeleton    skeletons.Skeleton
-	dbPtr       *sql.DB
-	txPtr       *sql.Tx
+	listInstanceToElementHashesListFn map[string]listInstanceToElementHashesListFn
+	repository                        orms.Repository
+	hashAdapter                       hash.Adapter
+	skeleton                          skeletons.Skeleton
+	dbPtr                             *sql.DB
+	txPtr                             *sql.Tx
 }
 
 func createOrmService(
-	toHashFns map[string]toHashesFn,
+	listInstanceToElementHashesListFn map[string]listInstanceToElementHashesListFn,
 	repository orms.Repository,
 	hashAdapter hash.Adapter,
 	skeleton skeletons.Skeleton,
@@ -69,12 +69,12 @@ func createOrmService(
 	txPtr *sql.Tx,
 ) orms.Service {
 	out := ormService{
-		toHashFns:   toHashFns,
-		repository:  repository,
-		hashAdapter: hashAdapter,
-		skeleton:    skeleton,
-		dbPtr:       dbPtr,
-		txPtr:       txPtr,
+		listInstanceToElementHashesListFn: listInstanceToElementHashesListFn,
+		repository:                        repository,
+		hashAdapter:                       hashAdapter,
+		skeleton:                          skeleton,
+		dbPtr:                             dbPtr,
+		txPtr:                             txPtr,
 	}
 
 	return &out
@@ -256,7 +256,7 @@ func (app *ormService) fetchFieldValue(
 
 		fromHash := ins.Hash().Bytes()
 		queryStr := fmt.Sprintf("INSERT INTO %s (%s, %s) VALUES(?, ?)", tableName, fromName, toName)
-		if toHashesFn, ok := app.toHashFns[toName]; ok {
+		if toHashesFn, ok := app.listInstanceToElementHashesListFn[toName]; ok {
 			retElementHashList, err := toHashesFn(retIns)
 			if err != nil {
 				return "", nil, err
@@ -315,7 +315,7 @@ func (app *ormService) fetchFieldValue(
 	}
 
 	if errorStr != "" {
-		str := fmt.Sprintf("there was an error while calling the retriever (%s) on the field (name: %s): %s", strings.Join(retriever, ","), fieldName, err.Error())
+		str := fmt.Sprintf("there was an error while calling the retriever (%s) on the field (name: %s): %s", strings.Join(retriever, ","), fieldName, errorStr)
 		return "", nil, errors.New(str)
 	}
 

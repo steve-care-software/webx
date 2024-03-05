@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"reflect"
 	"strings"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
@@ -16,26 +15,26 @@ import (
 )
 
 type ormRepository struct {
-	hashAdapter  hash.Adapter
-	builders     map[string]interface{}
-	listInstances  map[string]toListInstance
-	skeleton     skeletons.Skeleton
-	dbPtr        *sql.DB
+	hashAdapter              hash.Adapter
+	buildInstances           map[string]buildInstanceFn
+	elementsToListInstanceFn map[string]elementsToListInstanceFn
+	skeleton                 skeletons.Skeleton
+	dbPtr                    *sql.DB
 }
 
 func createOrmRepository(
 	hashAdapter hash.Adapter,
-	builders map[string]interface{},
-	listInstances  map[string]toListInstance,
+	buildInstances map[string]buildInstanceFn,
+	elementsToListInstanceFn map[string]elementsToListInstanceFn,
 	skeleton skeletons.Skeleton,
 	dbPtr *sql.DB,
 ) orms.Repository {
 	out := ormRepository{
-		hashAdapter:  hashAdapter,
-		builders:     builders,
-		listInstances: listInstances,
-		skeleton:     skeleton,
-		dbPtr:        dbPtr,
+		hashAdapter:              hashAdapter,
+		buildInstances:           buildInstances,
+		elementsToListInstanceFn: elementsToListInstanceFn,
+		skeleton:                 skeleton,
+		dbPtr:                    dbPtr,
 	}
 
 	return &out
@@ -113,7 +112,7 @@ func (app *ormRepository) retrieveByResourceAndHash(
 	allResources resources.Resources,
 	allConnections connections.Connections,
 ) (orms.Instance, error) {
-	values, err := app.retrieveFieldValuesByHash(
+	valuesMap, err := app.retrieveFieldValuesByHash(
 		table,
 		resource.Key(),
 		resource.Fields(),
@@ -126,15 +125,11 @@ func (app *ormRepository) retrieveByResourceAndHash(
 		return nil, err
 	}
 
-	if builderIns, ok := app.builders[table]; ok {
-		return app.buildInstance(
-			resource,
-			builderIns,
-			values,
-		)
+	if fnToBuild, ok := app.buildInstances[table]; ok {
+		return fnToBuild(valuesMap)
 	}
 
-	str := fmt.Sprintf("there is no builder for the provided table (name: %s)", table)
+	str := fmt.Sprintf("there is no builderInstances fn for the provided table (name: %s)", table)
 	return nil, errors.New(str)
 }
 
@@ -145,7 +140,7 @@ func (app *ormRepository) retrieveFieldValuesByHash(
 	hash hash.Hash,
 	allResources resources.Resources,
 	allConnections connections.Connections,
-) ([]interface{}, error) {
+) (map[string]interface{}, error) {
 	fieldNames := app.fetchFieldsForSelect(fields)
 	fieldNamesStr := strings.Join(fieldNames, ",")
 	queryStr := fmt.Sprintf("SELECT %s FROM %s WHERE %s = ?", fieldNamesStr, table, key.Name())
@@ -191,8 +186,9 @@ func (app *ormRepository) retrieveFieldValuesByHash(
 		return nil, err
 	}
 
-	output := []interface{}{}
+	valuesMap := map[string]interface{}{}
 	for _, oneField := range allFieldsList {
+		fieldName := oneField.Name()
 		kind := oneField.Kind()
 		if kind.IsConnection() {
 			name := kind.Connection()
@@ -224,13 +220,13 @@ func (app *ormRepository) retrieveFieldValuesByHash(
 				list = append(list, ins)
 			}
 
-			if listInstanceFn, ok := app.listInstances[name]; ok {
+			if listInstanceFn, ok := app.elementsToListInstanceFn[name]; ok {
 				ins, err := listInstanceFn(list)
 				if err != nil {
 					return nil, err
 				}
 
-				output = append(output, ins)
+				valuesMap[fieldName] = ins
 				continue
 			}
 
@@ -255,7 +251,7 @@ func (app *ormRepository) retrieveFieldValuesByHash(
 						return nil, err
 					}
 
-					output = append(output, &retInstance)
+					valuesMap[name] = &retInstance
 					continue
 				}
 
@@ -265,10 +261,65 @@ func (app *ormRepository) retrieveFieldValuesByHash(
 			return nil, errors.New("the reference type was expected to contain bytes")
 		}
 
-		output = append(output, values[idx])
+		if kind.IsNative() {
+			native := kind.Native()
+			if native.IsList() {
+				if pIns, ok := values[idx].(*interface{}); ok {
+					insValue := *pIns
+					if insValue == nil {
+						continue
+					}
+
+					if casted, ok := insValue.([]byte); ok {
+						list := native.List()
+						delimiter := list.Delimiter()
+						listValue := list.Value()
+						if listValue == resources.NativeString {
+							strList := []string{}
+							bytesList := bytes.Split(casted, []byte(delimiter))
+							for _, oneBytes := range bytesList {
+								if len(oneBytes) <= 0 {
+									continue
+								}
+
+								strList = append(strList, string(oneBytes))
+							}
+
+							valuesMap[fieldName] = strList
+							continue
+						}
+
+						if listValue == resources.NativeBytes {
+							panic(errors.New("retrieveByResourceAndHash -> finish bytes in ormRepository"))
+						}
+
+						if listValue == resources.NativeInteger {
+							panic(errors.New("retrieveByResourceAndHash -> finish integer in ormRepository"))
+						}
+
+						if listValue == resources.NativeFloat {
+							panic(errors.New("retrieveByResourceAndHash -> finish float in ormRepository"))
+						}
+					}
+
+					// error
+					return nil, errors.New("invalid casting")
+				}
+
+				// error
+				return nil, errors.New("invalid casting")
+			}
+		}
+
+		value := values[idx]
+		if pValue, ok := values[idx].(*interface{}); ok {
+			value = *pValue
+		}
+
+		valuesMap[name] = value
 	}
 
-	return output, nil
+	return valuesMap, nil
 }
 
 func (app *ormRepository) fetchFieldsForSelect(
@@ -348,256 +399,4 @@ func (app *ormRepository) generateValueFromNative(kind uint8) interface{} {
 
 	var value []byte
 	return value
-}
-
-func (app *ormRepository) callMethodWithParamAndKindOnInstanceReturnOneValue(
-	ins interface{},
-	method string,
-	param interface{},
-	kind resources.Kind,
-	pErrorStr *string,
-) (interface{}, error) {
-	if param == nil {
-		return ins, nil
-	}
-
-	if kind.IsNative() {
-		native := kind.Native()
-		if native.IsList() {
-			if casted, ok := param.([]byte); ok {
-				list := native.List()
-				delimiter := list.Delimiter()
-				listValue := list.Value()
-				if listValue == resources.NativeString {
-					output := []string{}
-					bytesList := bytes.Split(casted, []byte(delimiter))
-					for _, oneBytes := range bytesList {
-						if len(oneBytes) <= 0 {
-							continue
-						}
-
-						output = append(output, string(oneBytes))
-					}
-
-					return app.callMethodWithParamsOnInstanceReturnOneValue(
-						ins,
-						method,
-						[]interface{}{
-							output,
-						},
-						pErrorStr,
-					)
-				}
-
-				if listValue == resources.NativeBytes {
-					panic(errors.New("retrieveByResourceAndHash -> finish bytes in ormRepository"))
-				}
-
-				if listValue == resources.NativeInteger {
-					panic(errors.New("retrieveByResourceAndHash -> finish integer in ormRepository"))
-				}
-
-				if listValue == resources.NativeFloat {
-					panic(errors.New("retrieveByResourceAndHash -> finish float in ormRepository"))
-				}
-			}
-
-			// error
-			return nil, errors.New("invalid casting")
-		}
-	}
-
-	return app.callMethodWithParamsOnInstanceReturnOneValue(
-		ins,
-		method,
-		[]interface{}{
-			param,
-		},
-		pErrorStr,
-	)
-}
-
-func (app *ormRepository) callMethodWithParamsOnInstanceReturnOneValue(
-	ins interface{},
-	method string,
-	params []interface{},
-	pErrorStr *string,
-) (interface{}, error) {
-	defer func() {
-		if r := recover(); r != nil {
-			value := fmt.Sprint(r)
-			*pErrorStr = value
-		}
-	}()
-
-	value := reflect.ValueOf(ins)
-	methodName := value.MethodByName(method)
-	if !methodName.IsValid() {
-		str := fmt.Sprintf("there is no method (name: %s) on the provided instance", method)
-		return nil, errors.New(str)
-	}
-
-	retType := methodName.Type()
-	if retType == nil {
-		return nil, errors.New("the type was expected to be mandatory")
-	}
-
-	methodAmountArguments := retType.NumIn()
-	if methodAmountArguments != len(params) {
-		str := fmt.Sprintf("the methodName (%s) was expected to contain %d arguments, but it contains %d arguments in reality", method, len(params), methodAmountArguments)
-		return nil, errors.New(str)
-	}
-
-	methodParams := []reflect.Value{}
-	if params != nil && len(params) > 0 {
-		for _, oneParam := range params {
-
-			expectedType := retType.In(0)
-			value := reflect.ValueOf(oneParam)
-			currentType := value.Type()
-
-			// if the types are different, try to conver it:
-			if expectedType.Kind() != currentType.Kind() {
-				if value.CanConvert(expectedType) {
-					value = value.Convert(expectedType)
-				}
-			}
-
-			methodParams = append(methodParams, value)
-		}
-	}
-
-	retValues := value.MethodByName(method).Call(methodParams)
-	if len(retValues) < 1 {
-		str := fmt.Sprintf("%d  values were returned, at least %d were expected, when calling the method (name %s)", len(retValues), 1, method)
-		return nil, errors.New(str)
-	}
-
-	return retValues[0].Interface(), nil
-}
-
-func (app *ormRepository) buildInstance(
-	resource resources.Resource,
-	builderIns interface{},
-	values []interface{},
-) (orms.Instance, error) {
-	errorStr := ""
-	initialize := resource.Initialize()
-	retValue, err := app.callMethodWithParamsOnInstanceReturnOneValue(
-		builderIns,
-		initialize,
-		[]interface{}{},
-		&errorStr,
-	)
-
-	if errorStr != "" {
-		str := fmt.Sprintf("there was an error while executing the initialize method (name: %s)", initialize)
-		return nil, errors.New(str)
-	}
-
-	if err != nil {
-		return nil, err
-	}
-
-	fieldsList := resource.Fields().List()
-	for idx, oneField := range fieldsList {
-		if !oneField.HasBuilder() {
-			continue
-		}
-
-		value := values[idx]
-		if pInstance, ok := value.(*orms.Instance); ok {
-			value = *pInstance
-		}
-
-		if pValue, ok := value.(*interface{}); ok {
-			value = *pValue
-		}
-
-		if pValue, ok := value.(*[]interface{}); ok {
-			value = *pValue
-		}
-
-		kind := oneField.Kind()
-		builder := oneField.Builder()
-		builderMethod := builder.Method()
-		if !builder.ContainsParam() {
-
-			if boolValue, ok := value.(int64); ok {
-				// if the value is false, skip the method call
-				if boolValue == 0 {
-					continue
-				}
-			}
-
-			retValue, err = app.callMethodWithParamsOnInstanceReturnOneValue(
-				retValue,
-				builderMethod,
-				[]interface{}{},
-				&errorStr,
-			)
-
-			if errorStr != "" {
-				str := fmt.Sprintf("there was an error while executing the field method (name: %s) on the builder (name: %s): %s", oneField.Name(), oneField.Builder(), errorStr)
-				return nil, errors.New(str)
-			}
-
-			if err != nil {
-				return nil, err
-			}
-
-			if retValue == nil {
-				str := fmt.Sprintf("the field (name: %s) returned nil when calling its builder method (name: %s)", oneField.Name(), oneField.Builder())
-				return nil, errors.New(str)
-			}
-		} else {
-			retValue, err = app.callMethodWithParamAndKindOnInstanceReturnOneValue(
-				retValue,
-				builderMethod,
-				value,
-				kind,
-				&errorStr,
-			)
-
-			if errorStr != "" {
-				str := fmt.Sprintf("there was an error while executing the field method (name: %s) on the builder (name: %s): %s", oneField.Name(), oneField.Builder(), errorStr)
-				return nil, errors.New(str)
-			}
-
-			if err != nil {
-				return nil, err
-			}
-
-			if retValue == nil {
-				str := fmt.Sprintf("the field (name: %s) returned nil when calling its builder method (name: %s)", oneField.Name(), oneField.Builder())
-				return nil, errors.New(str)
-			}
-		}
-	}
-
-	trigger := resource.Trigger()
-	retValue, err = app.callMethodWithParamsOnInstanceReturnOneValue(
-		retValue,
-		trigger,
-		[]interface{}{},
-		&errorStr,
-	)
-
-	if errorStr != "" {
-		str := fmt.Sprintf("there was an error while executing the trigger method (name: %s): %s", trigger, errorStr)
-		return nil, errors.New(str)
-	}
-
-	if err != nil {
-		return nil, err
-	}
-
-	if casted, ok := retValue.(orms.Instance); ok {
-		return casted, nil
-	}
-
-	fmt.Printf("\n%v\n", retValue)
-	fmt.Printf("\n%s\n", resource.Name())
-
-	return nil, errors.New("the built instance could not be casted to an orms.Instance value")
 }
