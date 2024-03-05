@@ -161,6 +161,7 @@ type Elements interface {
 type ElementBuilder interface {
 	Create() ElementBuilder
 	WithLayer(layer hash.Hash) ElementBuilder
+	WithLayerBytes(layerBytes []byte) ElementBuilder
 	WithCondition(condition Condition) ElementBuilder
 	Now() (Element, error)
 }
@@ -259,6 +260,7 @@ type OriginValue interface {
 type OriginResourceBuilder interface {
 	Create() OriginResourceBuilder
 	WithLayer(layer hash.Hash) OriginResourceBuilder
+	WithLayerBytes(layerBytes []byte) OriginResourceBuilder
 	IsMandatory() OriginResourceBuilder
 	Now() (OriginResource, error)
 }

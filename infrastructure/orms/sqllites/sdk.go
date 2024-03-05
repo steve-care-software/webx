@@ -7,7 +7,9 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/links"
 	"github.com/steve-care-software/datastencil/domain/orms"
 	"github.com/steve-care-software/datastencil/domain/orms/skeletons"
 	"github.com/steve-care-software/datastencil/domain/orms/skeletons/connections"
@@ -28,16 +30,36 @@ func NewOrmRepository(
 ) orms.Repository {
 	hashAdapter := hash.NewAdapter()
 	builders := map[string]interface{}{
-		"layer":                        layers.NewLayerBuilder(),
-		"layer_output":                 layers.NewOutputBuilder(),
-		"layer_output_kind":            layers.NewKindBuilder(),
-		"layer_instruction":            layers.NewInstructionBuilder(),
-		"layer_instruction_assignment": layers.NewAssignmentBuilder(),
-		"layer_instruction_assignment_assignable":       layers.NewAssignableBuilder(),
-		"layer_instruction_assignment_assignable_bytes": layers.NewBytesBuilder(),
+		"library":                                               libraries.NewBuilder(),
+		"library_link":                                          links.NewLinkBuilder(),
+		"library_link_element":                                  links.NewElementBuilder(),
+		"library_link_element_condition":                        links.NewConditionBuilder(),
+		"library_link_element_condition_value":                  links.NewConditionValueBuilder(),
+		"library_link_element_condition_resource":               links.NewConditionResourceBuilder(),
+		"library_link_origin":                                   links.NewOriginBuilder(),
+		"library_link_origin_resource":                          links.NewOriginResourceBuilder(),
+		"library_link_origin_operator":                          links.NewOperatorBuilder(),
+		"library_link_origin_value":                             links.NewOriginValueBuilder(),
+		"library_layer":                                         layers.NewLayerBuilder(),
+		"library_layer_output":                                  layers.NewOutputBuilder(),
+		"library_layer_output_kind":                             layers.NewKindBuilder(),
+		"library_layer_instruction":                             layers.NewInstructionBuilder(),
+		"library_layer_instruction_assignment":                  layers.NewAssignmentBuilder(),
+		"library_layer_instruction_assignment_assignable":       layers.NewAssignableBuilder(),
+		"library_layer_instruction_assignment_assignable_bytes": layers.NewBytesBuilder(),
 	}
 
 	listInstances := map[string]toListInstance{
+		"library_layers": func(input []interface{}) (orms.Instance, error) {
+			output := []layers.Layer{}
+			for _, oneIns := range input {
+				output = append(output, oneIns.(layers.Layer))
+			}
+
+			return layers.NewBuilder().Create().
+				WithList(output).
+				Now()
+		},
 		"layer_instructions": func(input []interface{}) (orms.Instance, error) {
 			output := []layers.Instruction{}
 			for _, oneIns := range input {
@@ -45,6 +67,26 @@ func NewOrmRepository(
 			}
 
 			return layers.NewInstructionsBuilder().Create().
+				WithList(output).
+				Now()
+		},
+		"library_links": func(input []interface{}) (orms.Instance, error) {
+			output := []links.Link{}
+			for _, oneIns := range input {
+				output = append(output, oneIns.(links.Link))
+			}
+
+			return links.NewBuilder().Create().
+				WithList(output).
+				Now()
+		},
+		"link_elements": func(input []interface{}) (orms.Instance, error) {
+			output := []links.Element{}
+			for _, oneIns := range input {
+				output = append(output, oneIns.(links.Element))
+			}
+
+			return links.NewElementsBuilder().Create().
 				WithList(output).
 				Now()
 		},

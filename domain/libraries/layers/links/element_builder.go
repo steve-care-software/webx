@@ -9,6 +9,7 @@ import (
 type elementBuilder struct {
 	hashAdapter hash.Adapter
 	layer       hash.Hash
+	layerBytes  []byte
 	condition   Condition
 }
 
@@ -18,6 +19,7 @@ func createElementBuilder(
 	out := elementBuilder{
 		hashAdapter: hashAdapter,
 		layer:       nil,
+		layerBytes:  nil,
 		condition:   nil,
 	}
 
@@ -43,8 +45,27 @@ func (app *elementBuilder) WithCondition(condition Condition) ElementBuilder {
 	return app
 }
 
+// WithLayerBytes adds layer bytes to the builder
+func (app *elementBuilder) WithLayerBytes(layerBytes []byte) ElementBuilder {
+	app.layerBytes = layerBytes
+	return app
+}
+
 // Now builds a new Element instance
 func (app *elementBuilder) Now() (Element, error) {
+	if app.layerBytes != nil && len(app.layerBytes) <= 0 {
+		app.layerBytes = nil
+	}
+
+	if app.layerBytes != nil {
+		pHash, err := app.hashAdapter.FromBytes(app.layerBytes)
+		if err != nil {
+			return nil, err
+		}
+
+		app.layer = *pHash
+	}
+
 	if app.layer == nil {
 		return nil, errors.New("the layer hash is mandatory in order to build an Element instance")
 	}

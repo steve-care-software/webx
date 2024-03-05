@@ -9,6 +9,7 @@ import (
 type originResourceBuilder struct {
 	hashAdapter hash.Adapter
 	layer       hash.Hash
+	layerBytes  []byte
 	isMandatory bool
 }
 
@@ -18,6 +19,7 @@ func createOriginResourceBuilder(
 	out := originResourceBuilder{
 		hashAdapter: hashAdapter,
 		layer:       nil,
+		layerBytes:  nil,
 		isMandatory: false,
 	}
 
@@ -43,8 +45,27 @@ func (app *originResourceBuilder) IsMandatory() OriginResourceBuilder {
 	return app
 }
 
+// WithLayerBytes add layer bytes to the builder
+func (app *originResourceBuilder) WithLayerBytes(layerBytes []byte) OriginResourceBuilder {
+	app.layerBytes = layerBytes
+	return app
+}
+
 // Now builds a new OriginResource instance
 func (app *originResourceBuilder) Now() (OriginResource, error) {
+	if app.layerBytes != nil && len(app.layerBytes) <= 0 {
+		app.layerBytes = nil
+	}
+
+	if app.layerBytes != nil {
+		pHash, err := app.hashAdapter.FromBytes(app.layerBytes)
+		if err != nil {
+			return nil, err
+		}
+
+		app.layer = *pHash
+	}
+
 	if app.layer == nil {
 		return nil, errors.New("the layer hash is mandatory in order to build an OriginResouce instance")
 	}

@@ -36,6 +36,7 @@ func TestOrm_Success(t *testing.T) {
 		"layer": {
 			{
 				path: []string{
+					"library",
 					"layer",
 				},
 				instance: layers.NewLayerForTests(
@@ -58,6 +59,7 @@ func TestOrm_Success(t *testing.T) {
 				dependencies: []testInstance{
 					{
 						path: []string{
+							"library",
 							"layer",
 							"instruction",
 						},
@@ -76,6 +78,7 @@ func TestOrm_Success(t *testing.T) {
 		"output": {
 			{
 				path: []string{
+					"library",
 					"layer",
 					"output",
 				},
@@ -86,6 +89,7 @@ func TestOrm_Success(t *testing.T) {
 			},
 			{
 				path: []string{
+					"library",
 					"layer",
 					"output",
 				},
@@ -99,6 +103,7 @@ func TestOrm_Success(t *testing.T) {
 		"kind": {
 			{
 				path: []string{
+					"library",
 					"layer",
 					"output",
 					"kind",
@@ -107,6 +112,7 @@ func TestOrm_Success(t *testing.T) {
 			},
 			{
 				path: []string{
+					"library",
 					"layer",
 					"output",
 					"kind",
@@ -117,6 +123,7 @@ func TestOrm_Success(t *testing.T) {
 		"instruction": {
 			{
 				path: []string{
+					"library",
 					"layer",
 					"instruction",
 				},
@@ -133,6 +140,7 @@ func TestOrm_Success(t *testing.T) {
 		"assignment": {
 			{
 				path: []string{
+					"library",
 					"layer",
 					"instruction",
 					"assignment",
@@ -148,6 +156,7 @@ func TestOrm_Success(t *testing.T) {
 		"assignable": {
 			{
 				path: []string{
+					"library",
 					"layer",
 					"instruction",
 					"assignment",
@@ -161,6 +170,7 @@ func TestOrm_Success(t *testing.T) {
 		"bytes": {
 			{
 				path: []string{
+					"library",
 					"layer",
 					"instruction",
 					"assignment",
@@ -171,6 +181,7 @@ func TestOrm_Success(t *testing.T) {
 			},
 			{
 				path: []string{
+					"library",
 					"layer",
 					"instruction",
 					"assignment",
@@ -184,6 +195,7 @@ func TestOrm_Success(t *testing.T) {
 			},
 			{
 				path: []string{
+					"library",
 					"layer",
 					"instruction",
 					"assignment",

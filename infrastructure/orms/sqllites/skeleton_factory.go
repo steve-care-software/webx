@@ -70,7 +70,484 @@ func (app *skeletonFactory) concreteResources() resources.Resources {
 }
 
 func (app *skeletonFactory) concreteLibrary() resources.Resource {
-	return app.concreteLibraryLayer()
+	return app.resourceWithChildren(
+		"library",
+		app.field(
+			"hash",
+			[]string{"Hash", "Bytes"},
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.fieldWithBuilder(
+				"layers",
+				[]string{"Layers"},
+				app.kindWithConnection("library_layers"),
+				app.builderInstructionWithContainsParams(
+					"WithLayers",
+				),
+			),
+			app.fieldWithBuilderAndCondition(
+				"links",
+				[]string{"Links"},
+				app.kindWithConnection("library_links"),
+				app.builderInstructionWithContainsParams(
+					"WithLinks",
+				),
+				"HasLinks",
+			),
+		}),
+		"Create",
+		"Now",
+		app.resources([]resources.Resource{
+			app.concreteLibraryLink(),
+			app.concreteLibraryLayer(),
+		}),
+	)
+}
+
+func (app *skeletonFactory) concreteLibraryLink() resources.Resource {
+	return app.resourceWithChildren(
+		"link",
+		app.field(
+			"hash",
+			[]string{"Hash", "Bytes"},
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.fieldWithBuilder(
+				"origin",
+				[]string{"Origin"},
+				app.kindWithReference([]string{
+					"library",
+					"link",
+					"origin",
+				}),
+				app.builderInstructionWithContainsParams(
+					"WithOrigin",
+				),
+			),
+			app.fieldWithBuilder(
+				"elements",
+				[]string{"Elements"},
+				app.kindWithConnection("link_elements"),
+				app.builderInstructionWithContainsParams(
+					"WithElements",
+				),
+			),
+		}),
+		"Create",
+		"Now",
+		app.resources([]resources.Resource{
+			app.concreteLibraryLinkElement(),
+			app.concreteLibraryLinkOrigin(),
+		}),
+	)
+}
+
+func (app *skeletonFactory) concreteLibraryLinkElement() resources.Resource {
+	return app.resourceWithChildren(
+		"element",
+		app.field(
+			"hash",
+			[]string{"Hash", "Bytes"},
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.fieldWithBuilder(
+				"layer",
+				[]string{"Hash", "Bytes"},
+				app.kindWithNative(
+					app.nativeWithSingle(
+						resources.NativeBytes,
+					),
+				),
+				app.builderInstructionWithContainsParams(
+					"WithLayerBytes",
+				),
+			),
+			app.fieldWithBuilderAndCondition(
+				"condition",
+				[]string{"Condition"},
+				app.kindWithReference([]string{
+					"library",
+					"link",
+					"element",
+					"condition",
+				}),
+				app.builderInstructionWithContainsParams(
+					"WithCondition",
+				),
+				"HasCondition",
+			),
+		}),
+		"Create",
+		"Now",
+		app.resources([]resources.Resource{
+			app.concreteLibraryLinkElementCondition(),
+		}),
+	)
+}
+
+func (app *skeletonFactory) concreteLibraryLinkElementCondition() resources.Resource {
+	return app.resourceWithChildren(
+		"condition",
+		app.field(
+			"hash",
+			[]string{"Hash", "Bytes"},
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.fieldWithBuilder(
+				"resource",
+				[]string{"Resource"},
+				app.kindWithReference([]string{
+					"library",
+					"link",
+					"element",
+					"condition",
+					"resource",
+				}),
+				app.builderInstructionWithContainsParams(
+					"WithResource",
+				),
+			),
+			app.fieldWithBuilderAndCondition(
+				"next",
+				[]string{"Next"},
+				app.kindWithReference([]string{
+					"library",
+					"link",
+					"element",
+					"condition",
+					"value",
+				}),
+				app.builderInstructionWithContainsParams(
+					"WithNext",
+				),
+				"HasNext",
+			),
+		}),
+		"Create",
+		"Now",
+		app.resources([]resources.Resource{
+			app.concreteLibraryLinkElementConditionValue(),
+			app.concreteLibraryLinkElementConditionResource(),
+		}),
+	)
+}
+
+func (app *skeletonFactory) concreteLibraryLinkElementConditionValue() resources.Resource {
+	return app.resource(
+		"value",
+		app.field(
+			"hash",
+			[]string{"Hash", "Bytes"},
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.fieldWithBuilderAndCondition(
+				"resource",
+				[]string{"Resource"},
+				app.kindWithReference([]string{
+					"library",
+					"link",
+					"element",
+					"condition",
+					"resource",
+				}),
+				app.builderInstructionWithContainsParams(
+					"WithResource",
+				),
+				"IsResource",
+			),
+			app.fieldWithBuilderAndCondition(
+				"condition",
+				[]string{"Condition"},
+				app.kindWithReference([]string{
+					"library",
+					"link",
+					"element",
+					"condition",
+				}),
+				app.builderInstructionWithContainsParams(
+					"WithCondition",
+				),
+				"IsCondition",
+			),
+		}),
+		"Create",
+		"Now",
+	)
+}
+
+func (app *skeletonFactory) concreteLibraryLinkElementConditionResource() resources.Resource {
+	return app.resource(
+		"resource",
+		app.field(
+			"hash",
+			[]string{"Hash", "Bytes"},
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.fieldWithBuilder(
+				"code",
+				[]string{"Code"},
+				app.kindWithNative(
+					app.nativeWithSingle(
+						resources.NativeInteger,
+					),
+				),
+				app.builderInstructionWithContainsParams(
+					"WithCode",
+				),
+			),
+			app.fieldWithBuilder(
+				"is_raised_in_layer",
+				[]string{"IsRaisedInLayer"},
+				app.kindWithNative(
+					app.nativeWithSingle(
+						resources.NativeInteger,
+					),
+				),
+				app.builderInstruction(
+					"IsRaisedInLayer",
+				),
+			),
+		}),
+		"Create",
+		"Now",
+	)
+}
+
+func (app *skeletonFactory) concreteLibraryLinkOrigin() resources.Resource {
+	return app.resourceWithChildren(
+		"origin",
+		app.field(
+			"hash",
+			[]string{"Hash", "Bytes"},
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.fieldWithBuilder(
+				"resource",
+				[]string{"Resource"},
+				app.kindWithReference([]string{
+					"library",
+					"link",
+					"origin",
+					"resource",
+				}),
+				app.builderInstructionWithContainsParams(
+					"WithResource",
+				),
+			),
+			app.fieldWithBuilder(
+				"operator",
+				[]string{"Operator"},
+				app.kindWithReference([]string{
+					"library",
+					"link",
+					"origin",
+					"operator",
+				}),
+				app.builderInstructionWithContainsParams(
+					"WithOperator",
+				),
+			),
+			app.fieldWithBuilder(
+				"next",
+				[]string{"Next"},
+				app.kindWithReference([]string{
+					"library",
+					"link",
+					"origin",
+					"value",
+				}),
+				app.builderInstructionWithContainsParams(
+					"WithNext",
+				),
+			),
+		}),
+		"Create",
+		"Now",
+		app.resources([]resources.Resource{
+			app.concreteLibraryLinkOriginResource(),
+			app.concreteLibraryLinkOriginOperator(),
+			app.concreteLibraryLinkOriginValue(),
+		}),
+	)
+}
+
+func (app *skeletonFactory) concreteLibraryLinkOriginResource() resources.Resource {
+	return app.resource(
+		"resource",
+		app.field(
+			"hash",
+			[]string{"Hash", "Bytes"},
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.fieldWithBuilder(
+				"layer",
+				[]string{"Hash", "Bytes"},
+				app.kindWithNative(
+					app.nativeWithSingle(
+						resources.NativeBytes,
+					),
+				),
+				app.builderInstructionWithContainsParams(
+					"WithLayerBytes",
+				),
+			),
+			app.fieldWithBuilder(
+				"is_mandatory",
+				[]string{"IsMandatory"},
+				app.kindWithNative(
+					app.nativeWithSingle(
+						resources.NativeInteger,
+					),
+				),
+				app.builderInstruction(
+					"IsMandatory",
+				),
+			),
+		}),
+		"Create",
+		"Now",
+	)
+}
+
+func (app *skeletonFactory) concreteLibraryLinkOriginOperator() resources.Resource {
+	return app.resource(
+		"operator",
+		app.field(
+			"hash",
+			[]string{"Hash", "Bytes"},
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.fieldWithBuilder(
+				"is_and",
+				[]string{"IsAnd"},
+				app.kindWithNative(
+					app.nativeWithSingle(
+						resources.NativeInteger,
+					),
+				),
+				app.builderInstruction(
+					"IsAnd",
+				),
+			),
+			app.fieldWithBuilder(
+				"is_or",
+				[]string{"IsOr"},
+				app.kindWithNative(
+					app.nativeWithSingle(
+						resources.NativeInteger,
+					),
+				),
+				app.builderInstruction(
+					"IsOr",
+				),
+			),
+			app.fieldWithBuilder(
+				"is_xor",
+				[]string{"IsXor"},
+				app.kindWithNative(
+					app.nativeWithSingle(
+						resources.NativeInteger,
+					),
+				),
+				app.builderInstruction(
+					"IsXor",
+				),
+			),
+		}),
+		"Create",
+		"Now",
+	)
+}
+
+func (app *skeletonFactory) concreteLibraryLinkOriginValue() resources.Resource {
+	return app.resource(
+		"value",
+		app.field(
+			"hash",
+			[]string{"Hash", "Bytes"},
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.fieldWithBuilderAndCondition(
+				"is_resource",
+				[]string{"IsResource"},
+				app.kindWithReference([]string{
+					"library",
+					"link",
+					"origin",
+					"resource",
+				}),
+				app.builderInstructionWithContainsParams(
+					"WithResource",
+				),
+				"IsResource",
+			),
+			app.fieldWithBuilderAndCondition(
+				"is_origin",
+				[]string{"IsOrigin"},
+				app.kindWithReference([]string{
+					"library",
+					"link",
+					"origin",
+				}),
+				app.builderInstructionWithContainsParams(
+					"WithOrigin",
+				),
+				"IsOrigin",
+			),
+		}),
+		"Create",
+		"Now",
+	)
 }
 
 func (app *skeletonFactory) concreteLibraryLayer() resources.Resource {
@@ -98,6 +575,7 @@ func (app *skeletonFactory) concreteLibraryLayer() resources.Resource {
 				"output",
 				[]string{"Output"},
 				app.kindWithReference([]string{
+					"library",
 					"layer",
 					"output",
 				}),
@@ -156,6 +634,7 @@ func (app *skeletonFactory) concreteLibraryLayerOutput() resources.Resource {
 				"kind",
 				[]string{"Kind"},
 				app.kindWithReference([]string{
+					"library",
 					"layer",
 					"output",
 					"kind",
@@ -246,6 +725,7 @@ func (app *skeletonFactory) concreteLibraryLayerInstruction() resources.Resource
 				"assignment",
 				[]string{"Assignment"},
 				app.kindWithReference([]string{
+					"library",
 					"layer",
 					"instruction",
 					"assignment",
@@ -292,6 +772,7 @@ func (app *skeletonFactory) concreteLibraryLayerAssignment() resources.Resource 
 				"assignable",
 				[]string{"Assignable"},
 				app.kindWithReference([]string{
+					"library",
 					"layer",
 					"instruction",
 					"assignment",
@@ -327,6 +808,7 @@ func (app *skeletonFactory) createLibraryLayerAssignable() resources.Resource {
 				"bytes",
 				[]string{"Bytes"},
 				app.kindWithReference([]string{
+					"library",
 					"layer",
 					"instruction",
 					"assignment",
@@ -408,18 +890,70 @@ func (app *skeletonFactory) createLibraryLayerBytes() resources.Resource {
 func (app *skeletonFactory) concreteConnections() connections.Connections {
 	return app.connections([]connections.Connection{
 		app.connection(
+			"library_layers",
+			app.connectionField(
+				"library",
+				[]string{
+					"library",
+				},
+			),
+			app.connectionField(
+				"layer",
+				[]string{
+					"library",
+					"layer",
+				},
+			),
+		),
+		app.connection(
 			"layer_instructions",
 			app.connectionField(
 				"layer",
 				[]string{
+					"library",
 					"layer",
 				},
 			),
 			app.connectionField(
 				"instruction",
 				[]string{
+					"library",
 					"layer",
 					"instruction",
+				},
+			),
+		),
+		app.connection(
+			"library_links",
+			app.connectionField(
+				"library",
+				[]string{
+					"library",
+				},
+			),
+			app.connectionField(
+				"link",
+				[]string{
+					"library",
+					"link",
+				},
+			),
+		),
+		app.connection(
+			"link_elements",
+			app.connectionField(
+				"link",
+				[]string{
+					"library",
+					"link",
+				},
+			),
+			app.connectionField(
+				"elements",
+				[]string{
+					"library",
+					"link",
+					"element",
 				},
 			),
 		),
