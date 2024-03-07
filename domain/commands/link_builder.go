@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/links"
 )
 
 type linkBuilder struct {

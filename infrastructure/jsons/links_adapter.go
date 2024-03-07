@@ -3,7 +3,7 @@ package jsons
 import (
 	"encoding/json"
 
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/links"
 	structs "github.com/steve-care-software/datastencil/infrastructure/jsons/structs/libraries/layers/links"
 )
 

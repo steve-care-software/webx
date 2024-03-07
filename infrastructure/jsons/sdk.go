@@ -4,7 +4,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/links"
 )
 
 // NewLibraryAdapter creates a new library adapter
