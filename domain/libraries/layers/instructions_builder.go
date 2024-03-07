@@ -1,6 +1,8 @@
 package layers
 
 import (
+	"errors"
+
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
@@ -37,6 +39,10 @@ func (app *instructionsBuilder) WithList(list []Instruction) InstructionsBuilder
 func (app *instructionsBuilder) Now() (Instructions, error) {
 	if app.list != nil && len(app.list) <= 0 {
 		app.list = nil
+	}
+
+	if app.list == nil {
+		return nil, errors.New("there must be at least 1 Instruction in order to build an Instructions instance")
 	}
 
 	data := [][]byte{}

@@ -3,6 +3,8 @@ package sqllites
 import (
 	"database/sql"
 	"errors"
+	"fmt"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 
@@ -16,13 +18,16 @@ import (
 )
 
 // listInstanceToElementHashesListFn takes a list instance and return its element's hashes
-type listInstanceToElementHashesListFn func(input interface{}) ([]hash.Hash, error)
+type listInstanceToElementHashesListFn func(ins orms.Instance) ([]hash.Hash, error)
 
 // elementsToListInstanceFn takes a list of elements and returns a list instance
 type elementsToListInstanceFn func(input []interface{}) (orms.Instance, error)
 
 // buildInstanceFn takes values and build an Instance instance
 type buildInstanceFn func(values map[string]interface{}) (orms.Instance, error)
+
+// callMethodOnInstanceFn calls a method related to a field on instance, then returns its value
+type callMethodOnInstanceFn func(ins orms.Instance, fieldName string) (bool, interface{}, error)
 
 const resourceNameDelimiter = "_"
 const endOfLine = "\n"
@@ -61,18 +66,98 @@ func NewOrmRepository(
 		},
 		"library_link_origin": func(values map[string]interface{}) (orms.Instance, error) {
 			builder := links.NewOriginBuilder()
+			if value, ok := values["resource"]; ok {
+				if pIns, ok := value.(*orms.Instance); ok {
+					if pIns != nil {
+						ins := *pIns
+						builder.WithResource(ins.(links.OriginResource))
+					}
+				}
+			}
+
+			if value, ok := values["operator"]; ok {
+				if pIns, ok := value.(*orms.Instance); ok {
+					if pIns != nil {
+						ins := *pIns
+						builder.WithOperator(ins.(links.Operator))
+					}
+				}
+			}
+
+			if value, ok := values["next"]; ok {
+				if pIns, ok := value.(*orms.Instance); ok {
+					if pIns != nil {
+						ins := *pIns
+						builder.WithNext(ins.(links.OriginValue))
+					}
+				}
+			}
+
 			return builder.Now()
 		},
 		"library_link_origin_value": func(values map[string]interface{}) (orms.Instance, error) {
 			builder := links.NewOriginValueBuilder()
+			if value, ok := values["resource"]; ok {
+				if pIns, ok := value.(*orms.Instance); ok {
+					if pIns != nil {
+						ins := *pIns
+						builder.WithResource(ins.(links.OriginResource))
+					}
+				}
+			}
+
+			if value, ok := values["origin"]; ok {
+				if pIns, ok := value.(*orms.Instance); ok {
+					if pIns != nil {
+						ins := *pIns
+						builder.WithOrigin(ins.(links.Origin))
+					}
+				}
+			}
+
 			return builder.Now()
 		},
 		"library_link_origin_resource": func(values map[string]interface{}) (orms.Instance, error) {
 			builder := links.NewOriginResourceBuilder()
+			if value, ok := values["layer"]; ok {
+				if casted, ok := value.([]byte); ok {
+					pHash, err := hash.NewAdapter().FromBytes(casted)
+					if err != nil {
+						return nil, err
+					}
+
+					builder.WithLayer(*pHash)
+				}
+			}
+
+			if value, ok := values["is_mandatory"]; ok {
+				if value.(int64) != 0 {
+					builder.IsMandatory()
+				}
+			}
+
 			return builder.Now()
 		},
 		"library_link_origin_operator": func(values map[string]interface{}) (orms.Instance, error) {
 			builder := links.NewOperatorBuilder()
+			if value, ok := values["is_and"]; ok {
+				if value.(int64) != 0 {
+					builder.IsAnd()
+				}
+			}
+
+			if value, ok := values["is_or"]; ok {
+				if value.(int64) != 0 {
+					builder.IsOr()
+				}
+			}
+
+			if value, ok := values["is_xor"]; ok {
+				if value.(int64) != 0 {
+					builder.IsXor()
+				}
+			}
+
 			return builder.Now()
 		},
 		"library_layer": func(values map[string]interface{}) (orms.Instance, error) {
@@ -186,14 +271,16 @@ func NewOrmRepository(
 			builder := layers.NewBytesBuilder()
 			if value, ok := values["joins"]; ok {
 				if value != nil {
-					builder.WithJoin(value.([]string))
+					split := strings.Split(value.(string), resourceNameDelimiter)
+					builder.WithJoin(split)
 				}
 
 			}
 
 			if value, ok := values["compares"]; ok {
 				if value != nil {
-					builder.WithCompare(value.([]string))
+					split := strings.Split(value.(string), resourceNameDelimiter)
+					builder.WithCompare(split)
 				}
 
 			}
@@ -267,9 +354,232 @@ func NewOrmService(
 	dbPtr *sql.DB,
 	txPtr *sql.Tx,
 ) orms.Service {
+
+	callMethodsOnInstances := map[string]callMethodOnInstanceFn{
+		"library": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
+			return false, nil, nil
+		},
+		"library_link": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
+			return false, nil, nil
+		},
+		"library_link_element": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
+			return false, nil, nil
+		},
+		"library_link_element_condition": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
+			return false, nil, nil
+		},
+		"library_link_element_condition_value": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
+			return false, nil, nil
+		},
+		"library_link_element_condition_resource": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
+			return false, nil, nil
+		},
+		"library_link_origin": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
+			if casted, ok := ins.(links.Origin); ok {
+				switch fieldName {
+				case "hash":
+					return true, casted.Hash().Bytes(), nil
+				case "resource":
+					return true, casted.Resource().Hash().Bytes(), nil
+				case "operator":
+					return true, casted.Operator().Hash().Bytes(), nil
+				case "next":
+					return true, casted.Next().Hash().Bytes(), nil
+				}
+
+				str := fmt.Sprintf("origin: the fieldName is invalid: %s", fieldName)
+				return false, nil, errors.New(str)
+			}
+
+			return false, nil, errors.New("the Instance was expected to contain an Origin instance")
+		},
+		"library_link_origin_value": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
+			if casted, ok := ins.(links.OriginValue); ok {
+				switch fieldName {
+				case "hash":
+					return true, casted.Hash().Bytes(), nil
+				case "resource":
+					if casted.IsResource() {
+						return true, casted.Resource().Hash().Bytes(), nil
+					}
+
+					return false, nil, nil
+				case "origin":
+					if casted.IsOrigin() {
+						return true, casted.Origin().Hash().Bytes(), nil
+					}
+
+					return false, nil, nil
+				}
+
+				str := fmt.Sprintf("resource: the fieldName is invalid: %s", fieldName)
+				return false, nil, errors.New(str)
+			}
+
+			return false, nil, errors.New("the Instance was expected to contain an OriginValue instance")
+		},
+		"library_link_origin_resource": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
+			if casted, ok := ins.(links.OriginResource); ok {
+				switch fieldName {
+				case "hash":
+					return true, casted.Hash().Bytes(), nil
+				case "layer":
+					return true, casted.Layer().Bytes(), nil
+				case "is_mandatory":
+					return true, casted.IsMandatory(), nil
+				}
+
+				str := fmt.Sprintf("resource: the fieldName is invalid: %s", fieldName)
+				return false, nil, errors.New(str)
+			}
+
+			return false, nil, errors.New("the Instance was expected to contain an OriginResource instance")
+		},
+		"library_link_origin_operator": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
+			if casted, ok := ins.(links.Operator); ok {
+				switch fieldName {
+				case "hash":
+					return true, casted.Hash().Bytes(), nil
+				case "is_and":
+					return true, casted.IsAnd(), nil
+				case "is_or":
+					return true, casted.IsOr(), nil
+				case "is_xor":
+					return true, casted.IsXor(), nil
+				}
+
+				str := fmt.Sprintf("operator: the fieldName is invalid: %s", fieldName)
+				return false, nil, errors.New(str)
+			}
+
+			return false, nil, errors.New("the Instance was expected to contain an Operator instance")
+		},
+		"library_layer": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
+			if casted, ok := ins.(layers.Layer); ok {
+				switch fieldName {
+				case "hash":
+					return true, casted.Hash().Bytes(), nil
+				case "instructions":
+					return true, casted.Instructions(), nil
+				case "output":
+					return true, casted.Output().Hash().Bytes(), nil
+				case "input":
+					return true, casted.Input(), nil
+				}
+
+				str := fmt.Sprintf("layer: the fieldName is invalid: %s", fieldName)
+				return false, nil, errors.New(str)
+			}
+
+			return false, nil, errors.New("the Instance was expected to contain a Layer instance")
+		},
+		"library_layer_output": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
+			if casted, ok := ins.(layers.Output); ok {
+				switch fieldName {
+				case "hash":
+					return true, casted.Hash().Bytes(), nil
+				case "variable":
+					return true, casted.Variable(), nil
+				case "kind":
+					return true, casted.Kind().Hash().Bytes(), nil
+				case "execute":
+					return true, casted.Execute(), nil
+				}
+
+				str := fmt.Sprintf("output: the fieldName is invalid: %s", fieldName)
+				return false, nil, errors.New(str)
+			}
+
+			return false, nil, errors.New("the Instance was expected to contain an Output instance")
+		},
+		"library_layer_output_kind": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
+			if casted, ok := ins.(layers.Kind); ok {
+				switch fieldName {
+				case "hash":
+					return true, casted.Hash().Bytes(), nil
+				case "prompt":
+					return true, casted.IsPrompt(), nil
+				case "continue":
+					return true, casted.IsContinue(), nil
+				}
+
+				str := fmt.Sprintf("kind: the fieldName is invalid: %s", fieldName)
+				return false, nil, errors.New(str)
+			}
+
+			return false, nil, errors.New("the Instance was expected to contain a Kind instance")
+		},
+		"library_layer_instruction": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
+			if casted, ok := ins.(layers.Instruction); ok {
+				switch fieldName {
+				case "hash":
+					return true, casted.Hash().Bytes(), nil
+				case "assignment":
+					return true, casted.Assignment().Hash().Bytes(), nil
+				}
+
+				str := fmt.Sprintf("instruction: the fieldName is invalid: %s", fieldName)
+				return false, nil, errors.New(str)
+			}
+
+			return false, nil, errors.New("the Instance was expected to contain an Instruction instance")
+		},
+		"library_layer_instruction_assignment": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
+			if casted, ok := ins.(layers.Assignment); ok {
+				switch fieldName {
+				case "hash":
+					return true, casted.Hash().Bytes(), nil
+				case "name":
+					return true, casted.Name(), nil
+				case "assignable":
+					return true, casted.Assignable().Hash().Bytes(), nil
+				}
+
+				str := fmt.Sprintf("assignment: the fieldName is invalid: %s", fieldName)
+				return false, nil, errors.New(str)
+			}
+
+			return false, nil, errors.New("the Instance was expected to contain an Assignment instance")
+		},
+		"library_layer_instruction_assignment_assignable": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
+			if casted, ok := ins.(layers.Assignable); ok {
+				switch fieldName {
+				case "hash":
+					return true, casted.Hash().Bytes(), nil
+				case "bytes":
+					return casted.IsBytes(), casted.Bytes().Hash().Bytes(), nil
+				}
+
+				str := fmt.Sprintf("assignable: the fieldName is invalid: %s", fieldName)
+				return false, nil, errors.New(str)
+			}
+
+			return false, nil, errors.New("the Instance was expected to contain an Assignable instance")
+		},
+		"library_layer_instruction_assignment_assignable_bytes": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
+			if casted, ok := ins.(layers.Bytes); ok {
+				switch fieldName {
+				case "hash":
+					return true, casted.Hash().Bytes(), nil
+				case "joins":
+					return casted.IsJoin(), strings.Join(casted.Join(), resourceNameDelimiter), nil
+				case "compares":
+					return casted.IsCompare(), strings.Join(casted.Compare(), resourceNameDelimiter), nil
+				case "hash_bytes":
+					return casted.IsHashBytes(), casted.HashBytes(), nil
+				}
+
+				str := fmt.Sprintf("bytes: the fieldName is invalid: %s", fieldName)
+				return false, nil, errors.New(str)
+			}
+
+			return false, nil, errors.New("the Instance was expected to contain a Bytes instance")
+		},
+	}
+
 	listInstanceToElementHashesListFn := map[string]listInstanceToElementHashesListFn{
-		"layer": func(input interface{}) ([]hash.Hash, error) {
-			if ins, ok := input.(layers.Layers); ok {
+		"library_layers": func(ins orms.Instance) ([]hash.Hash, error) {
+			if ins, ok := ins.(layers.Layers); ok {
 				output := []hash.Hash{}
 				list := ins.List()
 				for _, oneIns := range list {
@@ -279,10 +589,10 @@ func NewOrmService(
 				return output, nil
 			}
 
-			return nil, errors.New("the input was expected to contain a Layers instance")
+			return nil, errors.New("the Instance was expected to contain a Layers instance")
 		},
-		"instruction": func(input interface{}) ([]hash.Hash, error) {
-			if ins, ok := input.(layers.Instructions); ok {
+		"layer_instructions": func(ins orms.Instance) ([]hash.Hash, error) {
+			if ins, ok := ins.(layers.Instructions); ok {
 				output := []hash.Hash{}
 				list := ins.List()
 				for _, oneIns := range list {
@@ -292,10 +602,10 @@ func NewOrmService(
 				return output, nil
 			}
 
-			return nil, errors.New("the input was expected to contain an Instructions instance")
+			return nil, errors.New("the Instance was expected to contain an Instructions instance")
 		},
-		"link": func(input interface{}) ([]hash.Hash, error) {
-			if ins, ok := input.(links.Links); ok {
+		"library_links": func(ins orms.Instance) ([]hash.Hash, error) {
+			if ins, ok := ins.(links.Links); ok {
 				output := []hash.Hash{}
 				list := ins.List()
 				for _, oneIns := range list {
@@ -305,10 +615,10 @@ func NewOrmService(
 				return output, nil
 			}
 
-			return nil, errors.New("the input was expected to contain a Links instance")
+			return nil, errors.New("the Instance was expected to contain a Links instance")
 		},
-		"element": func(input interface{}) ([]hash.Hash, error) {
-			if ins, ok := input.(links.Elements); ok {
+		"link_elements": func(ins orms.Instance) ([]hash.Hash, error) {
+			if ins, ok := ins.(links.Elements); ok {
 				output := []hash.Hash{}
 				list := ins.List()
 				for _, oneIns := range list {
@@ -318,12 +628,13 @@ func NewOrmService(
 				return output, nil
 			}
 
-			return nil, errors.New("the input was expected to contain an Elements instance")
+			return nil, errors.New("the Instance was expected to contain an Elements instance")
 		},
 	}
 
 	hashAdapter := hash.NewAdapter()
 	return createOrmService(
+		callMethodsOnInstances,
 		listInstanceToElementHashesListFn,
 		repository,
 		hashAdapter,

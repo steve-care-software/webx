@@ -518,8 +518,8 @@ func (app *skeletonFactory) concreteLibraryLinkOriginValue() resources.Resource 
 		),
 		app.fields([]resources.Field{
 			app.fieldWithBuilderAndCondition(
-				"is_resource",
-				[]string{"IsResource"},
+				"resource",
+				[]string{"Resource"},
 				app.kindWithReference([]string{
 					"library",
 					"link",
@@ -532,8 +532,8 @@ func (app *skeletonFactory) concreteLibraryLinkOriginValue() resources.Resource 
 				"IsResource",
 			),
 			app.fieldWithBuilderAndCondition(
-				"is_origin",
-				[]string{"IsOrigin"},
+				"origin",
+				[]string{"Origin"},
 				app.kindWithReference([]string{
 					"library",
 					"link",

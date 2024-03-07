@@ -67,7 +67,7 @@ func (app *originResourceBuilder) Now() (OriginResource, error) {
 	}
 
 	if app.layer == nil {
-		return nil, errors.New("the layer hash is mandatory in order to build an OriginResouce instance")
+		return nil, errors.New("the layer hash is mandatory in order to build an OriginResource instance")
 	}
 
 	isMandatory := "false"

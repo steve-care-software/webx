@@ -3,18 +3,27 @@ package sqllites
 import (
 	"bytes"
 	"database/sql"
+	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/links"
 	"github.com/steve-care-software/datastencil/domain/orms"
 )
+
+type typeDependency struct {
+	keyname string
+	index   uint
+}
 
 type testInstance struct {
 	path         []string
 	instance     orms.Instance
-	dependencies []testInstance
+	dependencies []typeDependency
 }
 
 func TestOrm_Success(t *testing.T) {
@@ -31,15 +40,15 @@ func TestOrm_Success(t *testing.T) {
 		return
 	}
 
-	/*pHash, err := hash.NewAdapter().FromBytes([]byte("this is some data"))
+	pHash, err := hash.NewAdapter().FromBytes([]byte("this is some data"))
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
-	}*/
+	}
 
 	// build resources:
 	instances := map[string][]testInstance{
-		/*"library_link_origin": {
+		"library_link_origin": {
 			{
 				path: []string{
 					"library",
@@ -57,52 +66,18 @@ func TestOrm_Success(t *testing.T) {
 						),
 					),
 				),
-				dependencies: []testInstance{
+				dependencies: []typeDependency{
 					{
-						path: []string{
-							"library",
-							"link",
-							"origin",
-							"resource",
-						},
-						instance: links.NewOriginResourceForTests(
-							*pHash,
-						),
+						keyname: "library_link_origin_resource",
+						index:   0,
 					},
 					{
-						path: []string{
-							"library",
-							"link",
-							"origin",
-							"operator",
-						},
-						instance: links.NewOperatorWithAndForTests(),
+						keyname: "library_link_origin_operator",
+						index:   0,
 					},
 					{
-						path: []string{
-							"library",
-							"link",
-							"origin",
-							"resource",
-						},
-						instance: links.NewOriginValueWithResourceForTests(
-							links.NewOriginResourceForTests(
-								*pHash,
-							),
-						),
-						dependencies: []testInstance{
-							{
-								path: []string{
-									"library",
-									"link",
-									"origin",
-									"resource",
-								},
-								instance: links.NewOriginResourceForTests(
-									*pHash,
-								),
-							},
-						},
+						keyname: "library_link_origin_value",
+						index:   0,
 					},
 				},
 			},
@@ -113,24 +88,17 @@ func TestOrm_Success(t *testing.T) {
 					"library",
 					"link",
 					"origin",
-					"resource",
+					"value",
 				},
 				instance: links.NewOriginValueWithResourceForTests(
 					links.NewOriginResourceForTests(
 						*pHash,
 					),
 				),
-				dependencies: []testInstance{
+				dependencies: []typeDependency{
 					{
-						path: []string{
-							"library",
-							"link",
-							"origin",
-							"resource",
-						},
-						instance: links.NewOriginResourceForTests(
-							*pHash,
-						),
+						keyname: "library_link_origin_resource",
+						index:   0,
 					},
 				},
 			},
@@ -139,7 +107,7 @@ func TestOrm_Success(t *testing.T) {
 					"library",
 					"link",
 					"origin",
-					"resource",
+					"value",
 				},
 				instance: links.NewOriginValueWithOriginForTests(
 					links.NewOriginForTests(
@@ -154,72 +122,10 @@ func TestOrm_Success(t *testing.T) {
 						),
 					),
 				),
-				dependencies: []testInstance{
+				dependencies: []typeDependency{
 					{
-						path: []string{
-							"library",
-							"link",
-							"origin",
-						},
-						instance: links.NewOriginForTests(
-							links.NewOriginResourceForTests(
-								*pHash,
-							),
-							links.NewOperatorWithAndForTests(),
-							links.NewOriginValueWithResourceForTests(
-								links.NewOriginResourceForTests(
-									*pHash,
-								),
-							),
-						),
-						dependencies: []testInstance{
-							{
-								path: []string{
-									"library",
-									"link",
-									"origin",
-									"resource",
-								},
-								instance: links.NewOriginResourceForTests(
-									*pHash,
-								),
-							},
-							{
-								path: []string{
-									"library",
-									"link",
-									"origin",
-									"operator",
-								},
-								instance: links.NewOperatorWithAndForTests(),
-							},
-							{
-								path: []string{
-									"library",
-									"link",
-									"origin",
-									"resource",
-								},
-								instance: links.NewOriginValueWithResourceForTests(
-									links.NewOriginResourceForTests(
-										*pHash,
-									),
-								),
-								dependencies: []testInstance{
-									{
-										path: []string{
-											"library",
-											"link",
-											"origin",
-											"resource",
-										},
-										instance: links.NewOriginResourceForTests(
-											*pHash,
-										),
-									},
-								},
-							},
-						},
+						keyname: "library_link_origin",
+						index:   0,
 					},
 				},
 			},
@@ -276,7 +182,7 @@ func TestOrm_Success(t *testing.T) {
 				},
 				instance: links.NewOperatorWithXOrForTests(),
 			},
-		},*/
+		},
 		"library_layer": {
 			{
 				path: []string{
@@ -300,21 +206,14 @@ func TestOrm_Success(t *testing.T) {
 					),
 					"some input",
 				),
-				dependencies: []testInstance{
+				dependencies: []typeDependency{
 					{
-						path: []string{
-							"library",
-							"layer",
-							"instruction",
-						},
-						instance: layers.NewInstructionWithAssignmentForTests(
-							layers.NewAssignmentForTests(
-								"myName",
-								layers.NewAssignableWithBytesForTests(
-									layers.NewBytesWithHashBytesForTests("myInput"),
-								),
-							),
-						),
+						keyname: "library_layer_instruction",
+						index:   0,
+					},
+					{
+						keyname: "library_layer_output",
+						index:   0,
 					},
 				},
 			},
@@ -330,6 +229,12 @@ func TestOrm_Success(t *testing.T) {
 					"myVariable",
 					layers.NewKindWithContinueForTests(),
 				),
+				dependencies: []typeDependency{
+					{
+						keyname: "library_layer_output_kind",
+						index:   0,
+					},
+				},
 			},
 			{
 				path: []string{
@@ -342,6 +247,12 @@ func TestOrm_Success(t *testing.T) {
 					layers.NewKindWithContinueForTests(),
 					"some command to execute",
 				),
+				dependencies: []typeDependency{
+					{
+						keyname: "library_layer_output_kind",
+						index:   0,
+					},
+				},
 			},
 		},
 		"library_layer_output_kind": {
@@ -379,6 +290,12 @@ func TestOrm_Success(t *testing.T) {
 						),
 					),
 				),
+				dependencies: []typeDependency{
+					{
+						keyname: "library_layer_instruction_assignment",
+						index:   0,
+					},
+				},
 			},
 		},
 		"library_layer_instruction_assignment": {
@@ -395,6 +312,12 @@ func TestOrm_Success(t *testing.T) {
 						layers.NewBytesWithHashBytesForTests("myInput"),
 					),
 				),
+				dependencies: []typeDependency{
+					{
+						keyname: "library_layer_instruction_assignment_assignable",
+						index:   0,
+					},
+				},
 			},
 		},
 		"library_layer_instruction_assignment_assignable": {
@@ -409,6 +332,12 @@ func TestOrm_Success(t *testing.T) {
 				instance: layers.NewAssignableWithBytesForTests(
 					layers.NewBytesWithHashBytesForTests("myInput"),
 				),
+				dependencies: []typeDependency{
+					{
+						keyname: "library_layer_instruction_assignment_assignable_bytes",
+						index:   0,
+					},
+				},
 			},
 		},
 		"library_layer_instruction_assignment_assignable_bytes": {
@@ -479,21 +408,10 @@ func TestOrm_Success(t *testing.T) {
 				return
 			}
 
-			// if there is dependencies, insert them:
-			if oneInstance.dependencies != nil && len(oneInstance.dependencies) > 0 {
-				for _, oneDependency := range oneInstance.dependencies {
-					err = service.Insert(oneDependency.instance, oneDependency.path)
-					if err != nil {
-						t.Errorf("section: %s: index: %d, the error was expected to be nil, error returned: %s", name, idx, err.Error())
-						return
-					}
-				}
-			}
-
 			// insert instance:
-			err = service.Insert(oneInstance.instance, oneInstance.path)
+			err = insertInstance(name, idx, oneInstance, instances, service, false)
 			if err != nil {
-				t.Errorf("section: %s: index: %d, the error was expected to be nil, error returned: %s", name, idx, err.Error())
+				t.Errorf(err.Error())
 				return
 			}
 
@@ -517,4 +435,62 @@ func TestOrm_Success(t *testing.T) {
 			}
 		}
 	}
+}
+
+func insertInstance(
+	name string,
+	idx int,
+	currentInstance testInstance,
+	allInstances map[string][]testInstance,
+	service orms.Service,
+	skipIfFails bool,
+) error {
+	// if there is dependencies, insert them:
+	if currentInstance.dependencies != nil && len(currentInstance.dependencies) > 0 {
+		err := insertDependencies(name, idx, currentInstance, allInstances, service)
+		if err != nil {
+			str := fmt.Sprintf("section: %s: index: %d, there was an error while inserting the dependencies: %s", name, idx, fmt.Sprintln(err.Error()))
+			return errors.New(str)
+		}
+	}
+
+	// insert instance:
+	err := service.Insert(currentInstance.instance, currentInstance.path)
+	if err != nil {
+		if skipIfFails {
+			return nil
+		}
+
+		str := fmt.Sprintf("section: %s: index: %d, the error was expected to be nil, error returned: %s", name, idx, fmt.Sprintln(err.Error()))
+		return errors.New(fmt.Sprintln(str))
+	}
+
+	return nil
+}
+
+func insertDependencies(
+	name string,
+	idx int,
+	currentInstance testInstance,
+	allInstances map[string][]testInstance,
+	service orms.Service,
+) error {
+	for _, oneDependency := range currentInstance.dependencies {
+		if dependencyList, ok := allInstances[oneDependency.keyname]; ok {
+			if dependencyIns := dependencyList[oneDependency.index]; ok {
+				err := insertInstance(name, idx, dependencyIns, allInstances, service, true)
+				if err != nil {
+					str := fmt.Sprintf("section: %s: index: %d, the error was expected to be nil, error returned: %s", name, idx, fmt.Sprintln(err.Error()))
+					return errors.New(str)
+				}
+
+				continue
+			}
+
+			str := fmt.Sprintf("the dependency (keyname: %s, index: %d) is undeclared in the instances list, used in at keyname: %s, index: %d", oneDependency.keyname, oneDependency.index, name, idx)
+			return errors.New(fmt.Sprintln(str))
+		}
+	}
+
+	return nil
 }

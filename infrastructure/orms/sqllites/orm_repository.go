@@ -1,7 +1,6 @@
 package sqllites
 
 import (
-	"bytes"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -239,6 +238,10 @@ func (app *ormRepository) retrieveFieldValuesByHash(
 		if kind.IsReference() {
 			if pIns, ok := values[idx].(*interface{}); ok {
 				insValue := *pIns
+				if insValue == nil {
+					continue
+				}
+
 				if bytes, ok := insValue.([]byte); ok {
 					pHash, err := app.hashAdapter.FromBytes(bytes)
 					if err != nil {
@@ -255,60 +258,10 @@ func (app *ormRepository) retrieveFieldValuesByHash(
 					continue
 				}
 
-				return nil, errors.New("the reference type was expected to contain bytes")
+				return nil, errors.New("the reference type is invalid")
 			}
 
 			return nil, errors.New("the reference type was expected to contain bytes")
-		}
-
-		if kind.IsNative() {
-			native := kind.Native()
-			if native.IsList() {
-				if pIns, ok := values[idx].(*interface{}); ok {
-					insValue := *pIns
-					if insValue == nil {
-						continue
-					}
-
-					if casted, ok := insValue.([]byte); ok {
-						list := native.List()
-						delimiter := list.Delimiter()
-						listValue := list.Value()
-						if listValue == resources.NativeString {
-							strList := []string{}
-							bytesList := bytes.Split(casted, []byte(delimiter))
-							for _, oneBytes := range bytesList {
-								if len(oneBytes) <= 0 {
-									continue
-								}
-
-								strList = append(strList, string(oneBytes))
-							}
-
-							valuesMap[fieldName] = strList
-							continue
-						}
-
-						if listValue == resources.NativeBytes {
-							panic(errors.New("retrieveByResourceAndHash -> finish bytes in ormRepository"))
-						}
-
-						if listValue == resources.NativeInteger {
-							panic(errors.New("retrieveByResourceAndHash -> finish integer in ormRepository"))
-						}
-
-						if listValue == resources.NativeFloat {
-							panic(errors.New("retrieveByResourceAndHash -> finish float in ormRepository"))
-						}
-					}
-
-					// error
-					return nil, errors.New("invalid casting")
-				}
-
-				// error
-				return nil, errors.New("invalid casting")
-			}
 		}
 
 		value := values[idx]

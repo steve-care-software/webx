@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"reflect"
 	"strings"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
@@ -52,6 +51,7 @@ type connection struct {
 }
 
 type ormService struct {
+	callMethodsOnInstances            map[string]callMethodOnInstanceFn
 	listInstanceToElementHashesListFn map[string]listInstanceToElementHashesListFn
 	repository                        orms.Repository
 	hashAdapter                       hash.Adapter
@@ -61,6 +61,7 @@ type ormService struct {
 }
 
 func createOrmService(
+	callMethodsOnInstances map[string]callMethodOnInstanceFn,
 	listInstanceToElementHashesListFn map[string]listInstanceToElementHashesListFn,
 	repository orms.Repository,
 	hashAdapter hash.Adapter,
@@ -69,6 +70,7 @@ func createOrmService(
 	txPtr *sql.Tx,
 ) orms.Service {
 	out := ormService{
+		callMethodsOnInstances:            callMethodsOnInstances,
 		listInstanceToElementHashesListFn: listInstanceToElementHashesListFn,
 		repository:                        repository,
 		hashAdapter:                       hashAdapter,
@@ -123,13 +125,13 @@ func (app *ormService) insertResource(
 	allConnections connections.Connections,
 ) error {
 	key := resource.Key()
-	keyName, keyValue, err := app.fetchFieldValue(ins, key, allResources, allConnections)
+	keyName, keyValue, err := app.fetchFieldValue(tableName, ins, key, allResources, allConnections)
 	if err != nil {
 		return err
 	}
 
 	fields := resource.Fields()
-	fieldValues, err := app.fetchFieldsValueList(ins, fields, allResources, allConnections)
+	fieldValues, connectionFieldValues, err := app.fetchFieldsValueList(tableName, ins, fields, allResources, allConnections)
 	if err != nil {
 		return err
 	}
@@ -160,227 +162,135 @@ func (app *ormService) insertResource(
 		return err
 	}
 
+	err = app.insertConnectionValues(
+		tableName,
+		ins,
+		fields,
+		allResources,
+		allConnections,
+		connectionFieldValues,
+	)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func (app *ormService) fetchFieldsValueList(
+func (app *ormService) insertConnectionValues(
+	table string,
 	ins orms.Instance,
 	fields resources.Fields,
 	allResources resources.Resources,
 	allConnections connections.Connections,
-) (map[string]interface{}, error) {
-	output := map[string]interface{}{}
+	fieldValues map[string]interface{},
+) error {
+	fromBytes := ins.Hash().Bytes()
 	list := fields.List()
 	for _, oneField := range list {
-		retName, retValue, err := app.fetchFieldValue(ins, oneField, allResources, allConnections)
+		kind := oneField.Kind()
+		if !kind.IsConnection() {
+			continue
+		}
+
+		fieldName := oneField.Name()
+		connectionName := kind.Connection()
+		if fnToCall, ok := app.listInstanceToElementHashesListFn[connectionName]; ok {
+			currentConnection, err := allConnections.Fetch(connectionName)
+			if err != nil {
+				return err
+			}
+
+			from := currentConnection.From()
+			to := currentConnection.To()
+			tableName := fmt.Sprintf(
+				"%s%s%s",
+				strings.Join(from.Path(), resourceNameDelimiter),
+				connectionNameDelimiter,
+				strings.Join(to.Path(), resourceNameDelimiter),
+			)
+
+			queryStr := fmt.Sprintf("INSERT INTO %s (%s, %s) VALUES (?, ?)", tableName, from.Name(), to.Name())
+			if casted, ok := fieldValues[fieldName].(orms.Instance); ok {
+				elements, err := fnToCall(casted)
+				if err != nil {
+					return err
+				}
+
+				for _, oneElement := range elements {
+					toBytes := oneElement.Bytes()
+					_, err = app.txPtr.Exec(queryStr, fromBytes, toBytes)
+					if err != nil {
+						return err
+					}
+				}
+
+				continue
+			}
+
+			str := fmt.Sprintf("field: %s: the field was expected to contain an Instance instance", oneField.Name())
+			return errors.New(str)
+		}
+
+		str := fmt.Sprintf("field: %s: there is no list fetcher for the connections (name: %s)", oneField.Name(), connectionName)
+		return errors.New(str)
+	}
+
+	return nil
+}
+
+func (app *ormService) fetchFieldsValueList(
+	table string,
+	ins orms.Instance,
+	fields resources.Fields,
+	allResources resources.Resources,
+	allConnections connections.Connections,
+) (map[string]interface{}, map[string]interface{}, error) {
+	output := map[string]interface{}{}
+	connectionsOutput := map[string]interface{}{}
+	list := fields.List()
+	for _, oneField := range list {
+		retName, retValue, err := app.fetchFieldValue(table, ins, oneField, allResources, allConnections)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		if oneField.Kind().IsConnection() {
+			connectionsOutput[retName] = retValue
 			continue
 		}
 
 		output[retName] = retValue
 	}
 
-	return output, nil
+	return output, connectionsOutput, nil
 }
 
 func (app *ormService) fetchFieldValue(
+	tableName string,
 	ins orms.Instance,
 	field resources.Field,
 	allResources resources.Resources,
 	allConnections connections.Connections,
 ) (string, interface{}, error) {
 	fieldName := field.Name()
-	if field.HasCondition() {
-		errorStr := ""
-		condition := field.Condition()
-		retConditionValue, err := app.callMethodsOnInstanceReturnOneValue(ins, []string{
-			condition,
-		}, &errorStr)
-
+	if toCallFn, ok := app.callMethodsOnInstances[tableName]; ok {
+		isExecuted, value, err := toCallFn(ins, fieldName)
 		if err != nil {
 			return "", nil, err
 		}
 
-		if errorStr != "" {
-			str := fmt.Sprintf("there was an error while calling the condition (%s) on the field (name: %s): %s", condition, fieldName, errorStr)
-			return "", nil, errors.New(str)
+		if !isExecuted {
+			return fieldName, nil, nil
 		}
 
-		if boolValue, ok := retConditionValue.(bool); ok {
-			if !boolValue {
-				return fieldName, nil, nil
-			}
-		}
+		return fieldName, value, nil
 	}
 
-	kind := field.Kind()
-	if kind.IsConnection() {
-		errorStr := ""
-		instanceRetriever := field.Retriever()
-		retIns, err := app.callMethodsOnInstanceReturnOneValue(ins, instanceRetriever, &errorStr)
-		if err != nil {
-			return "", nil, err
-		}
+	str := fmt.Sprintf("there is not Instance fetcher associated with the table: %s", tableName)
+	return "", nil, errors.New(str)
 
-		if errorStr != "" {
-			str := fmt.Sprintf("there was an error while calling the retriever (%s) on the field (name: %s): %s", strings.Join(instanceRetriever, ","), fieldName, errorStr)
-			return "", nil, errors.New(str)
-		}
-
-		connectionName := kind.Connection()
-		if allConnections == nil {
-			str := fmt.Sprintf("the field (name: %s) contains a connection (name: %s) but the skeleton contains no connections", fieldName, connectionName)
-			return "", nil, errors.New(str)
-		}
-
-		connection, err := allConnections.Fetch(connectionName)
-		if err != nil {
-			return "", nil, err
-		}
-
-		from := connection.From()
-		fromPath := from.Path()
-		fromName := from.Name()
-		to := connection.To()
-		toName := to.Name()
-		toPath := to.Path()
-
-		tableName := createConnectionTableName(
-			fromPath,
-			toPath,
-		)
-
-		fromHash := ins.Hash().Bytes()
-		queryStr := fmt.Sprintf("INSERT INTO %s (%s, %s) VALUES(?, ?)", tableName, fromName, toName)
-		if toHashesFn, ok := app.listInstanceToElementHashesListFn[toName]; ok {
-			retElementHashList, err := toHashesFn(retIns)
-			if err != nil {
-				return "", nil, err
-			}
-
-			for _, oneHash := range retElementHashList {
-				values := []interface{}{
-					fromHash,
-					oneHash.Bytes(),
-				}
-
-				_, err = app.txPtr.Exec(queryStr, values...)
-				if err != nil {
-					return "", nil, err
-				}
-			}
-
-			return "", nil, nil
-		}
-
-		str := fmt.Sprintf("the connection's to (name: %s) does not have a toHash method declared", toName)
-		return "", nil, errors.New(str)
-	}
-
-	if kind.IsReference() {
-		errorStr := ""
-		instanceRetriever := field.Retriever()
-		retIns, err := app.callMethodsOnInstanceReturnOneValue(ins, instanceRetriever, &errorStr)
-		if err != nil {
-			return "", nil, err
-		}
-
-		if errorStr != "" {
-			str := fmt.Sprintf("there was an error while calling the retriever (%s) on the field (name: %s): %s", strings.Join(instanceRetriever, ","), fieldName, errorStr)
-			return "", nil, errors.New(str)
-		}
-
-		if instance, ok := retIns.(orms.Instance); ok {
-			refPath := kind.Reference()
-			err = app.Insert(instance, refPath)
-			if err != nil {
-				return "", nil, err
-			}
-
-			return fieldName, instance.Hash().Bytes(), nil
-		}
-
-		return "", nil, errors.New("the reference was expected to contain an hash")
-	}
-
-	errorStr := ""
-	retriever := field.Retriever()
-	retValue, err := app.callMethodsOnInstanceReturnOneValue(ins, retriever, &errorStr)
-	if err != nil {
-		return "", nil, err
-	}
-
-	if errorStr != "" {
-		str := fmt.Sprintf("there was an error while calling the retriever (%s) on the field (name: %s): %s", strings.Join(retriever, ","), fieldName, errorStr)
-		return "", nil, errors.New(str)
-	}
-
-	native := kind.Native()
-	if native.IsSingle() {
-		return fieldName, retValue, nil
-	}
-
-	output := []byte{}
-	list := native.List()
-	value := list.Value()
-	delimiter := list.Delimiter()
-	if value == resources.NativeString {
-		if casted, ok := retValue.([]string); ok {
-			for _, oneElement := range casted {
-				output = append(output, []byte(oneElement)...)
-				output = append(output, []byte(delimiter)...)
-			}
-
-			return fieldName, output, nil
-		}
-
-		return "", errors.New("the field value was expected to contain a list of []string"), nil
-	}
-
-	if value == resources.NativeInteger {
-		panic(errors.New("fetchFieldValue: finish the integer transformation in orm service"))
-	}
-
-	if value == resources.NativeFloat {
-		panic(errors.New("fetchFieldValue: finish the float transformation in orm service"))
-	}
-
-	panic(errors.New("fetchFieldValue: finish the byte transformation in orm service"))
-
-}
-
-func (app *ormService) callMethodsOnInstanceReturnOneValue(
-	ins orms.Instance,
-	methods []string,
-	pErrorStr *string,
-) (interface{}, error) {
-	defer func() {
-		if r := recover(); r != nil {
-			value := fmt.Sprint(r)
-			*pErrorStr = value
-		}
-	}()
-
-	value := reflect.ValueOf(ins.(interface{}))
-	for _, oneMethod := range methods {
-		if value.IsNil() {
-			return nil, nil
-		}
-
-		retValues := value.MethodByName(oneMethod).Call([]reflect.Value{})
-		if len(retValues) != 1 {
-			str := fmt.Sprintf("%d values were returned, %d were expected, when calling the method (name %s) in the method chain (%s)", len(retValues), 1, oneMethod, strings.Join(methods, ","))
-			return nil, errors.New(str)
-		}
-
-		value = retValues[0]
-	}
-
-	return value.Interface(), nil
 }
 
 func (app *ormService) writeSchema(
