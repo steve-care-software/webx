@@ -1,4 +1,4 @@
-package links
+package origins
 
 import (
 	"reflect"
@@ -14,7 +14,7 @@ func TestOrigin_Success(t *testing.T) {
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
 	resource := resources.NewResourceForTests(*pFirstLayer)
 	operator := operators.NewOperatorWithAndForTests()
-	next := NewOriginValueWithResourceForTests(
+	next := NewValueWithResourceForTests(
 		resources.NewResourceForTests(*pSecondLayer),
 	)
 
@@ -46,11 +46,11 @@ func TestOrigin_Success(t *testing.T) {
 func TestOrigin__withoutResource_returnsError(t *testing.T) {
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
 	operator := operators.NewOperatorWithAndForTests()
-	next := NewOriginValueWithResourceForTests(
+	next := NewValueWithResourceForTests(
 		resources.NewResourceForTests(*pSecondLayer),
 	)
 
-	_, err := NewOriginBuilder().Create().WithOperator(operator).WithNext(next).Now()
+	_, err := NewBuilder().Create().WithOperator(operator).WithNext(next).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
@@ -61,11 +61,11 @@ func TestOrigin__withoutOperator_returnsError(t *testing.T) {
 	pFirstLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for first layer"))
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
 	resource := resources.NewResourceForTests(*pFirstLayer)
-	next := NewOriginValueWithResourceForTests(
+	next := NewValueWithResourceForTests(
 		resources.NewResourceForTests(*pSecondLayer),
 	)
 
-	_, err := NewOriginBuilder().Create().WithResource(resource).WithNext(next).Now()
+	_, err := NewBuilder().Create().WithResource(resource).WithNext(next).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
@@ -76,7 +76,7 @@ func TestOrigin__withoutNext_returnsError(t *testing.T) {
 	pFirstLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for first layer"))
 	resource := resources.NewResourceForTests(*pFirstLayer)
 	operator := operators.NewOperatorWithAndForTests()
-	_, err := NewOriginBuilder().Create().WithResource(resource).WithOperator(operator).Now()
+	_, err := NewBuilder().Create().WithResource(resource).WithOperator(operator).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

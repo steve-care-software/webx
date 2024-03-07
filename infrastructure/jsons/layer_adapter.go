@@ -16,7 +16,7 @@ type layerAdapter struct {
 	kindBuilder         layers.KindBuilder
 	instructionsBuilder layers.InstructionsBuilder
 	instructionBuilder  layers.InstructionBuilder
-	conditionResourceBuilder    layers.ConditionResourceBuilder
+	conditionBuilder    layers.ConditionBuilder
 	assignmentBuilder   layers.AssignmentBuilder
 	assignableBuilder   layers.AssignableBuilder
 	constantBuilder     layers.ConstantBuilder
@@ -32,7 +32,7 @@ func createLayerAdapter(
 	kindBuilder layers.KindBuilder,
 	instructionsBuilder layers.InstructionsBuilder,
 	instructionBuilder layers.InstructionBuilder,
-	conditionResourceBuilder layers.ConditionResourceBuilder,
+	conditionBuilder layers.ConditionBuilder,
 	assignmentBuilder layers.AssignmentBuilder,
 	assignableBuilder layers.AssignableBuilder,
 	constantBuilder layers.ConstantBuilder,
@@ -47,7 +47,7 @@ func createLayerAdapter(
 		kindBuilder:         kindBuilder,
 		instructionsBuilder: instructionsBuilder,
 		instructionBuilder:  instructionBuilder,
-		conditionResourceBuilder:    conditionResourceBuilder,
+		conditionBuilder:    conditionBuilder,
 		assignmentBuilder:   assignmentBuilder,
 		assignableBuilder:   assignableBuilder,
 		constantBuilder:     constantBuilder,
@@ -250,7 +250,7 @@ func (app *layerAdapter) toInstanceCondition(str structs.Condition) (layers.Cond
 		return nil, err
 	}
 
-	return app.conditionResourceBuilder.Create().
+	return app.conditionBuilder.Create().
 		WithVariable(str.Variable).
 		WithInstructions(instructions).
 		Now()

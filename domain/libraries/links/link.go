@@ -1,16 +1,19 @@
 package links
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
+)
 
 type link struct {
 	hash     hash.Hash
-	origin   Origin
+	origin   origins.Origin
 	elements Elements
 }
 
 func createLink(
 	hash hash.Hash,
-	origin Origin,
+	origin origins.Origin,
 	elements Elements,
 ) Link {
 	out := link{
@@ -28,7 +31,7 @@ func (obj *link) Hash() hash.Hash {
 }
 
 // Origin returns the origin
-func (obj *link) Origin() Origin {
+func (obj *link) Origin() origins.Origin {
 	return obj.origin
 }
 

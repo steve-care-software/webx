@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
 )
@@ -14,10 +15,10 @@ func TestLinks_withList_Success(t *testing.T) {
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
 	list := []Link{
 		NewLinkForTests(
-			NewOriginForTests(
+			origins.NewOriginForTests(
 				resources.NewResourceForTests(*pFirstLayer),
 				operators.NewOperatorWithAndForTests(),
-				NewOriginValueWithResourceForTests(
+				origins.NewValueWithResourceForTests(
 					resources.NewResourceForTests(*pSecondLayer),
 				),
 			),

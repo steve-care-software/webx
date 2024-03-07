@@ -5,6 +5,9 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
+	origins_resources "github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
 )
 
 // NewLibraryAdapter creates a new library adapter
@@ -38,7 +41,7 @@ func NewLayerAdapter() layers.LayerAdapter {
 	kindBuilder := layers.NewKindBuilder()
 	instructionsBuilder := layers.NewInstructionsBuilder()
 	instructionBuilder := layers.NewInstructionBuilder()
-	conditionResourceBuilder := layers.NewConditionResourceBuilder()
+	conditionBuilder := layers.NewConditionBuilder()
 	assignmentBuilder := layers.NewAssignmentBuilder()
 	assignableBuilder := layers.NewAssignableBuilder()
 	constantBuilder := layers.NewConstantBuilder()
@@ -52,7 +55,7 @@ func NewLayerAdapter() layers.LayerAdapter {
 		kindBuilder,
 		instructionsBuilder,
 		instructionBuilder,
-		conditionResourceBuilder,
+		conditionBuilder,
 		assignmentBuilder,
 		assignableBuilder,
 		constantBuilder,
@@ -78,25 +81,25 @@ func NewLinkAdapter() links.LinkAdapter {
 	linkBuilder := links.NewLinkBuilder()
 	elementsBuilder := links.NewElementsBuilder()
 	elementBuilder := links.NewElementBuilder()
-	conditionResourceBuilder := links.NewConditionResourceBuilder()
+	conditionBuilder := links.NewConditionBuilder()
 	conditionValueBuilder := links.NewConditionValueBuilder()
 	conditionResourceBuilder := links.NewConditionResourceBuilder()
-	originBuilder := links.NewOriginBuilder()
-	originValueBuilder := links.NewOriginValueBuilder()
-	originBuilder := links.NewBuilder()
-	operatorBuilder := links.NewOperatorBuilder()
+	originBuilder := origins.NewBuilder()
+	originValueBuilder := origins.NewValueBuilder()
+	originResourceBuilder := origins_resources.NewBuilder()
+	operatorBuilder := operators.NewBuilder()
 	return createLinkAdapter(
 		hashAdapter,
 		builder,
 		linkBuilder,
 		elementsBuilder,
 		elementBuilder,
-		conditionResourceBuilder,
+		conditionBuilder,
 		conditionValueBuilder,
 		conditionResourceBuilder,
 		originBuilder,
 		originValueBuilder,
-		originBuilder,
+		originResourceBuilder,
 		operatorBuilder,
 	)
 }

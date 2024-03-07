@@ -112,7 +112,7 @@ func NewInstructionWithStopForTests() Instruction {
 
 // NewConditionForTest creates a new condition for tests
 func NewConditionForTest(variable string, instructions Instructions) Condition {
-	ins, err := NewConditionResourceBuilder().Create().WithVariable(variable).WithInstructions(instructions).Now()
+	ins, err := NewConditionBuilder().Create().WithVariable(variable).WithInstructions(instructions).Now()
 	if err != nil {
 		panic(err)
 	}

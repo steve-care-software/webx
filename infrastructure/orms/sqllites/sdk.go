@@ -12,6 +12,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
 	links_resources "github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
 	"github.com/steve-care-software/datastencil/domain/orms"
@@ -65,7 +66,7 @@ func NewOrmRepository(
 				if pIns, ok := value.(*orms.Instance); ok {
 					if pIns != nil {
 						ins := *pIns
-						builder.WithOrigin(ins.(links.Origin))
+						builder.WithOrigin(ins.(origins.Origin))
 					}
 				}
 			}
@@ -158,7 +159,7 @@ func NewOrmRepository(
 			return builder.Now()
 		},
 		"library_link_origin": func(values map[string]interface{}) (orms.Instance, error) {
-			builder := links.NewOriginBuilder()
+			builder := origins.NewBuilder()
 			if value, ok := values["resource"]; ok {
 				if pIns, ok := value.(*orms.Instance); ok {
 					if pIns != nil {
@@ -181,7 +182,7 @@ func NewOrmRepository(
 				if pIns, ok := value.(*orms.Instance); ok {
 					if pIns != nil {
 						ins := *pIns
-						builder.WithNext(ins.(links.OriginValue))
+						builder.WithNext(ins.(origins.Value))
 					}
 				}
 			}
@@ -189,7 +190,7 @@ func NewOrmRepository(
 			return builder.Now()
 		},
 		"library_link_origin_value": func(values map[string]interface{}) (orms.Instance, error) {
-			builder := links.NewOriginValueBuilder()
+			builder := origins.NewValueBuilder()
 			if value, ok := values["resource"]; ok {
 				if pIns, ok := value.(*orms.Instance); ok {
 					if pIns != nil {
@@ -203,7 +204,7 @@ func NewOrmRepository(
 				if pIns, ok := value.(*orms.Instance); ok {
 					if pIns != nil {
 						ins := *pIns
-						builder.WithOrigin(ins.(links.Origin))
+						builder.WithOrigin(ins.(origins.Origin))
 					}
 				}
 			}
@@ -573,7 +574,7 @@ func NewOrmService(
 			return false, nil, errors.New("the Instance was expected to contain a ConditionResource instance")
 		},
 		"library_link_origin": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
-			if casted, ok := ins.(links.Origin); ok {
+			if casted, ok := ins.(origins.Origin); ok {
 				switch fieldName {
 				case "hash":
 					return true, casted.Hash().Bytes(), nil
@@ -592,7 +593,7 @@ func NewOrmService(
 			return false, nil, errors.New("the Instance was expected to contain an Origin instance")
 		},
 		"library_link_origin_value": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
-			if casted, ok := ins.(links.OriginValue); ok {
+			if casted, ok := ins.(origins.Value); ok {
 				switch fieldName {
 				case "hash":
 					return true, casted.Hash().Bytes(), nil
@@ -614,7 +615,7 @@ func NewOrmService(
 				return false, nil, errors.New(str)
 			}
 
-			return false, nil, errors.New("the Instance was expected to contain an OriginValue instance")
+			return false, nil, errors.New("the Instance was expected to contain an Value instance")
 		},
 		"library_link_origin_resource": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
 			if casted, ok := ins.(links_resources.Resource); ok {

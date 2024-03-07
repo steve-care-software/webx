@@ -1,4 +1,4 @@
-package links
+package origins
 
 import (
 	"errors"
@@ -8,17 +8,17 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
 )
 
-type originBuilder struct {
+type builder struct {
 	hashAdapter hash.Adapter
 	resource    resources.Resource
 	operator    operators.Operator
-	next        OriginValue
+	next        Value
 }
 
-func createOriginBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) OriginBuilder {
-	out := originBuilder{
+) Builder {
+	out := builder{
 		hashAdapter: hashAdapter,
 		resource:    nil,
 		operator:    nil,
@@ -29,32 +29,32 @@ func createOriginBuilder(
 }
 
 // Create initializes the builder
-func (app *originBuilder) Create() OriginBuilder {
-	return createOriginBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithResource adds a resource builder
-func (app *originBuilder) WithResource(resource resources.Resource) OriginBuilder {
+func (app *builder) WithResource(resource resources.Resource) Builder {
 	app.resource = resource
 	return app
 }
 
 // WithOperator adds an operator builder
-func (app *originBuilder) WithOperator(operator operators.Operator) OriginBuilder {
+func (app *builder) WithOperator(operator operators.Operator) Builder {
 	app.operator = operator
 	return app
 }
 
 // WithNext adds a next value to the builder builder
-func (app *originBuilder) WithNext(next OriginValue) OriginBuilder {
+func (app *builder) WithNext(next Value) Builder {
 	app.next = next
 	return app
 }
 
 // Now builds a new Origin instance
-func (app *originBuilder) Now() (Origin, error) {
+func (app *builder) Now() (Origin, error) {
 	if app.resource == nil {
 		return nil, errors.New("the resource is mandatory in order to build an Origin instance")
 	}

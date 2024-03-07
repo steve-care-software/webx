@@ -6,16 +6,16 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
-type conditionResourceBuilder struct {
+type conditionBuilder struct {
 	hashAdapter  hash.Adapter
 	variable     string
 	instructions Instructions
 }
 
-func createConditionResourceBuilder(
+func createConditionBuilder(
 	hashAdapter hash.Adapter,
-) ConditionResourceBuilder {
-	out := conditionResourceBuilder{
+) ConditionBuilder {
+	out := conditionBuilder{
 		hashAdapter:  hashAdapter,
 		variable:     "",
 		instructions: nil,
@@ -25,26 +25,26 @@ func createConditionResourceBuilder(
 }
 
 // Create initializes the builder
-func (app *conditionResourceBuilder) Create() ConditionResourceBuilder {
-	return createConditionResourceBuilder(
+func (app *conditionBuilder) Create() ConditionBuilder {
+	return createConditionBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithVariable adds a variable to the builder
-func (app *conditionResourceBuilder) WithVariable(variable string) ConditionResourceBuilder {
+func (app *conditionBuilder) WithVariable(variable string) ConditionBuilder {
 	app.variable = variable
 	return app
 }
 
 // WithInstructions add instructions to the builder
-func (app *conditionResourceBuilder) WithInstructions(instructions Instructions) ConditionResourceBuilder {
+func (app *conditionBuilder) WithInstructions(instructions Instructions) ConditionBuilder {
 	app.instructions = instructions
 	return app
 }
 
 // Now builds a new Condition instance
-func (app *conditionResourceBuilder) Now() (Condition, error) {
+func (app *conditionBuilder) Now() (Condition, error) {
 	if app.variable == "" {
 		return nil, errors.New("the variable is mandatory in order to build a Condition instance")
 	}

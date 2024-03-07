@@ -2,8 +2,7 @@ package links
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
-	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
 )
 
 // NewLinksForTests creates a new links for tests
@@ -17,7 +16,7 @@ func NewLinksForTests(list []Link) Links {
 }
 
 // NewLinkForTests creates new link for tests
-func NewLinkForTests(origin Origin, elements Elements) Link {
+func NewLinkForTests(origin origins.Origin, elements Elements) Link {
 	ins, err := NewLinkBuilder().Create().WithOrigin(origin).WithElements(elements).Now()
 	if err != nil {
 		panic(err)
@@ -109,36 +108,6 @@ func NewConditionResourceWithIsRaisedInLayerForTests(code uint) ConditionResourc
 // NewConditionResourceForTests creates a new condition resource for tests
 func NewConditionResourceForTests(code uint) ConditionResource {
 	ins, err := NewConditionResourceBuilder().Create().WithCode(code).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewOriginForTests creates a new origin for tests
-func NewOriginForTests(resource resources.Resource, operator operators.Operator, next OriginValue) Origin {
-	ins, err := NewOriginBuilder().Create().WithResource(resource).WithOperator(operator).WithNext(next).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewOriginValueWithOriginForTests creates a new origin value with origin for tests
-func NewOriginValueWithOriginForTests(origin Origin) OriginValue {
-	ins, err := NewOriginValueBuilder().Create().WithOrigin(origin).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewOriginValueWithResourceForTests creates a new origin value with resource for tests
-func NewOriginValueWithResourceForTests(resource resources.Resource) OriginValue {
-	ins, err := NewOriginValueBuilder().Create().WithResource(resource).Now()
 	if err != nil {
 		panic(err)
 	}

@@ -2,8 +2,7 @@ package links
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
-	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
 )
 
 // NewBuilder creates a new builder instance
@@ -62,22 +61,6 @@ func NewConditionResourceBuilder() ConditionResourceBuilder {
 	)
 }
 
-// NewOriginBuilder creates a new origin builder
-func NewOriginBuilder() OriginBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createOriginBuilder(
-		hashAdapter,
-	)
-}
-
-// NewOriginValueBuilder creates a new origin value builder
-func NewOriginValueBuilder() OriginValueBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createOriginValueBuilder(
-		hashAdapter,
-	)
-}
-
 // Adapter represents the links adapter
 type Adapter interface {
 	ToData(ins Links) ([]byte, error)
@@ -113,7 +96,7 @@ type LinkAdapter interface {
 // LinkBuilder represents a link builder
 type LinkBuilder interface {
 	Create() LinkBuilder
-	WithOrigin(origin Origin) LinkBuilder
+	WithOrigin(origin origins.Origin) LinkBuilder
 	WithElements(elements Elements) LinkBuilder
 	Now() (Link, error)
 }
@@ -121,7 +104,7 @@ type LinkBuilder interface {
 // Link represents a link
 type Link interface {
 	Hash() hash.Hash
-	Origin() Origin
+	Origin() origins.Origin
 	Elements() Elements
 }
 
@@ -206,38 +189,4 @@ type ConditionResource interface {
 	Hash() hash.Hash
 	Code() uint
 	IsRaisedInLayer() bool
-}
-
-// OriginBuilder represents the origin builder
-type OriginBuilder interface {
-	Create() OriginBuilder
-	WithResource(resource resources.Resource) OriginBuilder
-	WithOperator(operator operators.Operator) OriginBuilder
-	WithNext(next OriginValue) OriginBuilder
-	Now() (Origin, error)
-}
-
-// Origin represents an origin
-type Origin interface {
-	Hash() hash.Hash
-	Resource() resources.Resource
-	Operator() operators.Operator
-	Next() OriginValue
-}
-
-// OriginValueBuilder represents the originValue builder
-type OriginValueBuilder interface {
-	Create() OriginValueBuilder
-	WithResource(resource resources.Resource) OriginValueBuilder
-	WithOrigin(origin Origin) OriginValueBuilder
-	Now() (OriginValue, error)
-}
-
-// OriginValue represents an origin value
-type OriginValue interface {
-	Hash() hash.Hash
-	IsResource() bool
-	Resource() resources.Resource
-	IsOrigin() bool
-	Origin() Origin
 }

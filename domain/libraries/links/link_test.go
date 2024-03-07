@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
 )
@@ -17,10 +18,10 @@ func TestLink_Success(t *testing.T) {
 
 	pFirstLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for first layer"))
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
-	origin := NewOriginForTests(
+	origin := origins.NewOriginForTests(
 		resources.NewResourceForTests(*pFirstLayer),
 		operators.NewOperatorWithAndForTests(),
-		NewOriginValueWithResourceForTests(
+		origins.NewValueWithResourceForTests(
 			resources.NewResourceForTests(*pSecondLayer),
 		),
 	)
@@ -43,10 +44,10 @@ func TestLink_Success(t *testing.T) {
 func TestLink_withoutElements_returnsError(t *testing.T) {
 	pFirstLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for first layer"))
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
-	origin := NewOriginForTests(
+	origin := origins.NewOriginForTests(
 		resources.NewResourceForTests(*pFirstLayer),
 		operators.NewOperatorWithAndForTests(),
-		NewOriginValueWithResourceForTests(
+		origins.NewValueWithResourceForTests(
 			resources.NewResourceForTests(*pSecondLayer),
 		),
 	)

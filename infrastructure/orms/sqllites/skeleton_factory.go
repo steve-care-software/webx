@@ -312,7 +312,7 @@ func (app *skeletonFactory) concreteLibraryLinkOrigin() resources.Resource {
 		app.resources([]resources.Resource{
 			app.concreteLibraryLinkResource(),
 			app.concreteLibraryLinkOriginOperator(),
-			app.concreteLibraryLinkOriginValue(),
+			app.concreteLibraryLinkValue(),
 		}),
 	)
 }
@@ -389,7 +389,7 @@ func (app *skeletonFactory) concreteLibraryLinkOriginOperator() resources.Resour
 	)
 }
 
-func (app *skeletonFactory) concreteLibraryLinkOriginValue() resources.Resource {
+func (app *skeletonFactory) concreteLibraryLinkValue() resources.Resource {
 	return app.resource(
 		"value",
 		app.field(

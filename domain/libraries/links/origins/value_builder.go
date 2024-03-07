@@ -1,4 +1,4 @@
-package links
+package origins
 
 import (
 	"errors"
@@ -7,16 +7,16 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
 )
 
-type originValueBuilder struct {
+type valueBuilder struct {
 	hashAdapter hash.Adapter
 	resource    resources.Resource
 	origin      Origin
 }
 
-func createOriginValueBuilder(
+func createValueBuilder(
 	hashAdapter hash.Adapter,
-) OriginValueBuilder {
-	out := originValueBuilder{
+) ValueBuilder {
+	out := valueBuilder{
 		hashAdapter: hashAdapter,
 		resource:    nil,
 		origin:      nil,
@@ -26,26 +26,26 @@ func createOriginValueBuilder(
 }
 
 // Create initializes the builder
-func (app *originValueBuilder) Create() OriginValueBuilder {
-	return createOriginValueBuilder(
+func (app *valueBuilder) Create() ValueBuilder {
+	return createValueBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithResource adds a resource to the builder
-func (app *originValueBuilder) WithResource(resource resources.Resource) OriginValueBuilder {
+func (app *valueBuilder) WithResource(resource resources.Resource) ValueBuilder {
 	app.resource = resource
 	return app
 }
 
 // WithOrigin adds an origin to the builder
-func (app *originValueBuilder) WithOrigin(origin Origin) OriginValueBuilder {
+func (app *valueBuilder) WithOrigin(origin Origin) ValueBuilder {
 	app.origin = origin
 	return app
 }
 
-// Now builds a new OriginValue instance
-func (app *originValueBuilder) Now() (OriginValue, error) {
+// Now builds a new Value instance
+func (app *valueBuilder) Now() (Value, error) {
 	data := [][]byte{}
 	if app.resource != nil {
 		data = append(data, app.resource.Hash().Bytes())
@@ -56,7 +56,7 @@ func (app *originValueBuilder) Now() (OriginValue, error) {
 	}
 
 	if len(data) <= 0 {
-		return nil, errors.New("the OriginValue is invalid")
+		return nil, errors.New("the Value is invalid")
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes(data)
@@ -65,8 +65,8 @@ func (app *originValueBuilder) Now() (OriginValue, error) {
 	}
 
 	if app.resource != nil {
-		return createOriginValueWithResource(*pHash, app.resource), nil
+		return createValueWithResource(*pHash, app.resource), nil
 	}
 
-	return createOriginValueWithOrigin(*pHash, app.origin), nil
+	return createValueWithOrigin(*pHash, app.origin), nil
 }

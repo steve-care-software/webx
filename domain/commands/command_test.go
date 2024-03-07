@@ -4,10 +4,13 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/libraries/layers"
-	"github.com/steve-care-software/datastencil/domain/libraries/links"
 	"github.com/steve-care-software/datastencil/domain/commands/results"
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/libraries/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
 )
 
 func TestCommand_Success(t *testing.T) {
@@ -87,11 +90,11 @@ func TestCommand_withParent_Success(t *testing.T) {
 	parent := NewLinkForTests(
 		[]byte("this is an input"),
 		links.NewLinkForTests(
-			links.NewOriginForTests(
-				links.NewResourceForTests(*pFirstLayer),
-				links.NewOperatorWithAndForTests(),
-				links.NewOriginValueWithResourceForTests(
-					links.NewResourceForTests(*pSecondLayer),
+			origins.NewOriginForTests(
+				resources.NewResourceForTests(*pFirstLayer),
+				operators.NewOperatorWithAndForTests(),
+				origins.NewValueWithResourceForTests(
+					resources.NewResourceForTests(*pSecondLayer),
 				),
 			),
 			links.NewElementsForTests([]links.Element{

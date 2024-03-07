@@ -52,10 +52,10 @@ func NewInstructionBuilder() InstructionBuilder {
 	)
 }
 
-// NewConditionResourceBuilder creates a new condition builder
-func NewConditionResourceBuilder() ConditionResourceBuilder {
+// NewConditionBuilder creates a new condition builder
+func NewConditionBuilder() ConditionBuilder {
 	hashAdapter := hash.NewAdapter()
-	return createConditionResourceBuilder(
+	return createConditionBuilder(
 		hashAdapter,
 	)
 }
@@ -221,11 +221,11 @@ type Instruction interface {
 	Assignment() Assignment
 }
 
-// ConditionResourceBuilder represents a condition builder
-type ConditionResourceBuilder interface {
-	Create() ConditionResourceBuilder
-	WithVariable(variable string) ConditionResourceBuilder
-	WithInstructions(instructions Instructions) ConditionResourceBuilder
+// ConditionBuilder represents a condition builder
+type ConditionBuilder interface {
+	Create() ConditionBuilder
+	WithVariable(variable string) ConditionBuilder
+	WithInstructions(instructions Instructions) ConditionBuilder
 	Now() (Condition, error)
 }
 

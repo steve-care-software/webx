@@ -5,7 +5,10 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
-	structs "github.com/steve-care-software/datastencil/infrastructure/jsons/structs/libraries/layers/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
+	origins_resources "github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
+	structs "github.com/steve-care-software/datastencil/infrastructure/jsons/structs/libraries/links"
 )
 
 type linkAdapter struct {
@@ -14,13 +17,13 @@ type linkAdapter struct {
 	linkBuilder              links.LinkBuilder
 	elementsBuilder          links.ElementsBuilder
 	elementBuilder           links.ElementBuilder
-	conditionResourceBuilder         links.ConditionResourceBuilder
+	conditionBuilder         links.ConditionBuilder
 	conditionValueBuilder    links.ConditionValueBuilder
 	conditionResourceBuilder links.ConditionResourceBuilder
-	originBuilder            links.OriginBuilder
-	originValueBuilder       links.OriginValueBuilder
-	originBuilder    links.Builder
-	operatorBuilder          links.OperatorBuilder
+	originBuilder            origins.Builder
+	originValueBuilder       origins.ValueBuilder
+	originResourceBuilder    origins_resources.Builder
+	operatorBuilder          operators.Builder
 }
 
 func createLinkAdapter(
@@ -29,13 +32,13 @@ func createLinkAdapter(
 	linkBuilder links.LinkBuilder,
 	elementsBuilder links.ElementsBuilder,
 	elementBuilder links.ElementBuilder,
-	conditionResourceBuilder links.ConditionResourceBuilder,
+	conditionBuilder links.ConditionBuilder,
 	conditionValueBuilder links.ConditionValueBuilder,
 	conditionResourceBuilder links.ConditionResourceBuilder,
-	originBuilder links.OriginBuilder,
-	originValueBuilder links.OriginValueBuilder,
-	originBuilder links.Builder,
-	operatorBuilder links.OperatorBuilder,
+	originBuilder origins.Builder,
+	originValueBuilder origins.ValueBuilder,
+	originResourceBuilder origins_resources.Builder,
+	operatorBuilder operators.Builder,
 ) links.LinkAdapter {
 	out := linkAdapter{
 		hashAdapter:              hashAdapter,
@@ -43,12 +46,12 @@ func createLinkAdapter(
 		linkBuilder:              linkBuilder,
 		elementsBuilder:          elementsBuilder,
 		elementBuilder:           elementBuilder,
-		conditionResourceBuilder:         conditionResourceBuilder,
+		conditionBuilder:         conditionBuilder,
 		conditionValueBuilder:    conditionValueBuilder,
 		conditionResourceBuilder: conditionResourceBuilder,
 		originBuilder:            originBuilder,
 		originValueBuilder:       originValueBuilder,
-		originBuilder:    originBuilder,
+		originResourceBuilder:    originResourceBuilder,
 		operatorBuilder:          operatorBuilder,
 	}
 
@@ -162,7 +165,7 @@ func (app *linkAdapter) toInstanceCondition(str structs.Condition) (links.Condit
 		return nil, err
 	}
 
-	builder := app.conditionResourceBuilder.Create().WithResource(resource)
+	builder := app.conditionBuilder.Create().WithResource(resource)
 	if str.Next != nil {
 		value, err := app.toInstanceConditionValue(*str.Next)
 		if err != nil {
@@ -242,8 +245,8 @@ func (app *linkAdapter) toStructConditionResource(ins links.ConditionResource) s
 	}
 }
 
-func (app *linkAdapter) toInstanceOrigin(str structs.Origin) (links.Origin, error) {
-	resource, err := app.toInstanceResource(str.Resource)
+func (app *linkAdapter) toInstanceOrigin(str structs.Origin) (origins.Origin, error) {
+	resource, err := app.toInstanceOriginResource(str.Resource)
 	if err != nil {
 		return nil, err
 	}
@@ -265,18 +268,18 @@ func (app *linkAdapter) toInstanceOrigin(str structs.Origin) (links.Origin, erro
 		Now()
 }
 
-func (app *linkAdapter) toStructOrigin(ins links.Origin) structs.Origin {
+func (app *linkAdapter) toStructOrigin(ins origins.Origin) structs.Origin {
 	return structs.Origin{
-		Resource: app.toStructResource(ins.Resource()),
+		Resource: app.toStructOriginResource(ins.Resource()),
 		Operator: app.toStructOperator(ins.Operator()),
 		Next:     app.toStructOriginValue(ins.Next()),
 	}
 }
 
-func (app *linkAdapter) toInstanceOriginValue(str structs.OriginValue) (links.OriginValue, error) {
+func (app *linkAdapter) toInstanceOriginValue(str structs.OriginValue) (origins.Value, error) {
 	builder := app.originValueBuilder.Create()
 	if str.Resource != nil {
-		originValue, err := app.toInstanceResource(*str.Resource)
+		originValue, err := app.toInstanceOriginResource(*str.Resource)
 		if err != nil {
 			return nil, err
 		}
@@ -296,10 +299,10 @@ func (app *linkAdapter) toInstanceOriginValue(str structs.OriginValue) (links.Or
 	return builder.Now()
 }
 
-func (app *linkAdapter) toStructOriginValue(ins links.OriginValue) structs.OriginValue {
+func (app *linkAdapter) toStructOriginValue(ins origins.Value) structs.OriginValue {
 	output := structs.OriginValue{}
 	if ins.IsResource() {
-		resource := app.toStructResource(ins.Resource())
+		resource := app.toStructOriginResource(ins.Resource())
 		output.Resource = &resource
 	}
 
@@ -311,13 +314,13 @@ func (app *linkAdapter) toStructOriginValue(ins links.OriginValue) structs.Origi
 	return output
 }
 
-func (app *linkAdapter) toInstanceResource(str structs.Resource) (links.Resource, error) {
+func (app *linkAdapter) toInstanceOriginResource(str structs.Resource) (origins_resources.Resource, error) {
 	pHash, err := app.hashAdapter.FromString(str.Layer)
 	if err != nil {
 		return nil, err
 	}
 
-	builder := app.originBuilder.Create().WithLayer(*pHash)
+	builder := app.originResourceBuilder.Create().WithLayer(*pHash)
 	if str.IsMandatory {
 		builder.IsMandatory()
 	}
@@ -325,14 +328,14 @@ func (app *linkAdapter) toInstanceResource(str structs.Resource) (links.Resource
 	return builder.Now()
 }
 
-func (app *linkAdapter) toStructResource(ins links.Resource) structs.Resource {
+func (app *linkAdapter) toStructOriginResource(ins origins_resources.Resource) structs.Resource {
 	return structs.Resource{
 		Layer:       ins.Layer().String(),
 		IsMandatory: ins.IsMandatory(),
 	}
 }
 
-func (app *linkAdapter) toInstanceOperator(str structs.Operator) (links.Operator, error) {
+func (app *linkAdapter) toInstanceOperator(str structs.Operator) (operators.Operator, error) {
 	builder := app.operatorBuilder.Create()
 	if str.IsAnd {
 		builder.IsAnd()
@@ -349,7 +352,7 @@ func (app *linkAdapter) toInstanceOperator(str structs.Operator) (links.Operator
 	return builder.Now()
 }
 
-func (app *linkAdapter) toStructOperator(ins links.Operator) structs.Operator {
+func (app *linkAdapter) toStructOperator(ins operators.Operator) structs.Operator {
 	return structs.Operator{
 		IsAnd: ins.IsAnd(),
 		IsOr:  ins.IsOr(),

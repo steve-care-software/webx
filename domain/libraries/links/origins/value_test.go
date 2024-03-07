@@ -1,4 +1,4 @@
-package links
+package origins
 
 import (
 	"reflect"
@@ -9,22 +9,22 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
 )
 
-func TestOriginValue_withResource_Success(t *testing.T) {
+func TestValue_withResource_Success(t *testing.T) {
 	pLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
 	originResource := resources.NewResourceForTests(*pLayer)
-	originValue := NewOriginValueWithResourceForTests(originResource)
+	value := NewValueWithResourceForTests(originResource)
 
-	if !originValue.IsResource() {
-		t.Errorf("the originValue was expected to contain a resource")
+	if !value.IsResource() {
+		t.Errorf("the value was expected to contain a resource")
 		return
 	}
 
-	if originValue.IsOrigin() {
-		t.Errorf("the originValue was expected to NOT contain a resource")
+	if value.IsOrigin() {
+		t.Errorf("the value was expected to NOT contain a resource")
 		return
 	}
 
-	retResource := originValue.Resource()
+	retResource := value.Resource()
 	if !reflect.DeepEqual(originResource, retResource) {
 		t.Errorf("the resource is invalid")
 		return
@@ -32,29 +32,29 @@ func TestOriginValue_withResource_Success(t *testing.T) {
 
 }
 
-func TestOriginValue_withOrigin_Success(t *testing.T) {
+func TestValue_withOrigin_Success(t *testing.T) {
 	pFirstLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for first layer"))
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
 	origin := NewOriginForTests(
 		resources.NewResourceForTests(*pFirstLayer),
 		operators.NewOperatorWithAndForTests(),
-		NewOriginValueWithResourceForTests(
+		NewValueWithResourceForTests(
 			resources.NewResourceForTests(*pSecondLayer),
 		),
 	)
-	originValue := NewOriginValueWithOriginForTests(origin)
+	value := NewValueWithOriginForTests(origin)
 
-	if originValue.IsResource() {
-		t.Errorf("the originValue was expected to NOT contain a resource")
+	if value.IsResource() {
+		t.Errorf("the value was expected to NOT contain a resource")
 		return
 	}
 
-	if !originValue.IsOrigin() {
-		t.Errorf("the originValue was expected to contain a resource")
+	if !value.IsOrigin() {
+		t.Errorf("the value was expected to contain a resource")
 		return
 	}
 
-	retOrigin := originValue.Origin()
+	retOrigin := value.Origin()
 	if !reflect.DeepEqual(origin, retOrigin) {
 		t.Errorf("the origin is invalid")
 		return
@@ -62,8 +62,8 @@ func TestOriginValue_withOrigin_Success(t *testing.T) {
 
 }
 
-func TestOriginValue_withoutParam_returnsError(t *testing.T) {
-	_, err := NewOriginValueBuilder().Create().Now()
+func TestValue_withoutParam_returnsError(t *testing.T) {
+	_, err := NewValueBuilder().Create().Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
