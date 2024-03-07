@@ -2,6 +2,7 @@ package links
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
 )
 
 // NewBuilder creates a new builder instance
@@ -80,14 +81,6 @@ func NewOriginValueBuilder() OriginValueBuilder {
 func NewOriginResourceBuilder() OriginResourceBuilder {
 	hashAdapter := hash.NewAdapter()
 	return createOriginResourceBuilder(
-		hashAdapter,
-	)
-}
-
-// NewOperatorBuilder creates a new operator builder
-func NewOperatorBuilder() OperatorBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createOperatorBuilder(
 		hashAdapter,
 	)
 }
@@ -226,7 +219,7 @@ type ConditionResource interface {
 type OriginBuilder interface {
 	Create() OriginBuilder
 	WithResource(resource OriginResource) OriginBuilder
-	WithOperator(operator Operator) OriginBuilder
+	WithOperator(operator operators.Operator) OriginBuilder
 	WithNext(next OriginValue) OriginBuilder
 	Now() (Origin, error)
 }
@@ -235,7 +228,7 @@ type OriginBuilder interface {
 type Origin interface {
 	Hash() hash.Hash
 	Resource() OriginResource
-	Operator() Operator
+	Operator() operators.Operator
 	Next() OriginValue
 }
 
@@ -270,21 +263,4 @@ type OriginResource interface {
 	Hash() hash.Hash
 	Layer() hash.Hash
 	IsMandatory() bool
-}
-
-// OperatorBuilder represents the operator builder
-type OperatorBuilder interface {
-	Create() OperatorBuilder
-	IsAnd() OperatorBuilder
-	IsOr() OperatorBuilder
-	IsXor() OperatorBuilder
-	Now() (Operator, error)
-}
-
-// Operator represents the operator
-type Operator interface {
-	Hash() hash.Hash
-	IsAnd() bool
-	IsOr() bool
-	IsXor() bool
 }

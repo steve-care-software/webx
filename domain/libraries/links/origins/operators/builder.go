@@ -1,4 +1,4 @@
-package links
+package operators
 
 import (
 	"errors"
@@ -6,17 +6,17 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
-type operatorBuilder struct {
+type builder struct {
 	hashAdapter hash.Adapter
 	isAnd       bool
 	isOr        bool
 	isXor       bool
 }
 
-func createOperatorBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) OperatorBuilder {
-	out := operatorBuilder{
+) Builder {
+	out := builder{
 		hashAdapter: hashAdapter,
 		isAnd:       false,
 		isOr:        false,
@@ -27,32 +27,32 @@ func createOperatorBuilder(
 }
 
 // Create initializes the builder
-func (app *operatorBuilder) Create() OperatorBuilder {
-	return createOperatorBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // IsAnd flags the builder as an and
-func (app *operatorBuilder) IsAnd() OperatorBuilder {
+func (app *builder) IsAnd() Builder {
 	app.isAnd = true
 	return app
 }
 
 // IsOr flags the builder as an or
-func (app *operatorBuilder) IsOr() OperatorBuilder {
+func (app *builder) IsOr() Builder {
 	app.isOr = true
 	return app
 }
 
 // IsXor flags the builder as a xor
-func (app *operatorBuilder) IsXor() OperatorBuilder {
+func (app *builder) IsXor() Builder {
 	app.isXor = true
 	return app
 }
 
 // Now builds a new Operator instance
-func (app *operatorBuilder) Now() (Operator, error) {
+func (app *builder) Now() (Operator, error) {
 	data := [][]byte{}
 	if app.isAnd {
 		data = append(data, []byte("isAnd"))

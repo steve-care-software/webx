@@ -1,6 +1,9 @@
 package links
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
+)
 
 // NewLinksForTests creates a new links for tests
 func NewLinksForTests(list []Link) Links {
@@ -113,7 +116,7 @@ func NewConditionResourceForTests(code uint) ConditionResource {
 }
 
 // NewOriginForTests creates a new origin for tests
-func NewOriginForTests(resource OriginResource, operator Operator, next OriginValue) Origin {
+func NewOriginForTests(resource OriginResource, operator operators.Operator, next OriginValue) Origin {
 	ins, err := NewOriginBuilder().Create().WithResource(resource).WithOperator(operator).WithNext(next).Now()
 	if err != nil {
 		panic(err)
@@ -155,36 +158,6 @@ func NewOriginResourceWithIsMandatoryForTests(layer hash.Hash) OriginResource {
 // NewOriginResourceForTests creates a new origin resource for tests
 func NewOriginResourceForTests(layer hash.Hash) OriginResource {
 	ins, err := NewOriginResourceBuilder().Create().WithLayer(layer).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewOperatorWithXOrForTests creates a new operator with xor for tests
-func NewOperatorWithXOrForTests() Operator {
-	ins, err := NewOperatorBuilder().Create().IsXor().Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewOperatorWithOrForTests creates a new operator with or for tests
-func NewOperatorWithOrForTests() Operator {
-	ins, err := NewOperatorBuilder().Create().IsOr().Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewOperatorWithAndForTests creates a new operator with and for tests
-func NewOperatorWithAndForTests() Operator {
-	ins, err := NewOperatorBuilder().Create().IsAnd().Now()
 	if err != nil {
 		panic(err)
 	}

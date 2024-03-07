@@ -4,12 +4,13 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
 )
 
 type originBuilder struct {
 	hashAdapter hash.Adapter
 	resource    OriginResource
-	operator    Operator
+	operator    operators.Operator
 	next        OriginValue
 }
 
@@ -40,7 +41,7 @@ func (app *originBuilder) WithResource(resource OriginResource) OriginBuilder {
 }
 
 // WithOperator adds an operator builder
-func (app *originBuilder) WithOperator(operator Operator) OriginBuilder {
+func (app *originBuilder) WithOperator(operator operators.Operator) OriginBuilder {
 	app.operator = operator
 	return app
 }

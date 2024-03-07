@@ -5,13 +5,14 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
 )
 
 func TestOrigin_Success(t *testing.T) {
 	pFirstLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for first layer"))
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
 	resource := NewOriginResourceForTests(*pFirstLayer)
-	operator := NewOperatorWithAndForTests()
+	operator := operators.NewOperatorWithAndForTests()
 	next := NewOriginValueWithResourceForTests(
 		NewOriginResourceForTests(*pSecondLayer),
 	)
@@ -43,7 +44,7 @@ func TestOrigin_Success(t *testing.T) {
 
 func TestOrigin__withoutResource_returnsError(t *testing.T) {
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
-	operator := NewOperatorWithAndForTests()
+	operator := operators.NewOperatorWithAndForTests()
 	next := NewOriginValueWithResourceForTests(
 		NewOriginResourceForTests(*pSecondLayer),
 	)
@@ -73,7 +74,7 @@ func TestOrigin__withoutOperator_returnsError(t *testing.T) {
 func TestOrigin__withoutNext_returnsError(t *testing.T) {
 	pFirstLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for first layer"))
 	resource := NewOriginResourceForTests(*pFirstLayer)
-	operator := NewOperatorWithAndForTests()
+	operator := operators.NewOperatorWithAndForTests()
 	_, err := NewOriginBuilder().Create().WithResource(resource).WithOperator(operator).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")

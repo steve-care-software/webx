@@ -13,6 +13,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
 	"github.com/steve-care-software/datastencil/domain/orms"
 )
 
@@ -112,7 +113,7 @@ func TestOrm_Success(t *testing.T) {
 								links.NewOriginResourceForTests(
 									*pHash,
 								),
-								links.NewOperatorWithAndForTests(),
+								operators.NewOperatorWithAndForTests(),
 								links.NewOriginValueWithResourceForTests(
 									links.NewOriginResourceForTests(
 										*pHash,
@@ -150,7 +151,7 @@ func TestOrm_Success(t *testing.T) {
 						links.NewOriginResourceForTests(
 							*pHash,
 						),
-						links.NewOperatorWithAndForTests(),
+						operators.NewOperatorWithAndForTests(),
 						links.NewOriginValueWithResourceForTests(
 							links.NewOriginResourceForTests(
 								*pHash,
@@ -322,7 +323,7 @@ func TestOrm_Success(t *testing.T) {
 					links.NewOriginResourceForTests(
 						*pHash,
 					),
-					links.NewOperatorWithAndForTests(),
+					operators.NewOperatorWithAndForTests(),
 					links.NewOriginValueWithResourceForTests(
 						links.NewOriginResourceForTests(
 							*pHash,
@@ -377,7 +378,7 @@ func TestOrm_Success(t *testing.T) {
 						links.NewOriginResourceForTests(
 							*pHash,
 						),
-						links.NewOperatorWithAndForTests(),
+						operators.NewOperatorWithAndForTests(),
 						links.NewOriginValueWithResourceForTests(
 							links.NewOriginResourceForTests(
 								*pHash,
@@ -425,7 +426,7 @@ func TestOrm_Success(t *testing.T) {
 					"origin",
 					"operator",
 				},
-				instance: links.NewOperatorWithAndForTests(),
+				instance: operators.NewOperatorWithAndForTests(),
 			},
 			{
 				path: []string{
@@ -434,7 +435,7 @@ func TestOrm_Success(t *testing.T) {
 					"origin",
 					"operator",
 				},
-				instance: links.NewOperatorWithOrForTests(),
+				instance: operators.NewOperatorWithOrForTests(),
 			},
 			{
 				path: []string{
@@ -443,7 +444,7 @@ func TestOrm_Success(t *testing.T) {
 					"origin",
 					"operator",
 				},
-				instance: links.NewOperatorWithXOrForTests(),
+				instance: operators.NewOperatorWithXOrForTests(),
 			},
 		},
 		"library_layer": {

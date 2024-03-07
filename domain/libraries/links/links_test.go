@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
 )
 
 func TestLinks_withList_Success(t *testing.T) {
@@ -14,7 +15,7 @@ func TestLinks_withList_Success(t *testing.T) {
 		NewLinkForTests(
 			NewOriginForTests(
 				NewOriginResourceForTests(*pFirstLayer),
-				NewOperatorWithAndForTests(),
+				operators.NewOperatorWithAndForTests(),
 				NewOriginValueWithResourceForTests(
 					NewOriginResourceForTests(*pSecondLayer),
 				),

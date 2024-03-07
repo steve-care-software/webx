@@ -1,0 +1,30 @@
+package operators
+
+import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+)
+
+// NewBuilder creates a new operator builder
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
+// Builder represents the operator builder
+type Builder interface {
+	Create() Builder
+	IsAnd() Builder
+	IsOr() Builder
+	IsXor() Builder
+	Now() (Operator, error)
+}
+
+// Operator represents the operator
+type Operator interface {
+	Hash() hash.Hash
+	IsAnd() bool
+	IsOr() bool
+	IsXor() bool
+}

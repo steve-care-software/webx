@@ -1,4 +1,4 @@
-package links
+package operators
 
 import "github.com/steve-care-software/datastencil/domain/hash"
 

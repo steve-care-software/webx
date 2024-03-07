@@ -1,4 +1,4 @@
-package links
+package operators
 
 import "testing"
 
@@ -57,7 +57,7 @@ func TestOperator_isXor_Success(t *testing.T) {
 }
 
 func TestOperator_withoutParam_returnsError(t *testing.T) {
-	_, err := NewOperatorBuilder().Create().Now()
+	_, err := NewBuilder().Create().Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

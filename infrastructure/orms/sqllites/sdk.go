@@ -12,6 +12,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
 	"github.com/steve-care-software/datastencil/domain/orms"
 	"github.com/steve-care-software/datastencil/domain/orms/skeletons"
 	"github.com/steve-care-software/datastencil/domain/orms/skeletons/connections"
@@ -170,7 +171,7 @@ func NewOrmRepository(
 				if pIns, ok := value.(*orms.Instance); ok {
 					if pIns != nil {
 						ins := *pIns
-						builder.WithOperator(ins.(links.Operator))
+						builder.WithOperator(ins.(operators.Operator))
 					}
 				}
 			}
@@ -230,7 +231,7 @@ func NewOrmRepository(
 			return builder.Now()
 		},
 		"library_link_origin_operator": func(values map[string]interface{}) (orms.Instance, error) {
-			builder := links.NewOperatorBuilder()
+			builder := operators.NewBuilder()
 			if value, ok := values["is_and"]; ok {
 				if value.(int64) != 0 {
 					builder.IsAnd()
@@ -632,7 +633,7 @@ func NewOrmService(
 			return false, nil, errors.New("the Instance was expected to contain an OriginResource instance")
 		},
 		"library_link_origin_operator": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
-			if casted, ok := ins.(links.Operator); ok {
+			if casted, ok := ins.(operators.Operator); ok {
 				switch fieldName {
 				case "hash":
 					return true, casted.Hash().Bytes(), nil
