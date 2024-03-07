@@ -3,22 +3,16 @@ package resources
 import "errors"
 
 type fieldBuilder struct {
-	name      string
-	retriever []string
-	builder   BuilderInstruction
-	condition string
-	kind      Kind
-	canBeNil  bool
+	name     string
+	kind     Kind
+	canBeNil bool
 }
 
 func createFieldBuilder() FieldBuilder {
 	out := fieldBuilder{
-		name:      "",
-		retriever: nil,
-		builder:   nil,
-		condition: "",
-		kind:      nil,
-		canBeNil:  false,
+		name:     "",
+		kind:     nil,
+		canBeNil: false,
 	}
 
 	return &out
@@ -32,24 +26,6 @@ func (app *fieldBuilder) Create() FieldBuilder {
 // WithName adds a name to the builder
 func (app *fieldBuilder) WithName(name string) FieldBuilder {
 	app.name = name
-	return app
-}
-
-// WithRetriever adds a retriever to the builder
-func (app *fieldBuilder) WithRetriever(retriever []string) FieldBuilder {
-	app.retriever = retriever
-	return app
-}
-
-// WithBuilder adds a builder to the builder
-func (app *fieldBuilder) WithBuilder(builder BuilderInstruction) FieldBuilder {
-	app.builder = builder
-	return app
-}
-
-// WithCondition adds a condition to the builder
-func (app *fieldBuilder) WithCondition(condition string) FieldBuilder {
-	app.condition = condition
 	return app
 }
 
@@ -71,52 +47,12 @@ func (app *fieldBuilder) Now() (Field, error) {
 		return nil, errors.New("the name is mandatory in order to build a Field instance")
 	}
 
-	if app.retriever != nil && len(app.retriever) <= 0 {
-		app.retriever = nil
-	}
-
-	if app.retriever == nil {
-		return nil, errors.New("the retriever method is mandatory in order to build a Field instance")
-	}
-
 	if app.kind == nil {
 		return nil, errors.New("the kind is mandatory in order to build a Field instance")
 	}
 
-	if app.builder != nil && app.condition != "" {
-		return createFieldWithConditionAndBuilder(
-			app.name,
-			app.retriever,
-			app.kind,
-			app.canBeNil,
-			app.condition,
-			app.builder,
-		), nil
-	}
-
-	if app.builder != nil {
-		return createFieldWithBuilder(
-			app.name,
-			app.retriever,
-			app.kind,
-			app.canBeNil,
-			app.builder,
-		), nil
-	}
-
-	if app.condition != "" {
-		return createFieldWithCondition(
-			app.name,
-			app.retriever,
-			app.kind,
-			app.canBeNil,
-			app.condition,
-		), nil
-	}
-
 	return createField(
 		app.name,
-		app.retriever,
 		app.kind,
 		app.canBeNil,
 	), nil

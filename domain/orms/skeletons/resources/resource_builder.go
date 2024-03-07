@@ -3,22 +3,18 @@ package resources
 import "errors"
 
 type resourceBuilder struct {
-	name       string
-	key        Field
-	fields     Fields
-	initialize string
-	trigger    string
-	children   Resources
+	name     string
+	key      Field
+	fields   Fields
+	children Resources
 }
 
 func createResourceBuilder() ResourceBuilder {
 	out := resourceBuilder{
-		name:       "",
-		key:        nil,
-		fields:     nil,
-		initialize: "",
-		trigger:    "",
-		children:   nil,
+		name:     "",
+		key:      nil,
+		fields:   nil,
+		children: nil,
 	}
 
 	return &out
@@ -47,18 +43,6 @@ func (app *resourceBuilder) WithFields(fields Fields) ResourceBuilder {
 	return app
 }
 
-// WithInitialize adds an initialize method to the builder
-func (app *resourceBuilder) WithInitialize(initialize string) ResourceBuilder {
-	app.initialize = initialize
-	return app
-}
-
-// WithTrigger adds a trigger method to the builder
-func (app *resourceBuilder) WithTrigger(trigger string) ResourceBuilder {
-	app.trigger = trigger
-	return app
-}
-
 // WithChildren adds a children method to the builder
 func (app *resourceBuilder) WithChildren(children Resources) ResourceBuilder {
 	app.children = children
@@ -79,21 +63,11 @@ func (app *resourceBuilder) Now() (Resource, error) {
 		return nil, errors.New("the fields is mandatory in order to build a Resource instance")
 	}
 
-	if app.initialize == "" {
-		return nil, errors.New("the initialize method is mandatory in order to build a Resource instance")
-	}
-
-	if app.trigger == "" {
-		return nil, errors.New("the trigger method is mandatory in order to build a Resource instance")
-	}
-
 	if app.children != nil {
 		return createResourceWithChildren(
 			app.name,
 			app.key,
 			app.fields,
-			app.initialize,
-			app.trigger,
 			app.children,
 		), nil
 	}
@@ -102,7 +76,5 @@ func (app *resourceBuilder) Now() (Resource, error) {
 		app.name,
 		app.key,
 		app.fields,
-		app.initialize,
-		app.trigger,
 	), nil
 }

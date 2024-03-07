@@ -695,7 +695,7 @@ func (app *ormService) generateField(
 	return &field{
 		name:     name,
 		kind:     *createdKind,
-		canBeNil: fieldIns.HasCondition(),
+		canBeNil: fieldIns.CanBeNil(),
 	}, nil
 }
 

@@ -34,11 +34,6 @@ func NewFieldBuilder() FieldBuilder {
 	return createFieldBuilder()
 }
 
-// NewBuilderInstructionBuilder creates a new builder instruction builder
-func NewBuilderInstructionBuilder() BuilderInstructionBuilder {
-	return createBuilderInstructionBuilder()
-}
-
 // NewKindBuilder creates a new kind builder
 func NewKindBuilder() KindBuilder {
 	return createKindBuilder()
@@ -74,8 +69,6 @@ type ResourceBuilder interface {
 	WithName(name string) ResourceBuilder
 	WithKey(key Field) ResourceBuilder
 	WithFields(fields Fields) ResourceBuilder
-	WithInitialize(initialize string) ResourceBuilder
-	WithTrigger(trigger string) ResourceBuilder
 	WithChildren(children Resources) ResourceBuilder
 	Now() (Resource, error)
 }
@@ -85,8 +78,6 @@ type Resource interface {
 	Name() string
 	Key() Field
 	Fields() Fields
-	Initialize() string
-	Trigger() string
 	HasChildren() bool
 	Children() Resources
 }
@@ -107,30 +98,16 @@ type Fields interface {
 type FieldBuilder interface {
 	Create() FieldBuilder
 	WithName(name string) FieldBuilder
-	WithRetriever(retriever []string) FieldBuilder
-	WithBuilder(builder BuilderInstruction) FieldBuilder
-	WithCondition(condition string) FieldBuilder
 	WithKind(kind Kind) FieldBuilder
+	CanBeNil() FieldBuilder
 	Now() (Field, error)
 }
 
 // Field represents a field
 type Field interface {
 	Name() string
-	Retriever() []string
 	Kind() Kind
-	HasCondition() bool
-	Condition() string
-	HasBuilder() bool
-	Builder() BuilderInstruction
-}
-
-// BuilderInstructionBuilder represents a builder instruction builder
-type BuilderInstructionBuilder interface {
-	Create() BuilderInstructionBuilder
-	WithMethod(method string) BuilderInstructionBuilder
-	ContainsParam() BuilderInstructionBuilder
-	Now() (BuilderInstruction, error)
+	CanBeNil() bool
 }
 
 // BuilderInstruction represents a builder instruction
