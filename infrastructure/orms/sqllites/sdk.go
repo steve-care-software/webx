@@ -9,6 +9,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/links"
 	"github.com/steve-care-software/datastencil/domain/orms"
@@ -41,27 +42,117 @@ func NewOrmRepository(
 	hashAdapter := hash.NewAdapter()
 	buildInstances := map[string]buildInstanceFn{
 		"library": func(values map[string]interface{}) (orms.Instance, error) {
-			builder := links.NewBuilder()
+			builder := libraries.NewBuilder()
+			if value, ok := values["layers"]; ok {
+				if value, ok := value.(layers.Layers); ok {
+					builder.WithLayers(value)
+				}
+			}
+
+			if value, ok := values["links"]; ok {
+				if value, ok := value.(links.Links); ok {
+					builder.WithLinks(value)
+				}
+			}
+
 			return builder.Now()
 		},
 		"library_link": func(values map[string]interface{}) (orms.Instance, error) {
 			builder := links.NewLinkBuilder()
+			if value, ok := values["origin"]; ok {
+				if pIns, ok := value.(*orms.Instance); ok {
+					if pIns != nil {
+						ins := *pIns
+						builder.WithOrigin(ins.(links.Origin))
+					}
+				}
+			}
+
+			if value, ok := values["elements"]; ok {
+				if value, ok := value.(links.Elements); ok {
+					builder.WithElements(value)
+				}
+			}
+
 			return builder.Now()
 		},
 		"library_link_element": func(values map[string]interface{}) (orms.Instance, error) {
 			builder := links.NewElementBuilder()
+			if value, ok := values["layer"]; ok {
+				if value != nil {
+					builder.WithLayerBytes(value.([]byte))
+				}
+			}
+
+			if value, ok := values["condition"]; ok {
+				if pIns, ok := value.(*orms.Instance); ok {
+					if pIns != nil {
+						ins := *pIns
+						builder.WithCondition(ins.(links.Condition))
+					}
+				}
+			}
+
 			return builder.Now()
 		},
 		"library_link_element_condition": func(values map[string]interface{}) (orms.Instance, error) {
 			builder := links.NewConditionBuilder()
+			if value, ok := values["resource"]; ok {
+				if pIns, ok := value.(*orms.Instance); ok {
+					if pIns != nil {
+						ins := *pIns
+						builder.WithResource(ins.(links.ConditionResource))
+					}
+				}
+			}
+
+			if value, ok := values["next"]; ok {
+				if pIns, ok := value.(*orms.Instance); ok {
+					if pIns != nil {
+						ins := *pIns
+						builder.WithNext(ins.(links.ConditionValue))
+					}
+				}
+			}
+
 			return builder.Now()
 		},
 		"library_link_element_condition_value": func(values map[string]interface{}) (orms.Instance, error) {
 			builder := links.NewConditionValueBuilder()
+			if value, ok := values["resource"]; ok {
+				if pIns, ok := value.(*orms.Instance); ok {
+					if pIns != nil {
+						ins := *pIns
+						builder.WithResource(ins.(links.ConditionResource))
+					}
+				}
+			}
+
+			if value, ok := values["condition"]; ok {
+				if pIns, ok := value.(*orms.Instance); ok {
+					if pIns != nil {
+						ins := *pIns
+						builder.WithCondition(ins.(links.Condition))
+					}
+				}
+			}
+
 			return builder.Now()
 		},
 		"library_link_element_condition_resource": func(values map[string]interface{}) (orms.Instance, error) {
 			builder := links.NewConditionResourceBuilder()
+			if value, ok := values["code"]; ok {
+				if casted, ok := value.(int64); ok {
+					builder.WithCode(uint(casted))
+				}
+			}
+
+			if value, ok := values["is_raised_in_layer"]; ok {
+				if value.(int64) != 0 {
+					builder.IsRaisedInLayer()
+				}
+			}
+
 			return builder.Now()
 		},
 		"library_link_origin": func(values map[string]interface{}) (orms.Instance, error) {
@@ -357,22 +448,127 @@ func NewOrmService(
 
 	callMethodsOnInstances := map[string]callMethodOnInstanceFn{
 		"library": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
-			return false, nil, nil
+			if casted, ok := ins.(libraries.Library); ok {
+				switch fieldName {
+				case "hash":
+					return true, casted.Hash().Bytes(), nil
+				case "layers":
+					return true, casted.Layers(), nil
+				case "links":
+					if casted.HasLinks() {
+						return true, casted.Links(), nil
+					}
+
+					return false, nil, nil
+
+				}
+
+				str := fmt.Sprintf("link: the fieldName is invalid: %s", fieldName)
+				return false, nil, errors.New(str)
+			}
+
+			return false, nil, errors.New("the Instance was expected to contain a Library instance")
 		},
 		"library_link": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
-			return false, nil, nil
+			if casted, ok := ins.(links.Link); ok {
+				switch fieldName {
+				case "hash":
+					return true, casted.Hash().Bytes(), nil
+				case "origin":
+					return true, casted.Origin().Hash().Bytes(), nil
+				case "elements":
+					return true, casted.Elements(), nil
+				}
+
+				str := fmt.Sprintf("link: the fieldName is invalid: %s", fieldName)
+				return false, nil, errors.New(str)
+			}
+
+			return false, nil, errors.New("the Instance was expected to contain a Link instance")
 		},
 		"library_link_element": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
-			return false, nil, nil
+			if casted, ok := ins.(links.Element); ok {
+				switch fieldName {
+				case "hash":
+					return true, casted.Hash().Bytes(), nil
+				case "layer":
+					return true, casted.Layer().Bytes(), nil
+				case "condition":
+					if casted.HasCondition() {
+						return true, casted.Condition().Hash().Bytes(), nil
+					}
+
+					return false, nil, nil
+				}
+
+				str := fmt.Sprintf("element: the fieldName is invalid: %s", fieldName)
+				return false, nil, errors.New(str)
+			}
+
+			return false, nil, errors.New("the Instance was expected to contain an Element instance")
 		},
 		"library_link_element_condition": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
-			return false, nil, nil
+			if casted, ok := ins.(links.Condition); ok {
+				switch fieldName {
+				case "hash":
+					return true, casted.Hash().Bytes(), nil
+				case "resource":
+					return true, casted.Resource().Hash().Bytes(), nil
+				case "next":
+					if casted.HasNext() {
+						return true, casted.Next().Hash().Bytes(), nil
+					}
+
+					return false, nil, nil
+				}
+
+				str := fmt.Sprintf("condition: the fieldName is invalid: %s", fieldName)
+				return false, nil, errors.New(str)
+			}
+
+			return false, nil, errors.New("the Instance was expected to contain a Condition instance")
 		},
 		"library_link_element_condition_value": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
-			return false, nil, nil
+			if casted, ok := ins.(links.ConditionValue); ok {
+				switch fieldName {
+				case "hash":
+					return true, casted.Hash().Bytes(), nil
+				case "resource":
+					if casted.IsResource() {
+						return true, casted.Resource().Hash().Bytes(), nil
+					}
+
+					return false, nil, nil
+				case "condition":
+					if casted.IsCondition() {
+						return true, casted.Condition().Hash().Bytes(), nil
+					}
+
+					return false, nil, nil
+				}
+
+				str := fmt.Sprintf("conditionValue: the fieldName is invalid: %s", fieldName)
+				return false, nil, errors.New(str)
+			}
+
+			return false, nil, errors.New("the Instance was expected to contain a ConditionValue instance")
 		},
 		"library_link_element_condition_resource": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
-			return false, nil, nil
+			if casted, ok := ins.(links.ConditionResource); ok {
+				switch fieldName {
+				case "hash":
+					return true, casted.Hash().Bytes(), nil
+				case "code":
+					return true, casted.Code(), nil
+				case "is_raised_in_layer":
+					return true, casted.IsRaisedInLayer(), nil
+				}
+
+				str := fmt.Sprintf("conditionresource: the fieldName is invalid: %s", fieldName)
+				return false, nil, errors.New(str)
+			}
+
+			return false, nil, errors.New("the Instance was expected to contain a ConditionResource instance")
 		},
 		"library_link_origin": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
 			if casted, ok := ins.(links.Origin); ok {

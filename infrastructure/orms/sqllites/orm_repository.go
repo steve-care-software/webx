@@ -140,49 +140,51 @@ func (app *ormRepository) retrieveFieldValuesByHash(
 	allResources resources.Resources,
 	allConnections connections.Connections,
 ) (map[string]interface{}, error) {
-	fieldNames := app.fetchFieldsForSelect(fields)
-	fieldNamesStr := strings.Join(fieldNames, ",")
-	queryStr := fmt.Sprintf("SELECT %s FROM %s WHERE %s = ?", fieldNamesStr, table, key.Name())
-	rows, err := app.dbPtr.Query(queryStr, hash.Bytes())
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-	if !rows.Next() {
-		str := fmt.Sprintf("the given key (name: %s, value: %s) do NOT match a %s instance", key.Name(), hash.String(), table)
-		return nil, errors.New(str)
-	}
-
-	cpt := 0
-	mapping := map[string]int{}
 	values := []interface{}{}
+	mapping := map[string]int{}
 	allFieldsList := fields.List()
-	for _, oneField := range allFieldsList {
-		kind := oneField.Kind()
-		if kind.IsConnection() {
-			continue
-		}
-
-		retValue, err := app.generateValueFromKind(kind, allResources)
+	fieldNames := app.fetchFieldsForSelect(fields)
+	if len(fieldNames) > 0 {
+		fieldNamesStr := strings.Join(fieldNames, ",")
+		queryStr := fmt.Sprintf("SELECT %s FROM %s WHERE %s = ?", fieldNamesStr, table, key.Name())
+		rows, err := app.dbPtr.Query(queryStr, hash.Bytes())
 		if err != nil {
 			return nil, err
 		}
 
-		name := oneField.Name()
-		values = append(values, &retValue)
-		mapping[name] = cpt
-		cpt++
-	}
+		defer rows.Close()
+		if !rows.Next() {
+			str := fmt.Sprintf("the given key (name: %s, value: %s) do NOT match a %s instance", key.Name(), hash.String(), table)
+			return nil, errors.New(str)
+		}
 
-	err = rows.Scan(values...)
-	if err != nil {
-		return nil, err
-	}
+		cpt := 0
+		for _, oneField := range allFieldsList {
+			kind := oneField.Kind()
+			if kind.IsConnection() {
+				continue
+			}
 
-	err = rows.Err()
-	if err != nil {
-		return nil, err
+			retValue, err := app.generateValueFromKind(kind, allResources)
+			if err != nil {
+				return nil, err
+			}
+
+			name := oneField.Name()
+			values = append(values, &retValue)
+			mapping[name] = cpt
+			cpt++
+		}
+
+		err = rows.Scan(values...)
+		if err != nil {
+			return nil, err
+		}
+
+		err = rows.Err()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	valuesMap := map[string]interface{}{}
@@ -207,6 +209,10 @@ func (app *ormRepository) retrieveFieldValuesByHash(
 			hashes, err := app.List(from, toPath, hash)
 			if err != nil {
 				return nil, err
+			}
+
+			if len(hashes) <= 0 {
+				continue
 			}
 
 			list := []interface{}{}

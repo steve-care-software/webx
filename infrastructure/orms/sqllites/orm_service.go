@@ -189,52 +189,60 @@ func (app *ormService) insertConnectionValues(
 	fromBytes := ins.Hash().Bytes()
 	list := fields.List()
 	for _, oneField := range list {
-		kind := oneField.Kind()
-		if !kind.IsConnection() {
-			continue
-		}
-
 		fieldName := oneField.Name()
-		connectionName := kind.Connection()
-		if fnToCall, ok := app.listInstanceToElementHashesListFn[connectionName]; ok {
-			currentConnection, err := allConnections.Fetch(connectionName)
-			if err != nil {
-				return err
-			}
-
-			from := currentConnection.From()
-			to := currentConnection.To()
-			tableName := fmt.Sprintf(
-				"%s%s%s",
-				strings.Join(from.Path(), resourceNameDelimiter),
-				connectionNameDelimiter,
-				strings.Join(to.Path(), resourceNameDelimiter),
-			)
-
-			queryStr := fmt.Sprintf("INSERT INTO %s (%s, %s) VALUES (?, ?)", tableName, from.Name(), to.Name())
-			if casted, ok := fieldValues[fieldName].(orms.Instance); ok {
-				elements, err := fnToCall(casted)
-				if err != nil {
-					return err
+		if value, ok := fieldValues[fieldName]; ok {
+			if casted, ok := value.(orms.Instance); ok {
+				kind := oneField.Kind()
+				if !kind.IsConnection() {
+					continue
 				}
 
-				for _, oneElement := range elements {
-					toBytes := oneElement.Bytes()
-					_, err = app.txPtr.Exec(queryStr, fromBytes, toBytes)
+				connectionName := kind.Connection()
+				if fnToCall, ok := app.listInstanceToElementHashesListFn[connectionName]; ok {
+					currentConnection, err := allConnections.Fetch(connectionName)
 					if err != nil {
 						return err
 					}
+
+					from := currentConnection.From()
+					to := currentConnection.To()
+					tableName := fmt.Sprintf(
+						"%s%s%s",
+						strings.Join(from.Path(), resourceNameDelimiter),
+						connectionNameDelimiter,
+						strings.Join(to.Path(), resourceNameDelimiter),
+					)
+
+					queryStr := fmt.Sprintf("INSERT INTO %s (%s, %s) VALUES (?, ?)", tableName, from.Name(), to.Name())
+					elements, err := fnToCall(casted)
+					if err != nil {
+						return err
+					}
+
+					for _, oneElement := range elements {
+						toBytes := oneElement.Bytes()
+						_, err = app.txPtr.Exec(queryStr, fromBytes, toBytes)
+						if err != nil {
+							return err
+						}
+					}
+
+					continue
 				}
 
+				str := fmt.Sprintf("field: %s: there is no list fetcher for the connections (name: %s)", oneField.Name(), connectionName)
+				return errors.New(str)
+			}
+
+			if value == nil {
 				continue
 			}
+
+			fmt.Printf("\n%v\n", value)
 
 			str := fmt.Sprintf("field: %s: the field was expected to contain an Instance instance", oneField.Name())
 			return errors.New(str)
 		}
-
-		str := fmt.Sprintf("field: %s: there is no list fetcher for the connections (name: %s)", oneField.Name(), connectionName)
-		return errors.New(str)
 	}
 
 	return nil

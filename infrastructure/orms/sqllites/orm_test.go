@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/links"
 	"github.com/steve-care-software/datastencil/domain/orms"
@@ -48,6 +49,268 @@ func TestOrm_Success(t *testing.T) {
 
 	// build resources:
 	instances := map[string][]testInstance{
+		"library": {
+			{
+				path: []string{
+					"library",
+				},
+				instance: libraries.NewLibraryForTests(
+					layers.NewLayersForTests([]layers.Layer{
+						layers.NewLayerForTests(
+							layers.NewInstructionsForTests([]layers.Instruction{
+								layers.NewInstructionWithAssignmentForTests(
+									layers.NewAssignmentForTests(
+										"myName",
+										layers.NewAssignableWithBytesForTests(
+											layers.NewBytesWithHashBytesForTests("myInput"),
+										),
+									),
+								),
+							}),
+							layers.NewOutputForTests(
+								"myVariable",
+								layers.NewKindWithContinueForTests(),
+							),
+							"some input",
+						),
+					}),
+				),
+				dependencies: []typeDependency{
+					{
+						keyname: "library_layer",
+						index:   0,
+					},
+				},
+			},
+			{
+				path: []string{
+					"library",
+				},
+				instance: libraries.NewLibraryWithLinksForTests(
+					layers.NewLayersForTests([]layers.Layer{
+						layers.NewLayerForTests(
+							layers.NewInstructionsForTests([]layers.Instruction{
+								layers.NewInstructionWithAssignmentForTests(
+									layers.NewAssignmentForTests(
+										"myName",
+										layers.NewAssignableWithBytesForTests(
+											layers.NewBytesWithHashBytesForTests("myInput"),
+										),
+									),
+								),
+							}),
+							layers.NewOutputForTests(
+								"myVariable",
+								layers.NewKindWithContinueForTests(),
+							),
+							"some input",
+						),
+					}),
+					links.NewLinksForTests([]links.Link{
+						links.NewLinkForTests(
+							links.NewOriginForTests(
+								links.NewOriginResourceForTests(
+									*pHash,
+								),
+								links.NewOperatorWithAndForTests(),
+								links.NewOriginValueWithResourceForTests(
+									links.NewOriginResourceForTests(
+										*pHash,
+									),
+								),
+							),
+							links.NewElementsForTests([]links.Element{
+								links.NewElementForTests(
+									*pHash,
+								),
+							}),
+						),
+					}),
+				),
+				dependencies: []typeDependency{
+					{
+						keyname: "library_layer",
+						index:   0,
+					},
+					{
+						keyname: "library_link",
+						index:   0,
+					},
+				},
+			},
+		},
+		"library_link": {
+			{
+				path: []string{
+					"library",
+					"link",
+				},
+				instance: links.NewLinkForTests(
+					links.NewOriginForTests(
+						links.NewOriginResourceForTests(
+							*pHash,
+						),
+						links.NewOperatorWithAndForTests(),
+						links.NewOriginValueWithResourceForTests(
+							links.NewOriginResourceForTests(
+								*pHash,
+							),
+						),
+					),
+					links.NewElementsForTests([]links.Element{
+						links.NewElementForTests(
+							*pHash,
+						),
+					}),
+				),
+				dependencies: []typeDependency{
+					{
+						keyname: "library_link_origin",
+						index:   0,
+					},
+					{
+						keyname: "library_link_element",
+						index:   0,
+					},
+				},
+			},
+		},
+		"library_link_element": {
+			{
+				path: []string{
+					"library",
+					"link",
+					"element",
+				},
+				instance: links.NewElementForTests(
+					*pHash,
+				),
+			},
+			{
+				path: []string{
+					"library",
+					"link",
+					"element",
+				},
+				instance: links.NewElementWithConditionForTests(
+					*pHash,
+					links.NewConditionForTests(
+						links.NewConditionResourceForTests(22),
+					),
+				),
+				dependencies: []typeDependency{
+					{
+						keyname: "library_link_element_condition",
+						index:   0,
+					},
+				},
+			},
+		},
+		"library_link_element_condition": {
+			{
+				path: []string{
+					"library",
+					"link",
+					"element",
+					"condition",
+				},
+				instance: links.NewConditionForTests(
+					links.NewConditionResourceForTests(22),
+				),
+				dependencies: []typeDependency{
+					{
+						keyname: "library_link_element_condition_resource",
+						index:   0,
+					},
+				},
+			},
+			{
+				path: []string{
+					"library",
+					"link",
+					"element",
+					"condition",
+				},
+				instance: links.NewConditionWithNextForTests(
+					links.NewConditionResourceForTests(22),
+					links.NewConditionValueWithResourceForTests(
+						links.NewConditionResourceForTests(22),
+					),
+				),
+				dependencies: []typeDependency{
+					{
+						keyname: "library_link_element_condition_resource",
+						index:   0,
+					},
+					{
+						keyname: "library_link_element_condition_value",
+						index:   0,
+					},
+				},
+			},
+		},
+		"library_link_element_condition_value": {
+			{
+				path: []string{
+					"library",
+					"link",
+					"element",
+					"condition",
+					"value",
+				},
+				instance: links.NewConditionValueWithResourceForTests(
+					links.NewConditionResourceForTests(22),
+				),
+				dependencies: []typeDependency{
+					{
+						keyname: "library_link_element_condition_resource",
+						index:   0,
+					},
+				},
+			},
+			{
+				path: []string{
+					"library",
+					"link",
+					"element",
+					"condition",
+					"value",
+				},
+				instance: links.NewConditionValueWithConditionForTests(
+					links.NewConditionForTests(
+						links.NewConditionResourceForTests(22),
+					),
+				),
+				dependencies: []typeDependency{
+					{
+						keyname: "library_link_element_condition",
+						index:   0,
+					},
+				},
+			},
+		},
+		"library_link_element_condition_resource": {
+			{
+				path: []string{
+					"library",
+					"link",
+					"element",
+					"condition",
+					"resource",
+				},
+				instance: links.NewConditionResourceForTests(22),
+			},
+			{
+				path: []string{
+					"library",
+					"link",
+					"element",
+					"condition",
+					"resource",
+				},
+				instance: links.NewConditionResourceWithIsRaisedInLayerForTests(54),
+			},
+		},
 		"library_link_origin": {
 			{
 				path: []string{
