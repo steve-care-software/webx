@@ -4,11 +4,12 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
 )
 
 type originValueBuilder struct {
 	hashAdapter hash.Adapter
-	resource    OriginResource
+	resource    resources.Resource
 	origin      Origin
 }
 
@@ -32,7 +33,7 @@ func (app *originValueBuilder) Create() OriginValueBuilder {
 }
 
 // WithResource adds a resource to the builder
-func (app *originValueBuilder) WithResource(resource OriginResource) OriginValueBuilder {
+func (app *originValueBuilder) WithResource(resource resources.Resource) OriginValueBuilder {
 	app.resource = resource
 	return app
 }

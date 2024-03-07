@@ -18,10 +18,10 @@ func TestLink_Success(t *testing.T) {
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
 	link := links.NewLinkForTests(
 		links.NewOriginForTests(
-			links.NewOriginResourceForTests(*pFirstLayer),
+			links.NewResourceForTests(*pFirstLayer),
 			links.NewOperatorWithAndForTests(),
 			links.NewOriginValueWithResourceForTests(
-				links.NewOriginResourceForTests(*pSecondLayer),
+				links.NewResourceForTests(*pSecondLayer),
 			),
 		),
 		links.NewElementsForTests([]links.Element{
@@ -77,10 +77,10 @@ func TestLink_withoutInput_returnsError(t *testing.T) {
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
 	link := links.NewLinkForTests(
 		links.NewOriginForTests(
-			links.NewOriginResourceForTests(*pFirstLayer),
+			links.NewResourceForTests(*pFirstLayer),
 			links.NewOperatorWithAndForTests(),
 			links.NewOriginValueWithResourceForTests(
-				links.NewOriginResourceForTests(*pSecondLayer),
+				links.NewResourceForTests(*pSecondLayer),
 			),
 		),
 		links.NewElementsForTests([]links.Element{
@@ -152,10 +152,10 @@ func TestLink_withoutCommand_returnsError(t *testing.T) {
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
 	link := links.NewLinkForTests(
 		links.NewOriginForTests(
-			links.NewOriginResourceForTests(*pFirstLayer),
+			links.NewResourceForTests(*pFirstLayer),
 			links.NewOperatorWithAndForTests(),
 			links.NewOriginValueWithResourceForTests(
-				links.NewOriginResourceForTests(*pSecondLayer),
+				links.NewResourceForTests(*pSecondLayer),
 			),
 		),
 		links.NewElementsForTests([]links.Element{

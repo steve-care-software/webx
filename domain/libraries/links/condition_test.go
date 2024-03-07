@@ -52,7 +52,7 @@ func TestCondition_withNext_Success(t *testing.T) {
 	}
 }
 func TestCondition__withoutResource_returnsError(t *testing.T) {
-	_, err := NewConditionBuilder().Create().Now()
+	_, err := NewConditionResourceBuilder().Create().Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

@@ -14,6 +14,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
+	links_resources "github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
 	"github.com/steve-care-software/datastencil/domain/orms"
 )
 
@@ -110,12 +111,12 @@ func TestOrm_Success(t *testing.T) {
 					links.NewLinksForTests([]links.Link{
 						links.NewLinkForTests(
 							links.NewOriginForTests(
-								links.NewOriginResourceForTests(
+								links_resources.NewResourceForTests(
 									*pHash,
 								),
 								operators.NewOperatorWithAndForTests(),
 								links.NewOriginValueWithResourceForTests(
-									links.NewOriginResourceForTests(
+									links_resources.NewResourceForTests(
 										*pHash,
 									),
 								),
@@ -148,12 +149,12 @@ func TestOrm_Success(t *testing.T) {
 				},
 				instance: links.NewLinkForTests(
 					links.NewOriginForTests(
-						links.NewOriginResourceForTests(
+						links_resources.NewResourceForTests(
 							*pHash,
 						),
 						operators.NewOperatorWithAndForTests(),
 						links.NewOriginValueWithResourceForTests(
-							links.NewOriginResourceForTests(
+							links_resources.NewResourceForTests(
 								*pHash,
 							),
 						),
@@ -320,12 +321,12 @@ func TestOrm_Success(t *testing.T) {
 					"origin",
 				},
 				instance: links.NewOriginForTests(
-					links.NewOriginResourceForTests(
+					links_resources.NewResourceForTests(
 						*pHash,
 					),
 					operators.NewOperatorWithAndForTests(),
 					links.NewOriginValueWithResourceForTests(
-						links.NewOriginResourceForTests(
+						links_resources.NewResourceForTests(
 							*pHash,
 						),
 					),
@@ -355,7 +356,7 @@ func TestOrm_Success(t *testing.T) {
 					"value",
 				},
 				instance: links.NewOriginValueWithResourceForTests(
-					links.NewOriginResourceForTests(
+					links_resources.NewResourceForTests(
 						*pHash,
 					),
 				),
@@ -375,12 +376,12 @@ func TestOrm_Success(t *testing.T) {
 				},
 				instance: links.NewOriginValueWithOriginForTests(
 					links.NewOriginForTests(
-						links.NewOriginResourceForTests(
+						links_resources.NewResourceForTests(
 							*pHash,
 						),
 						operators.NewOperatorWithAndForTests(),
 						links.NewOriginValueWithResourceForTests(
-							links.NewOriginResourceForTests(
+							links_resources.NewResourceForTests(
 								*pHash,
 							),
 						),
@@ -402,7 +403,7 @@ func TestOrm_Success(t *testing.T) {
 					"origin",
 					"resource",
 				},
-				instance: links.NewOriginResourceForTests(
+				instance: links_resources.NewResourceForTests(
 					*pHash,
 				),
 			},
@@ -413,7 +414,7 @@ func TestOrm_Success(t *testing.T) {
 					"origin",
 					"resource",
 				},
-				instance: links.NewOriginResourceWithIsMandatoryForTests(
+				instance: links_resources.NewResourceWithIsMandatoryForTests(
 					*pHash,
 				),
 			},

@@ -13,6 +13,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
+	links_resources "github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
 	"github.com/steve-care-software/datastencil/domain/orms"
 	"github.com/steve-care-software/datastencil/domain/orms/skeletons"
 	"github.com/steve-care-software/datastencil/domain/orms/skeletons/connections"
@@ -162,7 +163,7 @@ func NewOrmRepository(
 				if pIns, ok := value.(*orms.Instance); ok {
 					if pIns != nil {
 						ins := *pIns
-						builder.WithResource(ins.(links.OriginResource))
+						builder.WithResource(ins.(links_resources.Resource))
 					}
 				}
 			}
@@ -193,7 +194,7 @@ func NewOrmRepository(
 				if pIns, ok := value.(*orms.Instance); ok {
 					if pIns != nil {
 						ins := *pIns
-						builder.WithResource(ins.(links.OriginResource))
+						builder.WithResource(ins.(links_resources.Resource))
 					}
 				}
 			}
@@ -210,7 +211,7 @@ func NewOrmRepository(
 			return builder.Now()
 		},
 		"library_link_origin_resource": func(values map[string]interface{}) (orms.Instance, error) {
-			builder := links.NewOriginResourceBuilder()
+			builder := links_resources.NewBuilder()
 			if value, ok := values["layer"]; ok {
 				if casted, ok := value.([]byte); ok {
 					pHash, err := hash.NewAdapter().FromBytes(casted)
@@ -616,7 +617,7 @@ func NewOrmService(
 			return false, nil, errors.New("the Instance was expected to contain an OriginValue instance")
 		},
 		"library_link_origin_resource": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
-			if casted, ok := ins.(links.OriginResource); ok {
+			if casted, ok := ins.(links_resources.Resource); ok {
 				switch fieldName {
 				case "hash":
 					return true, casted.Hash().Bytes(), nil
@@ -630,7 +631,7 @@ func NewOrmService(
 				return false, nil, errors.New(str)
 			}
 
-			return false, nil, errors.New("the Instance was expected to contain an OriginResource instance")
+			return false, nil, errors.New("the Instance was expected to contain an Resource instance")
 		},
 		"library_link_origin_operator": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
 			if casted, ok := ins.(operators.Operator); ok {

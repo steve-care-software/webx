@@ -56,10 +56,10 @@ func TestLibrary_withLinks_Success(t *testing.T) {
 	links := links.NewLinksForTests([]links.Link{
 		links.NewLinkForTests(
 			links.NewOriginForTests(
-				links.NewOriginResourceForTests(*pFirstLayer),
+				links.NewResourceForTests(*pFirstLayer),
 				links.NewOperatorWithAndForTests(),
 				links.NewOriginValueWithResourceForTests(
-					links.NewOriginResourceForTests(*pSecondLayer),
+					links.NewResourceForTests(*pSecondLayer),
 				),
 			),
 			links.NewElementsForTests([]links.Element{

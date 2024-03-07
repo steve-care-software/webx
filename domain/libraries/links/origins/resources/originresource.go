@@ -1,4 +1,4 @@
-package links
+package resources
 
 import "github.com/steve-care-software/datastencil/domain/hash"
 
@@ -8,11 +8,11 @@ type originResource struct {
 	isMandatory bool
 }
 
-func createOriginResource(
+func createResource(
 	hash hash.Hash,
 	layer hash.Hash,
 	isMandatory bool,
-) OriginResource {
+) Resource {
 	out := originResource{
 		hash:        hash,
 		layer:       layer,

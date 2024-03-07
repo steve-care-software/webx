@@ -310,14 +310,14 @@ func (app *skeletonFactory) concreteLibraryLinkOrigin() resources.Resource {
 			),
 		}),
 		app.resources([]resources.Resource{
-			app.concreteLibraryLinkOriginResource(),
+			app.concreteLibraryLinkResource(),
 			app.concreteLibraryLinkOriginOperator(),
 			app.concreteLibraryLinkOriginValue(),
 		}),
 	)
 }
 
-func (app *skeletonFactory) concreteLibraryLinkOriginResource() resources.Resource {
+func (app *skeletonFactory) concreteLibraryLinkResource() resources.Resource {
 	return app.resource(
 		"resource",
 		app.field(

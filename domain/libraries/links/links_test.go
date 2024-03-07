@@ -5,6 +5,7 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
 )
 
 func TestLinks_withList_Success(t *testing.T) {
@@ -14,10 +15,10 @@ func TestLinks_withList_Success(t *testing.T) {
 	list := []Link{
 		NewLinkForTests(
 			NewOriginForTests(
-				NewOriginResourceForTests(*pFirstLayer),
+				resources.NewResourceForTests(*pFirstLayer),
 				operators.NewOperatorWithAndForTests(),
 				NewOriginValueWithResourceForTests(
-					NewOriginResourceForTests(*pSecondLayer),
+					resources.NewResourceForTests(*pSecondLayer),
 				),
 			),
 			NewElementsForTests([]Element{

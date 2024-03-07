@@ -38,7 +38,7 @@ func NewLayerAdapter() layers.LayerAdapter {
 	kindBuilder := layers.NewKindBuilder()
 	instructionsBuilder := layers.NewInstructionsBuilder()
 	instructionBuilder := layers.NewInstructionBuilder()
-	conditionBuilder := layers.NewConditionBuilder()
+	conditionResourceBuilder := layers.NewConditionResourceBuilder()
 	assignmentBuilder := layers.NewAssignmentBuilder()
 	assignableBuilder := layers.NewAssignableBuilder()
 	constantBuilder := layers.NewConstantBuilder()
@@ -52,7 +52,7 @@ func NewLayerAdapter() layers.LayerAdapter {
 		kindBuilder,
 		instructionsBuilder,
 		instructionBuilder,
-		conditionBuilder,
+		conditionResourceBuilder,
 		assignmentBuilder,
 		assignableBuilder,
 		constantBuilder,
@@ -78,12 +78,12 @@ func NewLinkAdapter() links.LinkAdapter {
 	linkBuilder := links.NewLinkBuilder()
 	elementsBuilder := links.NewElementsBuilder()
 	elementBuilder := links.NewElementBuilder()
-	conditionBuilder := links.NewConditionBuilder()
+	conditionResourceBuilder := links.NewConditionResourceBuilder()
 	conditionValueBuilder := links.NewConditionValueBuilder()
 	conditionResourceBuilder := links.NewConditionResourceBuilder()
 	originBuilder := links.NewOriginBuilder()
 	originValueBuilder := links.NewOriginValueBuilder()
-	originResourceBuilder := links.NewOriginResourceBuilder()
+	originBuilder := links.NewBuilder()
 	operatorBuilder := links.NewOperatorBuilder()
 	return createLinkAdapter(
 		hashAdapter,
@@ -91,12 +91,12 @@ func NewLinkAdapter() links.LinkAdapter {
 		linkBuilder,
 		elementsBuilder,
 		elementBuilder,
-		conditionBuilder,
+		conditionResourceBuilder,
 		conditionValueBuilder,
 		conditionResourceBuilder,
 		originBuilder,
 		originValueBuilder,
-		originResourceBuilder,
+		originBuilder,
 		operatorBuilder,
 	)
 }

@@ -6,15 +6,16 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
 )
 
 func TestOrigin_Success(t *testing.T) {
 	pFirstLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for first layer"))
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
-	resource := NewOriginResourceForTests(*pFirstLayer)
+	resource := resources.NewResourceForTests(*pFirstLayer)
 	operator := operators.NewOperatorWithAndForTests()
 	next := NewOriginValueWithResourceForTests(
-		NewOriginResourceForTests(*pSecondLayer),
+		resources.NewResourceForTests(*pSecondLayer),
 	)
 
 	origin := NewOriginForTests(
@@ -46,7 +47,7 @@ func TestOrigin__withoutResource_returnsError(t *testing.T) {
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
 	operator := operators.NewOperatorWithAndForTests()
 	next := NewOriginValueWithResourceForTests(
-		NewOriginResourceForTests(*pSecondLayer),
+		resources.NewResourceForTests(*pSecondLayer),
 	)
 
 	_, err := NewOriginBuilder().Create().WithOperator(operator).WithNext(next).Now()
@@ -59,9 +60,9 @@ func TestOrigin__withoutResource_returnsError(t *testing.T) {
 func TestOrigin__withoutOperator_returnsError(t *testing.T) {
 	pFirstLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for first layer"))
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
-	resource := NewOriginResourceForTests(*pFirstLayer)
+	resource := resources.NewResourceForTests(*pFirstLayer)
 	next := NewOriginValueWithResourceForTests(
-		NewOriginResourceForTests(*pSecondLayer),
+		resources.NewResourceForTests(*pSecondLayer),
 	)
 
 	_, err := NewOriginBuilder().Create().WithResource(resource).WithNext(next).Now()
@@ -73,7 +74,7 @@ func TestOrigin__withoutOperator_returnsError(t *testing.T) {
 
 func TestOrigin__withoutNext_returnsError(t *testing.T) {
 	pFirstLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for first layer"))
-	resource := NewOriginResourceForTests(*pFirstLayer)
+	resource := resources.NewResourceForTests(*pFirstLayer)
 	operator := operators.NewOperatorWithAndForTests()
 	_, err := NewOriginBuilder().Create().WithResource(resource).WithOperator(operator).Now()
 	if err == nil {

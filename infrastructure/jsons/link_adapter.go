@@ -14,12 +14,12 @@ type linkAdapter struct {
 	linkBuilder              links.LinkBuilder
 	elementsBuilder          links.ElementsBuilder
 	elementBuilder           links.ElementBuilder
-	conditionBuilder         links.ConditionBuilder
+	conditionResourceBuilder         links.ConditionResourceBuilder
 	conditionValueBuilder    links.ConditionValueBuilder
 	conditionResourceBuilder links.ConditionResourceBuilder
 	originBuilder            links.OriginBuilder
 	originValueBuilder       links.OriginValueBuilder
-	originResourceBuilder    links.OriginResourceBuilder
+	originBuilder    links.Builder
 	operatorBuilder          links.OperatorBuilder
 }
 
@@ -29,12 +29,12 @@ func createLinkAdapter(
 	linkBuilder links.LinkBuilder,
 	elementsBuilder links.ElementsBuilder,
 	elementBuilder links.ElementBuilder,
-	conditionBuilder links.ConditionBuilder,
+	conditionResourceBuilder links.ConditionResourceBuilder,
 	conditionValueBuilder links.ConditionValueBuilder,
 	conditionResourceBuilder links.ConditionResourceBuilder,
 	originBuilder links.OriginBuilder,
 	originValueBuilder links.OriginValueBuilder,
-	originResourceBuilder links.OriginResourceBuilder,
+	originBuilder links.Builder,
 	operatorBuilder links.OperatorBuilder,
 ) links.LinkAdapter {
 	out := linkAdapter{
@@ -43,12 +43,12 @@ func createLinkAdapter(
 		linkBuilder:              linkBuilder,
 		elementsBuilder:          elementsBuilder,
 		elementBuilder:           elementBuilder,
-		conditionBuilder:         conditionBuilder,
+		conditionResourceBuilder:         conditionResourceBuilder,
 		conditionValueBuilder:    conditionValueBuilder,
 		conditionResourceBuilder: conditionResourceBuilder,
 		originBuilder:            originBuilder,
 		originValueBuilder:       originValueBuilder,
-		originResourceBuilder:    originResourceBuilder,
+		originBuilder:    originBuilder,
 		operatorBuilder:          operatorBuilder,
 	}
 
@@ -162,7 +162,7 @@ func (app *linkAdapter) toInstanceCondition(str structs.Condition) (links.Condit
 		return nil, err
 	}
 
-	builder := app.conditionBuilder.Create().WithResource(resource)
+	builder := app.conditionResourceBuilder.Create().WithResource(resource)
 	if str.Next != nil {
 		value, err := app.toInstanceConditionValue(*str.Next)
 		if err != nil {
@@ -243,7 +243,7 @@ func (app *linkAdapter) toStructConditionResource(ins links.ConditionResource) s
 }
 
 func (app *linkAdapter) toInstanceOrigin(str structs.Origin) (links.Origin, error) {
-	resource, err := app.toInstanceOriginResource(str.Resource)
+	resource, err := app.toInstanceResource(str.Resource)
 	if err != nil {
 		return nil, err
 	}
@@ -267,7 +267,7 @@ func (app *linkAdapter) toInstanceOrigin(str structs.Origin) (links.Origin, erro
 
 func (app *linkAdapter) toStructOrigin(ins links.Origin) structs.Origin {
 	return structs.Origin{
-		Resource: app.toStructOriginResource(ins.Resource()),
+		Resource: app.toStructResource(ins.Resource()),
 		Operator: app.toStructOperator(ins.Operator()),
 		Next:     app.toStructOriginValue(ins.Next()),
 	}
@@ -276,7 +276,7 @@ func (app *linkAdapter) toStructOrigin(ins links.Origin) structs.Origin {
 func (app *linkAdapter) toInstanceOriginValue(str structs.OriginValue) (links.OriginValue, error) {
 	builder := app.originValueBuilder.Create()
 	if str.Resource != nil {
-		originValue, err := app.toInstanceOriginResource(*str.Resource)
+		originValue, err := app.toInstanceResource(*str.Resource)
 		if err != nil {
 			return nil, err
 		}
@@ -299,7 +299,7 @@ func (app *linkAdapter) toInstanceOriginValue(str structs.OriginValue) (links.Or
 func (app *linkAdapter) toStructOriginValue(ins links.OriginValue) structs.OriginValue {
 	output := structs.OriginValue{}
 	if ins.IsResource() {
-		resource := app.toStructOriginResource(ins.Resource())
+		resource := app.toStructResource(ins.Resource())
 		output.Resource = &resource
 	}
 
@@ -311,13 +311,13 @@ func (app *linkAdapter) toStructOriginValue(ins links.OriginValue) structs.Origi
 	return output
 }
 
-func (app *linkAdapter) toInstanceOriginResource(str structs.OriginResource) (links.OriginResource, error) {
+func (app *linkAdapter) toInstanceResource(str structs.Resource) (links.Resource, error) {
 	pHash, err := app.hashAdapter.FromString(str.Layer)
 	if err != nil {
 		return nil, err
 	}
 
-	builder := app.originResourceBuilder.Create().WithLayer(*pHash)
+	builder := app.originBuilder.Create().WithLayer(*pHash)
 	if str.IsMandatory {
 		builder.IsMandatory()
 	}
@@ -325,8 +325,8 @@ func (app *linkAdapter) toInstanceOriginResource(str structs.OriginResource) (li
 	return builder.Now()
 }
 
-func (app *linkAdapter) toStructOriginResource(ins links.OriginResource) structs.OriginResource {
-	return structs.OriginResource{
+func (app *linkAdapter) toStructResource(ins links.Resource) structs.Resource {
+	return structs.Resource{
 		Layer:       ins.Layer().String(),
 		IsMandatory: ins.IsMandatory(),
 	}

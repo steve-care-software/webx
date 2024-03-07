@@ -1,16 +1,19 @@
 package links
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
+)
 
 type originValue struct {
 	hash     hash.Hash
-	resource OriginResource
+	resource resources.Resource
 	origin   Origin
 }
 
 func createOriginValueWithResource(
 	hash hash.Hash,
-	resource OriginResource,
+	resource resources.Resource,
 ) OriginValue {
 	return createOriginValueInternally(hash, resource, nil)
 }
@@ -24,7 +27,7 @@ func createOriginValueWithOrigin(
 
 func createOriginValueInternally(
 	hash hash.Hash,
-	resource OriginResource,
+	resource resources.Resource,
 	origin Origin,
 ) OriginValue {
 	out := originValue{
@@ -47,7 +50,7 @@ func (obj *originValue) IsResource() bool {
 }
 
 // Resource returns the resource, if any
-func (obj *originValue) Resource() OriginResource {
+func (obj *originValue) Resource() resources.Resource {
 	return obj.resource
 }
 

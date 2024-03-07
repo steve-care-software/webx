@@ -3,18 +3,19 @@ package links
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
 )
 
 type origin struct {
 	hash     hash.Hash
-	resource OriginResource
+	resource resources.Resource
 	operator operators.Operator
 	next     OriginValue
 }
 
 func createOrigin(
 	hash hash.Hash,
-	resource OriginResource,
+	resource resources.Resource,
 	operator operators.Operator,
 	next OriginValue,
 ) Origin {
@@ -34,7 +35,7 @@ func (obj *origin) Hash() hash.Hash {
 }
 
 // Resource returns the resource
-func (obj *origin) Resource() OriginResource {
+func (obj *origin) Resource() resources.Resource {
 	return obj.resource
 }
 

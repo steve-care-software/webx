@@ -1,4 +1,4 @@
-package links
+package resources
 
 import (
 	"bytes"
@@ -7,9 +7,9 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
-func TestOriginResource_Success(t *testing.T) {
+func TestResource_Success(t *testing.T) {
 	pLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
-	originResource := NewOriginResourceForTests(*pLayer)
+	originResource := NewResourceForTests(*pLayer)
 	retLayer := originResource.Layer()
 	if !bytes.Equal(pLayer.Bytes(), retLayer.Bytes()) {
 		t.Errorf("the returned layer is invalid")
@@ -23,9 +23,9 @@ func TestOriginResource_Success(t *testing.T) {
 
 }
 
-func TestOriginResource_isMandatory_Success(t *testing.T) {
+func TestResource_isMandatory_Success(t *testing.T) {
 	pLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
-	originResource := NewOriginResourceWithIsMandatoryForTests(*pLayer)
+	originResource := NewResourceWithIsMandatoryForTests(*pLayer)
 	retLayer := originResource.Layer()
 	if !bytes.Equal(pLayer.Bytes(), retLayer.Bytes()) {
 		t.Errorf("the returned layer is invalid")
@@ -39,8 +39,8 @@ func TestOriginResource_isMandatory_Success(t *testing.T) {
 
 }
 
-func TestOriginResource_withoutLayer_returnsError(t *testing.T) {
-	_, err := NewOriginResourceBuilder().Create().IsMandatory().Now()
+func TestResource_withoutLayer_returnsError(t *testing.T) {
+	_, err := NewBuilder().Create().IsMandatory().Now()
 	if err == nil {
 		t.Errorf("the returned error was expected to be valid, nil returned")
 		return

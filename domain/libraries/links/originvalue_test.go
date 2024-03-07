@@ -6,11 +6,12 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
 )
 
 func TestOriginValue_withResource_Success(t *testing.T) {
 	pLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
-	originResource := NewOriginResourceForTests(*pLayer)
+	originResource := resources.NewResourceForTests(*pLayer)
 	originValue := NewOriginValueWithResourceForTests(originResource)
 
 	if !originValue.IsResource() {
@@ -35,10 +36,10 @@ func TestOriginValue_withOrigin_Success(t *testing.T) {
 	pFirstLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for first layer"))
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
 	origin := NewOriginForTests(
-		NewOriginResourceForTests(*pFirstLayer),
+		resources.NewResourceForTests(*pFirstLayer),
 		operators.NewOperatorWithAndForTests(),
 		NewOriginValueWithResourceForTests(
-			NewOriginResourceForTests(*pSecondLayer),
+			resources.NewResourceForTests(*pSecondLayer),
 		),
 	)
 	originValue := NewOriginValueWithOriginForTests(origin)

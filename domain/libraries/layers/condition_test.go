@@ -30,7 +30,7 @@ func TestCondition_withoutVariable_returnsError(t *testing.T) {
 		NewInstructionWithStopForTests(),
 	})
 
-	_, err := NewConditionBuilder().Create().WithInstructions(instructions).Now()
+	_, err := NewConditionResourceBuilder().Create().WithInstructions(instructions).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
@@ -39,7 +39,7 @@ func TestCondition_withoutVariable_returnsError(t *testing.T) {
 
 func TestCondition_withoutInstructions_returnsError(t *testing.T) {
 	variable := "myName"
-	_, err := NewConditionBuilder().Create().WithVariable(variable).Now()
+	_, err := NewConditionResourceBuilder().Create().WithVariable(variable).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

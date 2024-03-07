@@ -1,4 +1,4 @@
-package links
+package resources
 
 import (
 	"errors"
@@ -6,17 +6,17 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
-type originResourceBuilder struct {
+type builder struct {
 	hashAdapter hash.Adapter
 	layer       hash.Hash
 	layerBytes  []byte
 	isMandatory bool
 }
 
-func createOriginResourceBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) OriginResourceBuilder {
-	out := originResourceBuilder{
+) Builder {
+	out := builder{
 		hashAdapter: hashAdapter,
 		layer:       nil,
 		layerBytes:  nil,
@@ -27,32 +27,32 @@ func createOriginResourceBuilder(
 }
 
 // Create initializes the builder
-func (app *originResourceBuilder) Create() OriginResourceBuilder {
-	return createOriginResourceBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithLayer adds a layer to the builder
-func (app *originResourceBuilder) WithLayer(layer hash.Hash) OriginResourceBuilder {
+func (app *builder) WithLayer(layer hash.Hash) Builder {
 	app.layer = layer
 	return app
 }
 
 // IsMandatory flags the builder as mandatory
-func (app *originResourceBuilder) IsMandatory() OriginResourceBuilder {
+func (app *builder) IsMandatory() Builder {
 	app.isMandatory = true
 	return app
 }
 
 // WithLayerBytes add layer bytes to the builder
-func (app *originResourceBuilder) WithLayerBytes(layerBytes []byte) OriginResourceBuilder {
+func (app *builder) WithLayerBytes(layerBytes []byte) Builder {
 	app.layerBytes = layerBytes
 	return app
 }
 
-// Now builds a new OriginResource instance
-func (app *originResourceBuilder) Now() (OriginResource, error) {
+// Now builds a new Resource instance
+func (app *builder) Now() (Resource, error) {
 	if app.layerBytes != nil && len(app.layerBytes) <= 0 {
 		app.layerBytes = nil
 	}
@@ -67,7 +67,7 @@ func (app *originResourceBuilder) Now() (OriginResource, error) {
 	}
 
 	if app.layer == nil {
-		return nil, errors.New("the layer hash is mandatory in order to build an OriginResource instance")
+		return nil, errors.New("the layer hash is mandatory in order to build an Resource instance")
 	}
 
 	isMandatory := "false"
@@ -84,5 +84,5 @@ func (app *originResourceBuilder) Now() (OriginResource, error) {
 		return nil, err
 	}
 
-	return createOriginResource(*pHash, app.layer, app.isMandatory), nil
+	return createResource(*pHash, app.layer, app.isMandatory), nil
 }

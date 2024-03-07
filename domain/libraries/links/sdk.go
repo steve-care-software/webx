@@ -3,6 +3,7 @@ package links
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
 )
 
 // NewBuilder creates a new builder instance
@@ -73,14 +74,6 @@ func NewOriginBuilder() OriginBuilder {
 func NewOriginValueBuilder() OriginValueBuilder {
 	hashAdapter := hash.NewAdapter()
 	return createOriginValueBuilder(
-		hashAdapter,
-	)
-}
-
-// NewOriginResourceBuilder creates a new origin resource builder
-func NewOriginResourceBuilder() OriginResourceBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createOriginResourceBuilder(
 		hashAdapter,
 	)
 }
@@ -218,7 +211,7 @@ type ConditionResource interface {
 // OriginBuilder represents the origin builder
 type OriginBuilder interface {
 	Create() OriginBuilder
-	WithResource(resource OriginResource) OriginBuilder
+	WithResource(resource resources.Resource) OriginBuilder
 	WithOperator(operator operators.Operator) OriginBuilder
 	WithNext(next OriginValue) OriginBuilder
 	Now() (Origin, error)
@@ -227,7 +220,7 @@ type OriginBuilder interface {
 // Origin represents an origin
 type Origin interface {
 	Hash() hash.Hash
-	Resource() OriginResource
+	Resource() resources.Resource
 	Operator() operators.Operator
 	Next() OriginValue
 }
@@ -235,7 +228,7 @@ type Origin interface {
 // OriginValueBuilder represents the originValue builder
 type OriginValueBuilder interface {
 	Create() OriginValueBuilder
-	WithResource(resource OriginResource) OriginValueBuilder
+	WithResource(resource resources.Resource) OriginValueBuilder
 	WithOrigin(origin Origin) OriginValueBuilder
 	Now() (OriginValue, error)
 }
@@ -244,23 +237,7 @@ type OriginValueBuilder interface {
 type OriginValue interface {
 	Hash() hash.Hash
 	IsResource() bool
-	Resource() OriginResource
+	Resource() resources.Resource
 	IsOrigin() bool
 	Origin() Origin
-}
-
-// OriginResourceBuilder represents the origin resource builder
-type OriginResourceBuilder interface {
-	Create() OriginResourceBuilder
-	WithLayer(layer hash.Hash) OriginResourceBuilder
-	WithLayerBytes(layerBytes []byte) OriginResourceBuilder
-	IsMandatory() OriginResourceBuilder
-	Now() (OriginResource, error)
-}
-
-// OriginResource represents an origin resource
-type OriginResource interface {
-	Hash() hash.Hash
-	Layer() hash.Hash
-	IsMandatory() bool
 }

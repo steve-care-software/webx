@@ -32,19 +32,19 @@ type ConditionResource struct {
 
 // Origin represents an origin
 type Origin struct {
-	Resource OriginResource `json:"resource"`
+	Resource Resource `json:"resource"`
 	Operator Operator       `json:"operator"`
 	Next     OriginValue    `json:"next"`
 }
 
 // OriginValue represents an origin value
 type OriginValue struct {
-	Resource *OriginResource `json:"resource"`
+	Resource *Resource `json:"resource"`
 	Origin   *Origin         `json:"origin"`
 }
 
-// OriginResource represents an origin resource
-type OriginResource struct {
+// Resource represents an origin resource
+type Resource struct {
 	Layer       string `json:"layer"`
 	IsMandatory bool   `json:"is_mandatory"`
 }

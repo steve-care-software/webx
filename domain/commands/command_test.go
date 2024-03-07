@@ -88,10 +88,10 @@ func TestCommand_withParent_Success(t *testing.T) {
 		[]byte("this is an input"),
 		links.NewLinkForTests(
 			links.NewOriginForTests(
-				links.NewOriginResourceForTests(*pFirstLayer),
+				links.NewResourceForTests(*pFirstLayer),
 				links.NewOperatorWithAndForTests(),
 				links.NewOriginValueWithResourceForTests(
-					links.NewOriginResourceForTests(*pSecondLayer),
+					links.NewResourceForTests(*pSecondLayer),
 				),
 			),
 			links.NewElementsForTests([]links.Element{
