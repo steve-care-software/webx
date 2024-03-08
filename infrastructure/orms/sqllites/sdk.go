@@ -11,6 +11,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
@@ -264,8 +265,8 @@ func NewOrmRepository(
 		"library_layer": func(values map[string]interface{}) (orms.Instance, error) {
 			builder := layers.NewLayerBuilder()
 			if value, ok := values["instructions"]; ok {
-				if ins, ok := value.(layers.Instructions); ok {
-					builder.WithInstructions(ins.(layers.Instructions))
+				if ins, ok := value.(instructions.Instructions); ok {
+					builder.WithInstructions(ins.(instructions.Instructions))
 				}
 			}
 
@@ -326,7 +327,7 @@ func NewOrmRepository(
 			return builder.Now()
 		},
 		"library_layer_instruction": func(values map[string]interface{}) (orms.Instance, error) {
-			builder := layers.NewInstructionBuilder()
+			builder := instructions.NewInstructionBuilder()
 			if value, ok := values["assignment"]; ok {
 				if pIns, ok := value.(*orms.Instance); ok {
 					if pIns != nil {
@@ -428,12 +429,12 @@ func NewOrmRepository(
 				Now()
 		},
 		"layer_instructions": func(input []interface{}) (orms.Instance, error) {
-			output := []layers.Instruction{}
+			output := []instructions.Instruction{}
 			for _, oneIns := range input {
-				output = append(output, oneIns.(layers.Instruction))
+				output = append(output, oneIns.(instructions.Instruction))
 			}
 
-			return layers.NewInstructionsBuilder().Create().
+			return instructions.NewBuilder().Create().
 				WithList(output).
 				Now()
 		},
@@ -716,7 +717,7 @@ func NewOrmService(
 			return false, nil, errors.New("the Instance was expected to contain a Kind instance")
 		},
 		"library_layer_instruction": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
-			if casted, ok := ins.(layers.Instruction); ok {
+			if casted, ok := ins.(instructions.Instruction); ok {
 				switch fieldName {
 				case "hash":
 					return true, casted.Hash().Bytes(), nil
@@ -798,7 +799,7 @@ func NewOrmService(
 			return nil, errors.New("the Instance was expected to contain a Layers instance")
 		},
 		"layer_instructions": func(ins orms.Instance) ([]hash.Hash, error) {
-			if ins, ok := ins.(layers.Instructions); ok {
+			if ins, ok := ins.(instructions.Instructions); ok {
 				output := []hash.Hash{}
 				list := ins.List()
 				for _, oneIns := range list {

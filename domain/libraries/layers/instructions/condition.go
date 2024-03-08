@@ -1,4 +1,4 @@
-package layers
+package instructions
 
 import "github.com/steve-care-software/datastencil/domain/hash"
 

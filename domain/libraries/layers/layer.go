@@ -1,17 +1,20 @@
 package layers
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
+)
 
 type layer struct {
 	hash         hash.Hash
-	instructions Instructions
+	instructions instructions.Instructions
 	output       Output
 	input        string
 }
 
 func createLayer(
 	hash hash.Hash,
-	instructions Instructions,
+	instructions instructions.Instructions,
 	output Output,
 	input string,
 ) Layer {
@@ -25,7 +28,7 @@ func createLayer(
 
 func createLayerInternally(
 	hash hash.Hash,
-	instructions Instructions,
+	instructions instructions.Instructions,
 	output Output,
 	input string,
 ) Layer {
@@ -45,7 +48,7 @@ func (obj *layer) Hash() hash.Hash {
 }
 
 // Instructions returns the instructions
-func (obj *layer) Instructions() Instructions {
+func (obj *layer) Instructions() instructions.Instructions {
 	return obj.instructions
 }
 

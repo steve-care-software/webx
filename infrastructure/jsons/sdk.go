@@ -4,6 +4,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
@@ -47,9 +48,9 @@ func NewLayerAdapter() layers.LayerAdapter {
 	layerBuilder := layers.NewLayerBuilder()
 	outputBuilder := layers.NewOutputBuilder()
 	kindBuilder := layers.NewKindBuilder()
-	instructionsBuilder := layers.NewInstructionsBuilder()
-	instructionBuilder := layers.NewInstructionBuilder()
-	conditionBuilder := layers.NewConditionBuilder()
+	instructionsBuilder := instructions.NewBuilder()
+	instructionBuilder := instructions.NewInstructionBuilder()
+	conditionBuilder := instructions.NewConditionBuilder()
 	assignmentBuilder := assignments.NewBuilder()
 	assignableBuilder := assignables.NewBuilder()
 	constantBuilder := constants.NewBuilder()

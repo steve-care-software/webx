@@ -1,12 +1,16 @@
 package layers
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
+)
 
 func TestLayers_withList_Success(t *testing.T) {
 	list := []Layer{
 		NewLayerForTests(
-			NewInstructionsForTests([]Instruction{
-				NewInstructionWithStopForTests(),
+			instructions.NewInstructionsForTests([]instructions.Instruction{
+				instructions.NewInstructionWithStopForTests(),
 			}),
 			NewOutputForTests(
 				"myVariable",

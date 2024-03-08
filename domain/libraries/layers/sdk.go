@@ -2,7 +2,7 @@ package layers
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
 )
 
 // NewBuilder creates a new builder instance
@@ -33,30 +33,6 @@ func NewOutputBuilder() OutputBuilder {
 func NewKindBuilder() KindBuilder {
 	hashAdapter := hash.NewAdapter()
 	return createKindBuilder(
-		hashAdapter,
-	)
-}
-
-// NewInstructionsBuilder creates a new instructions builder
-func NewInstructionsBuilder() InstructionsBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createInstructionsBuilder(
-		hashAdapter,
-	)
-}
-
-// NewInstructionBuilder creates a new instruction builder
-func NewInstructionBuilder() InstructionBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createInstructionBuilder(
-		hashAdapter,
-	)
-}
-
-// NewConditionBuilder creates a new condition builder
-func NewConditionBuilder() ConditionBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createConditionBuilder(
 		hashAdapter,
 	)
 }
@@ -95,7 +71,7 @@ type LayerAdapter interface {
 // LayerBuilder represents a layer builder
 type LayerBuilder interface {
 	Create() LayerBuilder
-	WithInstructions(instructions Instructions) LayerBuilder
+	WithInstructions(instructions instructions.Instructions) LayerBuilder
 	WithOutput(output Output) LayerBuilder
 	WithInput(input string) LayerBuilder
 	Now() (Layer, error)
@@ -104,7 +80,7 @@ type LayerBuilder interface {
 // Layer represents a layer
 type Layer interface {
 	Hash() hash.Hash
-	Instructions() Instructions
+	Instructions() instructions.Instructions
 	Output() Output
 	Input() string
 }
@@ -145,54 +121,4 @@ type Kind interface {
 	Hash() hash.Hash
 	IsPrompt() bool
 	IsContinue() bool
-}
-
-// InstructionsBuilder represents instructions builder
-type InstructionsBuilder interface {
-	Create() InstructionsBuilder
-	WithList(list []Instruction) InstructionsBuilder
-	Now() (Instructions, error)
-}
-
-// Instructions represents instructions
-type Instructions interface {
-	Hash() hash.Hash
-	List() []Instruction
-}
-
-// InstructionBuilder represents an instruction builder
-type InstructionBuilder interface {
-	Create() InstructionBuilder
-	WithRaiseError(raiseError uint) InstructionBuilder
-	WithCondition(condition Condition) InstructionBuilder
-	WithAssignment(assignment assignments.Assignment) InstructionBuilder
-	IsStop() InstructionBuilder
-	Now() (Instruction, error)
-}
-
-// Instruction represents an instruction
-type Instruction interface {
-	Hash() hash.Hash
-	IsStop() bool
-	IsRaiseError() bool
-	RaiseError() uint
-	IsCondition() bool
-	Condition() Condition
-	IsAssignment() bool
-	Assignment() assignments.Assignment
-}
-
-// ConditionBuilder represents a condition builder
-type ConditionBuilder interface {
-	Create() ConditionBuilder
-	WithVariable(variable string) ConditionBuilder
-	WithInstructions(instructions Instructions) ConditionBuilder
-	Now() (Condition, error)
-}
-
-// Condition represents a condition
-type Condition interface {
-	Hash() hash.Hash
-	Variable() string
-	Instructions() Instructions
 }

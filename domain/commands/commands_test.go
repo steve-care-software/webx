@@ -6,6 +6,7 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/commands/results"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
 )
 
 func TestCommands_Success(t *testing.T) {
@@ -13,8 +14,8 @@ func TestCommands_Success(t *testing.T) {
 		NewCommandForTests(
 			[]byte("this is the command input"),
 			layers.NewLayerForTests(
-				layers.NewInstructionsForTests([]layers.Instruction{
-					layers.NewInstructionWithStopForTests(),
+				instructions.NewInstructionsForTests([]instructions.Instruction{
+					instructions.NewInstructionWithStopForTests(),
 				}),
 				layers.NewOutputForTests(
 					"myVariable",

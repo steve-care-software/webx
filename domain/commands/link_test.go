@@ -7,6 +7,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/commands/results"
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
@@ -36,8 +37,8 @@ func TestLink_Success(t *testing.T) {
 	command := NewCommandForTests(
 		[]byte("this is the command input"),
 		layers.NewLayerForTests(
-			layers.NewInstructionsForTests([]layers.Instruction{
-				layers.NewInstructionWithStopForTests(),
+			instructions.NewInstructionsForTests([]instructions.Instruction{
+				instructions.NewInstructionWithStopForTests(),
 			}),
 			layers.NewOutputForTests(
 				"myVariable",
@@ -95,8 +96,8 @@ func TestLink_withoutInput_returnsError(t *testing.T) {
 	command := NewCommandForTests(
 		[]byte("this is the command input"),
 		layers.NewLayerForTests(
-			layers.NewInstructionsForTests([]layers.Instruction{
-				layers.NewInstructionWithStopForTests(),
+			instructions.NewInstructionsForTests([]instructions.Instruction{
+				instructions.NewInstructionWithStopForTests(),
 			}),
 			layers.NewOutputForTests(
 				"myVariable",
@@ -124,8 +125,8 @@ func TestLink_withoutLink_returnsError(t *testing.T) {
 	command := NewCommandForTests(
 		input,
 		layers.NewLayerForTests(
-			layers.NewInstructionsForTests([]layers.Instruction{
-				layers.NewInstructionWithStopForTests(),
+			instructions.NewInstructionsForTests([]instructions.Instruction{
+				instructions.NewInstructionWithStopForTests(),
 			}),
 			layers.NewOutputForTests(
 				"myVariable",

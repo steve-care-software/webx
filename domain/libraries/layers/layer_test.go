@@ -3,11 +3,13 @@ package layers
 import (
 	"reflect"
 	"testing"
+
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
 )
 
 func TestLayer_Success(t *testing.T) {
-	instructions := NewInstructionsForTests([]Instruction{
-		NewInstructionWithStopForTests(),
+	instructions := instructions.NewInstructionsForTests([]instructions.Instruction{
+		instructions.NewInstructionWithStopForTests(),
 	})
 
 	output := NewOutputForTests(
@@ -56,8 +58,8 @@ func TestLayer_withoutInstructions_returnsError(t *testing.T) {
 }
 
 func TestLayer_withoutOutput_returnsError(t *testing.T) {
-	instructions := NewInstructionsForTests([]Instruction{
-		NewInstructionWithStopForTests(),
+	instructions := instructions.NewInstructionsForTests([]instructions.Instruction{
+		instructions.NewInstructionWithStopForTests(),
 	})
 
 	input := "myInput"
@@ -69,8 +71,8 @@ func TestLayer_withoutOutput_returnsError(t *testing.T) {
 }
 
 func TestLayer_withoutInput_returnsError(t *testing.T) {
-	instructions := NewInstructionsForTests([]Instruction{
-		NewInstructionWithStopForTests(),
+	instructions := instructions.NewInstructionsForTests([]instructions.Instruction{
+		instructions.NewInstructionWithStopForTests(),
 	})
 
 	output := NewOutputForTests(

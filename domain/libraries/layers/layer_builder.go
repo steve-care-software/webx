@@ -4,12 +4,13 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
 )
 
 type layerBuilder struct {
 	hashAdapter  hash.Adapter
 	input        string
-	instructions Instructions
+	instructions instructions.Instructions
 	output       Output
 }
 
@@ -34,7 +35,7 @@ func (app *layerBuilder) Create() LayerBuilder {
 }
 
 // WithInstructions add instructions to the builder
-func (app *layerBuilder) WithInstructions(instructions Instructions) LayerBuilder {
+func (app *layerBuilder) WithInstructions(instructions instructions.Instructions) LayerBuilder {
 	app.instructions = instructions
 	return app
 }

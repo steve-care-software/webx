@@ -5,6 +5,7 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
@@ -19,9 +20,9 @@ type layerAdapter struct {
 	layerBuilder        layers.LayerBuilder
 	outputBuilder       layers.OutputBuilder
 	kindBuilder         layers.KindBuilder
-	instructionsBuilder layers.InstructionsBuilder
-	instructionBuilder  layers.InstructionBuilder
-	conditionBuilder    layers.ConditionBuilder
+	instructionsBuilder instructions.Builder
+	instructionBuilder  instructions.InstructionBuilder
+	conditionBuilder    instructions.ConditionBuilder
 	assignmentBuilder   assignments.Builder
 	assignableBuilder   assignables.Builder
 	constantBuilder     constants.Builder
@@ -35,9 +36,9 @@ func createLayerAdapter(
 	layerBuilder layers.LayerBuilder,
 	outputBuilder layers.OutputBuilder,
 	kindBuilder layers.KindBuilder,
-	instructionsBuilder layers.InstructionsBuilder,
-	instructionBuilder layers.InstructionBuilder,
-	conditionBuilder layers.ConditionBuilder,
+	instructionsBuilder instructions.Builder,
+	instructionBuilder instructions.InstructionBuilder,
+	conditionBuilder instructions.ConditionBuilder,
 	assignmentBuilder assignments.Builder,
 	assignableBuilder assignables.Builder,
 	constantBuilder constants.Builder,
@@ -161,7 +162,7 @@ func (app *layerAdapter) toInstanceKind(str structs.Kind) (layers.Kind, error) {
 	return builder.Now()
 }
 
-func (app *layerAdapter) toStructInstructions(ins layers.Instructions) []structs.Instruction {
+func (app *layerAdapter) toStructInstructions(ins instructions.Instructions) []structs.Instruction {
 	list := ins.List()
 	output := []structs.Instruction{}
 	for _, oneInstruction := range list {
@@ -172,8 +173,8 @@ func (app *layerAdapter) toStructInstructions(ins layers.Instructions) []structs
 	return output
 }
 
-func (app *layerAdapter) toInstanceInstructions(list []structs.Instruction) (layers.Instructions, error) {
-	output := []layers.Instruction{}
+func (app *layerAdapter) toInstanceInstructions(list []structs.Instruction) (instructions.Instructions, error) {
+	output := []instructions.Instruction{}
 	for _, oneStr := range list {
 		ins, err := app.toInstanceInstruction(oneStr)
 		if err != nil {
@@ -188,7 +189,7 @@ func (app *layerAdapter) toInstanceInstructions(list []structs.Instruction) (lay
 		Now()
 }
 
-func (app *layerAdapter) toStructInstruction(ins layers.Instruction) structs.Instruction {
+func (app *layerAdapter) toStructInstruction(ins instructions.Instruction) structs.Instruction {
 	output := structs.Instruction{}
 	if ins.IsStop() {
 		output.Stop = true
@@ -211,7 +212,7 @@ func (app *layerAdapter) toStructInstruction(ins layers.Instruction) structs.Ins
 	return output
 }
 
-func (app *layerAdapter) toInstanceInstruction(str structs.Instruction) (layers.Instruction, error) {
+func (app *layerAdapter) toInstanceInstruction(str structs.Instruction) (instructions.Instruction, error) {
 	builder := app.instructionBuilder.Create()
 	if str.Stop {
 		builder.IsStop()
@@ -242,14 +243,14 @@ func (app *layerAdapter) toInstanceInstruction(str structs.Instruction) (layers.
 	return builder.Now()
 }
 
-func (app *layerAdapter) toStructCondition(ins layers.Condition) structs.Condition {
+func (app *layerAdapter) toStructCondition(ins instructions.Condition) structs.Condition {
 	return structs.Condition{
 		Variable:     ins.Variable(),
 		Instructions: app.toStructInstructions(ins.Instructions()),
 	}
 }
 
-func (app *layerAdapter) toInstanceCondition(str structs.Condition) (layers.Condition, error) {
+func (app *layerAdapter) toInstanceCondition(str structs.Condition) (instructions.Condition, error) {
 	instructions, err := app.toInstanceInstructions(str.Instructions)
 	if err != nil {
 		return nil, err

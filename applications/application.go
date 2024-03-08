@@ -10,6 +10,9 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 	layers_bytes "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/executions"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
@@ -361,7 +364,7 @@ func (app *application) executeInstructions(
 	commands commands.Commands,
 	currentLayer layers.Layer,
 	stack stacks.Stack,
-	instructions layers.Instructions,
+	instructions instructions.Instructions,
 ) (stacks.Stack, results.Failure, commands.Commands, error) {
 	var currentFailure results.Failure
 	currentStack := stack
@@ -401,7 +404,7 @@ func (app *application) executeInstruction(
 	currentContext commands.Commands,
 	currentLayer layers.Layer,
 	stack stacks.Stack,
-	instruction layers.Instruction,
+	instruction instructions.Instruction,
 ) (bool, stacks.Stack, results.Failure, commands.Commands, error) {
 	headFrame := stack.Head()
 	if instruction.IsStop() {
@@ -487,7 +490,7 @@ func (app *application) executeCondition(
 	currentContext commands.Commands,
 	currentLayer layers.Layer,
 	stack stacks.Stack,
-	condition layers.Condition,
+	condition instructions.Condition,
 ) (stacks.Stack, results.Failure, commands.Commands, error) {
 	variable := condition.Variable()
 	boolValue, err := stack.Head().FetchBool(variable)
@@ -514,7 +517,7 @@ func (app *application) executeAssignment(
 	currentContext commands.Commands,
 	currentLayer layers.Layer,
 	frame stacks.Frame,
-	assignment layers.Assignment,
+	assignment assignments.Assignment,
 ) (stacks.Frame, results.Failure, commands.Commands, error) {
 	assignable := assignment.Assignable()
 	retAssignable, failure, receipts, err := app.executeAssignable(
@@ -569,7 +572,7 @@ func (app *application) executeAssignable(
 	currentContext commands.Commands,
 	currentLayer layers.Layer,
 	frame stacks.Frame,
-	assignable layers.Assignable,
+	assignable assignables.Assignable,
 ) (stacks.Assignable, results.Failure, commands.Commands, error) {
 	if assignable.IsBytes() {
 		bytesIns := assignable.Bytes()

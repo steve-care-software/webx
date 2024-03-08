@@ -7,6 +7,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/commands/results"
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
@@ -17,8 +18,8 @@ import (
 func TestCommand_Success(t *testing.T) {
 	input := []byte("this is the command input")
 	layer := layers.NewLayerForTests(
-		layers.NewInstructionsForTests([]layers.Instruction{
-			layers.NewInstructionWithStopForTests(),
+		instructions.NewInstructionsForTests([]instructions.Instruction{
+			instructions.NewInstructionWithStopForTests(),
 		}),
 		layers.NewOutputForTests(
 			"myVariable",
@@ -67,8 +68,8 @@ func TestCommand_Success(t *testing.T) {
 func TestCommand_withParent_Success(t *testing.T) {
 	input := []byte("this is the command input")
 	layer := layers.NewLayerForTests(
-		layers.NewInstructionsForTests([]layers.Instruction{
-			layers.NewInstructionWithStopForTests(),
+		instructions.NewInstructionsForTests([]instructions.Instruction{
+			instructions.NewInstructionWithStopForTests(),
 		}),
 		layers.NewOutputForTests(
 			"myVariable",
@@ -105,8 +106,8 @@ func TestCommand_withParent_Success(t *testing.T) {
 		NewCommandForTests(
 			[]byte("this is the command input"),
 			layers.NewLayerForTests(
-				layers.NewInstructionsForTests([]layers.Instruction{
-					layers.NewInstructionWithStopForTests(),
+				instructions.NewInstructionsForTests([]instructions.Instruction{
+					instructions.NewInstructionWithStopForTests(),
 				}),
 				layers.NewOutputForTests(
 					"myVariable",
@@ -162,8 +163,8 @@ func TestCommand_withParent_Success(t *testing.T) {
 
 func TestCommand_withoutInput_returnsError(t *testing.T) {
 	layer := layers.NewLayerForTests(
-		layers.NewInstructionsForTests([]layers.Instruction{
-			layers.NewInstructionWithStopForTests(),
+		instructions.NewInstructionsForTests([]instructions.Instruction{
+			instructions.NewInstructionWithStopForTests(),
 		}),
 		layers.NewOutputForTests(
 			"myVariable",
@@ -188,8 +189,8 @@ func TestCommand_withoutInput_returnsError(t *testing.T) {
 
 func TestCommand_withEmptyInput_returnsError(t *testing.T) {
 	layer := layers.NewLayerForTests(
-		layers.NewInstructionsForTests([]layers.Instruction{
-			layers.NewInstructionWithStopForTests(),
+		instructions.NewInstructionsForTests([]instructions.Instruction{
+			instructions.NewInstructionWithStopForTests(),
 		}),
 		layers.NewOutputForTests(
 			"myVariable",
@@ -231,8 +232,8 @@ func TestCommand_withoutLayer_returnsError(t *testing.T) {
 func TestCommand_withoutResult_returnsError(t *testing.T) {
 	input := []byte("this is the command input")
 	layer := layers.NewLayerForTests(
-		layers.NewInstructionsForTests([]layers.Instruction{
-			layers.NewInstructionWithStopForTests(),
+		instructions.NewInstructionsForTests([]instructions.Instruction{
+			instructions.NewInstructionWithStopForTests(),
 		}),
 		layers.NewOutputForTests(
 			"myVariable",
