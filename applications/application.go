@@ -11,6 +11,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions"
 	links_conditions_resources "github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
@@ -186,7 +187,7 @@ func (app *application) fetchSuccess(
 }
 
 func (app *application) matchLinkCondition(
-	condition links.Condition,
+	condition conditions.Condition,
 	failure results.Failure,
 ) bool {
 	resource := condition.Resource()

@@ -1,11 +1,14 @@
 package links
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions"
+)
 
 type element struct {
 	hash      hash.Hash
 	layer     hash.Hash
-	condition Condition
+	condition conditions.Condition
 }
 
 func createElement(
@@ -18,7 +21,7 @@ func createElement(
 func createElementWithCondition(
 	hash hash.Hash,
 	layer hash.Hash,
-	condition Condition,
+	condition conditions.Condition,
 ) Element {
 	return createElementInternally(hash, layer, condition)
 }
@@ -26,7 +29,7 @@ func createElementWithCondition(
 func createElementInternally(
 	hash hash.Hash,
 	layer hash.Hash,
-	condition Condition,
+	condition conditions.Condition,
 ) Element {
 	out := element{
 		hash:      hash,
@@ -42,7 +45,7 @@ func (obj *element) Hash() hash.Hash {
 	return obj.hash
 }
 
-//  Layer returns the layer
+// Layer returns the layer
 func (obj *element) Layer() hash.Hash {
 	return obj.layer
 }
@@ -53,6 +56,6 @@ func (obj *element) HasCondition() bool {
 }
 
 // Condition returns the condition, if any
-func (obj *element) Condition() Condition {
+func (obj *element) Condition() conditions.Condition {
 	return obj.condition
 }

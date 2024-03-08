@@ -5,6 +5,7 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
@@ -18,8 +19,8 @@ type linkAdapter struct {
 	linkBuilder              links.LinkBuilder
 	elementsBuilder          links.ElementsBuilder
 	elementBuilder           links.ElementBuilder
-	conditionBuilder         links.ConditionBuilder
-	conditionValueBuilder    links.ConditionValueBuilder
+	conditionBuilder         conditions.Builder
+	conditionValueBuilder    conditions.ConditionValueBuilder
 	conditionResourceBuilder resources.Builder
 	originBuilder            origins.Builder
 	originValueBuilder       origins.ValueBuilder
@@ -33,8 +34,8 @@ func createLinkAdapter(
 	linkBuilder links.LinkBuilder,
 	elementsBuilder links.ElementsBuilder,
 	elementBuilder links.ElementBuilder,
-	conditionBuilder links.ConditionBuilder,
-	conditionValueBuilder links.ConditionValueBuilder,
+	conditionBuilder conditions.Builder,
+	conditionValueBuilder conditions.ConditionValueBuilder,
 	conditionResourceBuilder resources.Builder,
 	originBuilder origins.Builder,
 	originValueBuilder origins.ValueBuilder,
@@ -160,7 +161,7 @@ func (app *linkAdapter) toStructElement(ins links.Element) structs.Element {
 	return output
 }
 
-func (app *linkAdapter) toInstanceCondition(str structs.Condition) (links.Condition, error) {
+func (app *linkAdapter) toInstanceCondition(str structs.Condition) (conditions.Condition, error) {
 	resource, err := app.toInstanceConditionResource(str.Resource)
 	if err != nil {
 		return nil, err
@@ -179,7 +180,7 @@ func (app *linkAdapter) toInstanceCondition(str structs.Condition) (links.Condit
 	return builder.Now()
 }
 
-func (app *linkAdapter) toStructCondition(ins links.Condition) structs.Condition {
+func (app *linkAdapter) toStructCondition(ins conditions.Condition) structs.Condition {
 	output := structs.Condition{
 		Resource: app.toStructConditionResource(ins.Resource()),
 	}
@@ -192,7 +193,7 @@ func (app *linkAdapter) toStructCondition(ins links.Condition) structs.Condition
 	return output
 }
 
-func (app *linkAdapter) toInstanceConditionValue(str structs.ConditionValue) (links.ConditionValue, error) {
+func (app *linkAdapter) toInstanceConditionValue(str structs.ConditionValue) (conditions.ConditionValue, error) {
 	builder := app.conditionValueBuilder.Create()
 	if str.Resource != nil {
 		resource, err := app.toInstanceConditionResource(*str.Resource)
@@ -215,7 +216,7 @@ func (app *linkAdapter) toInstanceConditionValue(str structs.ConditionValue) (li
 	return builder.Now()
 }
 
-func (app *linkAdapter) toStructConditionValue(ins links.ConditionValue) structs.ConditionValue {
+func (app *linkAdapter) toStructConditionValue(ins conditions.ConditionValue) structs.ConditionValue {
 	output := structs.ConditionValue{}
 	if ins.IsResource() {
 		resource := app.toStructConditionResource(ins.Resource())

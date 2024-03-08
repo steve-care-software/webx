@@ -1,4 +1,4 @@
-package links
+package conditions
 
 import (
 	"errors"
@@ -7,16 +7,16 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
 )
 
-type conditionBuilder struct {
+type builder struct {
 	hashAdapter hash.Adapter
 	resource    resources.Resource
 	next        ConditionValue
 }
 
-func createConditionBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) ConditionBuilder {
-	out := conditionBuilder{
+) Builder {
+	out := builder{
 		hashAdapter: hashAdapter,
 		resource:    nil,
 		next:        nil,
@@ -26,26 +26,26 @@ func createConditionBuilder(
 }
 
 // Create initializes the builder
-func (app *conditionBuilder) Create() ConditionBuilder {
-	return createConditionBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithResource adds a resource builder
-func (app *conditionBuilder) WithResource(resource resources.Resource) ConditionBuilder {
+func (app *builder) WithResource(resource resources.Resource) Builder {
 	app.resource = resource
 	return app
 }
 
 // WithNext adds a next value to the builder builder
-func (app *conditionBuilder) WithNext(next ConditionValue) ConditionBuilder {
+func (app *builder) WithNext(next ConditionValue) Builder {
 	app.next = next
 	return app
 }
 
 // Now builds a new Condition instance
-func (app *conditionBuilder) Now() (Condition, error) {
+func (app *builder) Now() (Condition, error) {
 	if app.resource == nil {
 		return nil, errors.New("the resource is mandatory in order to build an Condition instance")
 	}

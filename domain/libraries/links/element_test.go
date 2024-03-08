@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
 )
 
@@ -25,7 +26,7 @@ func TestElement_Success(t *testing.T) {
 }
 
 func TestElement_withCondition_Success(t *testing.T) {
-	condition := NewConditionForTests(
+	condition := conditions.NewConditionForTests(
 		resources.NewResourceForTests(23),
 	)
 

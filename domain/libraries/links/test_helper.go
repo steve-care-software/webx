@@ -2,7 +2,7 @@ package links
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
 )
 
@@ -37,7 +37,7 @@ func NewElementsForTests(list []Element) Elements {
 }
 
 // NewElementWithConditionForTests creates a new element with condition  for tests
-func NewElementWithConditionForTests(layer hash.Hash, condition Condition) Element {
+func NewElementWithConditionForTests(layer hash.Hash, condition conditions.Condition) Element {
 	ins, err := NewElementBuilder().Create().WithLayer(layer).WithCondition(condition).Now()
 	if err != nil {
 		panic(err)
@@ -49,46 +49,6 @@ func NewElementWithConditionForTests(layer hash.Hash, condition Condition) Eleme
 // NewElementForTests creates a new element for tests
 func NewElementForTests(layer hash.Hash) Element {
 	ins, err := NewElementBuilder().Create().WithLayer(layer).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewConditionWithNextForTests creates a new condition with next for tests
-func NewConditionWithNextForTests(resource resources.Resource, next ConditionValue) Condition {
-	ins, err := NewConditionBuilder().Create().WithResource(resource).WithNext(next).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewConditionForTests creates a new condition for tests
-func NewConditionForTests(resource resources.Resource) Condition {
-	ins, err := NewConditionBuilder().Create().WithResource(resource).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewConditionValueWithConditionForTests creates a new condition value with condition for tests
-func NewConditionValueWithConditionForTests(condition Condition) ConditionValue {
-	ins, err := NewConditionValueBuilder().Create().WithCondition(condition).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewConditionValueWithResourceForTests creates a new condition value with resource for tests
-func NewConditionValueWithResourceForTests(resource resources.Resource) ConditionValue {
-	ins, err := NewConditionValueBuilder().Create().WithResource(resource).Now()
 	if err != nil {
 		panic(err)
 	}

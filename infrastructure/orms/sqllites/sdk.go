@@ -12,6 +12,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions"
 	conditions_resources "github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
@@ -92,7 +93,7 @@ func NewOrmRepository(
 				if pIns, ok := value.(*orms.Instance); ok {
 					if pIns != nil {
 						ins := *pIns
-						builder.WithCondition(ins.(links.Condition))
+						builder.WithCondition(ins.(conditions.Condition))
 					}
 				}
 			}
@@ -100,7 +101,7 @@ func NewOrmRepository(
 			return builder.Now()
 		},
 		"library_link_element_condition": func(values map[string]interface{}) (orms.Instance, error) {
-			builder := links.NewConditionBuilder()
+			builder := conditions.NewBuilder()
 			if value, ok := values["resource"]; ok {
 				if pIns, ok := value.(*orms.Instance); ok {
 					if pIns != nil {
@@ -114,7 +115,7 @@ func NewOrmRepository(
 				if pIns, ok := value.(*orms.Instance); ok {
 					if pIns != nil {
 						ins := *pIns
-						builder.WithNext(ins.(links.ConditionValue))
+						builder.WithNext(ins.(conditions.ConditionValue))
 					}
 				}
 			}
@@ -122,7 +123,7 @@ func NewOrmRepository(
 			return builder.Now()
 		},
 		"library_link_element_condition_value": func(values map[string]interface{}) (orms.Instance, error) {
-			builder := links.NewConditionValueBuilder()
+			builder := conditions.NewConditionValueBuilder()
 			if value, ok := values["resource"]; ok {
 				if pIns, ok := value.(*orms.Instance); ok {
 					if pIns != nil {
@@ -136,7 +137,7 @@ func NewOrmRepository(
 				if pIns, ok := value.(*orms.Instance); ok {
 					if pIns != nil {
 						ins := *pIns
-						builder.WithCondition(ins.(links.Condition))
+						builder.WithCondition(ins.(conditions.Condition))
 					}
 				}
 			}
@@ -512,7 +513,7 @@ func NewOrmService(
 			return false, nil, errors.New("the Instance was expected to contain an Element instance")
 		},
 		"library_link_element_condition": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
-			if casted, ok := ins.(links.Condition); ok {
+			if casted, ok := ins.(conditions.Condition); ok {
 				switch fieldName {
 				case "hash":
 					return true, casted.Hash().Bytes(), nil
@@ -533,7 +534,7 @@ func NewOrmService(
 			return false, nil, errors.New("the Instance was expected to contain a Condition instance")
 		},
 		"library_link_element_condition_value": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
-			if casted, ok := ins.(links.ConditionValue); ok {
+			if casted, ok := ins.(conditions.ConditionValue); ok {
 				switch fieldName {
 				case "hash":
 					return true, casted.Hash().Bytes(), nil

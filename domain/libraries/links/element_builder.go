@@ -4,13 +4,14 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions"
 )
 
 type elementBuilder struct {
 	hashAdapter hash.Adapter
 	layer       hash.Hash
 	layerBytes  []byte
-	condition   Condition
+	condition   conditions.Condition
 }
 
 func createElementBuilder(
@@ -40,7 +41,7 @@ func (app *elementBuilder) WithLayer(layer hash.Hash) ElementBuilder {
 }
 
 // WithCondition adds a condition to the builder
-func (app *elementBuilder) WithCondition(condition Condition) ElementBuilder {
+func (app *elementBuilder) WithCondition(condition conditions.Condition) ElementBuilder {
 	app.condition = condition
 	return app
 }

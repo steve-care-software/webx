@@ -13,6 +13,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions"
 	conditions_resources "github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
@@ -198,7 +199,7 @@ func TestOrm_Success(t *testing.T) {
 				},
 				instance: links.NewElementWithConditionForTests(
 					*pHash,
-					links.NewConditionForTests(
+					conditions.NewConditionForTests(
 						conditions_resources.NewResourceForTests(22),
 					),
 				),
@@ -218,7 +219,7 @@ func TestOrm_Success(t *testing.T) {
 					"element",
 					"condition",
 				},
-				instance: links.NewConditionForTests(
+				instance: conditions.NewConditionForTests(
 					conditions_resources.NewResourceForTests(22),
 				),
 				dependencies: []typeDependency{
@@ -235,9 +236,9 @@ func TestOrm_Success(t *testing.T) {
 					"element",
 					"condition",
 				},
-				instance: links.NewConditionWithNextForTests(
+				instance: conditions.NewConditionWithNextForTests(
 					conditions_resources.NewResourceForTests(22),
-					links.NewConditionValueWithResourceForTests(
+					conditions.NewConditionValueWithResourceForTests(
 						conditions_resources.NewResourceForTests(22),
 					),
 				),
@@ -262,7 +263,7 @@ func TestOrm_Success(t *testing.T) {
 					"condition",
 					"value",
 				},
-				instance: links.NewConditionValueWithResourceForTests(
+				instance: conditions.NewConditionValueWithResourceForTests(
 					conditions_resources.NewResourceForTests(22),
 				),
 				dependencies: []typeDependency{
@@ -280,8 +281,8 @@ func TestOrm_Success(t *testing.T) {
 					"condition",
 					"value",
 				},
-				instance: links.NewConditionValueWithConditionForTests(
-					links.NewConditionForTests(
+				instance: conditions.NewConditionValueWithConditionForTests(
+					conditions.NewConditionForTests(
 						conditions_resources.NewResourceForTests(22),
 					),
 				),
