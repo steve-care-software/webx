@@ -1,17 +1,18 @@
-package logics
+package applications
 
 import (
-	"github.com/steve-care-software/datastencil/domain/commands"
-	"github.com/steve-care-software/datastencil/domain/libraries"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/applications/accounts"
+	"github.com/steve-care-software/datastencil/applications/compilers"
+	"github.com/steve-care-software/datastencil/applications/cryptography"
+	"github.com/steve-care-software/datastencil/applications/orms"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/executions"
 )
 
-// Application represents the logic application
+// Application represents the application
 type Application interface {
-	Execute(
-		input []byte,
-		layer layers.Layer,
-		library libraries.Library,
-		context commands.Commands,
-	) (commands.Commands, error)
+	Account() accounts.Application
+	Compile() compilers.Application
+	Cryptography() cryptography.Application
+	Execution() executions.Execution
+	ORM() orms.Application
 }

@@ -16,7 +16,7 @@ func createAccount(
 	encryptor encryptors.Encryptor,
 	signer signers.Signer,
 ) Account {
-	return createAccountInternally(username, encryptor, signer, nil)
+	return createAccountInternally(username, encryptor, signer)
 }
 
 func createAccountInternally(

@@ -10,6 +10,18 @@ type Instance interface {
 	Hash() hash.Hash
 }
 
+// Resources represents resources
+type Resources interface {
+	Hash() hash.Hash
+	List() []Resource
+}
+
+// Resource represents a resource
+type Resource interface {
+	Path() []string
+	Instance() Instance
+}
+
 // RepositoryBuilder represents the repository builder
 type RepositoryBuilder interface {
 	Create() RepositoryBuilder

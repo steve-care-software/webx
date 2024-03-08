@@ -1,9 +1,9 @@
 package accounts
 
 import (
+	"github.com/steve-care-software/datastencil/domain/accounts/credentials"
 	account_encryptors "github.com/steve-care-software/datastencil/domain/accounts/encryptors"
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
-	"steve.care/network/domain/credentials"
 )
 
 // NewBuilder creates a new builder instance
