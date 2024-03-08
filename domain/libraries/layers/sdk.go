@@ -3,6 +3,7 @@ package layers
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 )
 
 // NewBuilder creates a new builder instance
@@ -25,14 +26,6 @@ func NewLayerBuilder() LayerBuilder {
 func NewOutputBuilder() OutputBuilder {
 	hashAdapter := hash.NewAdapter()
 	return createOutputBuilder(
-		hashAdapter,
-	)
-}
-
-// NewKindBuilder creates a new kind builder
-func NewKindBuilder() KindBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createKindBuilder(
 		hashAdapter,
 	)
 }
@@ -94,7 +87,7 @@ type LayerRepository interface {
 type OutputBuilder interface {
 	Create() OutputBuilder
 	WithVariable(variable string) OutputBuilder
-	WithKind(kind Kind) OutputBuilder
+	WithKind(kind kinds.Kind) OutputBuilder
 	WithExecute(execute string) OutputBuilder
 	Now() (Output, error)
 }
@@ -103,22 +96,7 @@ type OutputBuilder interface {
 type Output interface {
 	Hash() hash.Hash
 	Variable() string
-	Kind() Kind
+	Kind() kinds.Kind
 	HasExecute() bool
 	Execute() string
-}
-
-// KindBuilder represents a kind builder
-type KindBuilder interface {
-	Create() KindBuilder
-	IsPrompt() KindBuilder
-	IsContinue() KindBuilder
-	Now() (Kind, error)
-}
-
-// Kind represents the output kind
-type Kind interface {
-	Hash() hash.Hash
-	IsPrompt() bool
-	IsContinue() bool
 }

@@ -4,12 +4,13 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 )
 
 type outputBuilder struct {
 	hashAdapter hash.Adapter
 	variable    string
-	kind        Kind
+	kind        kinds.Kind
 	execute     string
 }
 
@@ -40,7 +41,7 @@ func (app *outputBuilder) WithVariable(variable string) OutputBuilder {
 }
 
 // WithKind adds a kind to the builder
-func (app *outputBuilder) WithKind(kind Kind) OutputBuilder {
+func (app *outputBuilder) WithKind(kind kinds.Kind) OutputBuilder {
 	app.kind = kind
 	return app
 }

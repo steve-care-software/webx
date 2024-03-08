@@ -16,6 +16,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 	layers_bytes "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions"
@@ -79,7 +80,7 @@ func TestOrm_Success(t *testing.T) {
 							}),
 							layers.NewOutputForTests(
 								"myVariable",
-								layers.NewKindWithContinueForTests(),
+								kinds.NewKindWithContinueForTests(),
 							),
 							"some input",
 						),
@@ -111,7 +112,7 @@ func TestOrm_Success(t *testing.T) {
 							}),
 							layers.NewOutputForTests(
 								"myVariable",
-								layers.NewKindWithContinueForTests(),
+								kinds.NewKindWithContinueForTests(),
 							),
 							"some input",
 						),
@@ -475,7 +476,7 @@ func TestOrm_Success(t *testing.T) {
 					}),
 					layers.NewOutputForTests(
 						"myVariable",
-						layers.NewKindWithContinueForTests(),
+						kinds.NewKindWithContinueForTests(),
 					),
 					"some input",
 				),
@@ -500,7 +501,7 @@ func TestOrm_Success(t *testing.T) {
 				},
 				instance: layers.NewOutputForTests(
 					"myVariable",
-					layers.NewKindWithContinueForTests(),
+					kinds.NewKindWithContinueForTests(),
 				),
 				dependencies: []typeDependency{
 					{
@@ -517,7 +518,7 @@ func TestOrm_Success(t *testing.T) {
 				},
 				instance: layers.NewOutputWithExecuteForTests(
 					"myVariable",
-					layers.NewKindWithContinueForTests(),
+					kinds.NewKindWithContinueForTests(),
 					"some command to execute",
 				),
 				dependencies: []typeDependency{
@@ -536,7 +537,7 @@ func TestOrm_Success(t *testing.T) {
 					"output",
 					"kind",
 				},
-				instance: layers.NewKindWithContinueForTests(),
+				instance: kinds.NewKindWithContinueForTests(),
 			},
 			{
 				path: []string{
@@ -545,7 +546,7 @@ func TestOrm_Success(t *testing.T) {
 					"output",
 					"kind",
 				},
-				instance: layers.NewKindWithPromptForTests(),
+				instance: kinds.NewKindWithPromptForTests(),
 			},
 		},
 		"library_layer_instruction": {

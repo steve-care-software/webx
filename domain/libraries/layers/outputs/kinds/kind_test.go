@@ -1,4 +1,4 @@
-package layers
+package kinds
 
 import "testing"
 

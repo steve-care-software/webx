@@ -11,6 +11,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/executions"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 	structs "github.com/steve-care-software/datastencil/infrastructure/jsons/structs/libraries/layers"
 )
 
@@ -19,7 +20,7 @@ type layerAdapter struct {
 	builder             layers.Builder
 	layerBuilder        layers.LayerBuilder
 	outputBuilder       layers.OutputBuilder
-	kindBuilder         layers.KindBuilder
+	kindBuilder         kinds.KindBuilder
 	instructionsBuilder instructions.Builder
 	instructionBuilder  instructions.InstructionBuilder
 	conditionBuilder    instructions.ConditionBuilder
@@ -35,7 +36,7 @@ func createLayerAdapter(
 	builder layers.Builder,
 	layerBuilder layers.LayerBuilder,
 	outputBuilder layers.OutputBuilder,
-	kindBuilder layers.KindBuilder,
+	kindBuilder kinds.KindBuilder,
 	instructionsBuilder instructions.Builder,
 	instructionBuilder instructions.InstructionBuilder,
 	conditionBuilder instructions.ConditionBuilder,
@@ -142,14 +143,14 @@ func (app *layerAdapter) toInstanceOutput(str structs.Output) (layers.Output, er
 	return builder.Now()
 }
 
-func (app *layerAdapter) toStructKind(ins layers.Kind) structs.Kind {
+func (app *layerAdapter) toStructKind(ins kinds.Kind) structs.Kind {
 	return structs.Kind{
 		Prompt:   ins.IsPrompt(),
 		Continue: ins.IsContinue(),
 	}
 }
 
-func (app *layerAdapter) toInstanceKind(str structs.Kind) (layers.Kind, error) {
+func (app *layerAdapter) toInstanceKind(str structs.Kind) (kinds.Kind, error) {
 	builder := app.kindBuilder.Create()
 	if str.Prompt {
 		builder.IsPrompt()

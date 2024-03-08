@@ -2,19 +2,20 @@ package layers
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 )
 
 type output struct {
 	hash     hash.Hash
 	variable string
-	kind     Kind
+	kind     kinds.Kind
 	execute  string
 }
 
 func createOutput(
 	hash hash.Hash,
 	variable string,
-	kind Kind,
+	kind kinds.Kind,
 ) Output {
 	return createOutputInternally(hash, variable, kind, "")
 }
@@ -22,7 +23,7 @@ func createOutput(
 func createOutputWithExecute(
 	hash hash.Hash,
 	variable string,
-	kind Kind,
+	kind kinds.Kind,
 	execute string,
 ) Output {
 	return createOutputInternally(hash, variable, kind, execute)
@@ -31,7 +32,7 @@ func createOutputWithExecute(
 func createOutputInternally(
 	hash hash.Hash,
 	variable string,
-	kind Kind,
+	kind kinds.Kind,
 	execute string,
 ) Output {
 	out := output{
@@ -55,7 +56,7 @@ func (obj *output) Variable() string {
 }
 
 // Kind returns the kind
-func (obj *output) Kind() Kind {
+func (obj *output) Kind() kinds.Kind {
 	return obj.kind
 }
 

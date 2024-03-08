@@ -3,11 +3,13 @@ package layers
 import (
 	"reflect"
 	"testing"
+
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 )
 
 func TestOutput_Success(t *testing.T) {
 	variable := "myVariable"
-	kind := NewKindWithPromptForTests()
+	kind := kinds.NewKindWithPromptForTests()
 	output := NewOutputForTests(variable, kind)
 
 	retVariable := output.Variable()
@@ -30,7 +32,7 @@ func TestOutput_Success(t *testing.T) {
 
 func TestOutput_withExecute_Success(t *testing.T) {
 	variable := "myVariable"
-	kind := NewKindWithPromptForTests()
+	kind := kinds.NewKindWithPromptForTests()
 	execute := "this is a command to execute"
 	output := NewOutputWithExecuteForTests(variable, kind, execute)
 
@@ -59,7 +61,7 @@ func TestOutput_withExecute_Success(t *testing.T) {
 }
 
 func TestOutput_withoutVariable_returnsError(t *testing.T) {
-	kind := NewKindWithPromptForTests()
+	kind := kinds.NewKindWithPromptForTests()
 	_, err := NewOutputBuilder().Create().WithKind(kind).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")

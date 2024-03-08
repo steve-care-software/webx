@@ -16,6 +16,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 	layers_bytes "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions"
@@ -297,7 +298,7 @@ func NewOrmRepository(
 				if pIns, ok := value.(*orms.Instance); ok {
 					if pIns != nil {
 						ins := *pIns
-						builder.WithKind(ins.(layers.Kind))
+						builder.WithKind(ins.(kinds.Kind))
 					}
 				}
 			}
@@ -311,7 +312,7 @@ func NewOrmRepository(
 			return builder.Now()
 		},
 		"library_layer_output_kind": func(values map[string]interface{}) (orms.Instance, error) {
-			builder := layers.NewKindBuilder()
+			builder := kinds.NewKindBuilder()
 			if value, ok := values["prompt"]; ok {
 				if value.(int64) != 0 {
 					builder.IsPrompt()
@@ -700,7 +701,7 @@ func NewOrmService(
 			return false, nil, errors.New("the Instance was expected to contain an Output instance")
 		},
 		"library_layer_output_kind": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
-			if casted, ok := ins.(layers.Kind); ok {
+			if casted, ok := ins.(kinds.Kind); ok {
 				switch fieldName {
 				case "hash":
 					return true, casted.Hash().Bytes(), nil

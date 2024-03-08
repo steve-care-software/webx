@@ -2,19 +2,19 @@ package results
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 )
 
 type success struct {
 	hash  hash.Hash
 	bytes []byte
-	kind  layers.Kind
+	kind  kinds.Kind
 }
 
 func createSuccess(
 	hash hash.Hash,
 	bytes []byte,
-	kind layers.Kind,
+	kind kinds.Kind,
 ) Success {
 	out := success{
 		hash:  hash,
@@ -36,6 +36,6 @@ func (obj *success) Bytes() []byte {
 }
 
 // Kind returns the kind
-func (obj *success) Kind() layers.Kind {
+func (obj *success) Kind() kinds.Kind {
 	return obj.kind
 }

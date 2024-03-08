@@ -1,6 +1,6 @@
 package results
 
-import "github.com/steve-care-software/datastencil/domain/libraries/layers"
+import "github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 
 // NewResultWithFailureForTests creates a new result with failure for tests
 func NewResultWithFailureForTests(failure Failure) Result {
@@ -23,7 +23,7 @@ func NewResultWithSuccessForTests(success Success) Result {
 }
 
 // NewSuccessForTests creates a new success for tests
-func NewSuccessForTests(bytes []byte, kind layers.Kind) Success {
+func NewSuccessForTests(bytes []byte, kind kinds.Kind) Success {
 	ins, err := NewSuccessBuilder().Create().WithBytes(bytes).WithKind(kind).Now()
 	if err != nil {
 		panic(err)

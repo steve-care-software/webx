@@ -1,8 +1,8 @@
 package results
 
 import (
-	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 )
 
 const (
@@ -64,7 +64,7 @@ type Result interface {
 type SuccessBuilder interface {
 	Create() SuccessBuilder
 	WithBytes(bytes []byte) SuccessBuilder
-	WithKind(kind layers.Kind) SuccessBuilder
+	WithKind(kind kinds.Kind) SuccessBuilder
 	Now() (Success, error)
 }
 
@@ -72,7 +72,7 @@ type SuccessBuilder interface {
 type Success interface {
 	Hash() hash.Hash
 	Bytes() []byte
-	Kind() layers.Kind
+	Kind() kinds.Kind
 }
 
 // FailureBuilder represents the failure builder

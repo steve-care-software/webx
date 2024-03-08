@@ -4,13 +4,13 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 )
 
 type successBuilder struct {
 	hashAdapter hash.Adapter
 	bytes       []byte
-	kind        layers.Kind
+	kind        kinds.Kind
 }
 
 func createSuccessBuilder(
@@ -39,7 +39,7 @@ func (app *successBuilder) WithBytes(bytes []byte) SuccessBuilder {
 }
 
 // WithKind add kind to the builder
-func (app *successBuilder) WithKind(kind layers.Kind) SuccessBuilder {
+func (app *successBuilder) WithKind(kind kinds.Kind) SuccessBuilder {
 	app.kind = kind
 	return app
 }

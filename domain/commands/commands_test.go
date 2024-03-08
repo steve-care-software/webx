@@ -7,6 +7,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/commands/results"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 )
 
 func TestCommands_Success(t *testing.T) {
@@ -19,14 +20,14 @@ func TestCommands_Success(t *testing.T) {
 				}),
 				layers.NewOutputForTests(
 					"myVariable",
-					layers.NewKindWithContinueForTests(),
+					kinds.NewKindWithContinueForTests(),
 				),
 				"someInput",
 			),
 			results.NewResultWithSuccessForTests(
 				results.NewSuccessForTests(
 					[]byte("this is some bytes"),
-					layers.NewKindWithPromptForTests(),
+					kinds.NewKindWithPromptForTests(),
 				),
 			),
 		),

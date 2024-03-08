@@ -4,13 +4,13 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 )
 
 func TestResult_withSuccess_Success(t *testing.T) {
 	success := NewSuccessForTests(
 		[]byte("this is some bytes"),
-		layers.NewKindWithPromptForTests(),
+		kinds.NewKindWithPromptForTests(),
 	)
 
 	ins := NewResultWithSuccessForTests(success)

@@ -5,12 +5,12 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 )
 
 func TestSuccess_Success(t *testing.T) {
 	value := []byte("this is some bytes")
-	kind := layers.NewKindWithPromptForTests()
+	kind := kinds.NewKindWithPromptForTests()
 	ins := NewSuccessForTests(value, kind)
 	retBytes := ins.Bytes()
 	if !bytes.Equal(value, retBytes) {
@@ -26,7 +26,7 @@ func TestSuccess_Success(t *testing.T) {
 }
 
 func TestSuccess_withoutBytes_returnsError(t *testing.T) {
-	kind := layers.NewKindWithPromptForTests()
+	kind := kinds.NewKindWithPromptForTests()
 	_, err := NewSuccessBuilder().Create().WithKind(kind).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")

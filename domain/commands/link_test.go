@@ -8,6 +8,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
@@ -42,14 +43,14 @@ func TestLink_Success(t *testing.T) {
 			}),
 			layers.NewOutputForTests(
 				"myVariable",
-				layers.NewKindWithContinueForTests(),
+				kinds.NewKindWithContinueForTests(),
 			),
 			"someInput",
 		),
 		results.NewResultWithSuccessForTests(
 			results.NewSuccessForTests(
 				[]byte("this is some bytes"),
-				layers.NewKindWithPromptForTests(),
+				kinds.NewKindWithPromptForTests(),
 			),
 		),
 	)
@@ -101,14 +102,14 @@ func TestLink_withoutInput_returnsError(t *testing.T) {
 			}),
 			layers.NewOutputForTests(
 				"myVariable",
-				layers.NewKindWithContinueForTests(),
+				kinds.NewKindWithContinueForTests(),
 			),
 			"someInput",
 		),
 		results.NewResultWithSuccessForTests(
 			results.NewSuccessForTests(
 				[]byte("this is some bytes"),
-				layers.NewKindWithPromptForTests(),
+				kinds.NewKindWithPromptForTests(),
 			),
 		),
 	)
@@ -130,14 +131,14 @@ func TestLink_withoutLink_returnsError(t *testing.T) {
 			}),
 			layers.NewOutputForTests(
 				"myVariable",
-				layers.NewKindWithContinueForTests(),
+				kinds.NewKindWithContinueForTests(),
 			),
 			"someInput",
 		),
 		results.NewResultWithSuccessForTests(
 			results.NewSuccessForTests(
 				[]byte("this is some bytes"),
-				layers.NewKindWithPromptForTests(),
+				kinds.NewKindWithPromptForTests(),
 			),
 		),
 	)
