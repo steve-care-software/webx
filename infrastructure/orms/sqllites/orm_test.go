@@ -13,6 +13,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions"
 	conditions_resources "github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
@@ -124,8 +125,8 @@ func TestOrm_Success(t *testing.T) {
 									),
 								),
 							),
-							links.NewElementsForTests([]links.Element{
-								links.NewElementForTests(
+							elements.NewElementsForTests([]elements.Element{
+								elements.NewElementForTests(
 									*pHash,
 								),
 							}),
@@ -162,8 +163,8 @@ func TestOrm_Success(t *testing.T) {
 							),
 						),
 					),
-					links.NewElementsForTests([]links.Element{
-						links.NewElementForTests(
+					elements.NewElementsForTests([]elements.Element{
+						elements.NewElementForTests(
 							*pHash,
 						),
 					}),
@@ -187,7 +188,7 @@ func TestOrm_Success(t *testing.T) {
 					"link",
 					"element",
 				},
-				instance: links.NewElementForTests(
+				instance: elements.NewElementForTests(
 					*pHash,
 				),
 			},
@@ -197,7 +198,7 @@ func TestOrm_Success(t *testing.T) {
 					"link",
 					"element",
 				},
-				instance: links.NewElementWithConditionForTests(
+				instance: elements.NewElementWithConditionForTests(
 					*pHash,
 					conditions.NewConditionForTests(
 						conditions_resources.NewResourceForTests(22),

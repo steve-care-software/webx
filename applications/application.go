@@ -11,6 +11,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions"
 	links_conditions_resources "github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
 	"github.com/steve-care-software/datastencil/domain/stacks"
@@ -136,7 +137,7 @@ func (app *application) executeLink(
 }
 
 func (app *application) executeLinkElement(
-	element links.Element,
+	element elements.Element,
 	library libraries.Library,
 	previousSuccess results.Success,
 	context commands.Commands,

@@ -8,6 +8,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
@@ -27,8 +28,8 @@ func TestLink_Success(t *testing.T) {
 				resources.NewResourceForTests(*pSecondLayer),
 			),
 		),
-		links.NewElementsForTests([]links.Element{
-			links.NewElementForTests(*pLayer),
+		elements.NewElementsForTests([]elements.Element{
+			elements.NewElementForTests(*pLayer),
 		}),
 	)
 
@@ -86,8 +87,8 @@ func TestLink_withoutInput_returnsError(t *testing.T) {
 				resources.NewResourceForTests(*pSecondLayer),
 			),
 		),
-		links.NewElementsForTests([]links.Element{
-			links.NewElementForTests(*pLayer),
+		elements.NewElementsForTests([]elements.Element{
+			elements.NewElementForTests(*pLayer),
 		}),
 	)
 
@@ -161,8 +162,8 @@ func TestLink_withoutCommand_returnsError(t *testing.T) {
 				resources.NewResourceForTests(*pSecondLayer),
 			),
 		),
-		links.NewElementsForTests([]links.Element{
-			links.NewElementForTests(*pLayer),
+		elements.NewElementsForTests([]elements.Element{
+			elements.NewElementForTests(*pLayer),
 		}),
 	)
 

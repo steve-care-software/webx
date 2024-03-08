@@ -1,9 +1,9 @@
 package commands
 
 import (
+	"github.com/steve-care-software/datastencil/domain/commands/results"
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
-	"github.com/steve-care-software/datastencil/domain/commands/results"
 )
 
 type command struct {

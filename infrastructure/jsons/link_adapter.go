@@ -5,6 +5,7 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
@@ -17,8 +18,8 @@ type linkAdapter struct {
 	hashAdapter              hash.Adapter
 	builder                  links.Builder
 	linkBuilder              links.LinkBuilder
-	elementsBuilder          links.ElementsBuilder
-	elementBuilder           links.ElementBuilder
+	elementsBuilder          elements.Builder
+	elementBuilder           elements.ElementBuilder
 	conditionBuilder         conditions.Builder
 	conditionValueBuilder    conditions.ConditionValueBuilder
 	conditionResourceBuilder resources.Builder
@@ -32,8 +33,8 @@ func createLinkAdapter(
 	hashAdapter hash.Adapter,
 	builder links.Builder,
 	linkBuilder links.LinkBuilder,
-	elementsBuilder links.ElementsBuilder,
-	elementBuilder links.ElementBuilder,
+	elementsBuilder elements.Builder,
+	elementBuilder elements.ElementBuilder,
 	conditionBuilder conditions.Builder,
 	conditionValueBuilder conditions.ConditionValueBuilder,
 	conditionResourceBuilder resources.Builder,
@@ -103,8 +104,8 @@ func (app *linkAdapter) toStructLink(ins links.Link) structs.Link {
 	}
 }
 
-func (app *linkAdapter) toInstanceElements(list []structs.Element) (links.Elements, error) {
-	output := []links.Element{}
+func (app *linkAdapter) toInstanceElements(list []structs.Element) (elements.Elements, error) {
+	output := []elements.Element{}
 	for _, oneElement := range list {
 		ins, err := app.toInstanceElement(oneElement)
 		if err != nil {
@@ -119,7 +120,7 @@ func (app *linkAdapter) toInstanceElements(list []structs.Element) (links.Elemen
 		Now()
 }
 
-func (app *linkAdapter) toStructElements(ins links.Elements) []structs.Element {
+func (app *linkAdapter) toStructElements(ins elements.Elements) []structs.Element {
 	output := []structs.Element{}
 	list := ins.List()
 	for _, oneElement := range list {
@@ -129,7 +130,7 @@ func (app *linkAdapter) toStructElements(ins links.Elements) []structs.Element {
 	return output
 }
 
-func (app *linkAdapter) toInstanceElement(str structs.Element) (links.Element, error) {
+func (app *linkAdapter) toInstanceElement(str structs.Element) (elements.Element, error) {
 	pHash, err := app.hashAdapter.FromString(str.Layer)
 	if err != nil {
 		return nil, err
@@ -148,7 +149,7 @@ func (app *linkAdapter) toInstanceElement(str structs.Element) (links.Element, e
 	return builder.Now()
 }
 
-func (app *linkAdapter) toStructElement(ins links.Element) structs.Element {
+func (app *linkAdapter) toStructElement(ins elements.Element) structs.Element {
 	output := structs.Element{
 		Layer: ins.Layer().String(),
 	}

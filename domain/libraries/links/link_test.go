@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
@@ -12,8 +13,8 @@ import (
 
 func TestLink_Success(t *testing.T) {
 	pLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
-	elements := NewElementsForTests([]Element{
-		NewElementForTests(*pLayer),
+	elements := elements.NewElementsForTests([]elements.Element{
+		elements.NewElementForTests(*pLayer),
 	})
 
 	pFirstLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for first layer"))
@@ -61,8 +62,8 @@ func TestLink_withoutElements_returnsError(t *testing.T) {
 
 func TestLink_withoutOrigin_returnsError(t *testing.T) {
 	pLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
-	elements := NewElementsForTests([]Element{
-		NewElementForTests(*pLayer),
+	elements := elements.NewElementsForTests([]elements.Element{
+		elements.NewElementForTests(*pLayer),
 	})
 
 	_, err := NewLinkBuilder().Create().WithElements(elements).Now()

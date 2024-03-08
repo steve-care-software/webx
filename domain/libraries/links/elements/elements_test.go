@@ -1,4 +1,4 @@
-package links
+package elements
 
 import (
 	"testing"
@@ -20,7 +20,7 @@ func TestElements_Success(t *testing.T) {
 }
 
 func TestElements_withEmptyList_returnsError(t *testing.T) {
-	_, err := NewElementsBuilder().Create().WithList([]Element{}).Now()
+	_, err := NewBuilder().Create().WithList([]Element{}).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
@@ -28,7 +28,7 @@ func TestElements_withEmptyList_returnsError(t *testing.T) {
 }
 
 func TestElements_withoutList_returnsError(t *testing.T) {
-	_, err := NewElementsBuilder().Create().Now()
+	_, err := NewBuilder().Create().Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

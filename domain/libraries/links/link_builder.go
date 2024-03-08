@@ -4,13 +4,14 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
 )
 
 type linkBuilder struct {
 	hashAdapter hash.Adapter
 	origin      origins.Origin
-	elements    Elements
+	elements    elements.Elements
 }
 
 func createLinkBuilder(
@@ -39,7 +40,7 @@ func (app *linkBuilder) WithOrigin(origin origins.Origin) LinkBuilder {
 }
 
 // WithElements add elements to the builder
-func (app *linkBuilder) WithElements(elements Elements) LinkBuilder {
+func (app *linkBuilder) WithElements(elements elements.Elements) LinkBuilder {
 	app.elements = elements
 	return app
 }

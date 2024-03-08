@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
@@ -22,8 +23,8 @@ func TestLinks_withList_Success(t *testing.T) {
 					resources.NewResourceForTests(*pSecondLayer),
 				),
 			),
-			NewElementsForTests([]Element{
-				NewElementForTests(*pLayer),
+			elements.NewElementsForTests([]elements.Element{
+				elements.NewElementForTests(*pLayer),
 			}),
 		),
 	}

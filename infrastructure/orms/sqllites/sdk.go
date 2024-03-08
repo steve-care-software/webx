@@ -12,6 +12,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions"
 	conditions_resources "github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
@@ -74,7 +75,7 @@ func NewOrmRepository(
 			}
 
 			if value, ok := values["elements"]; ok {
-				if value, ok := value.(links.Elements); ok {
+				if value, ok := value.(elements.Elements); ok {
 					builder.WithElements(value)
 				}
 			}
@@ -82,7 +83,7 @@ func NewOrmRepository(
 			return builder.Now()
 		},
 		"library_link_element": func(values map[string]interface{}) (orms.Instance, error) {
-			builder := links.NewElementBuilder()
+			builder := elements.NewElementBuilder()
 			if value, ok := values["layer"]; ok {
 				if value != nil {
 					builder.WithLayerBytes(value.([]byte))
@@ -403,12 +404,12 @@ func NewOrmRepository(
 				Now()
 		},
 		"link_elements": func(input []interface{}) (orms.Instance, error) {
-			output := []links.Element{}
+			output := []elements.Element{}
 			for _, oneIns := range input {
-				output = append(output, oneIns.(links.Element))
+				output = append(output, oneIns.(elements.Element))
 			}
 
-			return links.NewElementsBuilder().Create().
+			return elements.NewBuilder().Create().
 				WithList(output).
 				Now()
 		},
@@ -492,7 +493,7 @@ func NewOrmService(
 			return false, nil, errors.New("the Instance was expected to contain a Link instance")
 		},
 		"library_link_element": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
-			if casted, ok := ins.(links.Element); ok {
+			if casted, ok := ins.(elements.Element); ok {
 				switch fieldName {
 				case "hash":
 					return true, casted.Hash().Bytes(), nil
@@ -819,7 +820,7 @@ func NewOrmService(
 			return nil, errors.New("the Instance was expected to contain a Links instance")
 		},
 		"link_elements": func(ins orms.Instance) ([]hash.Hash, error) {
-			if ins, ok := ins.(links.Elements); ok {
+			if ins, ok := ins.(elements.Elements); ok {
 				output := []hash.Hash{}
 				list := ins.List()
 				for _, oneIns := range list {

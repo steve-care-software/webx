@@ -1,4 +1,4 @@
-package links
+package elements
 
 import (
 	"errors"
@@ -6,15 +6,15 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
-type elementsBuilder struct {
+type builder struct {
 	hashAdapter hash.Adapter
 	list        []Element
 }
 
-func createElementsBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) ElementsBuilder {
-	out := elementsBuilder{
+) Builder {
+	out := builder{
 		hashAdapter: hashAdapter,
 		list:        nil,
 	}
@@ -23,20 +23,20 @@ func createElementsBuilder(
 }
 
 // Create initializes the builder
-func (app *elementsBuilder) Create() ElementsBuilder {
-	return createElementsBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithList adds a list to the builder
-func (app *elementsBuilder) WithList(list []Element) ElementsBuilder {
+func (app *builder) WithList(list []Element) Builder {
 	app.list = list
 	return app
 }
 
 // Now builds a new Elements instance
-func (app *elementsBuilder) Now() (Elements, error) {
+func (app *builder) Now() (Elements, error) {
 	if app.list != nil && len(app.list) <= 0 {
 		app.list = nil
 	}

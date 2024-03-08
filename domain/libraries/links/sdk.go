@@ -2,7 +2,7 @@ package links
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
 )
 
@@ -18,22 +18,6 @@ func NewBuilder() Builder {
 func NewLinkBuilder() LinkBuilder {
 	hashAdapter := hash.NewAdapter()
 	return createLinkBuilder(
-		hashAdapter,
-	)
-}
-
-// NewElementsBuilder creates a new elements builder
-func NewElementsBuilder() ElementsBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createElementsBuilder(
-		hashAdapter,
-	)
-}
-
-// NewElementBuilder creates a new element builder
-func NewElementBuilder() ElementBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createElementBuilder(
 		hashAdapter,
 	)
 }
@@ -74,7 +58,7 @@ type LinkAdapter interface {
 type LinkBuilder interface {
 	Create() LinkBuilder
 	WithOrigin(origin origins.Origin) LinkBuilder
-	WithElements(elements Elements) LinkBuilder
+	WithElements(elements elements.Elements) LinkBuilder
 	Now() (Link, error)
 }
 
@@ -82,40 +66,10 @@ type LinkBuilder interface {
 type Link interface {
 	Hash() hash.Hash
 	Origin() origins.Origin
-	Elements() Elements
+	Elements() elements.Elements
 }
 
 // LinkRepository represents the link repository
 type LinkRepository interface {
 	Retrieve(path []string) (Link, error)
-}
-
-// ElementsBuilder represents elements builder
-type ElementsBuilder interface {
-	Create() ElementsBuilder
-	WithList(list []Element) ElementsBuilder
-	Now() (Elements, error)
-}
-
-// Elements represents elements
-type Elements interface {
-	Hash() hash.Hash
-	List() []Element
-}
-
-// ElementBuilder represents the element builder
-type ElementBuilder interface {
-	Create() ElementBuilder
-	WithLayer(layer hash.Hash) ElementBuilder
-	WithLayerBytes(layerBytes []byte) ElementBuilder
-	WithCondition(condition conditions.Condition) ElementBuilder
-	Now() (Element, error)
-}
-
-// Element represents an element
-type Element interface {
-	Hash() hash.Hash
-	Layer() hash.Hash
-	HasCondition() bool
-	Condition() conditions.Condition
 }
