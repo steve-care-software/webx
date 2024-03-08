@@ -78,14 +78,6 @@ func NewAssignableBuilder() AssignableBuilder {
 	)
 }
 
-// NewConstantBuilder creates a new constant builder
-func NewConstantBuilder() ConstantBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createConstantBuilder(
-		hashAdapter,
-	)
-}
-
 // Adapter represents the layers adapter
 type Adapter interface {
 	ToData(ins Layers) ([]byte, error)
@@ -252,21 +244,4 @@ type Assignable interface {
 	Bytes() bytes.Bytes
 	IsExecution() bool
 	Execution() executions.Execution
-}
-
-// ConstantBuilder represents a constant builder
-type ConstantBuilder interface {
-	Create() ConstantBuilder
-	WithBool(boolValue bool) ConstantBuilder
-	WithBytes(bytes []byte) ConstantBuilder
-	Now() (Constant, error)
-}
-
-// Constant represents a constant assignable
-type Constant interface {
-	Hash() hash.Hash
-	IsBool() bool
-	Bool() *bool
-	IsBytes() bool
-	Bytes() []byte
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/executions"
 	structs "github.com/steve-care-software/datastencil/infrastructure/jsons/structs/libraries/layers"
 )
@@ -21,7 +22,7 @@ type layerAdapter struct {
 	conditionBuilder    layers.ConditionBuilder
 	assignmentBuilder   layers.AssignmentBuilder
 	assignableBuilder   layers.AssignableBuilder
-	constantBuilder     layers.ConstantBuilder
+	constantBuilder     constants.ConstantBuilder
 	executionBuilder    executions.Builder
 	bytesBuilder        bytes.Builder
 }
@@ -37,7 +38,7 @@ func createLayerAdapter(
 	conditionBuilder layers.ConditionBuilder,
 	assignmentBuilder layers.AssignmentBuilder,
 	assignableBuilder layers.AssignableBuilder,
-	constantBuilder layers.ConstantBuilder,
+	constantBuilder constants.ConstantBuilder,
 	executionBuilder executions.Builder,
 	bytesBuilder bytes.Builder,
 ) layers.LayerAdapter {
@@ -315,7 +316,7 @@ func (app *layerAdapter) toInstanceAssignable(str structs.Assignable) (layers.As
 	return builder.Now()
 }
 
-func (app *layerAdapter) toStructConstant(ins layers.Constant) structs.Constant {
+func (app *layerAdapter) toStructConstant(ins constants.Constant) structs.Constant {
 	output := structs.Constant{}
 	if ins.IsBool() {
 		output.Bool = ins.Bool()
@@ -328,7 +329,7 @@ func (app *layerAdapter) toStructConstant(ins layers.Constant) structs.Constant 
 	return output
 }
 
-func (app *layerAdapter) toInstanceConstant(str structs.Constant) (layers.Constant, error) {
+func (app *layerAdapter) toInstanceConstant(str structs.Constant) (constants.Constant, error) {
 	builder := app.constantBuilder.Create()
 	if str.Bool != nil {
 		builder.WithBool(*str.Bool)
