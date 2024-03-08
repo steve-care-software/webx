@@ -1,4 +1,4 @@
-package layers
+package assignables
 
 import (
 	"errors"
@@ -8,16 +8,16 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/executions"
 )
 
-type assignableBuilder struct {
+type builder struct {
 	hashAdapter hash.Adapter
 	bytes       bytes.Bytes
 	execution   executions.Execution
 }
 
-func createAssignableBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) AssignableBuilder {
-	out := assignableBuilder{
+) Builder {
+	out := builder{
 		hashAdapter: hashAdapter,
 		bytes:       nil,
 		execution:   nil,
@@ -27,26 +27,26 @@ func createAssignableBuilder(
 }
 
 // Create initializes the builder
-func (app *assignableBuilder) Create() AssignableBuilder {
-	return createAssignableBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithBytes add bytes to the builder
-func (app *assignableBuilder) WithBytes(bytes bytes.Bytes) AssignableBuilder {
+func (app *builder) WithBytes(bytes bytes.Bytes) Builder {
 	app.bytes = bytes
 	return app
 }
 
 // WithExecution adds an execution to the builder
-func (app *assignableBuilder) WithExecution(execution executions.Execution) AssignableBuilder {
+func (app *builder) WithExecution(execution executions.Execution) Builder {
 	app.execution = execution
 	return app
 }
 
 // Now builds a new Assignable instance
-func (app *assignableBuilder) Now() (Assignable, error) {
+func (app *builder) Now() (Assignable, error) {
 	data := [][]byte{}
 	if app.bytes != nil {
 		data = append(data, []byte("bytes"))

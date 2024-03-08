@@ -4,19 +4,19 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
-// NewConstantBuilder creates a new constant builder
-func NewConstantBuilder() ConstantBuilder {
+// NewBuilder creates a new constant builder
+func NewBuilder() Builder {
 	hashAdapter := hash.NewAdapter()
-	return createConstantBuilder(
+	return createBuilder(
 		hashAdapter,
 	)
 }
 
-// ConstantBuilder represents a constant builder
-type ConstantBuilder interface {
-	Create() ConstantBuilder
-	WithBool(boolValue bool) ConstantBuilder
-	WithBytes(bytes []byte) ConstantBuilder
+// Builder represents a constant builder
+type Builder interface {
+	Create() Builder
+	WithBool(boolValue bool) Builder
+	WithBytes(bytes []byte) Builder
 	Now() (Constant, error)
 }
 

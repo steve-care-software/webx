@@ -4,12 +4,13 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 )
 
 type assignmentBuilder struct {
 	hashAdapter hash.Adapter
 	name        string
-	assignable  Assignable
+	assignable  assignables.Assignable
 }
 
 func createAssignmentBuilder(
@@ -38,7 +39,7 @@ func (app *assignmentBuilder) WithName(name string) AssignmentBuilder {
 }
 
 // WithAssignable adds an assignable to the builder
-func (app *assignmentBuilder) WithAssignable(assignable Assignable) AssignmentBuilder {
+func (app *assignmentBuilder) WithAssignable(assignable assignables.Assignable) AssignmentBuilder {
 	app.assignable = assignable
 	return app
 }

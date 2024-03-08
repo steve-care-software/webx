@@ -2,8 +2,7 @@ package layers
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/executions"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 )
 
 // NewBuilder creates a new builder instance
@@ -66,14 +65,6 @@ func NewConditionBuilder() ConditionBuilder {
 func NewAssignmentBuilder() AssignmentBuilder {
 	hashAdapter := hash.NewAdapter()
 	return createAssignmentBuilder(
-		hashAdapter,
-	)
-}
-
-// NewAssignableBuilder creates a new assignable builder
-func NewAssignableBuilder() AssignableBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createAssignableBuilder(
 		hashAdapter,
 	)
 }
@@ -218,7 +209,7 @@ type Condition interface {
 type AssignmentBuilder interface {
 	Create() AssignmentBuilder
 	WithName(name string) AssignmentBuilder
-	WithAssignable(assignable Assignable) AssignmentBuilder
+	WithAssignable(assignable assignables.Assignable) AssignmentBuilder
 	Now() (Assignment, error)
 }
 
@@ -226,22 +217,5 @@ type AssignmentBuilder interface {
 type Assignment interface {
 	Hash() hash.Hash
 	Name() string
-	Assignable() Assignable
-}
-
-// AssignableBuilder represents an assignable builder
-type AssignableBuilder interface {
-	Create() AssignableBuilder
-	WithBytes(bytes bytes.Bytes) AssignableBuilder
-	WithExecution(execution executions.Execution) AssignableBuilder
-	Now() (Assignable, error)
-}
-
-// Assignable represents an assignable
-type Assignable interface {
-	Hash() hash.Hash
-	IsBytes() bool
-	Bytes() bytes.Bytes
-	IsExecution() bool
-	Execution() executions.Execution
+	Assignable() assignables.Assignable
 }

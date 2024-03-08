@@ -1,17 +1,20 @@
 package layers
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
+)
 
 type assignment struct {
 	hash       hash.Hash
 	name       string
-	assignable Assignable
+	assignable assignables.Assignable
 }
 
 func createAssignment(
 	hash hash.Hash,
 	name string,
-	assignable Assignable,
+	assignable assignables.Assignable,
 ) Assignment {
 	out := assignment{
 		hash:       hash,
@@ -33,6 +36,6 @@ func (obj *assignment) Name() string {
 }
 
 // Assignable returns the assignable
-func (obj *assignment) Assignable() Assignable {
+func (obj *assignment) Assignable() assignables.Assignable {
 	return obj.assignable
 }

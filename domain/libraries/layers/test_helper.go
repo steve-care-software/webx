@@ -1,6 +1,6 @@
 package layers
 
-import "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
+import "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 
 // NewLayersForTests creates a new layers for tests
 func NewLayersForTests(list []Layer) Layers {
@@ -123,18 +123,8 @@ func NewConditionForTest(variable string, instructions Instructions) Condition {
 }
 
 // NewAssignmentForTests creates a new assignment for tests
-func NewAssignmentForTests(name string, assignable Assignable) Assignment {
+func NewAssignmentForTests(name string, assignable assignables.Assignable) Assignment {
 	ins, err := NewAssignmentBuilder().Create().WithName(name).WithAssignable(assignable).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewAssignableWithBytesForTests creates a new assignable with bytes for tests
-func NewAssignableWithBytesForTests(input bytes.Bytes) Assignable {
-	ins, err := NewAssignableBuilder().Create().WithBytes(input).Now()
 	if err != nil {
 		panic(err)
 	}

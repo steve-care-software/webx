@@ -2,16 +2,16 @@ package constants
 
 import "github.com/steve-care-software/datastencil/domain/hash"
 
-type constantBuilder struct {
+type builder struct {
 	hashAdapter hash.Adapter
 	boolValue   *bool
 	bytes       []byte
 }
 
-func createConstantBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) ConstantBuilder {
-	out := constantBuilder{
+) Builder {
+	out := builder{
 		hashAdapter: hashAdapter,
 		boolValue:   nil,
 		bytes:       nil,
@@ -21,26 +21,26 @@ func createConstantBuilder(
 }
 
 // Create initializes the builder
-func (app *constantBuilder) Create() ConstantBuilder {
-	return createConstantBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithBool adds a bool to the builder
-func (app *constantBuilder) WithBool(boolValue bool) ConstantBuilder {
+func (app *builder) WithBool(boolValue bool) Builder {
 	app.boolValue = &boolValue
 	return app
 }
 
 // WithBytes add bytes to the builder
-func (app *constantBuilder) WithBytes(bytes []byte) ConstantBuilder {
+func (app *builder) WithBytes(bytes []byte) Builder {
 	app.bytes = bytes
 	return app
 }
 
 // Now builds a new Constant instance
-func (app *constantBuilder) Now() (Constant, error) {
+func (app *builder) Now() (Constant, error) {
 	data := [][]byte{}
 	if app.boolValue != nil {
 		bytes := [][]byte{

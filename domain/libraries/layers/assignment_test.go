@@ -4,12 +4,13 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 )
 
 func TestAssignment_Success(t *testing.T) {
 	name := "myName"
-	assignable := NewAssignableWithBytesForTests(bytes.NewBytesWithJoinForTests([]string{
+	assignable := assignables.NewAssignableWithBytesForTests(bytes.NewBytesWithJoinForTests([]string{
 		"first",
 		"second",
 	}))
@@ -29,7 +30,7 @@ func TestAssignment_Success(t *testing.T) {
 }
 
 func TestAssignment_withoutName_returnsError(t *testing.T) {
-	assignable := NewAssignableWithBytesForTests(bytes.NewBytesWithJoinForTests([]string{
+	assignable := assignables.NewAssignableWithBytesForTests(bytes.NewBytesWithJoinForTests([]string{
 		"first",
 		"second",
 	}))

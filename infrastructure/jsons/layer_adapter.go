@@ -5,6 +5,7 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/executions"
@@ -21,8 +22,8 @@ type layerAdapter struct {
 	instructionBuilder  layers.InstructionBuilder
 	conditionBuilder    layers.ConditionBuilder
 	assignmentBuilder   layers.AssignmentBuilder
-	assignableBuilder   layers.AssignableBuilder
-	constantBuilder     constants.ConstantBuilder
+	assignableBuilder   assignables.Builder
+	constantBuilder     constants.Builder
 	executionBuilder    executions.Builder
 	bytesBuilder        bytes.Builder
 }
@@ -37,8 +38,8 @@ func createLayerAdapter(
 	instructionBuilder layers.InstructionBuilder,
 	conditionBuilder layers.ConditionBuilder,
 	assignmentBuilder layers.AssignmentBuilder,
-	assignableBuilder layers.AssignableBuilder,
-	constantBuilder constants.ConstantBuilder,
+	assignableBuilder assignables.Builder,
+	constantBuilder constants.Builder,
 	executionBuilder executions.Builder,
 	bytesBuilder bytes.Builder,
 ) layers.LayerAdapter {
@@ -278,7 +279,7 @@ func (app *layerAdapter) toInstanceAssignment(str structs.Assignment) (layers.As
 		Now()
 }
 
-func (app *layerAdapter) toStructAssignable(ins layers.Assignable) structs.Assignable {
+func (app *layerAdapter) toStructAssignable(ins assignables.Assignable) structs.Assignable {
 	output := structs.Assignable{}
 	if ins.IsBytes() {
 		str := app.toStructBytes(ins.Bytes())
@@ -293,7 +294,7 @@ func (app *layerAdapter) toStructAssignable(ins layers.Assignable) structs.Assig
 	return output
 }
 
-func (app *layerAdapter) toInstanceAssignable(str structs.Assignable) (layers.Assignable, error) {
+func (app *layerAdapter) toInstanceAssignable(str structs.Assignable) (assignables.Assignable, error) {
 	builder := app.assignableBuilder.Create()
 	if str.Bytes != nil {
 		bytes, err := app.toInstanceBytes(*str.Bytes)

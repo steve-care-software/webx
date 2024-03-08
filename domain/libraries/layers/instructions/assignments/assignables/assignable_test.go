@@ -1,4 +1,4 @@
-package layers
+package assignables
 
 import (
 	"reflect"
@@ -28,7 +28,7 @@ func TestAssignable_withBytes_Success(t *testing.T) {
 }
 
 func TestAssignable_withoutParam_returnsError(t *testing.T) {
-	_, err := NewAssignableBuilder().Create().Now()
+	_, err := NewBuilder().Create().Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid")
 		return
