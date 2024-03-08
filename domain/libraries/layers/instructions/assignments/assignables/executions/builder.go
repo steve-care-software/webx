@@ -1,4 +1,4 @@
-package layers
+package executions
 
 import (
 	"errors"
@@ -6,16 +6,16 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
-type executionBuilder struct {
+type builder struct {
 	hashAdapter hash.Adapter
 	input       string
 	layer       string
 }
 
-func createExecutionBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) ExecutionBuilder {
-	out := executionBuilder{
+) Builder {
+	out := builder{
 		hashAdapter: hashAdapter,
 		input:       "",
 		layer:       "",
@@ -25,26 +25,26 @@ func createExecutionBuilder(
 }
 
 // Create initializes the builder
-func (app *executionBuilder) Create() ExecutionBuilder {
-	return createExecutionBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithInput adds an input to the builder
-func (app *executionBuilder) WithInput(input string) ExecutionBuilder {
+func (app *builder) WithInput(input string) Builder {
 	app.input = input
 	return app
 }
 
 // WithLayer adds a layer to the builder
-func (app *executionBuilder) WithLayer(layer string) ExecutionBuilder {
+func (app *builder) WithLayer(layer string) Builder {
 	app.layer = layer
 	return app
 }
 
 // Now builds a new Execution instance
-func (app *executionBuilder) Now() (Execution, error) {
+func (app *builder) Now() (Execution, error) {
 	if app.input == "" {
 		return nil, errors.New("the input is mandatory in order to build an Execution instance")
 	}

@@ -11,6 +11,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	layers_bytes "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/executions"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions"
@@ -599,7 +600,7 @@ func (app *application) executeExecution(
 	currentContext commands.Commands,
 	currentLayer layers.Layer,
 	frame stacks.Frame,
-	execution layers.Execution,
+	execution executions.Execution,
 ) (stacks.Assignable, results.Failure, commands.Commands, error) {
 	inputVariable := execution.Input()
 	input, err := frame.FetchBytes(inputVariable)

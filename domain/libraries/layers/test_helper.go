@@ -141,23 +141,3 @@ func NewAssignableWithBytesForTests(input bytes.Bytes) Assignable {
 
 	return ins
 }
-
-// NewExecutionWithLayerForTests creates a new execution with layer for tests
-func NewExecutionWithLayerForTests(input string, layer string) Execution {
-	ins, err := NewExecutionBuilder().Create().WithInput(input).WithLayer(layer).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewExecutionForTests creates a new execution for tests
-func NewExecutionForTests(input string) Execution {
-	ins, err := NewExecutionBuilder().Create().WithInput(input).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}

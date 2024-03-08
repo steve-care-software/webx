@@ -1,4 +1,4 @@
-package layers
+package executions
 
 import (
 	"reflect"
@@ -45,7 +45,7 @@ func TestExecution_withLayer_Success(t *testing.T) {
 }
 
 func TestExecution_withoutLayer_returnsError(t *testing.T) {
-	_, err := NewExecutionBuilder().Create().Now()
+	_, err := NewBuilder().Create().Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

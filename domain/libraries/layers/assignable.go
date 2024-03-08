@@ -3,12 +3,13 @@ package layers
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/executions"
 )
 
 type assignable struct {
 	hash      hash.Hash
 	bytes     bytes.Bytes
-	execution Execution
+	execution executions.Execution
 }
 
 func createAssignableWithBytes(
@@ -20,7 +21,7 @@ func createAssignableWithBytes(
 
 func createAssignableWithexecution(
 	hash hash.Hash,
-	execution Execution,
+	execution executions.Execution,
 ) Assignable {
 	return createAssignableInternally(hash, nil, execution)
 }
@@ -28,7 +29,7 @@ func createAssignableWithexecution(
 func createAssignableInternally(
 	hash hash.Hash,
 	bytes bytes.Bytes,
-	execution Execution,
+	execution executions.Execution,
 ) Assignable {
 	out := assignable{
 		hash:      hash,
@@ -60,6 +61,6 @@ func (obj *assignable) IsExecution() bool {
 }
 
 // Execution returns the execution, if any
-func (obj *assignable) Execution() Execution {
+func (obj *assignable) Execution() executions.Execution {
 	return obj.execution
 }

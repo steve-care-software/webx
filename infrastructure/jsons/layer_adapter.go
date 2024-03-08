@@ -6,6 +6,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/executions"
 	structs "github.com/steve-care-software/datastencil/infrastructure/jsons/structs/libraries/layers"
 )
 
@@ -21,8 +22,8 @@ type layerAdapter struct {
 	assignmentBuilder   layers.AssignmentBuilder
 	assignableBuilder   layers.AssignableBuilder
 	constantBuilder     layers.ConstantBuilder
-	executionBuilder    layers.ExecutionBuilder
-	bytesBuilder        bytes.BytesBuilder
+	executionBuilder    executions.Builder
+	bytesBuilder        bytes.Builder
 }
 
 func createLayerAdapter(
@@ -37,8 +38,8 @@ func createLayerAdapter(
 	assignmentBuilder layers.AssignmentBuilder,
 	assignableBuilder layers.AssignableBuilder,
 	constantBuilder layers.ConstantBuilder,
-	executionBuilder layers.ExecutionBuilder,
-	bytesBuilder bytes.BytesBuilder,
+	executionBuilder executions.Builder,
+	bytesBuilder bytes.Builder,
 ) layers.LayerAdapter {
 	out := layerAdapter{
 		hashAdapter:         hashAdapter,
@@ -340,7 +341,7 @@ func (app *layerAdapter) toInstanceConstant(str structs.Constant) (layers.Consta
 	return builder.Now()
 }
 
-func (app *layerAdapter) toStructExecution(ins layers.Execution) structs.Execution {
+func (app *layerAdapter) toStructExecution(ins executions.Execution) structs.Execution {
 	output := structs.Execution{
 		Input: ins.Input(),
 	}
@@ -352,7 +353,7 @@ func (app *layerAdapter) toStructExecution(ins layers.Execution) structs.Executi
 	return output
 }
 
-func (app *layerAdapter) toInstanceExecution(str structs.Execution) (layers.Execution, error) {
+func (app *layerAdapter) toInstanceExecution(str structs.Execution) (executions.Execution, error) {
 	builder := app.executionBuilder.Create().
 		WithInput(str.Input)
 

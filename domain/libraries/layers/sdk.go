@@ -3,6 +3,7 @@ package layers
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/executions"
 )
 
 // NewBuilder creates a new builder instance
@@ -81,14 +82,6 @@ func NewAssignableBuilder() AssignableBuilder {
 func NewConstantBuilder() ConstantBuilder {
 	hashAdapter := hash.NewAdapter()
 	return createConstantBuilder(
-		hashAdapter,
-	)
-}
-
-// NewExecutionBuilder creates a new execution builder
-func NewExecutionBuilder() ExecutionBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createExecutionBuilder(
 		hashAdapter,
 	)
 }
@@ -248,7 +241,7 @@ type Assignment interface {
 type AssignableBuilder interface {
 	Create() AssignableBuilder
 	WithBytes(bytes bytes.Bytes) AssignableBuilder
-	WithExecution(execution Execution) AssignableBuilder
+	WithExecution(execution executions.Execution) AssignableBuilder
 	Now() (Assignable, error)
 }
 
@@ -258,7 +251,7 @@ type Assignable interface {
 	IsBytes() bool
 	Bytes() bytes.Bytes
 	IsExecution() bool
-	Execution() Execution
+	Execution() executions.Execution
 }
 
 // ConstantBuilder represents a constant builder
@@ -276,20 +269,4 @@ type Constant interface {
 	Bool() *bool
 	IsBytes() bool
 	Bytes() []byte
-}
-
-// ExecutionBuilder represents an execution builder
-type ExecutionBuilder interface {
-	Create() ExecutionBuilder
-	WithInput(input string) ExecutionBuilder
-	WithLayer(layer string) ExecutionBuilder
-	Now() (Execution, error)
-}
-
-// Execution represents an execution
-type Execution interface {
-	Hash() hash.Hash
-	Input() string
-	HasLayer() bool
-	Layer() string
 }
