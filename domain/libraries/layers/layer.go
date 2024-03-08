@@ -3,19 +3,20 @@ package layers
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs"
 )
 
 type layer struct {
 	hash         hash.Hash
 	instructions instructions.Instructions
-	output       Output
+	output       outputs.Output
 	input        string
 }
 
 func createLayer(
 	hash hash.Hash,
 	instructions instructions.Instructions,
-	output Output,
+	output outputs.Output,
 	input string,
 ) Layer {
 	return createLayerInternally(
@@ -29,7 +30,7 @@ func createLayer(
 func createLayerInternally(
 	hash hash.Hash,
 	instructions instructions.Instructions,
-	output Output,
+	output outputs.Output,
 	input string,
 ) Layer {
 	out := layer{
@@ -53,7 +54,7 @@ func (obj *layer) Instructions() instructions.Instructions {
 }
 
 // Output returns the output
-func (obj *layer) Output() Output {
+func (obj *layer) Output() outputs.Output {
 	return obj.output
 }
 

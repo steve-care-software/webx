@@ -7,6 +7,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/commands/results"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 )
 
@@ -18,7 +19,7 @@ func TestCommands_Success(t *testing.T) {
 				instructions.NewInstructionsForTests([]instructions.Instruction{
 					instructions.NewInstructionWithStopForTests(),
 				}),
-				layers.NewOutputForTests(
+				outputs.NewOutputForTests(
 					"myVariable",
 					kinds.NewKindWithContinueForTests(),
 				),

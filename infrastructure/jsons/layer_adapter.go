@@ -11,6 +11,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/executions"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 	structs "github.com/steve-care-software/datastencil/infrastructure/jsons/structs/libraries/layers"
 )
@@ -19,8 +20,8 @@ type layerAdapter struct {
 	hashAdapter         hash.Adapter
 	builder             layers.Builder
 	layerBuilder        layers.LayerBuilder
-	outputBuilder       layers.OutputBuilder
-	kindBuilder         kinds.KindBuilder
+	outputBuilder       outputs.Builder
+	kindBuilder         kinds.Builder
 	instructionsBuilder instructions.Builder
 	instructionBuilder  instructions.InstructionBuilder
 	conditionBuilder    instructions.ConditionBuilder
@@ -35,8 +36,8 @@ func createLayerAdapter(
 	hashAdapter hash.Adapter,
 	builder layers.Builder,
 	layerBuilder layers.LayerBuilder,
-	outputBuilder layers.OutputBuilder,
-	kindBuilder kinds.KindBuilder,
+	outputBuilder outputs.Builder,
+	kindBuilder kinds.Builder,
 	instructionsBuilder instructions.Builder,
 	instructionBuilder instructions.InstructionBuilder,
 	conditionBuilder instructions.ConditionBuilder,
@@ -113,7 +114,7 @@ func (app *layerAdapter) toInstanceLayer(str structs.Layer) (layers.Layer, error
 		Now()
 }
 
-func (app *layerAdapter) toStructOutput(ins layers.Output) structs.Output {
+func (app *layerAdapter) toStructOutput(ins outputs.Output) structs.Output {
 	output := structs.Output{
 		Variable: ins.Variable(),
 		Kind:     app.toStructKind(ins.Kind()),
@@ -126,7 +127,7 @@ func (app *layerAdapter) toStructOutput(ins layers.Output) structs.Output {
 	return output
 }
 
-func (app *layerAdapter) toInstanceOutput(str structs.Output) (layers.Output, error) {
+func (app *layerAdapter) toInstanceOutput(str structs.Output) (outputs.Output, error) {
 	kind, err := app.toInstanceKind(str.Kind)
 	if err != nil {
 		return nil, err

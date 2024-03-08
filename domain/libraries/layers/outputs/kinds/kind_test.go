@@ -29,7 +29,7 @@ func TestKind_isContinue_Success(t *testing.T) {
 }
 
 func TestKind_withoutParam_returnsError(t *testing.T) {
-	_, err := NewKindBuilder().Create().Now()
+	_, err := NewBuilder().Create().Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

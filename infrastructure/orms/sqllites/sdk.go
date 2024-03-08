@@ -16,6 +16,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 	layers_bytes "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
@@ -275,7 +276,7 @@ func NewOrmRepository(
 				if pIns, ok := value.(*orms.Instance); ok {
 					if pIns != nil {
 						ins := *pIns
-						builder.WithOutput(ins.(layers.Output))
+						builder.WithOutput(ins.(outputs.Output))
 					}
 				}
 			}
@@ -289,7 +290,7 @@ func NewOrmRepository(
 			return builder.Now()
 		},
 		"library_layer_output": func(values map[string]interface{}) (orms.Instance, error) {
-			builder := layers.NewOutputBuilder()
+			builder := outputs.NewBuilder()
 			if value, ok := values["variable"]; ok {
 				builder.WithVariable(value.(string))
 			}
@@ -312,7 +313,7 @@ func NewOrmRepository(
 			return builder.Now()
 		},
 		"library_layer_output_kind": func(values map[string]interface{}) (orms.Instance, error) {
-			builder := kinds.NewKindBuilder()
+			builder := kinds.NewBuilder()
 			if value, ok := values["prompt"]; ok {
 				if value.(int64) != 0 {
 					builder.IsPrompt()
@@ -682,7 +683,7 @@ func NewOrmService(
 			return false, nil, errors.New("the Instance was expected to contain a Layer instance")
 		},
 		"library_layer_output": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
-			if casted, ok := ins.(layers.Output); ok {
+			if casted, ok := ins.(outputs.Output); ok {
 				switch fieldName {
 				case "hash":
 					return true, casted.Hash().Bytes(), nil

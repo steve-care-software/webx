@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 )
 
@@ -13,7 +14,7 @@ func TestLayer_Success(t *testing.T) {
 		instructions.NewInstructionWithStopForTests(),
 	})
 
-	output := NewOutputForTests(
+	output := outputs.NewOutputForTests(
 		"myVariable",
 		kinds.NewKindWithContinueForTests(),
 	)
@@ -45,7 +46,7 @@ func TestLayer_Success(t *testing.T) {
 }
 
 func TestLayer_withoutInstructions_returnsError(t *testing.T) {
-	output := NewOutputForTests(
+	output := outputs.NewOutputForTests(
 		"myVariable",
 		kinds.NewKindWithContinueForTests(),
 	)
@@ -76,7 +77,7 @@ func TestLayer_withoutInput_returnsError(t *testing.T) {
 		instructions.NewInstructionWithStopForTests(),
 	})
 
-	output := NewOutputForTests(
+	output := outputs.NewOutputForTests(
 		"myVariable",
 		kinds.NewKindWithContinueForTests(),
 	)

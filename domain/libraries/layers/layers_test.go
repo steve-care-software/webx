@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 )
 
@@ -13,7 +14,7 @@ func TestLayers_withList_Success(t *testing.T) {
 			instructions.NewInstructionsForTests([]instructions.Instruction{
 				instructions.NewInstructionWithStopForTests(),
 			}),
-			NewOutputForTests(
+			outputs.NewOutputForTests(
 				"myVariable",
 				kinds.NewKindWithContinueForTests(),
 			),

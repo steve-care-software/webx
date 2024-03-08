@@ -6,16 +6,16 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
-type kindBuilder struct {
+type builder struct {
 	hashAdapter hash.Adapter
 	isPrompt    bool
 	isContinue  bool
 }
 
-func createKindBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) KindBuilder {
-	out := kindBuilder{
+) Builder {
+	out := builder{
 		hashAdapter: hashAdapter,
 		isPrompt:    false,
 		isContinue:  false,
@@ -25,26 +25,26 @@ func createKindBuilder(
 }
 
 // Create initializes the builder
-func (app *kindBuilder) Create() KindBuilder {
-	return createKindBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // IsPrompt flags the builder as a prompt
-func (app *kindBuilder) IsPrompt() KindBuilder {
+func (app *builder) IsPrompt() Builder {
 	app.isPrompt = true
 	return app
 }
 
 // IsContinue flags the builder as a continue
-func (app *kindBuilder) IsContinue() KindBuilder {
+func (app *builder) IsContinue() Builder {
 	app.isContinue = true
 	return app
 }
 
 // Now builds a new Kind instance
-func (app *kindBuilder) Now() (Kind, error) {
+func (app *builder) Now() (Kind, error) {
 	data := [][]byte{}
 	if app.isPrompt {
 		data = append(data, []byte("isPrompt"))

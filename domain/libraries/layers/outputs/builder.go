@@ -1,4 +1,4 @@
-package layers
+package outputs
 
 import (
 	"errors"
@@ -7,17 +7,17 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 )
 
-type outputBuilder struct {
+type builder struct {
 	hashAdapter hash.Adapter
 	variable    string
 	kind        kinds.Kind
 	execute     string
 }
 
-func createOutputBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) OutputBuilder {
-	out := outputBuilder{
+) Builder {
+	out := builder{
 		hashAdapter: hashAdapter,
 		variable:    "",
 		kind:        nil,
@@ -28,32 +28,32 @@ func createOutputBuilder(
 }
 
 // Create initializes the builder
-func (app *outputBuilder) Create() OutputBuilder {
-	return createOutputBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithVariable adds a variable to the builder
-func (app *outputBuilder) WithVariable(variable string) OutputBuilder {
+func (app *builder) WithVariable(variable string) Builder {
 	app.variable = variable
 	return app
 }
 
 // WithKind adds a kind to the builder
-func (app *outputBuilder) WithKind(kind kinds.Kind) OutputBuilder {
+func (app *builder) WithKind(kind kinds.Kind) Builder {
 	app.kind = kind
 	return app
 }
 
 // WithExecute adds an execute to the builder
-func (app *outputBuilder) WithExecute(execute string) OutputBuilder {
+func (app *builder) WithExecute(execute string) Builder {
 	app.execute = execute
 	return app
 }
 
 // Now builds a new Output instance
-func (app *outputBuilder) Now() (Output, error) {
+func (app *builder) Now() (Output, error) {
 	if app.variable == "" {
 		return nil, errors.New("the variable is mandatory in order to build an Output instance")
 	}

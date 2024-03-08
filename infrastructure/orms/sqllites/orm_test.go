@@ -16,6 +16,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 	layers_bytes "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
@@ -78,7 +79,7 @@ func TestOrm_Success(t *testing.T) {
 									),
 								),
 							}),
-							layers.NewOutputForTests(
+							outputs.NewOutputForTests(
 								"myVariable",
 								kinds.NewKindWithContinueForTests(),
 							),
@@ -110,7 +111,7 @@ func TestOrm_Success(t *testing.T) {
 									),
 								),
 							}),
-							layers.NewOutputForTests(
+							outputs.NewOutputForTests(
 								"myVariable",
 								kinds.NewKindWithContinueForTests(),
 							),
@@ -474,7 +475,7 @@ func TestOrm_Success(t *testing.T) {
 							),
 						),
 					}),
-					layers.NewOutputForTests(
+					outputs.NewOutputForTests(
 						"myVariable",
 						kinds.NewKindWithContinueForTests(),
 					),
@@ -499,7 +500,7 @@ func TestOrm_Success(t *testing.T) {
 					"layer",
 					"output",
 				},
-				instance: layers.NewOutputForTests(
+				instance: outputs.NewOutputForTests(
 					"myVariable",
 					kinds.NewKindWithContinueForTests(),
 				),
@@ -516,7 +517,7 @@ func TestOrm_Success(t *testing.T) {
 					"layer",
 					"output",
 				},
-				instance: layers.NewOutputWithExecuteForTests(
+				instance: outputs.NewOutputWithExecuteForTests(
 					"myVariable",
 					kinds.NewKindWithContinueForTests(),
 					"some command to execute",

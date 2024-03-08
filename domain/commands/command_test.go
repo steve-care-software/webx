@@ -8,6 +8,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
@@ -22,7 +23,7 @@ func TestCommand_Success(t *testing.T) {
 		instructions.NewInstructionsForTests([]instructions.Instruction{
 			instructions.NewInstructionWithStopForTests(),
 		}),
-		layers.NewOutputForTests(
+		outputs.NewOutputForTests(
 			"myVariable",
 			kinds.NewKindWithContinueForTests(),
 		),
@@ -72,7 +73,7 @@ func TestCommand_withParent_Success(t *testing.T) {
 		instructions.NewInstructionsForTests([]instructions.Instruction{
 			instructions.NewInstructionWithStopForTests(),
 		}),
-		layers.NewOutputForTests(
+		outputs.NewOutputForTests(
 			"myVariable",
 			kinds.NewKindWithContinueForTests(),
 		),
@@ -110,7 +111,7 @@ func TestCommand_withParent_Success(t *testing.T) {
 				instructions.NewInstructionsForTests([]instructions.Instruction{
 					instructions.NewInstructionWithStopForTests(),
 				}),
-				layers.NewOutputForTests(
+				outputs.NewOutputForTests(
 					"myVariable",
 					kinds.NewKindWithContinueForTests(),
 				),
@@ -167,7 +168,7 @@ func TestCommand_withoutInput_returnsError(t *testing.T) {
 		instructions.NewInstructionsForTests([]instructions.Instruction{
 			instructions.NewInstructionWithStopForTests(),
 		}),
-		layers.NewOutputForTests(
+		outputs.NewOutputForTests(
 			"myVariable",
 			kinds.NewKindWithContinueForTests(),
 		),
@@ -193,7 +194,7 @@ func TestCommand_withEmptyInput_returnsError(t *testing.T) {
 		instructions.NewInstructionsForTests([]instructions.Instruction{
 			instructions.NewInstructionWithStopForTests(),
 		}),
-		layers.NewOutputForTests(
+		outputs.NewOutputForTests(
 			"myVariable",
 			kinds.NewKindWithContinueForTests(),
 		),
@@ -236,7 +237,7 @@ func TestCommand_withoutResult_returnsError(t *testing.T) {
 		instructions.NewInstructionsForTests([]instructions.Instruction{
 			instructions.NewInstructionWithStopForTests(),
 		}),
-		layers.NewOutputForTests(
+		outputs.NewOutputForTests(
 			"myVariable",
 			kinds.NewKindWithContinueForTests(),
 		),

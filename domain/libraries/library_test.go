@@ -7,6 +7,8 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
@@ -20,9 +22,9 @@ func TestLibrary_Success(t *testing.T) {
 			instructions.NewInstructionsForTests([]instructions.Instruction{
 				instructions.NewInstructionWithStopForTests(),
 			}),
-			layers.NewOutputForTests(
+			outputs.NewOutputForTests(
 				"myVariable",
-				layers.NewKindWithContinueForTests(),
+				kinds.NewKindWithContinueForTests(),
 			),
 			"someInput",
 		),
@@ -47,9 +49,9 @@ func TestLibrary_withLinks_Success(t *testing.T) {
 			instructions.NewInstructionsForTests([]instructions.Instruction{
 				instructions.NewInstructionWithStopForTests(),
 			}),
-			layers.NewOutputForTests(
+			outputs.NewOutputForTests(
 				"myVariable",
-				layers.NewKindWithContinueForTests(),
+				kinds.NewKindWithContinueForTests(),
 			),
 			"someInput",
 		),

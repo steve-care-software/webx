@@ -1,4 +1,4 @@
-package layers
+package outputs
 
 import (
 	"reflect"
@@ -62,7 +62,7 @@ func TestOutput_withExecute_Success(t *testing.T) {
 
 func TestOutput_withoutVariable_returnsError(t *testing.T) {
 	kind := kinds.NewKindWithPromptForTests()
-	_, err := NewOutputBuilder().Create().WithKind(kind).Now()
+	_, err := NewBuilder().Create().WithKind(kind).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
@@ -71,7 +71,7 @@ func TestOutput_withoutVariable_returnsError(t *testing.T) {
 
 func TestOutput_withoutKind_returnsError(t *testing.T) {
 	variable := "myVariable"
-	_, err := NewOutputBuilder().Create().WithVariable(variable).Now()
+	_, err := NewBuilder().Create().WithVariable(variable).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

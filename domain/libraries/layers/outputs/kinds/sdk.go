@@ -4,19 +4,19 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
-// NewKindBuilder creates a new kind builder
-func NewKindBuilder() KindBuilder {
+// NewBuilder creates a new kind builder
+func NewBuilder() Builder {
 	hashAdapter := hash.NewAdapter()
-	return createKindBuilder(
+	return createBuilder(
 		hashAdapter,
 	)
 }
 
-// KindBuilder represents a kind builder
-type KindBuilder interface {
-	Create() KindBuilder
-	IsPrompt() KindBuilder
-	IsContinue() KindBuilder
+// Builder represents a kind builder
+type Builder interface {
+	Create() Builder
+	IsPrompt() Builder
+	IsContinue() Builder
 	Now() (Kind, error)
 }
 
