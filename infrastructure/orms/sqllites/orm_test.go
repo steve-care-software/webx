@@ -12,6 +12,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 	layers_bytes "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
@@ -67,7 +68,7 @@ func TestOrm_Success(t *testing.T) {
 						layers.NewLayerForTests(
 							layers.NewInstructionsForTests([]layers.Instruction{
 								layers.NewInstructionWithAssignmentForTests(
-									layers.NewAssignmentForTests(
+									assignments.NewAssignmentForTests(
 										"myName",
 										assignables.NewAssignableWithBytesForTests(
 											layers_bytes.NewBytesWithHashBytesForTests("myInput"),
@@ -99,7 +100,7 @@ func TestOrm_Success(t *testing.T) {
 						layers.NewLayerForTests(
 							layers.NewInstructionsForTests([]layers.Instruction{
 								layers.NewInstructionWithAssignmentForTests(
-									layers.NewAssignmentForTests(
+									assignments.NewAssignmentForTests(
 										"myName",
 										assignables.NewAssignableWithBytesForTests(
 											layers_bytes.NewBytesWithHashBytesForTests("myInput"),
@@ -463,7 +464,7 @@ func TestOrm_Success(t *testing.T) {
 				instance: layers.NewLayerForTests(
 					layers.NewInstructionsForTests([]layers.Instruction{
 						layers.NewInstructionWithAssignmentForTests(
-							layers.NewAssignmentForTests(
+							assignments.NewAssignmentForTests(
 								"myName",
 								assignables.NewAssignableWithBytesForTests(
 									layers_bytes.NewBytesWithHashBytesForTests("myInput"),
@@ -554,7 +555,7 @@ func TestOrm_Success(t *testing.T) {
 					"instruction",
 				},
 				instance: layers.NewInstructionWithAssignmentForTests(
-					layers.NewAssignmentForTests(
+					assignments.NewAssignmentForTests(
 						"myName",
 						assignables.NewAssignableWithBytesForTests(
 							layers_bytes.NewBytesWithHashBytesForTests("myInput"),
@@ -577,7 +578,7 @@ func TestOrm_Success(t *testing.T) {
 					"instruction",
 					"assignment",
 				},
-				instance: layers.NewAssignmentForTests(
+				instance: assignments.NewAssignmentForTests(
 					"myName",
 					assignables.NewAssignableWithBytesForTests(
 						layers_bytes.NewBytesWithHashBytesForTests("myInput"),

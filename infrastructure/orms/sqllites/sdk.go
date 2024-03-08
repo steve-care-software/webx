@@ -11,6 +11,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 	layers_bytes "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
@@ -330,7 +331,7 @@ func NewOrmRepository(
 				if pIns, ok := value.(*orms.Instance); ok {
 					if pIns != nil {
 						ins := *pIns
-						builder.WithAssignment(ins.(layers.Assignment))
+						builder.WithAssignment(ins.(assignments.Assignment))
 					}
 				}
 			}
@@ -338,7 +339,7 @@ func NewOrmRepository(
 			return builder.Now()
 		},
 		"library_layer_instruction_assignment": func(values map[string]interface{}) (orms.Instance, error) {
-			builder := layers.NewAssignmentBuilder()
+			builder := assignments.NewBuilder()
 			if value, ok := values["name"]; ok {
 				builder.WithName(value.(string))
 			}
@@ -730,7 +731,7 @@ func NewOrmService(
 			return false, nil, errors.New("the Instance was expected to contain an Instruction instance")
 		},
 		"library_layer_instruction_assignment": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
-			if casted, ok := ins.(layers.Assignment); ok {
+			if casted, ok := ins.(assignments.Assignment); ok {
 				switch fieldName {
 				case "hash":
 					return true, casted.Hash().Bytes(), nil

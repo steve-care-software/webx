@@ -1,6 +1,6 @@
 package layers
 
-import "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
+import "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments"
 
 // NewLayersForTests creates a new layers for tests
 func NewLayersForTests(list []Layer) Layers {
@@ -73,7 +73,7 @@ func NewInstructionsForTests(list []Instruction) Instructions {
 }
 
 // NewInstructionWithAssignmentForTests creates a new instruction with assignment for tests
-func NewInstructionWithAssignmentForTests(assignment Assignment) Instruction {
+func NewInstructionWithAssignmentForTests(assignment assignments.Assignment) Instruction {
 	ins, err := NewInstructionBuilder().Create().WithAssignment(assignment).Now()
 	if err != nil {
 		panic(err)
@@ -115,16 +115,6 @@ func NewInstructionWithStopForTests() Instruction {
 // NewConditionForTest creates a new condition for tests
 func NewConditionForTest(variable string, instructions Instructions) Condition {
 	ins, err := NewConditionBuilder().Create().WithVariable(variable).WithInstructions(instructions).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewAssignmentForTests creates a new assignment for tests
-func NewAssignmentForTests(name string, assignable assignables.Assignable) Assignment {
-	ins, err := NewAssignmentBuilder().Create().WithName(name).WithAssignable(assignable).Now()
 	if err != nil {
 		panic(err)
 	}

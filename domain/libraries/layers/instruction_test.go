@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 )
@@ -98,7 +99,7 @@ func TestInstruction_withCondition_Success(t *testing.T) {
 }
 
 func TestInstruction_withAssignment_Success(t *testing.T) {
-	assignment := NewAssignmentForTests(
+	assignment := assignments.NewAssignmentForTests(
 		"myName",
 		assignables.NewAssignableWithBytesForTests(bytes.NewBytesWithJoinForTests([]string{
 			"first",

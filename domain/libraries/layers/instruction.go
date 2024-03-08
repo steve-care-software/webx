@@ -1,13 +1,16 @@
 package layers
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments"
+)
 
 type instruction struct {
 	hash       hash.Hash
 	isStop     bool
 	raiseError uint
 	condition  Condition
-	assignment Assignment
+	assignment assignments.Assignment
 }
 
 func createInstructionWithIsStop(
@@ -50,7 +53,7 @@ func createInstructionWithCondition(
 
 func createInstructionWithAssignment(
 	hash hash.Hash,
-	assignment Assignment,
+	assignment assignments.Assignment,
 ) Instruction {
 	return createInstructionInternally(
 		hash,
@@ -66,7 +69,7 @@ func createInstructionInternally(
 	isStop bool,
 	raiseError uint,
 	condition Condition,
-	assignment Assignment,
+	assignment assignments.Assignment,
 ) Instruction {
 	out := instruction{
 		hash:       hash,
@@ -115,6 +118,6 @@ func (obj *instruction) IsAssignment() bool {
 }
 
 // Assignment returns the assignment, if any
-func (obj *instruction) Assignment() Assignment {
+func (obj *instruction) Assignment() assignments.Assignment {
 	return obj.assignment
 }

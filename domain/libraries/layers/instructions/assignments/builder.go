@@ -1,4 +1,4 @@
-package layers
+package assignments
 
 import (
 	"errors"
@@ -7,16 +7,16 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 )
 
-type assignmentBuilder struct {
+type builder struct {
 	hashAdapter hash.Adapter
 	name        string
 	assignable  assignables.Assignable
 }
 
-func createAssignmentBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) AssignmentBuilder {
-	out := assignmentBuilder{
+) Builder {
+	out := builder{
 		hashAdapter: hashAdapter,
 		name:        "",
 		assignable:  nil,
@@ -26,26 +26,26 @@ func createAssignmentBuilder(
 }
 
 // Create initializes the builder
-func (app *assignmentBuilder) Create() AssignmentBuilder {
-	return createAssignmentBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithName adds a name to the builder
-func (app *assignmentBuilder) WithName(name string) AssignmentBuilder {
+func (app *builder) WithName(name string) Builder {
 	app.name = name
 	return app
 }
 
 // WithAssignable adds an assignable to the builder
-func (app *assignmentBuilder) WithAssignable(assignable assignables.Assignable) AssignmentBuilder {
+func (app *builder) WithAssignable(assignable assignables.Assignable) Builder {
 	app.assignable = assignable
 	return app
 }
 
 // Now builds a new Assignment instance
-func (app *assignmentBuilder) Now() (Assignment, error) {
+func (app *builder) Now() (Assignment, error) {
 	if app.name == "" {
 		return nil, errors.New("the name is mandatory in order to build an Assignment instance")
 	}

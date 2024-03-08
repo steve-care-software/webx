@@ -1,4 +1,4 @@
-package layers
+package assignments
 
 import (
 	"reflect"
@@ -35,7 +35,7 @@ func TestAssignment_withoutName_returnsError(t *testing.T) {
 		"second",
 	}))
 
-	_, err := NewAssignmentBuilder().Create().WithAssignable(assignable).Now()
+	_, err := NewBuilder().Create().WithAssignable(assignable).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
@@ -44,7 +44,7 @@ func TestAssignment_withoutName_returnsError(t *testing.T) {
 
 func TestAssignment_withoutAssignable_returnsError(t *testing.T) {
 	name := "myName"
-	_, err := NewAssignmentBuilder().Create().WithName(name).Now()
+	_, err := NewBuilder().Create().WithName(name).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

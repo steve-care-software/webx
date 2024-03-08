@@ -5,6 +5,7 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/constants"
@@ -21,7 +22,7 @@ type layerAdapter struct {
 	instructionsBuilder layers.InstructionsBuilder
 	instructionBuilder  layers.InstructionBuilder
 	conditionBuilder    layers.ConditionBuilder
-	assignmentBuilder   layers.AssignmentBuilder
+	assignmentBuilder   assignments.Builder
 	assignableBuilder   assignables.Builder
 	constantBuilder     constants.Builder
 	executionBuilder    executions.Builder
@@ -37,7 +38,7 @@ func createLayerAdapter(
 	instructionsBuilder layers.InstructionsBuilder,
 	instructionBuilder layers.InstructionBuilder,
 	conditionBuilder layers.ConditionBuilder,
-	assignmentBuilder layers.AssignmentBuilder,
+	assignmentBuilder assignments.Builder,
 	assignableBuilder assignables.Builder,
 	constantBuilder constants.Builder,
 	executionBuilder executions.Builder,
@@ -260,14 +261,14 @@ func (app *layerAdapter) toInstanceCondition(str structs.Condition) (layers.Cond
 		Now()
 }
 
-func (app *layerAdapter) toStructAssignment(ins layers.Assignment) structs.Assignment {
+func (app *layerAdapter) toStructAssignment(ins assignments.Assignment) structs.Assignment {
 	return structs.Assignment{
 		Name:       ins.Name(),
 		Assignable: app.toStructAssignable(ins.Assignable()),
 	}
 }
 
-func (app *layerAdapter) toInstanceAssignment(str structs.Assignment) (layers.Assignment, error) {
+func (app *layerAdapter) toInstanceAssignment(str structs.Assignment) (assignments.Assignment, error) {
 	assignable, err := app.toInstanceAssignable(str.Assignable)
 	if err != nil {
 		return nil, err

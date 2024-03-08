@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments"
 )
 
 type instructionBuilder struct {
@@ -12,7 +13,7 @@ type instructionBuilder struct {
 	isStop      bool
 	raiseError  uint
 	condition   Condition
-	assignment  Assignment
+	assignment  assignments.Assignment
 }
 
 func createInstructionBuilder(
@@ -49,7 +50,7 @@ func (app *instructionBuilder) WithCondition(condition Condition) InstructionBui
 }
 
 // WithAssignment adds an assignment to the builder
-func (app *instructionBuilder) WithAssignment(assignment Assignment) InstructionBuilder {
+func (app *instructionBuilder) WithAssignment(assignment assignments.Assignment) InstructionBuilder {
 	app.assignment = assignment
 	return app
 }
