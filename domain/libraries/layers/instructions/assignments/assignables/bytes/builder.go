@@ -1,4 +1,4 @@
-package layers
+package bytes
 
 import (
 	"errors"
@@ -6,17 +6,17 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
-type bytesBuilder struct {
+type builder struct {
 	hashAdapter hash.Adapter
 	join        []string
 	compare     []string
 	hashBytes   string
 }
 
-func createBytesBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) BytesBuilder {
-	out := bytesBuilder{
+) Builder {
+	out := builder{
 		hashAdapter: hashAdapter,
 		join:        nil,
 		compare:     nil,
@@ -27,32 +27,32 @@ func createBytesBuilder(
 }
 
 // Create initializes the builder
-func (app *bytesBuilder) Create() BytesBuilder {
-	return createBytesBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithJoin adds a join to the builder
-func (app *bytesBuilder) WithJoin(join []string) BytesBuilder {
+func (app *builder) WithJoin(join []string) Builder {
 	app.join = join
 	return app
 }
 
 // WithCompare adds a compare to the builder
-func (app *bytesBuilder) WithCompare(compare []string) BytesBuilder {
+func (app *builder) WithCompare(compare []string) Builder {
 	app.compare = compare
 	return app
 }
 
 // WithHashBytes adds an hashBytes to the builder
-func (app *bytesBuilder) WithHashBytes(hashBytes string) BytesBuilder {
+func (app *builder) WithHashBytes(hashBytes string) Builder {
 	app.hashBytes = hashBytes
 	return app
 }
 
 // Now builds a new Bytes instance
-func (app *bytesBuilder) Now() (Bytes, error) {
+func (app *builder) Now() (Bytes, error) {
 	data := [][]byte{}
 	if app.join != nil && len(app.join) <= 0 {
 		app.join = nil

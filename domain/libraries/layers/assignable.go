@@ -1,16 +1,19 @@
 package layers
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
+)
 
 type assignable struct {
 	hash      hash.Hash
-	bytes     Bytes
+	bytes     bytes.Bytes
 	execution Execution
 }
 
 func createAssignableWithBytes(
 	hash hash.Hash,
-	bytes Bytes,
+	bytes bytes.Bytes,
 ) Assignable {
 	return createAssignableInternally(hash, bytes, nil)
 }
@@ -24,7 +27,7 @@ func createAssignableWithexecution(
 
 func createAssignableInternally(
 	hash hash.Hash,
-	bytes Bytes,
+	bytes bytes.Bytes,
 	execution Execution,
 ) Assignable {
 	out := assignable{
@@ -47,7 +50,7 @@ func (obj *assignable) IsBytes() bool {
 }
 
 // Bytes returns the bytes, if any
-func (obj *assignable) Bytes() Bytes {
+func (obj *assignable) Bytes() bytes.Bytes {
 	return obj.bytes
 }
 

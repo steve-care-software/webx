@@ -5,6 +5,7 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 	structs "github.com/steve-care-software/datastencil/infrastructure/jsons/structs/libraries/layers"
 )
 
@@ -21,7 +22,7 @@ type layerAdapter struct {
 	assignableBuilder   layers.AssignableBuilder
 	constantBuilder     layers.ConstantBuilder
 	executionBuilder    layers.ExecutionBuilder
-	bytesBuilder        layers.BytesBuilder
+	bytesBuilder        bytes.BytesBuilder
 }
 
 func createLayerAdapter(
@@ -37,7 +38,7 @@ func createLayerAdapter(
 	assignableBuilder layers.AssignableBuilder,
 	constantBuilder layers.ConstantBuilder,
 	executionBuilder layers.ExecutionBuilder,
-	bytesBuilder layers.BytesBuilder,
+	bytesBuilder bytes.BytesBuilder,
 ) layers.LayerAdapter {
 	out := layerAdapter{
 		hashAdapter:         hashAdapter,
@@ -362,7 +363,7 @@ func (app *layerAdapter) toInstanceExecution(str structs.Execution) (layers.Exec
 	return builder.Now()
 }
 
-func (app *layerAdapter) toStructBytes(ins layers.Bytes) structs.Bytes {
+func (app *layerAdapter) toStructBytes(ins bytes.Bytes) structs.Bytes {
 	output := structs.Bytes{}
 	if ins.IsJoin() {
 		output.Join = ins.Join()
@@ -379,7 +380,7 @@ func (app *layerAdapter) toStructBytes(ins layers.Bytes) structs.Bytes {
 	return output
 }
 
-func (app *layerAdapter) toInstanceBytes(str structs.Bytes) (layers.Bytes, error) {
+func (app *layerAdapter) toInstanceBytes(str structs.Bytes) (bytes.Bytes, error) {
 	builder := app.bytesBuilder.Create()
 	if str.Join != nil {
 		builder.WithJoin(str.Join)

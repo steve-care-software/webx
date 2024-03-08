@@ -2,6 +2,7 @@ package layers
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 )
 
 // NewBuilder creates a new builder instance
@@ -88,14 +89,6 @@ func NewConstantBuilder() ConstantBuilder {
 func NewExecutionBuilder() ExecutionBuilder {
 	hashAdapter := hash.NewAdapter()
 	return createExecutionBuilder(
-		hashAdapter,
-	)
-}
-
-// NewBytesBuilder creates a new bytes builder
-func NewBytesBuilder() BytesBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createBytesBuilder(
 		hashAdapter,
 	)
 }
@@ -254,7 +247,7 @@ type Assignment interface {
 // AssignableBuilder represents an assignable builder
 type AssignableBuilder interface {
 	Create() AssignableBuilder
-	WithBytes(bytes Bytes) AssignableBuilder
+	WithBytes(bytes bytes.Bytes) AssignableBuilder
 	WithExecution(execution Execution) AssignableBuilder
 	Now() (Assignable, error)
 }
@@ -263,7 +256,7 @@ type AssignableBuilder interface {
 type Assignable interface {
 	Hash() hash.Hash
 	IsBytes() bool
-	Bytes() Bytes
+	Bytes() bytes.Bytes
 	IsExecution() bool
 	Execution() Execution
 }
@@ -299,24 +292,4 @@ type Execution interface {
 	Input() string
 	HasLayer() bool
 	Layer() string
-}
-
-// BytesBuilder represents a bytes builder
-type BytesBuilder interface {
-	Create() BytesBuilder
-	WithJoin(join []string) BytesBuilder
-	WithCompare(compare []string) BytesBuilder
-	WithHashBytes(hashBytes string) BytesBuilder
-	Now() (Bytes, error)
-}
-
-// Bytes represents the bytes assignable
-type Bytes interface {
-	Hash() hash.Hash
-	IsJoin() bool
-	Join() []string
-	IsCompare() bool
-	Compare() []string
-	IsHashBytes() bool
-	HashBytes() string
 }

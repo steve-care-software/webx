@@ -10,6 +10,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	layers_bytes "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions"
@@ -651,7 +652,7 @@ func (app *application) executeExecution(
 	return nil, failure, retCommands, nil
 }
 
-func (app *application) executeBytes(frame stacks.Frame, bytesIns layers.Bytes) (stacks.Assignable, error) {
+func (app *application) executeBytes(frame stacks.Frame, bytesIns layers_bytes.Bytes) (stacks.Assignable, error) {
 	if bytesIns.IsJoin() {
 		variables := bytesIns.Join()
 		return app.executeJoin(frame, variables)

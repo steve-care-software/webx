@@ -4,11 +4,12 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 )
 
 type assignableBuilder struct {
 	hashAdapter hash.Adapter
-	bytes       Bytes
+	bytes       bytes.Bytes
 	execution   Execution
 }
 
@@ -32,7 +33,7 @@ func (app *assignableBuilder) Create() AssignableBuilder {
 }
 
 // WithBytes add bytes to the builder
-func (app *assignableBuilder) WithBytes(bytes Bytes) AssignableBuilder {
+func (app *assignableBuilder) WithBytes(bytes bytes.Bytes) AssignableBuilder {
 	app.bytes = bytes
 	return app
 }

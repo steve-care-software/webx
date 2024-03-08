@@ -11,6 +11,8 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
+	layers_bytes "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions"
@@ -357,7 +359,7 @@ func NewOrmRepository(
 				if pIns, ok := value.(*orms.Instance); ok {
 					if pIns != nil {
 						ins := *pIns
-						builder.WithBytes(ins.(layers.Bytes))
+						builder.WithBytes(ins.(bytes.Bytes))
 					}
 				}
 			}
@@ -365,7 +367,7 @@ func NewOrmRepository(
 			return builder.Now()
 		},
 		"library_layer_instruction_assignment_assignable_bytes": func(values map[string]interface{}) (orms.Instance, error) {
-			builder := layers.NewBytesBuilder()
+			builder := layers_bytes.NewBuilder()
 			if value, ok := values["joins"]; ok {
 				if value != nil {
 					split := strings.Split(value.(string), resourceNameDelimiter)
@@ -759,7 +761,7 @@ func NewOrmService(
 			return false, nil, errors.New("the Instance was expected to contain an Assignable instance")
 		},
 		"library_layer_instruction_assignment_assignable_bytes": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
-			if casted, ok := ins.(layers.Bytes); ok {
+			if casted, ok := ins.(bytes.Bytes); ok {
 				switch fieldName {
 				case "hash":
 					return true, casted.Hash().Bytes(), nil

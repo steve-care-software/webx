@@ -12,6 +12,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	layers_bytes "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions"
@@ -68,7 +69,7 @@ func TestOrm_Success(t *testing.T) {
 									layers.NewAssignmentForTests(
 										"myName",
 										layers.NewAssignableWithBytesForTests(
-											layers.NewBytesWithHashBytesForTests("myInput"),
+											layers_bytes.NewBytesWithHashBytesForTests("myInput"),
 										),
 									),
 								),
@@ -100,7 +101,7 @@ func TestOrm_Success(t *testing.T) {
 									layers.NewAssignmentForTests(
 										"myName",
 										layers.NewAssignableWithBytesForTests(
-											layers.NewBytesWithHashBytesForTests("myInput"),
+											layers_bytes.NewBytesWithHashBytesForTests("myInput"),
 										),
 									),
 								),
@@ -464,7 +465,7 @@ func TestOrm_Success(t *testing.T) {
 							layers.NewAssignmentForTests(
 								"myName",
 								layers.NewAssignableWithBytesForTests(
-									layers.NewBytesWithHashBytesForTests("myInput"),
+									layers_bytes.NewBytesWithHashBytesForTests("myInput"),
 								),
 							),
 						),
@@ -555,7 +556,7 @@ func TestOrm_Success(t *testing.T) {
 					layers.NewAssignmentForTests(
 						"myName",
 						layers.NewAssignableWithBytesForTests(
-							layers.NewBytesWithHashBytesForTests("myInput"),
+							layers_bytes.NewBytesWithHashBytesForTests("myInput"),
 						),
 					),
 				),
@@ -578,7 +579,7 @@ func TestOrm_Success(t *testing.T) {
 				instance: layers.NewAssignmentForTests(
 					"myName",
 					layers.NewAssignableWithBytesForTests(
-						layers.NewBytesWithHashBytesForTests("myInput"),
+						layers_bytes.NewBytesWithHashBytesForTests("myInput"),
 					),
 				),
 				dependencies: []typeDependency{
@@ -599,7 +600,7 @@ func TestOrm_Success(t *testing.T) {
 					"assignable",
 				},
 				instance: layers.NewAssignableWithBytesForTests(
-					layers.NewBytesWithHashBytesForTests("myInput"),
+					layers_bytes.NewBytesWithHashBytesForTests("myInput"),
 				),
 				dependencies: []typeDependency{
 					{
@@ -619,7 +620,7 @@ func TestOrm_Success(t *testing.T) {
 					"assignable",
 					"bytes",
 				},
-				instance: layers.NewBytesWithHashBytesForTests("myInput"),
+				instance: layers_bytes.NewBytesWithHashBytesForTests("myInput"),
 			},
 			{
 				path: []string{
@@ -630,7 +631,7 @@ func TestOrm_Success(t *testing.T) {
 					"assignable",
 					"bytes",
 				},
-				instance: layers.NewBytesWithCompareForTests([]string{
+				instance: layers_bytes.NewBytesWithCompareForTests([]string{
 					"first",
 					"second",
 				}),
@@ -644,7 +645,7 @@ func TestOrm_Success(t *testing.T) {
 					"assignable",
 					"bytes",
 				},
-				instance: layers.NewBytesWithJoinForTests([]string{
+				instance: layers_bytes.NewBytesWithJoinForTests([]string{
 					"first",
 					"second",
 				}),

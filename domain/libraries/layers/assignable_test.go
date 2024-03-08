@@ -3,10 +3,12 @@ package layers
 import (
 	"reflect"
 	"testing"
+
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 )
 
 func TestAssignable_withBytes_Success(t *testing.T) {
-	bytes := NewBytesWithJoinForTests([]string{
+	bytes := bytes.NewBytesWithJoinForTests([]string{
 		"first",
 		"second",
 	})

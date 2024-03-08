@@ -1,4 +1,4 @@
-package layers
+package bytes
 
 import (
 	"reflect"
@@ -92,7 +92,7 @@ func TestBytes_withHashBytes_Success(t *testing.T) {
 }
 
 func TestBytes_withoutParam_returnsError(t *testing.T) {
-	_, err := NewBytesBuilder().Create().Now()
+	_, err := NewBuilder().Create().Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid")
 		return

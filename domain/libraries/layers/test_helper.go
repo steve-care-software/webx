@@ -1,5 +1,7 @@
 package layers
 
+import "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
+
 // NewLayersForTests creates a new layers for tests
 func NewLayersForTests(list []Layer) Layers {
 	ins, err := NewBuilder().Create().WithList(list).Now()
@@ -131,7 +133,7 @@ func NewAssignmentForTests(name string, assignable Assignable) Assignment {
 }
 
 // NewAssignableWithBytesForTests creates a new assignable with bytes for tests
-func NewAssignableWithBytesForTests(input Bytes) Assignable {
+func NewAssignableWithBytesForTests(input bytes.Bytes) Assignable {
 	ins, err := NewAssignableBuilder().Create().WithBytes(input).Now()
 	if err != nil {
 		panic(err)
@@ -153,36 +155,6 @@ func NewExecutionWithLayerForTests(input string, layer string) Execution {
 // NewExecutionForTests creates a new execution for tests
 func NewExecutionForTests(input string) Execution {
 	ins, err := NewExecutionBuilder().Create().WithInput(input).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewBytesWithHashBytesForTests creates a new bytes with hashBytes for tests
-func NewBytesWithHashBytesForTests(input string) Bytes {
-	ins, err := NewBytesBuilder().Create().WithHashBytes(input).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewBytesWithCompareForTests creates a new bytes with compare for tests
-func NewBytesWithCompareForTests(input []string) Bytes {
-	ins, err := NewBytesBuilder().Create().WithCompare(input).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewBytesWithJoinForTests creates a new bytes with join for tests
-func NewBytesWithJoinForTests(join []string) Bytes {
-	ins, err := NewBytesBuilder().Create().WithJoin(join).Now()
 	if err != nil {
 		panic(err)
 	}

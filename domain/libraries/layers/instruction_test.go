@@ -3,6 +3,8 @@ package layers
 import (
 	"reflect"
 	"testing"
+
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 )
 
 func TestInstruction_isStop_Success(t *testing.T) {
@@ -97,7 +99,7 @@ func TestInstruction_withCondition_Success(t *testing.T) {
 func TestInstruction_withAssignment_Success(t *testing.T) {
 	assignment := NewAssignmentForTests(
 		"myName",
-		NewAssignableWithBytesForTests(NewBytesWithJoinForTests([]string{
+		NewAssignableWithBytesForTests(bytes.NewBytesWithJoinForTests([]string{
 			"first",
 			"second",
 		})),
