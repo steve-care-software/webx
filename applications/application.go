@@ -588,6 +588,27 @@ func (app *application) executeAssignable(
 		return retAssignable, nil, currentContext, nil
 	}
 
+	if assignable.IsConstant() {
+		builder := app.assignableBuilder.Create()
+		consIns := assignable.Constant()
+		if consIns.IsBool() {
+			pBool := consIns.Bool()
+			builder.WithBool(*pBool)
+		}
+
+		if consIns.IsBytes() {
+			bytesVal := consIns.Bytes()
+			builder.WithBytes(bytesVal)
+		}
+
+		retAssignable, err := builder.Now()
+		if err != nil {
+			return nil, nil, nil, err
+		}
+
+		return retAssignable, nil, currentContext, nil
+	}
+
 	execution := assignable.Execution()
 	return app.executeExecution(
 		library,

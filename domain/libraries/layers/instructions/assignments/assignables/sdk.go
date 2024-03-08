@@ -3,6 +3,7 @@ package assignables
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/executions"
 )
 
@@ -18,6 +19,7 @@ func NewBuilder() Builder {
 type Builder interface {
 	Create() Builder
 	WithBytes(bytes bytes.Bytes) Builder
+	WithConsant(constant constants.Constant) Builder
 	WithExecution(execution executions.Execution) Builder
 	Now() (Assignable, error)
 }
@@ -27,6 +29,8 @@ type Assignable interface {
 	Hash() hash.Hash
 	IsBytes() bool
 	Bytes() bytes.Bytes
+	IsConstant() bool
+	Constant() constants.Constant
 	IsExecution() bool
 	Execution() executions.Execution
 }
