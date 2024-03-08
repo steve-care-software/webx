@@ -1,16 +1,19 @@
 package links
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
+)
 
 type conditionValue struct {
 	hash      hash.Hash
-	resource  ConditionResource
+	resource  resources.Resource
 	condition Condition
 }
 
 func createConditionValueWithResource(
 	hash hash.Hash,
-	resource ConditionResource,
+	resource resources.Resource,
 ) ConditionValue {
 	return createConditionValueInternally(hash, resource, nil)
 }
@@ -24,7 +27,7 @@ func createConditionValueWithCondition(
 
 func createConditionValueInternally(
 	hash hash.Hash,
-	resource ConditionResource,
+	resource resources.Resource,
 	condition Condition,
 ) ConditionValue {
 	out := conditionValue{
@@ -47,7 +50,7 @@ func (obj *conditionValue) IsResource() bool {
 }
 
 // Resource returns the resource, if any
-func (obj *conditionValue) Resource() ConditionResource {
+func (obj *conditionValue) Resource() resources.Resource {
 	return obj.resource
 }
 

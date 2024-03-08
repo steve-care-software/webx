@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
 )
 
 func TestElement_Success(t *testing.T) {
@@ -25,7 +26,7 @@ func TestElement_Success(t *testing.T) {
 
 func TestElement_withCondition_Success(t *testing.T) {
 	condition := NewConditionForTests(
-		NewConditionResourceForTests(23),
+		resources.NewResourceForTests(23),
 	)
 
 	pLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))

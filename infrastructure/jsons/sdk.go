@@ -5,6 +5,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
 	origins_resources "github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
@@ -83,7 +84,7 @@ func NewLinkAdapter() links.LinkAdapter {
 	elementBuilder := links.NewElementBuilder()
 	conditionBuilder := links.NewConditionBuilder()
 	conditionValueBuilder := links.NewConditionValueBuilder()
-	conditionResourceBuilder := links.NewConditionResourceBuilder()
+	conditionResourceBuilder := resources.NewBuilder()
 	originBuilder := origins.NewBuilder()
 	originValueBuilder := origins.NewValueBuilder()
 	originResourceBuilder := origins_resources.NewBuilder()

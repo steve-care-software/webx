@@ -12,6 +12,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
+	conditions_resources "github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
 	links_resources "github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
@@ -104,7 +105,7 @@ func NewOrmRepository(
 				if pIns, ok := value.(*orms.Instance); ok {
 					if pIns != nil {
 						ins := *pIns
-						builder.WithResource(ins.(links.ConditionResource))
+						builder.WithResource(ins.(conditions_resources.Resource))
 					}
 				}
 			}
@@ -126,7 +127,7 @@ func NewOrmRepository(
 				if pIns, ok := value.(*orms.Instance); ok {
 					if pIns != nil {
 						ins := *pIns
-						builder.WithResource(ins.(links.ConditionResource))
+						builder.WithResource(ins.(conditions_resources.Resource))
 					}
 				}
 			}
@@ -143,7 +144,7 @@ func NewOrmRepository(
 			return builder.Now()
 		},
 		"library_link_element_condition_resource": func(values map[string]interface{}) (orms.Instance, error) {
-			builder := links.NewConditionResourceBuilder()
+			builder := conditions_resources.NewBuilder()
 			if value, ok := values["code"]; ok {
 				if casted, ok := value.(int64); ok {
 					builder.WithCode(uint(casted))
@@ -557,7 +558,7 @@ func NewOrmService(
 			return false, nil, errors.New("the Instance was expected to contain a ConditionValue instance")
 		},
 		"library_link_element_condition_resource": func(ins orms.Instance, fieldName string) (bool, interface{}, error) {
-			if casted, ok := ins.(links.ConditionResource); ok {
+			if casted, ok := ins.(conditions_resources.Resource); ok {
 				switch fieldName {
 				case "hash":
 					return true, casted.Hash().Bytes(), nil

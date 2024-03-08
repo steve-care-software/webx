@@ -3,10 +3,12 @@ package links
 import (
 	"reflect"
 	"testing"
+
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
 )
 
 func TestCondition_Success(t *testing.T) {
-	resource := NewConditionResourceForTests(23)
+	resource := resources.NewResourceForTests(23)
 	condition := NewConditionForTests(
 		resource,
 	)
@@ -24,9 +26,9 @@ func TestCondition_Success(t *testing.T) {
 }
 
 func TestCondition_withNext_Success(t *testing.T) {
-	resource := NewConditionResourceForTests(23)
+	resource := resources.NewResourceForTests(23)
 	next := NewConditionValueWithResourceForTests(
-		NewConditionResourceForTests(44),
+		resources.NewResourceForTests(44),
 	)
 
 	condition := NewConditionWithNextForTests(
@@ -52,7 +54,7 @@ func TestCondition_withNext_Success(t *testing.T) {
 	}
 }
 func TestCondition__withoutResource_returnsError(t *testing.T) {
-	_, err := NewConditionResourceBuilder().Create().Now()
+	_, err := resources.NewBuilder().Create().Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

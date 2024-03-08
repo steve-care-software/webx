@@ -2,6 +2,7 @@ package links
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
 )
 
@@ -49,14 +50,6 @@ func NewConditionBuilder() ConditionBuilder {
 func NewConditionValueBuilder() ConditionValueBuilder {
 	hashAdapter := hash.NewAdapter()
 	return createConditionValueBuilder(
-		hashAdapter,
-	)
-}
-
-// NewConditionResourceBuilder creates a new condition resource builder
-func NewConditionResourceBuilder() ConditionResourceBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createConditionResourceBuilder(
 		hashAdapter,
 	)
 }
@@ -146,7 +139,7 @@ type Element interface {
 // ConditionBuilder represents condition builder
 type ConditionBuilder interface {
 	Create() ConditionBuilder
-	WithResource(resource ConditionResource) ConditionBuilder
+	WithResource(resource resources.Resource) ConditionBuilder
 	WithNext(next ConditionValue) ConditionBuilder
 	Now() (Condition, error)
 }
@@ -154,7 +147,7 @@ type ConditionBuilder interface {
 // Condition represents a condition
 type Condition interface {
 	Hash() hash.Hash
-	Resource() ConditionResource
+	Resource() resources.Resource
 	HasNext() bool
 	Next() ConditionValue
 }
@@ -162,7 +155,7 @@ type Condition interface {
 // ConditionValueBuilder represents a condition value builder
 type ConditionValueBuilder interface {
 	Create() ConditionValueBuilder
-	WithResource(resource ConditionResource) ConditionValueBuilder
+	WithResource(resource resources.Resource) ConditionValueBuilder
 	WithCondition(condition Condition) ConditionValueBuilder
 	Now() (ConditionValue, error)
 }
@@ -171,22 +164,7 @@ type ConditionValueBuilder interface {
 type ConditionValue interface {
 	Hash() hash.Hash
 	IsResource() bool
-	Resource() ConditionResource
+	Resource() resources.Resource
 	IsCondition() bool
 	Condition() Condition
-}
-
-// ConditionResourceBuilder represents a condition resource builder
-type ConditionResourceBuilder interface {
-	Create() ConditionResourceBuilder
-	WithCode(code uint) ConditionResourceBuilder
-	IsRaisedInLayer() ConditionResourceBuilder
-	Now() (ConditionResource, error)
-}
-
-// ConditionResource represents a condition resource
-type ConditionResource interface {
-	Hash() hash.Hash
-	Code() uint
-	IsRaisedInLayer() bool
 }

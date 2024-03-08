@@ -5,6 +5,7 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
 	origins_resources "github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
@@ -19,7 +20,7 @@ type linkAdapter struct {
 	elementBuilder           links.ElementBuilder
 	conditionBuilder         links.ConditionBuilder
 	conditionValueBuilder    links.ConditionValueBuilder
-	conditionResourceBuilder links.ConditionResourceBuilder
+	conditionResourceBuilder resources.Builder
 	originBuilder            origins.Builder
 	originValueBuilder       origins.ValueBuilder
 	originResourceBuilder    origins_resources.Builder
@@ -34,7 +35,7 @@ func createLinkAdapter(
 	elementBuilder links.ElementBuilder,
 	conditionBuilder links.ConditionBuilder,
 	conditionValueBuilder links.ConditionValueBuilder,
-	conditionResourceBuilder links.ConditionResourceBuilder,
+	conditionResourceBuilder resources.Builder,
 	originBuilder origins.Builder,
 	originValueBuilder origins.ValueBuilder,
 	originResourceBuilder origins_resources.Builder,
@@ -229,7 +230,7 @@ func (app *linkAdapter) toStructConditionValue(ins links.ConditionValue) structs
 	return output
 }
 
-func (app *linkAdapter) toInstanceConditionResource(str structs.ConditionResource) (links.ConditionResource, error) {
+func (app *linkAdapter) toInstanceConditionResource(str structs.ConditionResource) (resources.Resource, error) {
 	builder := app.conditionResourceBuilder.Create().WithCode(str.Code)
 	if str.IsRaisedInLayer {
 		builder.IsRaisedInLayer()
@@ -238,7 +239,7 @@ func (app *linkAdapter) toInstanceConditionResource(str structs.ConditionResourc
 	return builder.Now()
 }
 
-func (app *linkAdapter) toStructConditionResource(ins links.ConditionResource) structs.ConditionResource {
+func (app *linkAdapter) toStructConditionResource(ins resources.Resource) structs.ConditionResource {
 	return structs.ConditionResource{
 		Code:            ins.Code(),
 		IsRaisedInLayer: ins.IsRaisedInLayer(),

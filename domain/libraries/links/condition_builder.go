@@ -4,11 +4,12 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
 )
 
 type conditionBuilder struct {
 	hashAdapter hash.Adapter
-	resource    ConditionResource
+	resource    resources.Resource
 	next        ConditionValue
 }
 
@@ -32,7 +33,7 @@ func (app *conditionBuilder) Create() ConditionBuilder {
 }
 
 // WithResource adds a resource builder
-func (app *conditionBuilder) WithResource(resource ConditionResource) ConditionBuilder {
+func (app *conditionBuilder) WithResource(resource resources.Resource) ConditionBuilder {
 	app.resource = resource
 	return app
 }

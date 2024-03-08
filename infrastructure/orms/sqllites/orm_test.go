@@ -13,6 +13,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
+	conditions_resources "github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
 	links_resources "github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
@@ -198,7 +199,7 @@ func TestOrm_Success(t *testing.T) {
 				instance: links.NewElementWithConditionForTests(
 					*pHash,
 					links.NewConditionForTests(
-						links.NewConditionResourceForTests(22),
+						conditions_resources.NewResourceForTests(22),
 					),
 				),
 				dependencies: []typeDependency{
@@ -218,7 +219,7 @@ func TestOrm_Success(t *testing.T) {
 					"condition",
 				},
 				instance: links.NewConditionForTests(
-					links.NewConditionResourceForTests(22),
+					conditions_resources.NewResourceForTests(22),
 				),
 				dependencies: []typeDependency{
 					{
@@ -235,9 +236,9 @@ func TestOrm_Success(t *testing.T) {
 					"condition",
 				},
 				instance: links.NewConditionWithNextForTests(
-					links.NewConditionResourceForTests(22),
+					conditions_resources.NewResourceForTests(22),
 					links.NewConditionValueWithResourceForTests(
-						links.NewConditionResourceForTests(22),
+						conditions_resources.NewResourceForTests(22),
 					),
 				),
 				dependencies: []typeDependency{
@@ -262,7 +263,7 @@ func TestOrm_Success(t *testing.T) {
 					"value",
 				},
 				instance: links.NewConditionValueWithResourceForTests(
-					links.NewConditionResourceForTests(22),
+					conditions_resources.NewResourceForTests(22),
 				),
 				dependencies: []typeDependency{
 					{
@@ -281,7 +282,7 @@ func TestOrm_Success(t *testing.T) {
 				},
 				instance: links.NewConditionValueWithConditionForTests(
 					links.NewConditionForTests(
-						links.NewConditionResourceForTests(22),
+						conditions_resources.NewResourceForTests(22),
 					),
 				),
 				dependencies: []typeDependency{
@@ -301,7 +302,7 @@ func TestOrm_Success(t *testing.T) {
 					"condition",
 					"resource",
 				},
-				instance: links.NewConditionResourceForTests(22),
+				instance: conditions_resources.NewResourceForTests(22),
 			},
 			{
 				path: []string{
@@ -311,7 +312,7 @@ func TestOrm_Success(t *testing.T) {
 					"condition",
 					"resource",
 				},
-				instance: links.NewConditionResourceWithIsRaisedInLayerForTests(54),
+				instance: conditions_resources.NewResourceWithIsRaisedInLayerForTests(54),
 			},
 		},
 		"library_link_origin": {

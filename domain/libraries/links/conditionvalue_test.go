@@ -3,10 +3,12 @@ package links
 import (
 	"reflect"
 	"testing"
+
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
 )
 
 func TestConditionValue_withResource_Success(t *testing.T) {
-	conditionResource := NewConditionResourceForTests(45)
+	conditionResource := resources.NewResourceForTests(45)
 	conditionValue := NewConditionValueWithResourceForTests(conditionResource)
 
 	if !conditionValue.IsResource() {
@@ -29,7 +31,7 @@ func TestConditionValue_withResource_Success(t *testing.T) {
 
 func TestConditionValue_withCondition_Success(t *testing.T) {
 	condition := NewConditionForTests(
-		NewConditionResourceForTests(22),
+		resources.NewResourceForTests(22),
 	)
 	conditionValue := NewConditionValueWithConditionForTests(condition)
 

@@ -1,4 +1,4 @@
-package links
+package resources
 
 import (
 	"errors"
@@ -7,16 +7,16 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
-type conditionResourceBuilder struct {
+type builder struct {
 	hashAdapter    hash.Adapter
 	code           uint
 	isRaiseInLayer bool
 }
 
-func createConditionResourceBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) ConditionResourceBuilder {
-	out := conditionResourceBuilder{
+) Builder {
+	out := builder{
 		hashAdapter:    hashAdapter,
 		code:           0,
 		isRaiseInLayer: false,
@@ -26,28 +26,28 @@ func createConditionResourceBuilder(
 }
 
 // Create initializes the builder
-func (app *conditionResourceBuilder) Create() ConditionResourceBuilder {
-	return createConditionResourceBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithCode adds a code to the builder
-func (app *conditionResourceBuilder) WithCode(code uint) ConditionResourceBuilder {
+func (app *builder) WithCode(code uint) Builder {
 	app.code = code
 	return app
 }
 
 // IsRaisedInLayer flags the builder as isRaisedInLayer
-func (app *conditionResourceBuilder) IsRaisedInLayer() ConditionResourceBuilder {
+func (app *builder) IsRaisedInLayer() Builder {
 	app.isRaiseInLayer = true
 	return app
 }
 
-// Now builds a new ConditionResource instance
-func (app *conditionResourceBuilder) Now() (ConditionResource, error) {
+// Now builds a new Resource instance
+func (app *builder) Now() (Resource, error) {
 	if app.code <= 0 {
-		return nil, errors.New("the code is mandatory in order to build a ConditionResource instance")
+		return nil, errors.New("the code is mandatory in order to build a Resource instance")
 	}
 
 	isRaisedInLayer := "false"
@@ -64,5 +64,5 @@ func (app *conditionResourceBuilder) Now() (ConditionResource, error) {
 		return nil, err
 	}
 
-	return createConditionResource(*pHash, app.code, app.isRaiseInLayer), nil
+	return createResource(*pHash, app.code, app.isRaiseInLayer), nil
 }

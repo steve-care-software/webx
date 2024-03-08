@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/commands/results"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 )
 
 func TestCommands_Success(t *testing.T) {

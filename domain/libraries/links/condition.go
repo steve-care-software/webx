@@ -1,23 +1,26 @@
 package links
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/links/elements/conditions/resources"
+)
 
 type condition struct {
 	hash     hash.Hash
-	resource ConditionResource
+	resource resources.Resource
 	next     ConditionValue
 }
 
 func createCondition(
 	hash hash.Hash,
-	resource ConditionResource,
+	resource resources.Resource,
 ) Condition {
 	return createConditionInternally(hash, resource, nil)
 }
 
 func createConditionWithNext(
 	hash hash.Hash,
-	resource ConditionResource,
+	resource resources.Resource,
 	next ConditionValue,
 ) Condition {
 	return createConditionInternally(hash, resource, next)
@@ -25,7 +28,7 @@ func createConditionWithNext(
 
 func createConditionInternally(
 	hash hash.Hash,
-	resource ConditionResource,
+	resource resources.Resource,
 	next ConditionValue,
 ) Condition {
 	out := condition{
@@ -43,7 +46,7 @@ func (obj *condition) Hash() hash.Hash {
 }
 
 // Resource returns the resource
-func (obj *condition) Resource() ConditionResource {
+func (obj *condition) Resource() resources.Resource {
 	return obj.resource
 }
 
