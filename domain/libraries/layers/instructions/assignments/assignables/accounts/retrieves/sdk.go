@@ -1,5 +1,7 @@
 package retrieves
 
+import "github.com/steve-care-software/datastencil/domain/hash"
+
 // Builder represents a retrieve builder
 type Builder interface {
 	Create() Builder
@@ -10,6 +12,7 @@ type Builder interface {
 
 // Retrieve represents a retrieve
 type Retrieve interface {
+	Hash() hash.Hash
 	Password() string
 	Credentials() string
 }

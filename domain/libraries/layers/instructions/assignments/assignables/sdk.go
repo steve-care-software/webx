@@ -2,6 +2,7 @@ package assignables
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/accounts"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/constants"
 )
@@ -19,6 +20,7 @@ type Builder interface {
 	Create() Builder
 	WithBytes(bytes bytes.Bytes) Builder
 	WithConsant(constant constants.Constant) Builder
+	WithAccount(account accounts.Account) Builder
 	Now() (Assignable, error)
 }
 
@@ -29,4 +31,6 @@ type Assignable interface {
 	Bytes() bytes.Bytes
 	IsConstant() bool
 	Constant() constants.Constant
+	IsAccount() bool
+	Account() accounts.Account
 }

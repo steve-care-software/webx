@@ -1,5 +1,7 @@
 package decrypts
 
+import "github.com/steve-care-software/datastencil/domain/hash"
+
 // Builder represents a decrypt builder
 type Builder interface {
 	Create() Builder
@@ -10,6 +12,7 @@ type Builder interface {
 
 // Decrypt represents a decrypt
 type Decrypt interface {
+	Hash() hash.Hash
 	Cipher() string
 	Account() string
 }

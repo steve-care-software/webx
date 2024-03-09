@@ -1,6 +1,7 @@
 package encryptions
 
 import (
+	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/accounts/encryptions/decrypts"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/accounts/encryptions/encrypts"
 )
@@ -15,6 +16,7 @@ type Builder interface {
 
 // Encryption represents an encryption
 type Encryption interface {
+	Hash() hash.Hash
 	IsEncrypt() bool
 	Encrypt() encrypts.Encrypt
 	IsDecrypt() bool

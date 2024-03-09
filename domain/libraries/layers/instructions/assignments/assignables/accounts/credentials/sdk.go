@@ -1,5 +1,7 @@
 package credentials
 
+import "github.com/steve-care-software/datastencil/domain/hash"
+
 // Builder represents a credentials builder
 type Builder interface {
 	Create() Builder
@@ -10,6 +12,7 @@ type Builder interface {
 
 // Credentials represents a credentials
 type Credentials interface {
+	Hash() hash.Hash
 	Username() string
 	Password() string
 }

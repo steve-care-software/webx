@@ -1,5 +1,7 @@
 package votes
 
+import "github.com/steve-care-software/datastencil/domain/hash"
+
 // Builder represents a vote builder
 type Builder interface {
 	Create() Builder
@@ -11,6 +13,7 @@ type Builder interface {
 
 // Vote represents a vote
 type Vote interface {
+	Hash() hash.Hash
 	Message() string
 	Ring() string
 	Account() string

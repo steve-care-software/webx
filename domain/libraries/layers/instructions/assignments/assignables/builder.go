@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/accounts"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/constants"
 )
@@ -12,6 +13,7 @@ type builder struct {
 	hashAdapter hash.Adapter
 	bytes       bytes.Bytes
 	constant    constants.Constant
+	account     accounts.Account
 }
 
 func createBuilder(
@@ -21,6 +23,7 @@ func createBuilder(
 		hashAdapter: hashAdapter,
 		bytes:       nil,
 		constant:    nil,
+		account:     nil,
 	}
 
 	return &out
@@ -45,6 +48,12 @@ func (app *builder) WithConsant(constant constants.Constant) Builder {
 	return app
 }
 
+// WithAccount adds an account to the builder
+func (app *builder) WithAccount(account accounts.Account) Builder {
+	app.account = account
+	return app
+}
+
 // Now builds a new Assignable instance
 func (app *builder) Now() (Assignable, error) {
 	data := [][]byte{}
@@ -56,6 +65,11 @@ func (app *builder) Now() (Assignable, error) {
 	if app.constant != nil {
 		data = append(data, []byte("constant"))
 		data = append(data, app.constant.Hash().Bytes())
+	}
+
+	if app.account != nil {
+		data = append(data, []byte("account"))
+		data = append(data, app.account.Hash().Bytes())
 	}
 
 	if len(data) <= 0 {
@@ -71,5 +85,9 @@ func (app *builder) Now() (Assignable, error) {
 		return createAssignableWithBytes(*pHash, app.bytes), nil
 	}
 
-	return createAssignableWithConstant(*pHash, app.constant), nil
+	if app.constant != nil {
+		return createAssignableWithConstant(*pHash, app.constant), nil
+	}
+
+	return createAssignableWithAccount(*pHash, app.account), nil
 }

@@ -1,6 +1,7 @@
 package accounts
 
 import (
+	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/accounts/communications"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/accounts/credentials"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/accounts/encryptions"
@@ -20,6 +21,7 @@ type Builder interface {
 
 // Account represents an account assignable
 type Account interface {
+	Hash() hash.Hash
 	IsList() bool
 	List() string
 	IsCredentials() bool

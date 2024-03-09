@@ -1,6 +1,7 @@
 package communications
 
 import (
+	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/accounts/communications/signs"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/accounts/communications/votes"
 )
@@ -16,6 +17,7 @@ type Builder interface {
 
 // Communication represents a communication
 type Communication interface {
+	Hash() hash.Hash
 	IsSign() bool
 	Sign() signs.Sign
 	IsVote() bool
