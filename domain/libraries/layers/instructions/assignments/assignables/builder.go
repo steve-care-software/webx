@@ -7,6 +7,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/accounts"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/constants"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/cryptography"
 )
 
 type builder struct {
@@ -14,6 +15,7 @@ type builder struct {
 	bytes       bytes.Bytes
 	constant    constants.Constant
 	account     accounts.Account
+	crypto      cryptography.Cryptography
 }
 
 func createBuilder(
@@ -24,6 +26,7 @@ func createBuilder(
 		bytes:       nil,
 		constant:    nil,
 		account:     nil,
+		crypto:      nil,
 	}
 
 	return &out
@@ -54,6 +57,12 @@ func (app *builder) WithAccount(account accounts.Account) Builder {
 	return app
 }
 
+// WithCryptography adds a cryptography to the builder
+func (app *builder) WithCryptography(cryptography cryptography.Cryptography) Builder {
+	app.crypto = cryptography
+	return app
+}
+
 // Now builds a new Assignable instance
 func (app *builder) Now() (Assignable, error) {
 	data := [][]byte{}
@@ -70,6 +79,11 @@ func (app *builder) Now() (Assignable, error) {
 	if app.account != nil {
 		data = append(data, []byte("account"))
 		data = append(data, app.account.Hash().Bytes())
+	}
+
+	if app.crypto != nil {
+		data = append(data, []byte("crypto"))
+		data = append(data, app.crypto.Hash().Bytes())
 	}
 
 	if len(data) <= 0 {

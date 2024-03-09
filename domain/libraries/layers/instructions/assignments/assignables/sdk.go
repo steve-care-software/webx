@@ -5,6 +5,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/accounts"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/constants"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/cryptography"
 )
 
 // NewBuilder creates a new assignable builder
@@ -21,6 +22,7 @@ type Builder interface {
 	WithBytes(bytes bytes.Bytes) Builder
 	WithConsant(constant constants.Constant) Builder
 	WithAccount(account accounts.Account) Builder
+	WithCryptography(cryptography cryptography.Cryptography) Builder
 	Now() (Assignable, error)
 }
 
@@ -33,4 +35,6 @@ type Assignable interface {
 	Constant() constants.Constant
 	IsAccount() bool
 	Account() accounts.Account
+	IsCryptography() bool
+	Cryptography() cryptography.Cryptography
 }

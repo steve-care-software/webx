@@ -1,23 +1,24 @@
 package cryptography
 
+import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/cryptography/decrypts"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/cryptography/encrypts"
+)
+
+// Builder represents a cryptography builder
+type Builder interface {
+	Create() Builder
+	WithEncrypt(encrypt encrypts.Encrypt) Builder
+	WithDecrypt(decrypt decrypts.Decrypt) Builder
+	Now() (Cryptography, error)
+}
+
 // Cryptography represents a cryptography
 type Cryptography interface {
-	IsHash() bool
-	Hash() string
+	Hash() hash.Hash
 	IsEncrypt() bool
-	Encrypt() Encrypt
+	Encrypt() encrypts.Encrypt
 	IsDecrypt() bool
-	Decrypt() Decrypt
-}
-
-// Encrypt represents an encrypt
-type Encrypt interface {
-	Message() string
-	Password() string
-}
-
-// Decrypt represents a decrypt
-type Decrypt interface {
-	Cipher() string
-	Password() string
+	Decrypt() decrypts.Decrypt
 }
