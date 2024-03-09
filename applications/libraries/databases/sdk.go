@@ -1,4 +1,4 @@
-package orms
+package databases
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
@@ -6,7 +6,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/orms/skeletons"
 )
 
-// Application represents the ORM application
+// Application represents the database application
 type Application interface {
 	Skeleton() skeletons.Skeleton
 	Retrieve(path []string, hash hash.Hash) (orms.Instance, error)
