@@ -8,6 +8,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/accounts/credentials"
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/orms"
 )
 
 type frame struct {
@@ -111,6 +112,11 @@ func (obj *frame) FetchRing(name string) ([]signers.PublicKey, error) {
 
 // FetchCredentials fetches a credentials by name
 func (obj *frame) FetchCredentials(name string) (credentials.Credentials, error) {
+	return nil, nil
+}
+
+// FetchInstance fetches an instance by name
+func (obj *frame) FetchInstance(name string) (orms.Instance, error) {
 	return nil, nil
 }
 

@@ -5,7 +5,9 @@ import (
 	"github.com/steve-care-software/datastencil/domain/accounts/credentials"
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/orms"
 	stack_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
+	"github.com/steve-care-software/datastencil/domain/stacks/libraries"
 )
 
 // NewBuilder creates a new builder
@@ -90,6 +92,7 @@ type Frame interface {
 	FetchAccount(name string) (accounts.Account, error)
 	FetchRing(name string) ([]signers.PublicKey, error)
 	FetchCredentials(name string) (credentials.Credentials, error)
+	FetchInstance(name string) (orms.Instance, error)
 	HasAssignments() bool
 	Assignments() Assignments
 }
@@ -130,6 +133,7 @@ type AssignableBuilder interface {
 	WithStringList(strList []string) AssignableBuilder
 	WithUnsignedInt(unsignedInt uint) AssignableBuilder
 	WithAccount(account stack_accounts.Account) AssignableBuilder
+	WithLibrary(lib libraries.Library) AssignableBuilder
 	Now() (Assignable, error)
 }
 

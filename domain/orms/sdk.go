@@ -5,6 +5,12 @@ import (
 	"github.com/steve-care-software/datastencil/domain/orms/skeletons"
 )
 
+// Adapter represents the instance adapter
+type Adapter interface {
+	ToData(ins Instance) ([]byte, error)
+	ToInstance(data []byte) (Instance, error)
+}
+
 // Instance represents an instance
 type Instance interface {
 	Hash() hash.Hash

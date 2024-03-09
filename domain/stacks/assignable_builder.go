@@ -5,6 +5,7 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/stacks/accounts"
+	"github.com/steve-care-software/datastencil/domain/stacks/libraries"
 )
 
 type assignableBuilder struct {
@@ -51,13 +52,18 @@ func (app *assignableBuilder) WithStringList(strList []string) AssignableBuilder
 	return nil
 }
 
+// WithUnsignedInt adds an uint to the builder
+func (app *assignableBuilder) WithUnsignedInt(unsignedInt uint) AssignableBuilder {
+	return nil
+}
+
 // WithAccount adds an account to the builder
 func (app *assignableBuilder) WithAccount(account accounts.Account) AssignableBuilder {
 	return nil
 }
 
-// WithUnsignedInt adds an uint to the builder
-func (app *assignableBuilder) WithUnsignedInt(unsignedInt uint) AssignableBuilder {
+// WithLibrary adds a library to the builder
+func (app *assignableBuilder) WithLibrary(lib libraries.Library) AssignableBuilder {
 	return nil
 }
 
