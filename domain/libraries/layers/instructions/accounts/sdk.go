@@ -1,31 +1,22 @@
 package accounts
 
+import (
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/accounts/deletes"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/accounts/updates"
+)
+
+// Builder represents an account builder
+type Builder interface {
+	Create() Builder
+	WithUpate(update updates.Update) Builder
+	WithDelete(delete deletes.Delete) Builder
+	Now() (Account, error)
+}
+
 // Account represents an account instruction
 type Account interface {
-	IsUpdateCriteria() bool
-	UpdateCriteria() UpdateCriteria
 	IsUpdate() bool
-	Update() Update
+	Update() updates.Update
 	IsDelete() bool
-	Delete() Delete
-}
-
-// UpdateCriteria represents an update criteria
-type UpdateCriteria interface {
-	ChangeSigner() bool
-	ChangeEncryptor() bool
-	Credentials() string
-}
-
-// Update represents an update
-type Update interface {
-	Credentials() string
-	Account() string
-	Criteria() string
-}
-
-// Delete represents a delete
-type Delete interface {
-	Credentials() string
-	Account() string
+	Delete() deletes.Delete
 }
