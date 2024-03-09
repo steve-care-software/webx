@@ -4,6 +4,9 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/steve-care-software/datastencil/domain/accounts"
+	"github.com/steve-care-software/datastencil/domain/accounts/credentials"
+	"github.com/steve-care-software/datastencil/domain/accounts/signers"
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
@@ -89,6 +92,26 @@ func (obj *frame) FetchBytes(name string) ([]byte, error) {
 	}
 
 	return assignable.Bytes(), nil
+}
+
+// FetchStringList fetches a string list by name
+func (obj *frame) FetchStringList(name string) ([]string, error) {
+	return nil, nil
+}
+
+// FetchAccount fetches an account by name
+func (obj *frame) FetchAccount(name string) (accounts.Account, error) {
+	return nil, nil
+}
+
+// FetchRing fetches a ring by name
+func (obj *frame) FetchRing(name string) ([]signers.PublicKey, error) {
+	return nil, nil
+}
+
+// FetchCredentials fetches a credentials by name
+func (obj *frame) FetchCredentials(name string) (credentials.Credentials, error) {
+	return nil, nil
 }
 
 // HasAssignments returns true if there is assignments, false otherwise

@@ -1,7 +1,11 @@
 package stacks
 
 import (
+	"github.com/steve-care-software/datastencil/domain/accounts"
+	"github.com/steve-care-software/datastencil/domain/accounts/credentials"
+	"github.com/steve-care-software/datastencil/domain/accounts/signers"
 	"github.com/steve-care-software/datastencil/domain/hash"
+	stack_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )
 
 // NewBuilder creates a new builder
@@ -82,6 +86,10 @@ type Frame interface {
 	FetchBool(name string) (bool, error)
 	FetchHash(name string) (hash.Hash, error)
 	FetchBytes(name string) ([]byte, error)
+	FetchStringList(name string) ([]string, error)
+	FetchAccount(name string) (accounts.Account, error)
+	FetchRing(name string) ([]signers.PublicKey, error)
+	FetchCredentials(name string) (credentials.Credentials, error)
 	HasAssignments() bool
 	Assignments() Assignments
 }
@@ -119,6 +127,9 @@ type AssignableBuilder interface {
 	WithBool(boolValue bool) AssignableBuilder
 	WithBytes(bytes []byte) AssignableBuilder
 	WithHash(hash hash.Hash) AssignableBuilder
+	WithStringList(strList []string) AssignableBuilder
+	WithUnsignedInt(unsignedInt uint) AssignableBuilder
+	WithAccount(account stack_accounts.Account) AssignableBuilder
 	Now() (Assignable, error)
 }
 

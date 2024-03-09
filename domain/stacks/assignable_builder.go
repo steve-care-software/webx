@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )
 
 type assignableBuilder struct {
@@ -43,6 +44,21 @@ func (app *assignableBuilder) WithBytes(bytes []byte) AssignableBuilder {
 func (app *assignableBuilder) WithHash(hash hash.Hash) AssignableBuilder {
 	app.hash = hash
 	return app
+}
+
+// WithStringList adds a string list to the builder
+func (app *assignableBuilder) WithStringList(strList []string) AssignableBuilder {
+	return nil
+}
+
+// WithAccount adds an account to the builder
+func (app *assignableBuilder) WithAccount(account accounts.Account) AssignableBuilder {
+	return nil
+}
+
+// WithUnsignedInt adds an uint to the builder
+func (app *assignableBuilder) WithUnsignedInt(unsignedInt uint) AssignableBuilder {
+	return nil
 }
 
 // Now builds a new Assignable instance

@@ -4,12 +4,12 @@ package credentials
 type Builder interface {
 	Create() Builder
 	WithUsername(username string) Builder
-	WithPassword(password []byte) Builder
+	WithPassword(password string) Builder
 	Now() (Credentials, error)
 }
 
 // Credentials represents a credentials
 type Credentials interface {
 	Username() string
-	Password() []byte
+	Password() string
 }
