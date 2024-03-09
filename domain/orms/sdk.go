@@ -10,6 +10,14 @@ type Instance interface {
 	Hash() hash.Hash
 }
 
+// Actions represents actions
+type Actions interface {
+	HasInsert() bool
+	Insert() Resources
+	HasDelete() bool
+	Delete() Pointers
+}
+
 // Resources represents resources
 type Resources interface {
 	Hash() hash.Hash
@@ -20,6 +28,18 @@ type Resources interface {
 type Resource interface {
 	Path() []string
 	Instance() Instance
+}
+
+// Pointers represents pointers
+type Pointers interface {
+	Hash() hash.Hash
+	List() []Pointer
+}
+
+// Pointer represents a pointer
+type Pointer interface {
+	Path() []string
+	Hash() hash.Hash
 }
 
 // RepositoryBuilder represents the repository builder

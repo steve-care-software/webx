@@ -4,48 +4,37 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/constants"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/executions"
 )
 
 type assignable struct {
-	hash      hash.Hash
-	bytes     bytes.Bytes
-	constant  constants.Constant
-	execution executions.Execution
+	hash     hash.Hash
+	bytes    bytes.Bytes
+	constant constants.Constant
 }
 
 func createAssignableWithBytes(
 	hash hash.Hash,
 	bytes bytes.Bytes,
 ) Assignable {
-	return createAssignableInternally(hash, bytes, nil, nil)
+	return createAssignableInternally(hash, bytes, nil)
 }
 
 func createAssignableWithConstant(
 	hash hash.Hash,
 	constant constants.Constant,
 ) Assignable {
-	return createAssignableInternally(hash, nil, constant, nil)
-}
-
-func createAssignableWithexecution(
-	hash hash.Hash,
-	execution executions.Execution,
-) Assignable {
-	return createAssignableInternally(hash, nil, nil, execution)
+	return createAssignableInternally(hash, nil, constant)
 }
 
 func createAssignableInternally(
 	hash hash.Hash,
 	bytes bytes.Bytes,
 	constant constants.Constant,
-	execution executions.Execution,
 ) Assignable {
 	out := assignable{
-		hash:      hash,
-		bytes:     bytes,
-		constant:  constant,
-		execution: execution,
+		hash:     hash,
+		bytes:    bytes,
+		constant: constant,
 	}
 
 	return &out
@@ -74,14 +63,4 @@ func (obj *assignable) IsConstant() bool {
 // Constant returns the constant, if any
 func (obj *assignable) Constant() constants.Constant {
 	return obj.constant
-}
-
-// IsExecution returns true if there is execution, false otherwise
-func (obj *assignable) IsExecution() bool {
-	return obj.execution != nil
-}
-
-// Execution returns the execution, if any
-func (obj *assignable) Execution() executions.Execution {
-	return obj.execution
 }

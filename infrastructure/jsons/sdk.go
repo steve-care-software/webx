@@ -9,7 +9,6 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/constants"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/executions"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 	"github.com/steve-care-software/datastencil/domain/libraries/links"
@@ -56,7 +55,6 @@ func NewLayerAdapter() layers.LayerAdapter {
 	assignmentBuilder := assignments.NewBuilder()
 	assignableBuilder := assignables.NewBuilder()
 	constantBuilder := constants.NewBuilder()
-	executionBuilder := executions.NewBuilder()
 	bytesBuilder := bytes.NewBuilder()
 	return createLayerAdapter(
 		hashAdapter,
@@ -70,7 +68,6 @@ func NewLayerAdapter() layers.LayerAdapter {
 		assignmentBuilder,
 		assignableBuilder,
 		constantBuilder,
-		executionBuilder,
 		bytesBuilder,
 	)
 }

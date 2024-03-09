@@ -42,8 +42,7 @@ type Assignment struct {
 
 // Assignable represents assignable
 type Assignable struct {
-	Bytes     *Bytes     `json:"bytes"`
-	Execution *Execution `json:"execution"`
+	Bytes *Bytes `json:"bytes"`
 }
 
 // Constant represents constant

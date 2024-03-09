@@ -10,7 +10,6 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/constants"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/executions"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/outputs/kinds"
 	structs "github.com/steve-care-software/datastencil/infrastructure/jsons/structs/libraries/layers"
@@ -28,7 +27,6 @@ type layerAdapter struct {
 	assignmentBuilder   assignments.Builder
 	assignableBuilder   assignables.Builder
 	constantBuilder     constants.Builder
-	executionBuilder    executions.Builder
 	bytesBuilder        bytes.Builder
 }
 
@@ -44,7 +42,6 @@ func createLayerAdapter(
 	assignmentBuilder assignments.Builder,
 	assignableBuilder assignables.Builder,
 	constantBuilder constants.Builder,
-	executionBuilder executions.Builder,
 	bytesBuilder bytes.Builder,
 ) layers.LayerAdapter {
 	out := layerAdapter{
@@ -59,7 +56,6 @@ func createLayerAdapter(
 		assignmentBuilder:   assignmentBuilder,
 		assignableBuilder:   assignableBuilder,
 		constantBuilder:     constantBuilder,
-		executionBuilder:    executionBuilder,
 		bytesBuilder:        bytesBuilder,
 	}
 
@@ -290,11 +286,6 @@ func (app *layerAdapter) toStructAssignable(ins assignables.Assignable) structs.
 		output.Bytes = &str
 	}
 
-	if ins.IsExecution() {
-		execution := app.toStructExecution(ins.Execution())
-		output.Execution = &execution
-	}
-
 	return output
 }
 
@@ -307,15 +298,6 @@ func (app *layerAdapter) toInstanceAssignable(str structs.Assignable) (assignabl
 		}
 
 		builder.WithBytes(bytes)
-	}
-
-	if str.Execution != nil {
-		execution, err := app.toInstanceExecution(*str.Execution)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithExecution(execution)
 	}
 
 	return builder.Now()
@@ -342,29 +324,6 @@ func (app *layerAdapter) toInstanceConstant(str structs.Constant) (constants.Con
 
 	if str.Bytes != nil {
 		builder.WithBytes(str.Bytes)
-	}
-
-	return builder.Now()
-}
-
-func (app *layerAdapter) toStructExecution(ins executions.Execution) structs.Execution {
-	output := structs.Execution{
-		Input: ins.Input(),
-	}
-
-	if ins.HasLayer() {
-		output.Layer = ins.Layer()
-	}
-
-	return output
-}
-
-func (app *layerAdapter) toInstanceExecution(str structs.Execution) (executions.Execution, error) {
-	builder := app.executionBuilder.Create().
-		WithInput(str.Input)
-
-	if str.Layer != "" {
-		builder.WithLayer(str.Layer)
 	}
 
 	return builder.Now()
