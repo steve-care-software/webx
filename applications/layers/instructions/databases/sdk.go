@@ -1,7 +1,7 @@
 package databases
 
 import (
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/databases"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/databases"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

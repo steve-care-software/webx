@@ -1,7 +1,7 @@
 package accounts
 
 import (
-	instructions_accounts "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/accounts"
+	instructions_accounts "github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/accounts"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

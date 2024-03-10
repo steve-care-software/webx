@@ -6,7 +6,7 @@ import (
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/cryptography"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/libraries"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

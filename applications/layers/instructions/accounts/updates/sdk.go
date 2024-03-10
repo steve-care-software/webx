@@ -1,7 +1,7 @@
 package updates
 
 import (
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/accounts/updates"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/accounts/updates"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

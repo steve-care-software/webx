@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/queries"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/queries"
 	"github.com/steve-care-software/datastencil/domain/stacks/accounts"
 	"github.com/steve-care-software/datastencil/domain/stacks/databases"
 	"github.com/steve-care-software/datastencil/domain/stacks/libraries"

@@ -6,7 +6,7 @@ import (
 	application_execution_encryptions "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/accounts/encryptions"
 	application_execution_retrieves "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/accounts/retrieves"
 	"github.com/steve-care-software/datastencil/domain/accounts"
-	assignables_accounts "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/accounts"
+	assignables_accounts "github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/accounts"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	stacks_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )

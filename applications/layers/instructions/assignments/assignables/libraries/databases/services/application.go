@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/steve-care-software/datastencil/domain/commits/contents/actions/resources/instances"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/libraries/databases/services"
+	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/libraries/databases/services"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

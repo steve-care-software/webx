@@ -1,9 +1,9 @@
 package executions
 
 import (
-	"github.com/steve-care-software/datastencil/domain/commands"
-	"github.com/steve-care-software/datastencil/domain/libraries"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/commands"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers"
 )
 
 // Application represents the logic application

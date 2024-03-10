@@ -1,9 +1,9 @@
 package repositories
 
 import (
-	"github.com/steve-care-software/datastencil/domain/commits/contents/actions/resources/instances"
-	"github.com/steve-care-software/datastencil/domain/commits/contents/actions/resources/instances/skeletons"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/libraries/databases/repositories"
+	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/skeletons"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/libraries/databases/repositories"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	stacks_databases "github.com/steve-care-software/datastencil/domain/stacks/databases"
 	stacks_libraries "github.com/steve-care-software/datastencil/domain/stacks/libraries"

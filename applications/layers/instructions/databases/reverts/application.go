@@ -1,8 +1,8 @@
 package reverts
 
 import (
-	"github.com/steve-care-software/datastencil/domain/commits/contents/actions/resources/instances"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/databases/reverts"
+	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/databases/reverts"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

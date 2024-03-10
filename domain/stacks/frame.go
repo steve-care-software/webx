@@ -7,9 +7,9 @@ import (
 	"github.com/steve-care-software/datastencil/domain/accounts"
 	"github.com/steve-care-software/datastencil/domain/accounts/credentials"
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
-	"github.com/steve-care-software/datastencil/domain/commits/contents/actions/resources/instances"
+	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/queries"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/queries"
 )
 
 type frame struct {

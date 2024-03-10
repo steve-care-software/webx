@@ -1,7 +1,7 @@
 package communications
 
 import (
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/accounts/communications"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/accounts/communications"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

@@ -4,7 +4,7 @@ import (
 	"bytes"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	assignable_bytes "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/bytes"
+	assignable_bytes "github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

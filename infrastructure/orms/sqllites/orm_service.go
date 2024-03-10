@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances"
-	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances/skeletons"
-	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances/skeletons/connections"
-	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances/skeletons/resources"
+	"github.com/steve-care-software/datastencil/domain/instances/commits/actions/resources/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/commits/actions/resources/instances/skeletons"
+	"github.com/steve-care-software/datastencil/domain/instances/commits/actions/resources/instances/skeletons/connections"
+	"github.com/steve-care-software/datastencil/domain/instances/commits/actions/resources/instances/skeletons/resources"
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 

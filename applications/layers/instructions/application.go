@@ -5,8 +5,8 @@ import (
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/databases"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
-	"github.com/steve-care-software/datastencil/domain/commands/results"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

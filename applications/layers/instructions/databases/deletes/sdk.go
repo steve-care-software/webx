@@ -1,7 +1,7 @@
 package deletes
 
 import (
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/databases/deletes"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/databases/deletes"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

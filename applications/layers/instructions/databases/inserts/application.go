@@ -2,8 +2,8 @@ package inserts
 
 import (
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
-	"github.com/steve-care-software/datastencil/domain/commits/contents/actions/resources/instances"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/databases/inserts"
+	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/databases/inserts"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

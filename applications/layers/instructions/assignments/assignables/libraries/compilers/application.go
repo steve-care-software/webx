@@ -1,8 +1,8 @@
 package compilers
 
 import (
-	"github.com/steve-care-software/datastencil/domain/commits/contents/actions/resources/instances"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/libraries/compilers"
+	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/libraries/compilers"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	stacks_libraries "github.com/steve-care-software/datastencil/domain/stacks/libraries"
 )
