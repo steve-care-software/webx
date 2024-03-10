@@ -1,8 +1,8 @@
 package communications
 
 import (
-	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/accounts/communications/signs"
-	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/accounts/communications/votes"
+	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignments/assignables/accounts/communications/signs"
+	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignments/assignables/accounts/communications/votes"
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/accounts/communications"
 	"github.com/steve-care-software/datastencil/domain/stacks"

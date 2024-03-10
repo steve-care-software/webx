@@ -1,8 +1,8 @@
 package encryptions
 
 import (
-	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/accounts/encryptions/decrypts"
-	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/accounts/encryptions/encrypts"
+	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignments/assignables/accounts/encryptions/decrypts"
+	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignments/assignables/accounts/encryptions/encrypts"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/accounts/encryptions"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )

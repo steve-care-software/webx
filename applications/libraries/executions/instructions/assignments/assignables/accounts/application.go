@@ -2,10 +2,10 @@ package accounts
 
 import (
 	application_account "github.com/steve-care-software/datastencil/applications/accounts"
-	application_execution_communications "github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/accounts/communications"
-	application_execution_credentials "github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/accounts/credentials"
-	application_execution_encryptions "github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/accounts/encryptions"
-	application_execution_retrieves "github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/accounts/retrieves"
+	application_execution_communications "github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignments/assignables/accounts/communications"
+	application_execution_credentials "github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignments/assignables/accounts/credentials"
+	application_execution_encryptions "github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignments/assignables/accounts/encryptions"
+	application_execution_retrieves "github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignments/assignables/accounts/retrieves"
 	assignables_accounts "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/accounts"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	stacks_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"

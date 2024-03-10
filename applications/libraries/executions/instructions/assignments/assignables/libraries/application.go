@@ -1,8 +1,8 @@
 package libraries
 
 import (
-	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/libraries/compilers"
-	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/libraries/databases"
+	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignments/assignables/libraries/compilers"
+	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignments/assignables/libraries/databases"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/libraries"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )

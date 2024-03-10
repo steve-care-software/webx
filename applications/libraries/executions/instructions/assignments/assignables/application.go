@@ -1,11 +1,11 @@
 package assignables
 
 import (
-	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/accounts"
-	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/bytes"
-	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/constants"
-	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/cryptography"
-	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/libraries"
+	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignments/assignables/accounts"
+	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignments/assignables/constants"
+	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignments/assignables/cryptography"
+	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignments/assignables/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )

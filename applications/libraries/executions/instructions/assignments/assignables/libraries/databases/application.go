@@ -1,8 +1,8 @@
 package databases
 
 import (
-	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/libraries/databases/repositories"
-	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/libraries/databases/services"
+	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignments/assignables/libraries/databases/repositories"
+	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignments/assignables/libraries/databases/services"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/libraries/databases"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
