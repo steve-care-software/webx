@@ -5,6 +5,11 @@ import (
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represents an update criteria builder
 type Builder interface {
 	Create() Builder
@@ -17,8 +22,10 @@ type Builder interface {
 
 // Criteria represents an update criteria
 type Criteria interface {
-	ChangeSigner() bool
-	ChangeEncryptor() bool
+	HasSigner() bool
+	Signer() signers.Signer
+	HasEncryptor() bool
+	Encryptor() encryptors.Encryptor
 	HasUsername() bool
 	Username() string
 	HasPassword() bool
