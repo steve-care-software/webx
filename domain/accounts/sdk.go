@@ -56,9 +56,9 @@ type UpdateCriteria interface {
 
 // Repository represents the account repository
 type Repository interface {
-	List() ([]string, error)
+	List(password []byte) ([]string, error)
 	Exists(username string) (bool, error)
-	Retrieve(credentials credentials.Credentials) (Account, error)
+	Retrieve(password []byte, credentials credentials.Credentials) (Account, error)
 }
 
 // Service represents the account service

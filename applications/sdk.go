@@ -1,12 +1,17 @@
-package applications
+package executions
 
 import (
-	"github.com/steve-care-software/datastencil/applications/accounts"
-	"github.com/steve-care-software/datastencil/applications/libraries"
+	"github.com/steve-care-software/datastencil/domain/commands"
+	"github.com/steve-care-software/datastencil/domain/libraries"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers"
 )
 
-// Application represents the application
+// Application represents the logic application
 type Application interface {
-	Account() accounts.Application
-	Library() libraries.Application
+	Execute(
+		input []byte,
+		layer layers.Layer,
+		library libraries.Library,
+		context commands.Commands,
+	) (commands.Commands, error)
 }
