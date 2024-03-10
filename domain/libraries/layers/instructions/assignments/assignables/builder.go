@@ -9,6 +9,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/cryptography"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/libraries"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/queries"
 )
 
 type builder struct {
@@ -18,6 +19,7 @@ type builder struct {
 	account     accounts.Account
 	crypto      cryptography.Cryptography
 	library     libraries.Library
+	query       queries.Query
 }
 
 func createBuilder(
@@ -30,6 +32,7 @@ func createBuilder(
 		account:     nil,
 		crypto:      nil,
 		library:     nil,
+		query:       nil,
 	}
 
 	return &out
@@ -72,6 +75,12 @@ func (app *builder) WithLibrary(library libraries.Library) Builder {
 	return app
 }
 
+// WithQuery adds a query to the builder
+func (app *builder) WithQuery(query queries.Query) Builder {
+	app.query = query
+	return app
+}
+
 // Now builds a new Assignable instance
 func (app *builder) Now() (Assignable, error) {
 	data := [][]byte{}
@@ -100,6 +109,11 @@ func (app *builder) Now() (Assignable, error) {
 		data = append(data, app.library.Hash().Bytes())
 	}
 
+	if app.query != nil {
+		data = append(data, []byte("query"))
+		data = append(data, app.query.Hash().Bytes())
+	}
+
 	if len(data) <= 0 {
 		return nil, errors.New("the Assignable is invalid")
 	}
@@ -119,6 +133,10 @@ func (app *builder) Now() (Assignable, error) {
 
 	if app.library != nil {
 		return createAssignableWithLibrary(*pHash, app.library), nil
+	}
+
+	if app.query != nil {
+		return createAssignableWithQuery(*pHash, app.query), nil
 	}
 
 	return createAssignableWithAccount(*pHash, app.account), nil

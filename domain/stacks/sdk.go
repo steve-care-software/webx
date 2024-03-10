@@ -139,6 +139,7 @@ type AssignableBuilder interface {
 	WithAccount(account stack_accounts.Account) AssignableBuilder
 	WithLibrary(lib libraries.Library) AssignableBuilder
 	WithDatabase(database databases.Database) AssignableBuilder
+	WithQuery(query queries.Query) AssignableBuilder
 	Now() (Assignable, error)
 }
 

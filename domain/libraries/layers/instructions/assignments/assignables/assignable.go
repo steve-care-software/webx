@@ -7,6 +7,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/cryptography"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/libraries"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/queries"
 )
 
 type assignable struct {
@@ -16,41 +17,49 @@ type assignable struct {
 	account  accounts.Account
 	crypto   cryptography.Cryptography
 	library  libraries.Library
+	query    queries.Query
 }
 
 func createAssignableWithBytes(
 	hash hash.Hash,
 	bytes bytes.Bytes,
 ) Assignable {
-	return createAssignableInternally(hash, bytes, nil, nil, nil, nil)
+	return createAssignableInternally(hash, bytes, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithConstant(
 	hash hash.Hash,
 	constant constants.Constant,
 ) Assignable {
-	return createAssignableInternally(hash, nil, constant, nil, nil, nil)
+	return createAssignableInternally(hash, nil, constant, nil, nil, nil, nil)
 }
 
 func createAssignableWithAccount(
 	hash hash.Hash,
 	account accounts.Account,
 ) Assignable {
-	return createAssignableInternally(hash, nil, nil, account, nil, nil)
+	return createAssignableInternally(hash, nil, nil, account, nil, nil, nil)
 }
 
 func createAssignableWithCryptography(
 	hash hash.Hash,
 	crypto cryptography.Cryptography,
 ) Assignable {
-	return createAssignableInternally(hash, nil, nil, nil, crypto, nil)
+	return createAssignableInternally(hash, nil, nil, nil, crypto, nil, nil)
 }
 
 func createAssignableWithLibrary(
 	hash hash.Hash,
 	library libraries.Library,
 ) Assignable {
-	return createAssignableInternally(hash, nil, nil, nil, nil, library)
+	return createAssignableInternally(hash, nil, nil, nil, nil, library, nil)
+}
+
+func createAssignableWithQuery(
+	hash hash.Hash,
+	query queries.Query,
+) Assignable {
+	return createAssignableInternally(hash, nil, nil, nil, nil, nil, query)
 }
 
 func createAssignableInternally(
@@ -60,6 +69,7 @@ func createAssignableInternally(
 	account accounts.Account,
 	crypto cryptography.Cryptography,
 	library libraries.Library,
+	query queries.Query,
 ) Assignable {
 	out := assignable{
 		hash:     hash,
@@ -68,6 +78,7 @@ func createAssignableInternally(
 		account:  account,
 		crypto:   crypto,
 		library:  library,
+		query:    query,
 	}
 
 	return &out
@@ -126,4 +137,14 @@ func (obj *assignable) IsLibrary() bool {
 // Library returns the library, if any
 func (obj *assignable) Library() libraries.Library {
 	return obj.library
+}
+
+// IsQuery returns true if there is a query, false otherwise
+func (obj *assignable) IsQuery() bool {
+	return obj.query != nil
+}
+
+// Query returns the query, if any
+func (obj *assignable) Query() queries.Query {
+	return obj.query
 }

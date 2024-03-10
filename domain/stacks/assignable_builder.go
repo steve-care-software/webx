@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/queries"
 	"github.com/steve-care-software/datastencil/domain/stacks/accounts"
 	"github.com/steve-care-software/datastencil/domain/stacks/databases"
 	"github.com/steve-care-software/datastencil/domain/stacks/libraries"
@@ -75,6 +76,11 @@ func (app *assignableBuilder) WithLibrary(lib libraries.Library) AssignableBuild
 
 // WithDatabase adds a database to the builder
 func (app *assignableBuilder) WithDatabase(database databases.Database) AssignableBuilder {
+	return nil
+}
+
+// WithQuery adds a query to the builder
+func (app *assignableBuilder) WithQuery(query queries.Query) AssignableBuilder {
 	return nil
 }
 

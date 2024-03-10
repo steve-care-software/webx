@@ -11,11 +11,12 @@ import (
 )
 
 type application struct {
-	execAccountApp  accounts.Application
-	execBytesApp    bytes.Application
-	execConstantApp constants.Application
-	execCryptoApp   cryptography.Application
-	execLibraryApp  libraries.Application
+	execAccountApp    accounts.Application
+	execBytesApp      bytes.Application
+	execConstantApp   constants.Application
+	execCryptoApp     cryptography.Application
+	execLibraryApp    libraries.Application
+	assignableBuilder stacks.AssignableBuilder
 }
 
 func createApplication(
@@ -24,13 +25,15 @@ func createApplication(
 	execConstantApp constants.Application,
 	execCryptoApp cryptography.Application,
 	execLibraryApp libraries.Application,
+	assignableBuilder stacks.AssignableBuilder,
 ) Application {
 	out := application{
-		execAccountApp:  execAccountApp,
-		execBytesApp:    execBytesApp,
-		execConstantApp: execConstantApp,
-		execCryptoApp:   execCryptoApp,
-		execLibraryApp:  execLibraryApp,
+		execAccountApp:    execAccountApp,
+		execBytesApp:      execBytesApp,
+		execConstantApp:   execConstantApp,
+		execCryptoApp:     execCryptoApp,
+		execLibraryApp:    execLibraryApp,
+		assignableBuilder: assignableBuilder,
 	}
 
 	return &out
@@ -58,6 +61,13 @@ func (app *application) Execute(frame stacks.Frame, assignable assignables.Assig
 		return app.execLibraryApp.Execute(frame, library)
 	}
 
-	account := assignable.Account()
-	return app.execAccountApp.Execute(frame, account)
+	if assignable.IsAccount() {
+		account := assignable.Account()
+		return app.execAccountApp.Execute(frame, account)
+	}
+
+	query := assignable.Query()
+	return app.assignableBuilder.Create().
+		WithQuery(query).
+		Now()
 }
