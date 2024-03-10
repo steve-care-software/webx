@@ -5,6 +5,7 @@ import (
 	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/bytes"
 	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/constants"
 	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/cryptography"
+	"github.com/steve-care-software/datastencil/applications/libraries/executions/instructions/assignables/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
@@ -14,6 +15,7 @@ type application struct {
 	execBytesApp    bytes.Application
 	execConstantApp constants.Application
 	execCryptoApp   cryptography.Application
+	execLibraryApp  libraries.Application
 }
 
 func createApplication(
@@ -21,12 +23,14 @@ func createApplication(
 	execBytesApp bytes.Application,
 	execConstantApp constants.Application,
 	execCryptoApp cryptography.Application,
+	execLibraryApp libraries.Application,
 ) Application {
 	out := application{
 		execAccountApp:  execAccountApp,
 		execBytesApp:    execBytesApp,
 		execConstantApp: execConstantApp,
 		execCryptoApp:   execCryptoApp,
+		execLibraryApp:  execLibraryApp,
 	}
 
 	return &out
@@ -47,6 +51,11 @@ func (app *application) Execute(frame stacks.Frame, assignable assignables.Assig
 	if assignable.IsCryptography() {
 		crypto := assignable.Cryptography()
 		return app.execCryptoApp.Execute(frame, crypto)
+	}
+
+	if assignable.IsLibrary() {
+		library := assignable.Library()
+		return app.execLibraryApp.Execute(frame, library)
 	}
 
 	account := assignable.Account()

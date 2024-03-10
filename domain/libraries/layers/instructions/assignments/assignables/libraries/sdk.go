@@ -1,6 +1,7 @@
 package libraries
 
 import (
+	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/libraries/compilers"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/libraries/databases"
 )
@@ -15,6 +16,7 @@ type Builder interface {
 
 // Library represents a library assignable
 type Library interface {
+	Hash() hash.Hash
 	IsCompiler() bool
 	Compiler() compilers.Compiler
 	IsDatabase() bool
