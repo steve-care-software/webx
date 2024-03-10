@@ -96,6 +96,11 @@ func (obj *frame) FetchBytes(name string) ([]byte, error) {
 	return assignable.Bytes(), nil
 }
 
+// FetchString fetches a string by name
+func (obj *frame) FetchString(name string) (string, error) {
+	return "", nil
+}
+
 // FetchStringList fetches a string list by name
 func (obj *frame) FetchStringList(name string) ([]string, error) {
 	return nil, nil

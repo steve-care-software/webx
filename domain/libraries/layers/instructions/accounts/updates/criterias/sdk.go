@@ -3,7 +3,8 @@ package criterias
 // Builder represents a criteria builder
 type Builder interface {
 	Create() Builder
-	WithCredentials(credentials string) Builder
+	WithUsername(username string) Builder
+	WithPassword(password string) Builder
 	ChangeSigner() Builder
 	ChangeEncryptor() Builder
 	Now() (Criteria, error)
@@ -13,5 +14,8 @@ type Builder interface {
 type Criteria interface {
 	ChangeSigner() bool
 	ChangeEncryptor() bool
-	Credentials() string
+	HasUsername() bool
+	Username() string
+	HasPassword() bool
+	Password() string
 }

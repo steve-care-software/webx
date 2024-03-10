@@ -2,6 +2,7 @@ package accounts
 
 import (
 	"github.com/steve-care-software/datastencil/domain/accounts/credentials"
+	"github.com/steve-care-software/datastencil/domain/accounts/encryptors"
 	account_encryptors "github.com/steve-care-software/datastencil/domain/accounts/encryptors"
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
 )
@@ -38,8 +39,8 @@ type UpdateCriteriaBuilder interface {
 	Create() UpdateCriteriaBuilder
 	WithUsername(username string) UpdateCriteriaBuilder
 	WithPassword(password []byte) UpdateCriteriaBuilder
-	ChangeSigner() UpdateCriteriaBuilder
-	ChangeEncryptor() UpdateCriteriaBuilder
+	WithSigner(signer signers.Signer) UpdateCriteriaBuilder
+	WithEncryptor(encryptor encryptors.Encryptor) UpdateCriteriaBuilder
 	Now() (UpdateCriteria, error)
 }
 

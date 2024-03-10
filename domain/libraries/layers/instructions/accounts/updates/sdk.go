@@ -1,22 +1,17 @@
 package updates
 
-import (
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/accounts/updates/criterias"
-	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/accounts/updates/executions"
-)
+import "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/accounts/updates/criterias"
 
 // Builder represents an update builder
 type Builder interface {
 	Create() Builder
+	WithCredentials(credentials string) Builder
 	WithCriteria(criteria criterias.Criteria) Builder
-	WithExecution(execution executions.Execution) Builder
 	Now() (Update, error)
 }
 
 // Update represents an update
 type Update interface {
-	IsCriteria() bool
+	Credentials() string
 	Criteria() criterias.Criteria
-	IsExecution() bool
-	Execution() executions.Execution
 }
