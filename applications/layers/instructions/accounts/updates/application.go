@@ -6,6 +6,7 @@ import (
 
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/domain/accounts"
+	"github.com/steve-care-software/datastencil/domain/accounts/criterias"
 	"github.com/steve-care-software/datastencil/domain/accounts/encryptors"
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/accounts/updates"
@@ -16,7 +17,7 @@ type application struct {
 	repository       accounts.Repository
 	service          accounts.Service
 	accountBuilder   accounts.Builder
-	criteriaBuilder  accounts.UpdateCriteriaBuilder
+	criteriaBuilder  criterias.Builder
 	signerFactory    signers.Factory
 	encryptorBuilder encryptors.Builder
 	bitRate          int
@@ -26,6 +27,7 @@ func createApplication(
 	repository accounts.Repository,
 	service accounts.Service,
 	accountBuilder accounts.Builder,
+	criteriaBuilder criterias.Builder,
 	signerFactory signers.Factory,
 	encryptorBuilder encryptors.Builder,
 	bitRate int,
@@ -34,6 +36,7 @@ func createApplication(
 		repository:       repository,
 		service:          service,
 		accountBuilder:   accountBuilder,
+		criteriaBuilder:  criteriaBuilder,
 		signerFactory:    signerFactory,
 		encryptorBuilder: encryptorBuilder,
 	}

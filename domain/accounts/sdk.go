@@ -2,7 +2,7 @@ package accounts
 
 import (
 	"github.com/steve-care-software/datastencil/domain/accounts/credentials"
-	"github.com/steve-care-software/datastencil/domain/accounts/encryptors"
+	"github.com/steve-care-software/datastencil/domain/accounts/criterias"
 	account_encryptors "github.com/steve-care-software/datastencil/domain/accounts/encryptors"
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
 )
@@ -34,26 +34,6 @@ type Account interface {
 	Signer() signers.Signer
 }
 
-// UpdateCriteriaBuilder represents an update criteria builder
-type UpdateCriteriaBuilder interface {
-	Create() UpdateCriteriaBuilder
-	WithUsername(username string) UpdateCriteriaBuilder
-	WithPassword(password []byte) UpdateCriteriaBuilder
-	WithSigner(signer signers.Signer) UpdateCriteriaBuilder
-	WithEncryptor(encryptor encryptors.Encryptor) UpdateCriteriaBuilder
-	Now() (UpdateCriteria, error)
-}
-
-// UpdateCriteria represents an update criteria
-type UpdateCriteria interface {
-	ChangeSigner() bool
-	ChangeEncryptor() bool
-	HasUsername() bool
-	Username() string
-	HasPassword() bool
-	Password() []byte
-}
-
 // Repository represents the account repository
 type Repository interface {
 	List(password []byte) ([]string, error)
@@ -64,6 +44,6 @@ type Repository interface {
 // Service represents the account service
 type Service interface {
 	Insert(account Account, password []byte) error
-	Update(credentials credentials.Credentials, criteria UpdateCriteria) error
+	Update(credentials credentials.Credentials, criteria criterias.Criteria) error
 	Delete(credentials credentials.Credentials) error
 }
