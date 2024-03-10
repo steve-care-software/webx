@@ -1,6 +1,15 @@
 package updates
 
-import "github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/accounts/updates/criterias"
+import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/accounts/updates/criterias"
+)
+
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(hashAdapter)
+}
 
 // Builder represents an update builder
 type Builder interface {
@@ -12,6 +21,7 @@ type Builder interface {
 
 // Update represents an update
 type Update interface {
+	Hash() hash.Hash
 	Credentials() string
 	Criteria() criterias.Criteria
 }

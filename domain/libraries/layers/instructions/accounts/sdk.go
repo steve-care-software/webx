@@ -6,10 +6,16 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/accounts/updates"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(hashAdapter)
+}
+
 // Builder represents an account builder
 type Builder interface {
 	Create() Builder
-	WithInsert(isnert inserts.Insert) Builder
+	WithInsert(insert inserts.Insert) Builder
 	WithUpdate(update updates.Update) Builder
 	WithDelete(delete string) Builder
 	Now() (Account, error)
