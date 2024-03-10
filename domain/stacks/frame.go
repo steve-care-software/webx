@@ -96,6 +96,11 @@ func (obj *frame) FetchBytes(name string) ([]byte, error) {
 	return assignable.Bytes(), nil
 }
 
+// FetchUnsignedInt fetches an unsigned int by name
+func (obj *frame) FetchUnsignedInt(name string) (*uint, error) {
+	return nil, nil
+}
+
 // FetchString fetches a string by name
 func (obj *frame) FetchString(name string) (string, error) {
 	return "", nil

@@ -34,8 +34,14 @@ type Repository interface {
 	// List returns the hashes list related to the query
 	List(query queries.Query) ([]hash.Hash, error)
 
+	// Exists returns true if the instance exists, false otherwise
+	Exists(path []string, hash hash.Hash) (bool, error)
+
 	// Retrieve returns the instance by query
 	Retrieve(query queries.Query) (Instance, error)
+
+	// RetrieveByPathAndHash returns the instance by path and hash
+	RetrieveByPathAndHash(path []string, hash hash.Hash) (Instance, error)
 }
 
 // ServiceBuilder represents the service builder

@@ -21,4 +21,19 @@ const (
 
 	// AccountWithSameUsernameAlreadyExists represents an account with same username already exists
 	AccountWithSameUsernameAlreadyExists
+
+	// CouldNotFetchContextFromFrame represents a could not fetch context from frame
+	CouldNotFetchContextFromFrame
+
+	// CouldNotFetchPathFromFrame represents a could not fetch path from frame
+	CouldNotFetchPathFromFrame
+
+	// CouldNotFetchIdentifierFromFrame represents a could not fetch identifier from frame
+	CouldNotFetchIdentifierFromFrame
+
+	// InstanceDoesNotExists represents an insatnce does not exists
+	InstanceDoesNotExists
+
+	// InstanceAlreadyExists represents an insatnce already exists
+	InstanceAlreadyExists
 )

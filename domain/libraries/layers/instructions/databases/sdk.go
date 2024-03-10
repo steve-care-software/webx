@@ -6,9 +6,19 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/databases/reverts"
 )
 
-// Service represents a service
-type Service interface {
-	IsBegin() bool
+// Builder represents a database builder
+type Builder interface {
+	Create() Builder
+	WithInsert(insert inserts.Insert) Builder
+	WithDelete(delete deletes.Delete) Builder
+	WithCommit(commit string) Builder
+	WithCancel(cancel string) Builder
+	WithRevert(revert reverts.Revert) Builder
+	Now() (Database, error)
+}
+
+// Database represents a database
+type Database interface {
 	IsInsert() bool
 	Insert() inserts.Insert
 	IsDelete() bool

@@ -90,6 +90,7 @@ type Frame interface {
 	FetchBool(name string) (bool, error)
 	FetchHash(name string) (hash.Hash, error)
 	FetchBytes(name string) ([]byte, error)
+	FetchUnsignedInt(name string) (*uint, error)
 	FetchString(name string) (string, error)
 	FetchStringList(name string) ([]string, error)
 	FetchAccount(name string) (accounts.Account, error)
