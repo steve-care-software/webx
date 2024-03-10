@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances"
+	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances/skeletons"
+	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances/skeletons/connections"
+	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances/skeletons/resources"
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/orms"
-	"github.com/steve-care-software/datastencil/domain/orms/skeletons"
-	"github.com/steve-care-software/datastencil/domain/orms/skeletons/connections"
-	"github.com/steve-care-software/datastencil/domain/orms/skeletons/resources"
 )
 
 type table struct {
@@ -53,7 +53,7 @@ type connection struct {
 type ormService struct {
 	callMethodsOnInstances            map[string]callMethodOnInstanceFn
 	listInstanceToElementHashesListFn map[string]listInstanceToElementHashesListFn
-	repository                        orms.Repository
+	repository                        instances.RepositoryBackup
 	hashAdapter                       hash.Adapter
 	skeleton                          skeletons.Skeleton
 	dbPtr                             *sql.DB
@@ -63,12 +63,12 @@ type ormService struct {
 func createOrmService(
 	callMethodsOnInstances map[string]callMethodOnInstanceFn,
 	listInstanceToElementHashesListFn map[string]listInstanceToElementHashesListFn,
-	repository orms.Repository,
+	repository instances.RepositoryBackup,
 	hashAdapter hash.Adapter,
 	skeleton skeletons.Skeleton,
 	dbPtr *sql.DB,
 	txPtr *sql.Tx,
-) orms.Service {
+) instances.Service {
 	out := ormService{
 		callMethodsOnInstances:            callMethodsOnInstances,
 		listInstanceToElementHashesListFn: listInstanceToElementHashesListFn,
@@ -105,7 +105,7 @@ func (app *ormService) Init() error {
 }
 
 // Insert inserts an instance
-func (app *ormService) Insert(ins orms.Instance, path []string) error {
+func (app *ormService) Insert(ins instances.Instance, path []string) error {
 	allResources := app.skeleton.Resources()
 	resource, err := allResources.FetchByPath(path)
 	if err != nil {
@@ -119,7 +119,7 @@ func (app *ormService) Insert(ins orms.Instance, path []string) error {
 
 func (app *ormService) insertResource(
 	tableName string,
-	ins orms.Instance,
+	ins instances.Instance,
 	resource resources.Resource,
 	allResources resources.Resources,
 	allConnections connections.Connections,
@@ -180,7 +180,7 @@ func (app *ormService) insertResource(
 
 func (app *ormService) insertConnectionValues(
 	table string,
-	ins orms.Instance,
+	ins instances.Instance,
 	fields resources.Fields,
 	allResources resources.Resources,
 	allConnections connections.Connections,
@@ -191,7 +191,7 @@ func (app *ormService) insertConnectionValues(
 	for _, oneField := range list {
 		fieldName := oneField.Name()
 		if value, ok := fieldValues[fieldName]; ok {
-			if casted, ok := value.(orms.Instance); ok {
+			if casted, ok := value.(instances.Instance); ok {
 				kind := oneField.Kind()
 				if !kind.IsConnection() {
 					continue
@@ -250,7 +250,7 @@ func (app *ormService) insertConnectionValues(
 
 func (app *ormService) fetchFieldsValueList(
 	table string,
-	ins orms.Instance,
+	ins instances.Instance,
 	fields resources.Fields,
 	allResources resources.Resources,
 	allConnections connections.Connections,
@@ -277,7 +277,7 @@ func (app *ormService) fetchFieldsValueList(
 
 func (app *ormService) fetchFieldValue(
 	tableName string,
-	ins orms.Instance,
+	ins instances.Instance,
 	field resources.Field,
 	allResources resources.Resources,
 	allConnections connections.Connections,

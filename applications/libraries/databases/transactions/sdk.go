@@ -1,10 +1,14 @@
 package transactions
 
-import "github.com/steve-care-software/datastencil/domain/orms"
+import (
+	"github.com/steve-care-software/datastencil/domain/commits/actions"
+	"github.com/steve-care-software/datastencil/domain/commits/actions/pointers"
+	"github.com/steve-care-software/datastencil/domain/commits/actions/resources"
+)
 
 // Application represents a transaction application
 type Application interface {
-	Actions() (orms.Actions, error)
-	Insert(resource orms.Resource) error
-	Delete(resource orms.Pointer) error
+	Actions() (actions.Actions, error)
+	Insert(resource resources.Resource) error
+	Delete(resource pointers.Pointer) error
 }

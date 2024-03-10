@@ -1,9 +1,9 @@
 package sqllites
 
 import (
-	"github.com/steve-care-software/datastencil/domain/orms/skeletons"
-	"github.com/steve-care-software/datastencil/domain/orms/skeletons/connections"
-	"github.com/steve-care-software/datastencil/domain/orms/skeletons/resources"
+	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances/skeletons"
+	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances/skeletons/connections"
+	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances/skeletons/resources"
 )
 
 type skeletonFactory struct {

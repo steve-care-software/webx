@@ -1,20 +1,20 @@
 package compilers
 
 import (
+	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/libraries/compilers"
-	"github.com/steve-care-software/datastencil/domain/orms"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	stacks_libraries "github.com/steve-care-software/datastencil/domain/stacks/libraries"
 )
 
 type application struct {
-	instanceAdapter   orms.Adapter
+	instanceAdapter   instances.Adapter
 	libraryBuilder    stacks_libraries.Builder
 	assignableBuilder stacks.AssignableBuilder
 }
 
 func createApplication(
-	instanceAdapter orms.Adapter,
+	instanceAdapter instances.Adapter,
 	libraryBuilder stacks_libraries.Builder,
 	assignableBuilder stacks.AssignableBuilder,
 ) Application {

@@ -1,8 +1,8 @@
 package skeletons
 
 import (
-	"github.com/steve-care-software/datastencil/domain/orms/skeletons/connections"
-	"github.com/steve-care-software/datastencil/domain/orms/skeletons/resources"
+	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances/skeletons/connections"
+	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances/skeletons/resources"
 )
 
 // NewBuilder creates a new builder instance

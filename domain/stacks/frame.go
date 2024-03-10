@@ -7,8 +7,9 @@ import (
 	"github.com/steve-care-software/datastencil/domain/accounts"
 	"github.com/steve-care-software/datastencil/domain/accounts/credentials"
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
+	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances"
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/orms"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/queries"
 )
 
 type frame struct {
@@ -116,7 +117,12 @@ func (obj *frame) FetchCredentials(name string) (credentials.Credentials, error)
 }
 
 // FetchInstance fetches an instance by name
-func (obj *frame) FetchInstance(name string) (orms.Instance, error) {
+func (obj *frame) FetchInstance(name string) (instances.Instance, error) {
+	return nil, nil
+}
+
+// FetchQuery fetches a query by name
+func (obj *frame) FetchQuery(name string) (queries.Query, error) {
 	return nil, nil
 }
 

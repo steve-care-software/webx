@@ -5,6 +5,7 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/stacks/accounts"
+	"github.com/steve-care-software/datastencil/domain/stacks/databases"
 	"github.com/steve-care-software/datastencil/domain/stacks/libraries"
 )
 
@@ -47,6 +48,11 @@ func (app *assignableBuilder) WithHash(hash hash.Hash) AssignableBuilder {
 	return app
 }
 
+// WithHashList adds an hash list to the builder
+func (app *assignableBuilder) WithHashList(hashList []hash.Hash) AssignableBuilder {
+	return nil
+}
+
 // WithStringList adds a string list to the builder
 func (app *assignableBuilder) WithStringList(strList []string) AssignableBuilder {
 	return nil
@@ -64,6 +70,11 @@ func (app *assignableBuilder) WithAccount(account accounts.Account) AssignableBu
 
 // WithLibrary adds a library to the builder
 func (app *assignableBuilder) WithLibrary(lib libraries.Library) AssignableBuilder {
+	return nil
+}
+
+// WithDatabase adds a database to the builder
+func (app *assignableBuilder) WithDatabase(database databases.Database) AssignableBuilder {
 	return nil
 }
 

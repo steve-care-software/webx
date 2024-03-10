@@ -4,9 +4,11 @@ import (
 	"github.com/steve-care-software/datastencil/domain/accounts"
 	"github.com/steve-care-software/datastencil/domain/accounts/credentials"
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
+	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances"
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/orms"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/queries"
 	stack_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
+	"github.com/steve-care-software/datastencil/domain/stacks/databases"
 	"github.com/steve-care-software/datastencil/domain/stacks/libraries"
 )
 
@@ -92,7 +94,8 @@ type Frame interface {
 	FetchAccount(name string) (accounts.Account, error)
 	FetchRing(name string) ([]signers.PublicKey, error)
 	FetchCredentials(name string) (credentials.Credentials, error)
-	FetchInstance(name string) (orms.Instance, error)
+	FetchInstance(name string) (instances.Instance, error)
+	FetchQuery(name string) (queries.Query, error)
 	HasAssignments() bool
 	Assignments() Assignments
 }
@@ -130,10 +133,12 @@ type AssignableBuilder interface {
 	WithBool(boolValue bool) AssignableBuilder
 	WithBytes(bytes []byte) AssignableBuilder
 	WithHash(hash hash.Hash) AssignableBuilder
+	WithHashList(hashList []hash.Hash) AssignableBuilder
 	WithStringList(strList []string) AssignableBuilder
 	WithUnsignedInt(unsignedInt uint) AssignableBuilder
 	WithAccount(account stack_accounts.Account) AssignableBuilder
 	WithLibrary(lib libraries.Library) AssignableBuilder
+	WithDatabase(database databases.Database) AssignableBuilder
 	Now() (Assignable, error)
 }
 

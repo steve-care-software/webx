@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances"
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers"
@@ -25,7 +26,6 @@ import (
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins"
 	"github.com/steve-care-software/datastencil/domain/libraries/links/origins/operators"
 	links_resources "github.com/steve-care-software/datastencil/domain/libraries/links/origins/resources"
-	"github.com/steve-care-software/datastencil/domain/orms"
 )
 
 type typeDependency struct {
@@ -35,7 +35,7 @@ type typeDependency struct {
 
 type testInstance struct {
 	path         []string
-	instance     orms.Instance
+	instance     instances.Instance
 	dependencies []typeDependency
 }
 
@@ -717,7 +717,7 @@ func insertInstance(
 	idx int,
 	currentInstance testInstance,
 	allInstances map[string][]testInstance,
-	service orms.Service,
+	service instances.Service,
 	skipIfFails bool,
 ) error {
 	// if there is dependencies, insert them:
@@ -748,7 +748,7 @@ func insertDependencies(
 	idx int,
 	currentInstance testInstance,
 	allInstances map[string][]testInstance,
-	service orms.Service,
+	service instances.Service,
 ) error {
 	for _, oneDependency := range currentInstance.dependencies {
 		if dependencyList, ok := allInstances[oneDependency.keyname]; ok {

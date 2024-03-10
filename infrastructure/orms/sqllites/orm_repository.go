@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances"
+	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances/skeletons"
+	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances/skeletons/connections"
+	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances/skeletons/resources"
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/orms"
-	"github.com/steve-care-software/datastencil/domain/orms/skeletons"
-	"github.com/steve-care-software/datastencil/domain/orms/skeletons/connections"
-	"github.com/steve-care-software/datastencil/domain/orms/skeletons/resources"
 )
 
 type ormRepository struct {
@@ -27,7 +27,7 @@ func createOrmRepository(
 	elementsToListInstanceFn map[string]elementsToListInstanceFn,
 	skeleton skeletons.Skeleton,
 	dbPtr *sql.DB,
-) orms.Repository {
+) instances.RepositoryBackup {
 	out := ormRepository{
 		hashAdapter:              hashAdapter,
 		buildInstances:           buildInstances,
@@ -40,7 +40,7 @@ func createOrmRepository(
 }
 
 // Retrieve retrieves an instance by path and hash
-func (app *ormRepository) Retrieve(path []string, hash hash.Hash) (orms.Instance, error) {
+func (app *ormRepository) Retrieve(path []string, hash hash.Hash) (instances.Instance, error) {
 	allResources := app.skeleton.Resources()
 	resource, err := allResources.FetchByPath(path)
 	if err != nil {
@@ -52,8 +52,12 @@ func (app *ormRepository) Retrieve(path []string, hash hash.Hash) (orms.Instance
 	return app.retrieveByResourceAndHash(tableName, resource, hash, allResources, allConnections)
 }
 
-// List retrieves a list of to hashes
-func (app *ormRepository) List(fromPath []string, toPath []string, fromHash hash.Hash) ([]hash.Hash, error) {
+// List returns the list of hashes connected to the list
+func (app *ormRepository) List(path []string) ([]hash.Hash, error) {
+	return nil, nil
+}
+
+func (app *ormRepository) connectedList(fromPath []string, toPath []string, fromHash hash.Hash) ([]hash.Hash, error) {
 	allConnections := app.skeleton.Connections()
 	connection, err := allConnections.FetchByPaths(fromPath, toPath)
 	if err != nil {
@@ -110,7 +114,7 @@ func (app *ormRepository) retrieveByResourceAndHash(
 	hash hash.Hash,
 	allResources resources.Resources,
 	allConnections connections.Connections,
-) (orms.Instance, error) {
+) (instances.Instance, error) {
 	valuesMap, err := app.retrieveFieldValuesByHash(
 		table,
 		resource.Key(),
@@ -206,7 +210,7 @@ func (app *ormRepository) retrieveFieldValuesByHash(
 			from := connection.From().Path()
 			to := connection.To()
 			toPath := to.Path()
-			hashes, err := app.List(from, toPath, hash)
+			hashes, err := app.connectedList(from, toPath, hash)
 			if err != nil {
 				return nil, err
 			}
