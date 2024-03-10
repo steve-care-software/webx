@@ -50,8 +50,13 @@ func (app *application) Execute(frame stacks.Frame, assignable communications.Co
 	builder := app.assignableBuilder.Create()
 	if assignable.IsGenerateRing() {
 		ring := []signers.PublicKey{}
-		amount := assignable.GenerateRing()
-		casted := int(amount)
+		amountVariable := assignable.GenerateRing()
+		pAmount, err := frame.FetchUnsignedInt(amountVariable)
+		if err != nil {
+			return nil, err
+		}
+
+		casted := int(*pAmount)
 		for i := 0; i < casted; i++ {
 			pubKey := app.signerFactory.Create().PublicKey()
 			ring = append(ring, pubKey)

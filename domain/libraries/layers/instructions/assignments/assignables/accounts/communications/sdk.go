@@ -11,7 +11,7 @@ type Builder interface {
 	Create() Builder
 	WithSign(sign signs.Sign) Builder
 	WithVote(vote votes.Vote) Builder
-	WithGenerateRing(genRing uint) Builder
+	WithGenerateRing(genRing string) Builder
 	Now() (Communication, error)
 }
 
@@ -23,5 +23,5 @@ type Communication interface {
 	IsVote() bool
 	Vote() votes.Vote
 	IsGenerateRing() bool
-	GenerateRing() uint
+	GenerateRing() string
 }

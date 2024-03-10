@@ -1,6 +1,6 @@
 package libraries
 
-import "github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances"
+import "github.com/steve-care-software/datastencil/domain/commits/contents/actions/resources/instances"
 
 // Builder represents a library builder
 type Builder interface {

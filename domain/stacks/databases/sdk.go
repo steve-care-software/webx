@@ -1,6 +1,6 @@
 package databases
 
-import "github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances/skeletons"
+import "github.com/steve-care-software/datastencil/domain/commits/contents/actions/resources/instances/skeletons"
 
 // Builder represents a database builder
 type Builder interface {

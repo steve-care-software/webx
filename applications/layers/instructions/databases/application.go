@@ -5,7 +5,7 @@ import (
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/databases/inserts"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/databases/reverts"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
-	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances"
+	"github.com/steve-care-software/datastencil/domain/commits/contents/actions/resources/instances"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/databases"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
