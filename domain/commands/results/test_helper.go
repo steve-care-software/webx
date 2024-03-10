@@ -33,8 +33,8 @@ func NewSuccessForTests(bytes []byte, kind kinds.Kind) Success {
 }
 
 // NewFailureForTests creates a new failure for tests
-func NewFailureForTests(code uint, isRaisedInLayer bool) Failure {
-	builder := NewFailureBuilder().Create().WithCode(code)
+func NewFailureForTests(index uint, code uint, isRaisedInLayer bool) Failure {
+	builder := NewFailureBuilder().Create().WithIndex(index).WithCode(code)
 	if isRaisedInLayer {
 		builder.IsRaisedInLayer()
 	}

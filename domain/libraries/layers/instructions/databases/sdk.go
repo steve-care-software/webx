@@ -1,6 +1,7 @@
 package databases
 
 import (
+	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/databases/deletes"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/databases/inserts"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/databases/reverts"
@@ -19,6 +20,7 @@ type Builder interface {
 
 // Database represents a database
 type Database interface {
+	Hash() hash.Hash
 	IsInsert() bool
 	Insert() inserts.Insert
 	IsDelete() bool

@@ -9,7 +9,8 @@ import (
 
 type failureBuilder struct {
 	hashAdapter     hash.Adapter
-	code            uint
+	pIndex          *uint
+	pCode           *uint
 	isRaisedInLayer bool
 }
 
@@ -18,7 +19,8 @@ func createFailureBuilder(
 ) FailureBuilder {
 	out := failureBuilder{
 		hashAdapter:     hashAdapter,
-		code:            0,
+		pIndex:          nil,
+		pCode:           nil,
 		isRaisedInLayer: false,
 	}
 
@@ -32,9 +34,15 @@ func (app *failureBuilder) Create() FailureBuilder {
 	)
 }
 
+// WithIndex adds an index to the builder
+func (app *failureBuilder) WithIndex(index uint) FailureBuilder {
+	app.pIndex = &index
+	return app
+}
+
 // WithCode adds a code to the builder
 func (app *failureBuilder) WithCode(code uint) FailureBuilder {
-	app.code = code
+	app.pCode = &code
 	return app
 }
 
@@ -46,7 +54,11 @@ func (app *failureBuilder) IsRaisedInLayer() FailureBuilder {
 
 // Now builds a new Failure instance
 func (app *failureBuilder) Now() (Failure, error) {
-	if app.code <= 0 {
+	if app.pCode == nil {
+		return nil, errors.New("the code is mandatory in order to build a Failure instance")
+	}
+
+	if app.pIndex == nil {
 		return nil, errors.New("the code is mandatory in order to build a Failure instance")
 	}
 
@@ -56,7 +68,8 @@ func (app *failureBuilder) Now() (Failure, error) {
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
-		[]byte(strconv.Itoa(int(app.code))),
+		[]byte(strconv.Itoa(int(*app.pIndex))),
+		[]byte(strconv.Itoa(int(*app.pCode))),
 		[]byte(isRaisedInLayer),
 	})
 
@@ -64,5 +77,5 @@ func (app *failureBuilder) Now() (Failure, error) {
 		return nil, err
 	}
 
-	return createFailure(*pHash, app.code, app.isRaisedInLayer), nil
+	return createFailure(*pHash, *app.pIndex, *app.pCode, app.isRaisedInLayer), nil
 }

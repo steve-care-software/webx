@@ -1,6 +1,7 @@
 package accounts
 
 import (
+	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/accounts/inserts"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/accounts/updates"
 )
@@ -16,6 +17,7 @@ type Builder interface {
 
 // Account represents an account instruction
 type Account interface {
+	Hash() hash.Hash
 	IsInsert() bool
 	Insert() inserts.Insert
 	IsUpdate() bool

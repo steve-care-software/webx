@@ -2,7 +2,9 @@ package instructions
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/accounts"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/databases"
 )
 
 // NewBuilder creates a new instructions builder
@@ -48,6 +50,8 @@ type InstructionBuilder interface {
 	WithRaiseError(raiseError uint) InstructionBuilder
 	WithCondition(condition Condition) InstructionBuilder
 	WithAssignment(assignment assignments.Assignment) InstructionBuilder
+	WithAccount(account accounts.Account) InstructionBuilder
+	WithDatabase(database databases.Database) InstructionBuilder
 	IsStop() InstructionBuilder
 	Now() (Instruction, error)
 }
@@ -62,6 +66,10 @@ type Instruction interface {
 	Condition() Condition
 	IsAssignment() bool
 	Assignment() assignments.Assignment
+	IsAccount() bool
+	Account() accounts.Account
+	IsDatabase() bool
+	Database() databases.Database
 }
 
 // ConditionBuilder represents a condition builder

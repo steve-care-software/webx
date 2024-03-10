@@ -78,6 +78,7 @@ type Success interface {
 // FailureBuilder represents the failure builder
 type FailureBuilder interface {
 	Create() FailureBuilder
+	WithIndex(index uint) FailureBuilder
 	WithCode(code uint) FailureBuilder
 	IsRaisedInLayer() FailureBuilder
 	Now() (Failure, error)
@@ -86,6 +87,7 @@ type FailureBuilder interface {
 // Failure represents failure result
 type Failure interface {
 	Hash() hash.Hash
+	Index() uint
 	Code() uint
 	IsRaisedInLayer() bool
 }

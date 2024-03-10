@@ -36,4 +36,7 @@ const (
 
 	// InstanceAlreadyExists represents an insatnce already exists
 	InstanceAlreadyExists
+
+	// CouldNotFetchConditionFromFrame represents a could not fetch condition from frame
+	CouldNotFetchConditionFromFrame
 )

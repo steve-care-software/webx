@@ -4,25 +4,29 @@ import "github.com/steve-care-software/datastencil/domain/hash"
 
 type failure struct {
 	hash            hash.Hash
+	index           uint
 	code            uint
 	isRaisedInLayer bool
 }
 
 func createFailure(
 	hash hash.Hash,
+	index uint,
 	code uint,
 	isRaisedInLayer bool,
 ) Failure {
-	return createFailureInternally(hash, code, isRaisedInLayer)
+	return createFailureInternally(hash, index, code, isRaisedInLayer)
 }
 
 func createFailureInternally(
 	hash hash.Hash,
+	index uint,
 	code uint,
 	isRaisedInLayer bool,
 ) Failure {
 	out := failure{
 		hash:            hash,
+		index:           index,
 		code:            code,
 		isRaisedInLayer: isRaisedInLayer,
 	}
@@ -33,6 +37,11 @@ func createFailureInternally(
 // Hash returns the hash
 func (obj *failure) Hash() hash.Hash {
 	return obj.hash
+}
+
+// Index returns the index
+func (obj *failure) Index() uint {
+	return obj.index
 }
 
 // Code returns the code

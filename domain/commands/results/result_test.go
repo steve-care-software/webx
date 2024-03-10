@@ -33,7 +33,7 @@ func TestResult_withSuccess_Success(t *testing.T) {
 }
 
 func TestResult_withFailure_Success(t *testing.T) {
-	failure := NewFailureForTests(56, true)
+	failure := NewFailureForTests(1, 56, true)
 	ins := NewResultWithFailureForTests(failure)
 
 	if ins.IsSuccess() {

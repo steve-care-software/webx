@@ -5,15 +5,19 @@ import (
 	"strconv"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/accounts"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/databases"
 )
 
 type instructionBuilder struct {
 	hashAdapter hash.Adapter
 	isStop      bool
-	raiseError  uint
+	pRaiseError *uint
 	condition   Condition
 	assignment  assignments.Assignment
+	account     accounts.Account
+	database    databases.Database
 }
 
 func createInstructionBuilder(
@@ -22,9 +26,11 @@ func createInstructionBuilder(
 	out := instructionBuilder{
 		hashAdapter: hashAdapter,
 		isStop:      false,
-		raiseError:  0,
+		pRaiseError: nil,
 		condition:   nil,
 		assignment:  nil,
+		account:     nil,
+		database:    nil,
 	}
 
 	return &out
@@ -39,7 +45,7 @@ func (app *instructionBuilder) Create() InstructionBuilder {
 
 // WithRaiseError raises an error in the builder
 func (app *instructionBuilder) WithRaiseError(raiseError uint) InstructionBuilder {
-	app.raiseError = raiseError
+	app.pRaiseError = &raiseError
 	return app
 }
 
@@ -52,6 +58,18 @@ func (app *instructionBuilder) WithCondition(condition Condition) InstructionBui
 // WithAssignment adds an assignment to the builder
 func (app *instructionBuilder) WithAssignment(assignment assignments.Assignment) InstructionBuilder {
 	app.assignment = assignment
+	return app
+}
+
+// WithAccount adds an account to the builder
+func (app *instructionBuilder) WithAccount(account accounts.Account) InstructionBuilder {
+	app.account = account
+	return app
+}
+
+// WithDatabase adds a database to the builder
+func (app *instructionBuilder) WithDatabase(database databases.Database) InstructionBuilder {
+	app.database = database
 	return app
 }
 
@@ -68,9 +86,9 @@ func (app *instructionBuilder) Now() (Instruction, error) {
 		data = append(data, []byte("isStop"))
 	}
 
-	if app.raiseError > 0 {
+	if app.pRaiseError != nil {
 		data = append(data, []byte("raiseError"))
-		data = append(data, []byte(strconv.Itoa(int(app.raiseError))))
+		data = append(data, []byte(strconv.Itoa(int(*app.pRaiseError))))
 	}
 
 	if app.condition != nil {
@@ -81,6 +99,11 @@ func (app *instructionBuilder) Now() (Instruction, error) {
 	if app.assignment != nil {
 		data = append(data, []byte("assignment"))
 		data = append(data, app.assignment.Hash().Bytes())
+	}
+
+	if app.account != nil {
+		data = append(data, []byte("account"))
+		data = append(data, app.account.Hash().Bytes())
 	}
 
 	if len(data) <= 0 {
@@ -96,12 +119,20 @@ func (app *instructionBuilder) Now() (Instruction, error) {
 		return createInstructionWithIsStop(*pHash), nil
 	}
 
-	if app.raiseError > 0 {
-		return createInstructionWithRaiseError(*pHash, app.raiseError), nil
+	if app.pRaiseError != nil {
+		return createInstructionWithRaiseError(*pHash, *app.pRaiseError), nil
 	}
 
 	if app.condition != nil {
 		return createInstructionWithCondition(*pHash, app.condition), nil
+	}
+
+	if app.account != nil {
+		return createInstructionWithAccount(*pHash, app.account), nil
+	}
+
+	if app.database != nil {
+		return createInstructionWithDatabase(*pHash, app.database), nil
 	}
 
 	return createInstructionWithAssignment(*pHash, app.assignment), nil

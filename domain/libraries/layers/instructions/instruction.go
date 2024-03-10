@@ -2,7 +2,9 @@ package instructions
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/accounts"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments"
+	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/databases"
 )
 
 type instruction struct {
@@ -11,6 +13,8 @@ type instruction struct {
 	raiseError uint
 	condition  Condition
 	assignment assignments.Assignment
+	account    accounts.Account
+	database   databases.Database
 }
 
 func createInstructionWithIsStop(
@@ -20,6 +24,8 @@ func createInstructionWithIsStop(
 		hash,
 		true,
 		0,
+		nil,
+		nil,
 		nil,
 		nil,
 	)
@@ -35,6 +41,8 @@ func createInstructionWithRaiseError(
 		raiseError,
 		nil,
 		nil,
+		nil,
+		nil,
 	)
 }
 
@@ -47,6 +55,8 @@ func createInstructionWithCondition(
 		false,
 		0,
 		condition,
+		nil,
+		nil,
 		nil,
 	)
 }
@@ -61,6 +71,38 @@ func createInstructionWithAssignment(
 		0,
 		nil,
 		assignment,
+		nil,
+		nil,
+	)
+}
+
+func createInstructionWithAccount(
+	hash hash.Hash,
+	account accounts.Account,
+) Instruction {
+	return createInstructionInternally(
+		hash,
+		false,
+		0,
+		nil,
+		nil,
+		account,
+		nil,
+	)
+}
+
+func createInstructionWithDatabase(
+	hash hash.Hash,
+	database databases.Database,
+) Instruction {
+	return createInstructionInternally(
+		hash,
+		false,
+		0,
+		nil,
+		nil,
+		nil,
+		database,
 	)
 }
 
@@ -70,6 +112,8 @@ func createInstructionInternally(
 	raiseError uint,
 	condition Condition,
 	assignment assignments.Assignment,
+	account accounts.Account,
+	database databases.Database,
 ) Instruction {
 	out := instruction{
 		hash:       hash,
@@ -77,6 +121,8 @@ func createInstructionInternally(
 		raiseError: raiseError,
 		condition:  condition,
 		assignment: assignment,
+		account:    account,
+		database:   database,
 	}
 
 	return &out
@@ -120,4 +166,24 @@ func (obj *instruction) IsAssignment() bool {
 // Assignment returns the assignment, if any
 func (obj *instruction) Assignment() assignments.Assignment {
 	return obj.assignment
+}
+
+// IsAccount returns true if account, false otherwise
+func (obj *instruction) IsAccount() bool {
+	return obj.account != nil
+}
+
+// Account returns the account, if any
+func (obj *instruction) Account() accounts.Account {
+	return obj.account
+}
+
+// IsDatabase returns true if database, false otherwise
+func (obj *instruction) IsDatabase() bool {
+	return obj.database != nil
+}
+
+// Database returns the database, if any
+func (obj *instruction) Database() databases.Database {
+	return obj.database
 }
