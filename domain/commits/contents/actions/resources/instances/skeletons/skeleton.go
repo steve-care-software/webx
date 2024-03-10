@@ -1,8 +1,8 @@
 package skeletons
 
 import (
-	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances/skeletons/connections"
-	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances/skeletons/resources"
+	"github.com/steve-care-software/datastencil/domain/commits/contents/actions/resources/instances/skeletons/connections"
+	"github.com/steve-care-software/datastencil/domain/commits/contents/actions/resources/instances/skeletons/resources"
 )
 
 type skeleton struct {

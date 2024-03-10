@@ -2,10 +2,12 @@ package pointers
 
 import "github.com/steve-care-software/datastencil/domain/hash"
 
-// Pointers represents pointers
-type Pointers interface {
-	Hash() hash.Hash
-	List() []Pointer
+// Builder represents a pointer builder
+type Builder interface {
+	Create() Builder
+	WithPath(path []string) Builder
+	WithIdentifier(identifier hash.Hash) Builder
+	Now() (Pointer, error)
 }
 
 // Pointer represents a pointer

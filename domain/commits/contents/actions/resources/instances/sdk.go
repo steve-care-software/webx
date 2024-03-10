@@ -2,7 +2,7 @@ package instances
 
 import (
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
-	"github.com/steve-care-software/datastencil/domain/commits/actions/resources/instances/skeletons"
+	"github.com/steve-care-software/datastencil/domain/commits/contents/actions/resources/instances/skeletons"
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/libraries/layers/instructions/assignments/assignables/queries"
 )
