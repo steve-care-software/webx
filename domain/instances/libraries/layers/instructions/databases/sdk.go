@@ -7,6 +7,14 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/databases/reverts"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder represents a database builder
 type Builder interface {
 	Create() Builder
