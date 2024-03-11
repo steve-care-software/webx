@@ -4,6 +4,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/links"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/references"
 )
 
 // NewBuilder creates a new builder
@@ -25,6 +26,7 @@ type Builder interface {
 	Create() Builder
 	WithLayers(layers layers.Layers) Builder
 	WithLinks(links links.Links) Builder
+	WithReferences(references references.References) Builder
 	Now() (Library, error)
 }
 
@@ -34,6 +36,8 @@ type Library interface {
 	Layers() layers.Layers
 	HasLinks() bool
 	Links() links.Links
+	HasReferences() bool
+	References() references.References
 }
 
 // Repository represents the library repository
