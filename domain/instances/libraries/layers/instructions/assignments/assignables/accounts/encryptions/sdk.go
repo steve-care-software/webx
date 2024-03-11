@@ -6,6 +6,12 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/accounts/encryptions/encrypts"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(hashAdapter)
+}
+
 // Builder represents an encryption builder
 type Builder interface {
 	Create() Builder

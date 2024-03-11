@@ -8,6 +8,12 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/accounts/retrieves"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(hashAdapter)
+}
+
 // Builder represents an account builder
 type Builder interface {
 	Create() Builder
