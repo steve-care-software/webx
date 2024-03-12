@@ -1,10 +1,22 @@
 package actions
 
 import (
+	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/commits/contents/actions/pointers"
 	"github.com/steve-care-software/datastencil/domain/instances/commits/contents/actions/resources"
-	"github.com/steve-care-software/datastencil/domain/hash"
 )
+
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(hashAdapter)
+}
+
+// NewActionBuilder creates a new action builder instance
+func NewActionBuilder() ActionBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createActionBuilder(hashAdapter)
+}
 
 // Builder represents an actions builder
 type Builder interface {
