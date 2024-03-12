@@ -3,6 +3,8 @@ package inserts
 import (
 	"crypto/rand"
 	"crypto/rsa"
+	"errors"
+	"fmt"
 
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/domain/accounts"
@@ -35,6 +37,7 @@ func createApplication(
 		accountBuilder:   accountBuilder,
 		signerFactory:    signerFactory,
 		encryptorBuilder: encryptorBuilder,
+		bitRate:          bitRate,
 	}
 
 	return &out
@@ -57,7 +60,8 @@ func (app *application) Execute(frame stacks.Frame, instruction inserts.Insert) 
 
 	if exists {
 		code := failures.AccountWithSameUsernameAlreadyExists
-		return &code, nil
+		str := fmt.Sprintf("the account (name: %s) already exists", username)
+		return &code, errors.New(str)
 	}
 
 	passVar := instruction.Password()
@@ -94,7 +98,8 @@ func (app *application) Execute(frame stacks.Frame, instruction inserts.Insert) 
 
 	err = app.service.Insert(account, password)
 	if err != nil {
-		return nil, err
+		code := failures.CouldNotInsertAccount
+		return &code, err
 	}
 
 	return nil, nil
