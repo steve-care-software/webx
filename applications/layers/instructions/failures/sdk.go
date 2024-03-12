@@ -45,4 +45,7 @@ const (
 
 	// CouldNotFetchAccountFromFrame represents a could not fetch account from frame
 	CouldNotFetchAccountFromFrame
+
+	// CouldNotFetchRingFromFrame represents a could not fetch ring from frame
+	CouldNotFetchRingFromFrame
 )
