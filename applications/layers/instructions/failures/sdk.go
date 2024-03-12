@@ -51,4 +51,10 @@ const (
 
 	// CouldNotFetchGenerateRingFromFrame represents a could not fetch generate ring from frame
 	CouldNotFetchGenerateRingFromFrame
+
+	// CouldNotFetchCipherFromFrame represents a could not fetch cipher from frame
+	CouldNotFetchCipherFromFrame
+
+	// CouldNotDecryptCipher represents a could not decrypt cipher
+	CouldNotDecryptCipher
 )
