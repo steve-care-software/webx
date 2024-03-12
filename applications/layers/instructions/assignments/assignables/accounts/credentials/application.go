@@ -1,6 +1,7 @@
 package credentials
 
 import (
+	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	account_credentials "github.com/steve-care-software/datastencil/domain/accounts/credentials"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/accounts/credentials"
 	"github.com/steve-care-software/datastencil/domain/stacks"
@@ -32,13 +33,15 @@ func (app *application) Execute(frame stacks.Frame, assignable credentials.Crede
 	userVar := assignable.Username()
 	userBytes, err := frame.FetchBytes(userVar)
 	if err != nil {
-		return nil, nil, err
+		code := failures.CouldNotFetchUsernameFromFrame
+		return nil, &code, err
 	}
 
 	passVar := assignable.Password()
 	password, err := frame.FetchBytes(passVar)
 	if err != nil {
-		return nil, nil, err
+		code := failures.CouldNotFetchPasswordFromFrame
+		return nil, &code, err
 	}
 
 	username := string(userBytes)

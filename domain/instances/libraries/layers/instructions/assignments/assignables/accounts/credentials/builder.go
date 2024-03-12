@@ -43,11 +43,11 @@ func (app *builder) WithPassword(password string) Builder {
 
 // Now builds a new Credentials instance
 func (app *builder) Now() (Credentials, error) {
-	if app.username != "" {
+	if app.username == "" {
 		return nil, errors.New("the username is mandatory in order to build a Credentials instance")
 	}
 
-	if app.password != "" {
+	if app.password == "" {
 		return nil, errors.New("the password is mandatory in order to build a Credentials instance")
 	}
 
