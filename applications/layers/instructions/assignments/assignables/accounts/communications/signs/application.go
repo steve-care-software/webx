@@ -42,7 +42,7 @@ func (app *application) Execute(frame stacks.Frame, assignable signs.Sign) (stac
 		return nil, err
 	}
 
-	stackAccount, err := app.accountBuilder.Create().
+	retStackAccount, err := app.accountBuilder.Create().
 		WithSignature(sig).
 		Now()
 
@@ -51,7 +51,7 @@ func (app *application) Execute(frame stacks.Frame, assignable signs.Sign) (stac
 	}
 
 	return app.assignableBuilder.Create().
-		WithAccount(stackAccount).
+		WithAccount(retStackAccount).
 		Now()
 
 }

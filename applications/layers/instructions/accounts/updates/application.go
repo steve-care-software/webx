@@ -80,12 +80,13 @@ func (app *application) Execute(frame stacks.Frame, instruction updates.Update) 
 
 	if insCriteria.HasUsername() {
 		userVar := insCriteria.Username()
-		username, err := frame.FetchString(userVar)
+		userBytes, err := frame.FetchBytes(userVar)
 		if err != nil {
 			code := failures.CouldNotFetchUsernameFromFrame
 			return &code, err
 		}
 
+		username := string(userBytes)
 		exists, err := app.repository.Exists(username)
 		if err != nil {
 			return nil, err

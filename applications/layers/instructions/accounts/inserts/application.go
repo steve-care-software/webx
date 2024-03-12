@@ -43,12 +43,13 @@ func createApplication(
 // Execute executes the application
 func (app *application) Execute(frame stacks.Frame, instruction inserts.Insert) (*uint, error) {
 	userVar := instruction.Username()
-	username, err := frame.FetchString(userVar)
+	userBytes, err := frame.FetchBytes(userVar)
 	if err != nil {
 		code := failures.CouldNotFetchUsernameFromFrame
 		return &code, err
 	}
 
+	username := string(userBytes)
 	exists, err := app.repository.Exists(username)
 	if err != nil {
 		return nil, err

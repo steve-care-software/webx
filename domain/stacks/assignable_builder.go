@@ -8,19 +8,34 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/queries"
 	"github.com/steve-care-software/datastencil/domain/skeletons"
 	"github.com/steve-care-software/datastencil/domain/stacks/accounts"
+	stack_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )
 
 type assignableBuilder struct {
-	pBool *bool
-	bytes []byte
-	hash  hash.Hash
+	pBool        *bool
+	bytes        []byte
+	hash         hash.Hash
+	hashList     []hash.Hash
+	stringList   []string
+	pUnsignedInt *uint
+	account      stack_accounts.Account
+	instance     instances.Instance
+	skeleton     skeletons.Skeleton
+	query        queries.Query
 }
 
 func createAssignableBuilder() AssignableBuilder {
 	out := assignableBuilder{
-		pBool: nil,
-		bytes: nil,
-		hash:  nil,
+		pBool:        nil,
+		bytes:        nil,
+		hash:         nil,
+		hashList:     nil,
+		stringList:   nil,
+		pUnsignedInt: nil,
+		account:      nil,
+		instance:     nil,
+		skeleton:     nil,
+		query:        nil,
 	}
 
 	return &out
@@ -51,37 +66,44 @@ func (app *assignableBuilder) WithHash(hash hash.Hash) AssignableBuilder {
 
 // WithHashList adds an hash list to the builder
 func (app *assignableBuilder) WithHashList(hashList []hash.Hash) AssignableBuilder {
-	return nil
+	app.hashList = hashList
+	return app
 }
 
 // WithStringList adds a string list to the builder
 func (app *assignableBuilder) WithStringList(strList []string) AssignableBuilder {
-	return nil
+	app.stringList = strList
+	return app
 }
 
 // WithUnsignedInt adds an uint to the builder
 func (app *assignableBuilder) WithUnsignedInt(unsignedInt uint) AssignableBuilder {
-	return nil
+	app.pUnsignedInt = &unsignedInt
+	return app
 }
 
 // WithAccount adds an account to the builder
 func (app *assignableBuilder) WithAccount(account accounts.Account) AssignableBuilder {
-	return nil
+	app.account = account
+	return app
 }
 
 // WithInstance adds an instance to the builder
 func (app *assignableBuilder) WithInstance(instance instances.Instance) AssignableBuilder {
-	return nil
+	app.instance = instance
+	return app
 }
 
 // WithSkeleton adds a skeleton to the builder
 func (app *assignableBuilder) WithSkeleton(skeleton skeletons.Skeleton) AssignableBuilder {
-	return nil
+	app.skeleton = skeleton
+	return app
 }
 
 // WithQuery adds a query to the builder
 func (app *assignableBuilder) WithQuery(query queries.Query) AssignableBuilder {
-	return nil
+	app.query = query
+	return app
 }
 
 // Now builds a new Assignable instance
@@ -100,6 +122,38 @@ func (app *assignableBuilder) Now() (Assignable, error) {
 
 	if app.hash != nil {
 		return createAssignableWithHash(app.hash), nil
+	}
+
+	if app.hashList != nil && len(app.hashList) <= 0 {
+		app.hashList = nil
+	}
+
+	if app.hashList != nil {
+		return createAssignableWithHashList(app.hashList), nil
+	}
+
+	if app.stringList != nil {
+		return createAssignableWithStringList(app.stringList), nil
+	}
+
+	if app.pUnsignedInt != nil {
+		return createAssignableWithUnsignedInt(app.pUnsignedInt), nil
+	}
+
+	if app.account != nil {
+		return createAssignableWithAccount(app.account), nil
+	}
+
+	if app.instance != nil {
+		return createAssignableWithInstance(app.instance), nil
+	}
+
+	if app.skeleton != nil {
+		return createAssignableWithSkeleton(app.skeleton), nil
+	}
+
+	if app.query != nil {
+		return createAssignableWithQuery(app.query), nil
 	}
 
 	return nil, errors.New("the Assignable is invalid")

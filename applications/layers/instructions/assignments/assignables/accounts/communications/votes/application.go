@@ -48,7 +48,7 @@ func (app *application) Execute(frame stacks.Frame, assignable votes.Vote) (stac
 		return nil, err
 	}
 
-	stackAccount, err := app.accountBuilder.Create().
+	retStackAccount, err := app.accountBuilder.Create().
 		WithVote(vote).
 		Now()
 
@@ -57,7 +57,7 @@ func (app *application) Execute(frame stacks.Frame, assignable votes.Vote) (stac
 	}
 
 	return app.assignableBuilder.Create().
-		WithAccount(stackAccount).
+		WithAccount(retStackAccount).
 		Now()
 
 }

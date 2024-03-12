@@ -90,7 +90,6 @@ type Frame interface {
 	FetchHash(name string) (hash.Hash, error)
 	FetchBytes(name string) ([]byte, error)
 	FetchUnsignedInt(name string) (*uint, error)
-	FetchString(name string) (string, error)
 	FetchStringList(name string) ([]string, error)
 	FetchAccount(name string) (accounts.Account, error)
 	FetchRing(name string) ([]signers.PublicKey, error)
@@ -152,4 +151,18 @@ type Assignable interface {
 	Bytes() []byte
 	IsHash() bool
 	Hash() hash.Hash
+	IsHashList() bool
+	HashList() []hash.Hash
+	IsStringList() bool
+	StringList() []string
+	IsUnsignedInt() bool
+	UnsignedInt() *uint
+	IsAccount() bool
+	Account() stack_accounts.Account
+	IsInstance() bool
+	Instance() instances.Instance
+	IsSkeleton() bool
+	Skeleton() skeletons.Skeleton
+	IsQuery() bool
+	Query() queries.Query
 }

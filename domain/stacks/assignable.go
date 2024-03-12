@@ -2,12 +2,23 @@ package stacks
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/queries"
+	"github.com/steve-care-software/datastencil/domain/skeletons"
+	stack_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )
 
 type assignable struct {
-	pBool *bool
-	bytes []byte
-	hash  hash.Hash
+	pBool        *bool
+	bytes        []byte
+	hash         hash.Hash
+	hashList     []hash.Hash
+	stringList   []string
+	pUnsignedInt *uint
+	account      stack_accounts.Account
+	instance     instances.Instance
+	skeleton     skeletons.Skeleton
+	query        queries.Query
 }
 
 func createAssignableWithBool(
@@ -15,6 +26,13 @@ func createAssignableWithBool(
 ) Assignable {
 	return createAssignableInternally(
 		pBool,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
 		nil,
 		nil,
 	)
@@ -27,6 +45,13 @@ func createAssignableWithBytes(
 		nil,
 		bytes,
 		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
 	)
 }
 
@@ -37,6 +62,132 @@ func createAssignableWithHash(
 		nil,
 		nil,
 		hash,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+	)
+}
+
+func createAssignableWithHashList(
+	hashList []hash.Hash,
+) Assignable {
+	return createAssignableInternally(
+		nil,
+		nil,
+		nil,
+		hashList,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+	)
+}
+
+func createAssignableWithStringList(
+	stringList []string,
+) Assignable {
+	return createAssignableInternally(
+		nil,
+		nil,
+		nil,
+		nil,
+		stringList,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+	)
+}
+
+func createAssignableWithUnsignedInt(
+	pUnsignedInt *uint,
+) Assignable {
+	return createAssignableInternally(
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		pUnsignedInt,
+		nil,
+		nil,
+		nil,
+		nil,
+	)
+}
+
+func createAssignableWithAccount(
+	account stack_accounts.Account,
+) Assignable {
+	return createAssignableInternally(
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		account,
+		nil,
+		nil,
+		nil,
+	)
+}
+
+func createAssignableWithInstance(
+	instance instances.Instance,
+) Assignable {
+	return createAssignableInternally(
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		instance,
+		nil,
+		nil,
+	)
+}
+
+func createAssignableWithSkeleton(
+	skeleton skeletons.Skeleton,
+) Assignable {
+	return createAssignableInternally(
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		skeleton,
+		nil,
+	)
+}
+
+func createAssignableWithQuery(
+	query queries.Query,
+) Assignable {
+	return createAssignableInternally(
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		query,
 	)
 }
 
@@ -44,11 +195,25 @@ func createAssignableInternally(
 	pBool *bool,
 	bytes []byte,
 	hash hash.Hash,
+	hashList []hash.Hash,
+	stringList []string,
+	pUnsignedInt *uint,
+	account stack_accounts.Account,
+	instance instances.Instance,
+	skeleton skeletons.Skeleton,
+	query queries.Query,
 ) Assignable {
 	out := assignable{
-		pBool: pBool,
-		bytes: bytes,
-		hash:  hash,
+		pBool:        pBool,
+		bytes:        bytes,
+		hash:         hash,
+		hashList:     hashList,
+		stringList:   stringList,
+		pUnsignedInt: pUnsignedInt,
+		account:      account,
+		instance:     instance,
+		skeleton:     skeleton,
+		query:        query,
 	}
 
 	return &out
@@ -82,4 +247,74 @@ func (obj *assignable) IsHash() bool {
 // Hash returns hash, if any
 func (obj *assignable) Hash() hash.Hash {
 	return obj.hash
+}
+
+// IsHashList returns true if hash list, false otherwise
+func (obj *assignable) IsHashList() bool {
+	return obj.hashList != nil
+}
+
+// HashList returns hashList, if any
+func (obj *assignable) HashList() []hash.Hash {
+	return obj.hashList
+}
+
+// IsStringList returns true if string list, false otherwise
+func (obj *assignable) IsStringList() bool {
+	return obj.stringList != nil
+}
+
+// StringList returns stringList, if any
+func (obj *assignable) StringList() []string {
+	return obj.stringList
+}
+
+// IsUnsignedInt returns true if unsigned int, false otherwise
+func (obj *assignable) IsUnsignedInt() bool {
+	return obj.pUnsignedInt != nil
+}
+
+// UnsignedInt returns unsigned int, if any
+func (obj *assignable) UnsignedInt() *uint {
+	return obj.pUnsignedInt
+}
+
+// IsAccount returns true if account, false otherwise
+func (obj *assignable) IsAccount() bool {
+	return obj.account != nil
+}
+
+// Account returns account, if any
+func (obj *assignable) Account() stack_accounts.Account {
+	return obj.account
+}
+
+// IsInstance returns true if instance, false otherwise
+func (obj *assignable) IsInstance() bool {
+	return obj.instance != nil
+}
+
+// Instance returns instance, if any
+func (obj *assignable) Instance() instances.Instance {
+	return obj.instance
+}
+
+// IsSkeleton returns true if skeleton, false otherwise
+func (obj *assignable) IsSkeleton() bool {
+	return obj.skeleton != nil
+}
+
+// Skeleton returns skeleton, if any
+func (obj *assignable) Skeleton() skeletons.Skeleton {
+	return obj.skeleton
+}
+
+// IsQuery returns true if query, false otherwise
+func (obj *assignable) IsQuery() bool {
+	return obj.query != nil
+}
+
+// Query returns query, if any
+func (obj *assignable) Query() queries.Query {
+	return obj.query
 }

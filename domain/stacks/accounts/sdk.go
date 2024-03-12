@@ -6,6 +6,11 @@ import (
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represents an account builder
 type Builder interface {
 	Create() Builder
@@ -24,7 +29,7 @@ type Account interface {
 	IsCredentials() bool
 	Credentials() credentials.Credentials
 	IsRing() bool
-	Rign() []signers.PublicKey
+	Ring() []signers.PublicKey
 	IsSignature() bool
 	Signature() signers.Signature
 	IsVote() bool
