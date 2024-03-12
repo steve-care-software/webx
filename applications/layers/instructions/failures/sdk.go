@@ -57,4 +57,7 @@ const (
 
 	// CouldNotDecryptCipher represents a could not decrypt cipher
 	CouldNotDecryptCipher
+
+	// CouldNotRetrieveAccountFromDatabase represents a could not retrieve account from database
+	CouldNotRetrieveAccountFromDatabase
 )

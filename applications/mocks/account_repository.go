@@ -1,19 +1,24 @@
 package mocks
 
 import (
+	"errors"
+
 	"github.com/steve-care-software/datastencil/domain/accounts"
 	"github.com/steve-care-software/datastencil/domain/accounts/credentials"
 )
 
 type accountRepository struct {
-	exists map[string]bool
+	exists   map[string]bool
+	retrieve map[string]accounts.Account
 }
 
 func createAccountRepository(
 	exists map[string]bool,
+	retrieve map[string]accounts.Account,
 ) accounts.Repository {
 	out := accountRepository{
-		exists: exists,
+		exists:   exists,
+		retrieve: retrieve,
 	}
 
 	return &out
@@ -35,5 +40,10 @@ func (app *accountRepository) Exists(username string) (bool, error) {
 
 // Retrieve retrieves an account
 func (app *accountRepository) Retrieve(password []byte, credentials credentials.Credentials) (accounts.Account, error) {
-	return nil, nil
+	username := credentials.Username()
+	if ins, ok := app.retrieve[username]; ok {
+		return ins, nil
+	}
+
+	return nil, errors.New("Invalid Account")
 }

@@ -1,6 +1,7 @@
 package retrieves
 
 import (
+	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/domain/accounts"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/accounts/retrieves"
 	"github.com/steve-care-software/datastencil/domain/stacks"
@@ -32,18 +33,21 @@ func (app *application) Execute(frame stacks.Frame, assignable retrieves.Retriev
 	passVar := assignable.Password()
 	password, err := frame.FetchBytes(passVar)
 	if err != nil {
-		return nil, nil, err
+		code := failures.CouldNotFetchPasswordFromFrame
+		return nil, &code, err
 	}
 
 	credVar := assignable.Credentials()
 	credentials, err := frame.FetchCredentials(credVar)
 	if err != nil {
-		return nil, nil, err
+		code := failures.CouldNotFetchCredentialsFromFrame
+		return nil, &code, err
 	}
 
 	accountIns, err := app.repository.Retrieve(password, credentials)
 	if err != nil {
-		return nil, nil, err
+		code := failures.CouldNotRetrieveAccountFromDatabase
+		return nil, &code, err
 	}
 
 	account, err := app.accountBuilder.Create().
