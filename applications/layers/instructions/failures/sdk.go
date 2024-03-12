@@ -39,4 +39,10 @@ const (
 
 	// CouldNotFetchConditionFromFrame represents a could not fetch condition from frame
 	CouldNotFetchConditionFromFrame
+
+	// CouldNotFetchMessageFromFrame represents a could not fetch message from frame
+	CouldNotFetchMessageFromFrame
+
+	// CouldNotFetchAccountFromFrame represents a could not fetch account from frame
+	CouldNotFetchAccountFromFrame
 )

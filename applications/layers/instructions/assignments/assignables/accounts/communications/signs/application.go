@@ -1,6 +1,7 @@
 package signs
 
 import (
+	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/accounts/communications/signs"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	stacks_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
@@ -28,13 +29,15 @@ func (app *application) Execute(frame stacks.Frame, assignable signs.Sign) (stac
 	messageVar := assignable.Message()
 	message, err := frame.FetchBytes(messageVar)
 	if err != nil {
-		return nil, nil, err
+		code := failures.CouldNotFetchMessageFromFrame
+		return nil, &code, err
 	}
 
 	accountVar := assignable.Account()
 	account, err := frame.FetchAccount(accountVar)
 	if err != nil {
-		return nil, nil, err
+		code := failures.CouldNotFetchAccountFromFrame
+		return nil, &code, err
 	}
 
 	sig, err := account.Signer().Sign(string(message))
