@@ -1,6 +1,9 @@
 package accounts
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/accounts/inserts"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/accounts/updates"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
@@ -45,7 +48,8 @@ func (app *application) Execute(frame stacks.Frame, instruction instructions_acc
 	credentials, err := frame.FetchCredentials(credentialsVar)
 	if err != nil {
 		code := failures.CouldNotFetchCredentialsFromFrame
-		return &code, err
+		str := fmt.Sprintf("the variable (name: %s) was expected to contain credentials, but was NOT declared", credentialsVar)
+		return &code, errors.New(str)
 	}
 
 	err = app.service.Delete(credentials)
