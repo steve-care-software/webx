@@ -199,8 +199,8 @@ func TestExecute_userExistsInFrame_passwordExistsInFrame_userDoesNotExists_inser
 	}
 
 	code := *pCode
-	if code != failures.CouldNotInsertAccount {
-		t.Errorf("the code was expected to be %d, %d returned", failures.CouldNotInsertAccount, code)
+	if code != failures.CouldNotInsertAccountInDatabase {
+		t.Errorf("the code was expected to be %d, %d returned", failures.CouldNotInsertAccountInDatabase, code)
 		return
 	}
 }

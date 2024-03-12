@@ -98,7 +98,7 @@ func (app *application) Execute(frame stacks.Frame, instruction inserts.Insert) 
 
 	err = app.service.Insert(account, password)
 	if err != nil {
-		code := failures.CouldNotInsertAccount
+		code := failures.CouldNotInsertAccountInDatabase
 		return &code, err
 	}
 

@@ -90,7 +90,7 @@ func TestExecute_credentialsDoesNotExistsInFrame_changeSigner_doNotChangeEncrypt
 	}
 }
 
-func TestExecute_credentialsExistsInFrame_changeSigner_doNotChangeEncryptor_doNotChangeUsername_doNotChangePassword_updateDoesNotSucceeds_ReturnsError(t *testing.T) {
+func TestExecute_credentialsExistsInFrame_changeSigner_doNotChangeEncryptor_doNotChangeUsername_doNotChangePassword_updateFails_ReturnsError(t *testing.T) {
 	username := "myUsername"
 	password := "myPassword"
 	originalCredentialsVar := "originalCredentials"
@@ -127,8 +127,14 @@ func TestExecute_credentialsExistsInFrame_changeSigner_doNotChangeEncryptor_doNo
 		return
 	}
 
-	if pCode != nil {
-		t.Errorf("the code was expected to be nil, code returned: %d", *pCode)
+	if pCode == nil {
+		t.Errorf("the code was expected to be valid, nil returned")
+		return
+	}
+
+	code := *pCode
+	if code != failures.CouldNotUpdateAccountInDatabase {
+		t.Errorf("the code was expected to be %d, %d returned", failures.CouldNotUpdateAccountInDatabase, code)
 		return
 	}
 }

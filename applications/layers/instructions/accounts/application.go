@@ -54,7 +54,7 @@ func (app *application) Execute(frame stacks.Frame, instruction instructions_acc
 
 	err = app.service.Delete(credentials)
 	if err != nil {
-		code := failures.CouldNotDeleteAccount
+		code := failures.CouldNotDeleteAccountFromDatabase
 		return &code, err
 	}
 

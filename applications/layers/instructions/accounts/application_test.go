@@ -232,8 +232,8 @@ func TestExecute_withDelete_credentialsDoesNotExistsInFrame_deleteFails_ReturnsE
 	}
 
 	code := *pCode
-	if code != failures.CouldNotDeleteAccount {
-		t.Errorf("the code was expected to be %d, %d returned", failures.CouldNotDeleteAccount, code)
+	if code != failures.CouldNotDeleteAccountFromDatabase {
+		t.Errorf("the code was expected to be %d, %d returned", failures.CouldNotDeleteAccountFromDatabase, code)
 		return
 	}
 }

@@ -53,7 +53,7 @@ func (app *application) Execute(frame stacks.Frame, instruction deletes.Delete) 
 	}
 
 	if !exists {
-		code := failures.InstanceDoesNotExists
+		code := failures.InstanceDoesNotExistsInDatabase
 		return &code, err
 	}
 

@@ -123,7 +123,8 @@ func (app *application) Execute(frame stacks.Frame, instruction updates.Update) 
 
 	err = app.service.Update(credentials, criteria)
 	if err != nil {
-		return nil, err
+		code := failures.CouldNotUpdateAccountInDatabase
+		return &code, err
 	}
 
 	return nil, nil

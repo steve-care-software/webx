@@ -1,14 +1,14 @@
 package failures
 
 const (
-	// CouldNotInsertAccount represents a could not insert account failure
-	CouldNotInsertAccount (uint) = iota
+	// CouldNotInsertAccountInDatabase represents a could not insert account in database
+	CouldNotInsertAccountInDatabase (uint) = iota
 
-	// CouldNotUpdateAccount represents a could not update account
-	CouldNotUpdateAccount
+	// CouldNotUpdateAccountInDatabase represents a could not update account in database
+	CouldNotUpdateAccountInDatabase
 
-	// CouldNotDeleteAccount represents a could not delete account
-	CouldNotDeleteAccount
+	// CouldNotDeleteAccountFromDatabase represents a could not delete account from database
+	CouldNotDeleteAccountFromDatabase
 
 	// CouldNotFetchCredentialsFromFrame represents a could not fetch credentials from frame
 	CouldNotFetchCredentialsFromFrame
@@ -31,11 +31,11 @@ const (
 	// CouldNotFetchIdentifierFromFrame represents a could not fetch identifier from frame
 	CouldNotFetchIdentifierFromFrame
 
-	// InstanceDoesNotExists represents an insatnce does not exists
-	InstanceDoesNotExists
+	// InstanceDoesNotExistsInDatabase represents an instance does not exists in database
+	InstanceDoesNotExistsInDatabase
 
-	// InstanceAlreadyExists represents an insatnce already exists
-	InstanceAlreadyExists
+	// InstanceAlreadyExistsInDatabase represents an instance already exists in database
+	InstanceAlreadyExistsInDatabase
 
 	// CouldNotFetchConditionFromFrame represents a could not fetch condition from frame
 	CouldNotFetchConditionFromFrame

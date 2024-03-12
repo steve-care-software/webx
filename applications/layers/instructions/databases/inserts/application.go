@@ -53,7 +53,7 @@ func (app *application) Execute(frame stacks.Frame, instruction inserts.Insert) 
 	}
 
 	if exists {
-		code := failures.InstanceAlreadyExists
+		code := failures.InstanceAlreadyExistsInDatabase
 		return &code, err
 	}
 
