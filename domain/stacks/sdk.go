@@ -4,12 +4,11 @@ import (
 	"github.com/steve-care-software/datastencil/domain/accounts"
 	"github.com/steve-care-software/datastencil/domain/accounts/credentials"
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
-	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/queries"
+	"github.com/steve-care-software/datastencil/domain/skeletons"
 	stack_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
-	"github.com/steve-care-software/datastencil/domain/stacks/databases"
-	"github.com/steve-care-software/datastencil/domain/stacks/libraries"
 )
 
 // NewBuilder creates a new builder
@@ -139,8 +138,8 @@ type AssignableBuilder interface {
 	WithStringList(strList []string) AssignableBuilder
 	WithUnsignedInt(unsignedInt uint) AssignableBuilder
 	WithAccount(account stack_accounts.Account) AssignableBuilder
-	WithLibrary(lib libraries.Library) AssignableBuilder
-	WithDatabase(database databases.Database) AssignableBuilder
+	WithInstance(ins instances.Instance) AssignableBuilder
+	WithSkeleton(skeleton skeletons.Skeleton) AssignableBuilder
 	WithQuery(query queries.Query) AssignableBuilder
 	Now() (Assignable, error)
 }

@@ -4,23 +4,19 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/libraries/compilers"
 	"github.com/steve-care-software/datastencil/domain/stacks"
-	stacks_libraries "github.com/steve-care-software/datastencil/domain/stacks/libraries"
 )
 
 type application struct {
 	instanceAdapter   instances.Adapter
-	libraryBuilder    stacks_libraries.Builder
 	assignableBuilder stacks.AssignableBuilder
 }
 
 func createApplication(
 	instanceAdapter instances.Adapter,
-	libraryBuilder stacks_libraries.Builder,
 	assignableBuilder stacks.AssignableBuilder,
 ) Application {
 	out := application{
 		instanceAdapter:   instanceAdapter,
-		libraryBuilder:    libraryBuilder,
 		assignableBuilder: assignableBuilder,
 	}
 
@@ -42,15 +38,7 @@ func (app *application) Execute(frame stacks.Frame, assignable compilers.Compile
 			return nil, err
 		}
 
-		lib, err := app.libraryBuilder.Create().
-			WithInstance(ins).
-			Now()
-
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithLibrary(lib)
+		builder.WithInstance(ins)
 	}
 
 	if assignable.IsDecompile() {
