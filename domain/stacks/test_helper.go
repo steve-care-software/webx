@@ -9,7 +9,17 @@ import (
 )
 
 // NewFrameForTests creates a new frame for tests
-func NewFrameForTests(value Assignments) Frame {
+func NewFrameForTests() Frame {
+	ins, err := NewFrameBuilder().Create().Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewFrameWithAssignmentsForTests creates a new frame with assignments for tests
+func NewFrameWithAssignmentsForTests(value Assignments) Frame {
 	ins, err := NewFrameBuilder().Create().WithAssignments(value).Now()
 	if err != nil {
 		panic(err)

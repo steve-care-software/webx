@@ -15,7 +15,7 @@ func TestExecute_userExistsInFrame_passwordExistsInFrame_userDoesNotExists_inser
 	passVar := "password"
 	password := "myPassword"
 	insert := inserts.NewInsertForTests(userVar, passVar)
-	frame := stacks.NewFrameForTests(
+	frame := stacks.NewFrameWithAssignmentsForTests(
 		stacks.NewAssignmentsForTests([]stacks.Assignment{
 			stacks.NewAssignmentForTests(userVar, stacks.NewAssignableWithBytesForTests([]byte(username))),
 			stacks.NewAssignmentForTests(passVar, stacks.NewAssignableWithBytesForTests([]byte(password))),
@@ -49,7 +49,7 @@ func TestExecute_userDoesNotExistsInFrame_passwordExistsInFrame_userDoesNotExist
 	passVar := "password"
 	password := "myPassword"
 	insert := inserts.NewInsertForTests("nonMatchingUserVar", passVar)
-	frame := stacks.NewFrameForTests(
+	frame := stacks.NewFrameWithAssignmentsForTests(
 		stacks.NewAssignmentsForTests([]stacks.Assignment{
 			stacks.NewAssignmentForTests(userVar, stacks.NewAssignableWithBytesForTests([]byte(username))),
 			stacks.NewAssignmentForTests(passVar, stacks.NewAssignableWithBytesForTests([]byte(password))),
@@ -89,7 +89,7 @@ func TestExecute_userExistsInFrame_passwordDoesNotExistsInFrame_userDoesNotExist
 	passVar := "password"
 	password := "myPassword"
 	insert := inserts.NewInsertForTests(userVar, "nonMatchingPassVar")
-	frame := stacks.NewFrameForTests(
+	frame := stacks.NewFrameWithAssignmentsForTests(
 		stacks.NewAssignmentsForTests([]stacks.Assignment{
 			stacks.NewAssignmentForTests(userVar, stacks.NewAssignableWithBytesForTests([]byte(username))),
 			stacks.NewAssignmentForTests(passVar, stacks.NewAssignableWithBytesForTests([]byte(password))),
@@ -129,7 +129,7 @@ func TestExecute_userExistsInFrame_passwordExistsInFrame_userAlreadyExists_inser
 	passVar := "password"
 	password := "myPassword"
 	insert := inserts.NewInsertForTests(userVar, passVar)
-	frame := stacks.NewFrameForTests(
+	frame := stacks.NewFrameWithAssignmentsForTests(
 		stacks.NewAssignmentsForTests([]stacks.Assignment{
 			stacks.NewAssignmentForTests(userVar, stacks.NewAssignableWithBytesForTests([]byte(username))),
 			stacks.NewAssignmentForTests(passVar, stacks.NewAssignableWithBytesForTests([]byte(password))),
@@ -171,7 +171,7 @@ func TestExecute_userExistsInFrame_passwordExistsInFrame_userDoesNotExists_inser
 	passVar := "password"
 	password := "myPassword"
 	insert := inserts.NewInsertForTests(userVar, passVar)
-	frame := stacks.NewFrameForTests(
+	frame := stacks.NewFrameWithAssignmentsForTests(
 		stacks.NewAssignmentsForTests([]stacks.Assignment{
 			stacks.NewAssignmentForTests(userVar, stacks.NewAssignableWithBytesForTests([]byte(username))),
 			stacks.NewAssignmentForTests(passVar, stacks.NewAssignableWithBytesForTests([]byte(password))),

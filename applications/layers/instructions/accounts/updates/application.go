@@ -3,6 +3,8 @@ package updates
 import (
 	"crypto/rand"
 	"crypto/rsa"
+	"errors"
+	"fmt"
 
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/domain/accounts"
@@ -39,6 +41,7 @@ func createApplication(
 		criteriaBuilder:  criteriaBuilder,
 		signerFactory:    signerFactory,
 		encryptorBuilder: encryptorBuilder,
+		bitRate:          bitRate,
 	}
 
 	return &out
@@ -50,7 +53,8 @@ func (app *application) Execute(frame stacks.Frame, instruction updates.Update) 
 	credentials, err := frame.FetchCredentials(credentialsVar)
 	if err != nil {
 		code := failures.CouldNotFetchCredentialsFromFrame
-		return &code, nil
+		str := fmt.Sprintf("the variable (name: %s) was expected to contain credentials, but was NOT declared", credentialsVar)
+		return &code, errors.New(str)
 	}
 
 	insCriteria := instruction.Criteria()
@@ -94,7 +98,8 @@ func (app *application) Execute(frame stacks.Frame, instruction updates.Update) 
 
 		if exists {
 			code := failures.AccountWithSameUsernameAlreadyExists
-			return &code, nil
+			str := fmt.Sprintf("the account (name: %s) already exists", username)
+			return &code, errors.New(str)
 		}
 
 		builder.WithUsername(username)
