@@ -44,6 +44,15 @@ func (obj *previous) Hash() hash.Hash {
 	return obj.hash
 }
 
+// Index returns the index
+func (obj *previous) Index() uint {
+	if obj.IsRoot() {
+		return 0
+	}
+
+	return obj.prev.Index() + 1
+}
+
 // IsRoot returns true if there is root, false otherwise
 func (obj *previous) IsRoot() bool {
 	return obj.root != nil

@@ -1,10 +1,16 @@
 package contents
 
 import (
+	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/commits/contents/actions"
 	"github.com/steve-care-software/datastencil/domain/instances/commits/contents/previous"
-	"github.com/steve-care-software/datastencil/domain/hash"
 )
+
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(hashAdapter)
+}
 
 // Builder represents the content builder
 type Builder interface {

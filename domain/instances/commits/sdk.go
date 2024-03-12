@@ -6,12 +6,17 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/commits/contents"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(hashAdapter)
+}
+
 // Builder represents the commit builder
 type Builder interface {
 	Create() Builder
 	WithContent(content contents.Content) Builder
 	WithSignature(signature signers.Signature) Builder
-	WithIndex(index uint) Builder
 	Now() (Commit, error)
 }
 
@@ -21,4 +26,5 @@ type Commit interface {
 	Content() contents.Content
 	Signature() signers.Signature
 	Index() uint
+	PublicKey() (signers.PublicKey, error)
 }

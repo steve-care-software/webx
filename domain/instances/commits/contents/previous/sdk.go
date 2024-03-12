@@ -22,6 +22,7 @@ type Builder interface {
 // Previous represents a previous
 type Previous interface {
 	Hash() hash.Hash
+	Index() uint
 	IsRoot() bool
 	Root() actions.Actions
 	IsPrevious() bool
