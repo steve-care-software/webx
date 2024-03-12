@@ -60,4 +60,7 @@ const (
 
 	// CouldNotRetrieveAccountFromDatabase represents a could not retrieve account from database
 	CouldNotRetrieveAccountFromDatabase
+
+	// CouldNotRetrieveAccountNamesListFromDatabase represents a could not retrieve account names list from database
+	CouldNotRetrieveAccountNamesListFromDatabase
 )

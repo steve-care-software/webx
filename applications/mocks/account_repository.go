@@ -10,15 +10,18 @@ import (
 type accountRepository struct {
 	exists   map[string]bool
 	retrieve map[string]accounts.Account
+	list     map[string][]string
 }
 
 func createAccountRepository(
 	exists map[string]bool,
 	retrieve map[string]accounts.Account,
+	list map[string][]string,
 ) accounts.Repository {
 	out := accountRepository{
 		exists:   exists,
 		retrieve: retrieve,
+		list:     list,
 	}
 
 	return &out
@@ -26,7 +29,11 @@ func createAccountRepository(
 
 // List lists the account names
 func (app *accountRepository) List(password []byte) ([]string, error) {
-	return nil, nil
+	if list, ok := app.list[string(password)]; ok {
+		return list, nil
+	}
+
+	return nil, errors.New("there is no list attached to the provided password")
 }
 
 // Exists returns true if exists, false otherwise
@@ -45,5 +52,5 @@ func (app *accountRepository) Retrieve(password []byte, credentials credentials.
 		return ins, nil
 	}
 
-	return nil, errors.New("Invalid Account")
+	return nil, errors.New("there is no account attached to the provided username")
 }

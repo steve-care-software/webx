@@ -1,6 +1,7 @@
 package credentials
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
@@ -46,6 +47,25 @@ func TestExecute_usernameExistsInFrame_passwordExistsInFrame_Success(t *testing.
 
 	if !retAssignable.IsAccount() {
 		t.Errorf("the assignable was expected to contain an Account instance")
+		return
+	}
+
+	retAccount := retAssignable.Account()
+	if !retAccount.IsCredentials() {
+		t.Errorf("the assignable (account) was expected to contain a Credentials instance")
+		return
+	}
+
+	retCredentials := retAccount.Credentials()
+	retUsername := retCredentials.Username()
+	if !reflect.DeepEqual(retUsername, username) {
+		t.Errorf("the username is invalid")
+		return
+	}
+
+	retPassword := retCredentials.Password()
+	if !reflect.DeepEqual(retPassword, password) {
+		t.Errorf("the password is invalid")
 		return
 	}
 }

@@ -11,6 +11,7 @@ func NewAccountRepositoryWithExistsForTests(
 	return createAccountRepository(
 		exists,
 		map[string]accounts.Account{},
+		map[string][]string{},
 	)
 }
 
@@ -26,6 +27,18 @@ func NewAccountRepositoryWithRetrieveForTests(
 	return createAccountRepository(
 		exists,
 		instances,
+		map[string][]string{},
+	)
+}
+
+// NewAccountRepositoryWithListForTests creates a new account repository with list for tests
+func NewAccountRepositoryWithListForTests(
+	list map[string][]string,
+) accounts.Repository {
+	return createAccountRepository(
+		map[string]bool{},
+		map[string]accounts.Account{},
+		list,
 	)
 }
 
