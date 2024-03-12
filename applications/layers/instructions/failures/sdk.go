@@ -63,4 +63,13 @@ const (
 
 	// CouldNotRetrieveAccountNamesListFromDatabase represents a could not retrieve account names list from database
 	CouldNotRetrieveAccountNamesListFromDatabase
+
+	// CouldNotFetchJoinVariableFromFrame represents a could not fetch a join variable from frame
+	CouldNotFetchJoinVariableFromFrame
+
+	// CouldNotFetchCompareVariableFromFrame represents a could not fetch a compare variable from frame
+	CouldNotFetchCompareVariableFromFrame
+
+	// CouldNotFetchHashVariableFromFrame represents a could not fetch a hash variable from frame
+	CouldNotFetchHashVariableFromFrame
 )

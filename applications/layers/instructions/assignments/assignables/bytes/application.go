@@ -3,6 +3,7 @@ package bytes
 import (
 	"bytes"
 
+	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/domain/hash"
 	assignable_bytes "github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/stacks"
@@ -34,7 +35,8 @@ func (app *application) Execute(frame stacks.Frame, assignable assignable_bytes.
 		for _, oneVariable := range variables {
 			data, err := frame.FetchBytes(oneVariable)
 			if err != nil {
-				return nil, nil, err
+				code := failures.CouldNotFetchJoinVariableFromFrame
+				return nil, &code, err
 			}
 
 			output = append(output, data...)
@@ -45,20 +47,21 @@ func (app *application) Execute(frame stacks.Frame, assignable assignable_bytes.
 
 	if assignable.IsCompare() {
 		boolValue := true
-		var lastBytes []byte
+		var firstBytes []byte
 		variables := assignable.Compare()
 		for _, oneVariable := range variables {
 			data, err := frame.FetchBytes(oneVariable)
 			if err != nil {
-				return nil, nil, err
+				code := failures.CouldNotFetchCompareVariableFromFrame
+				return nil, &code, err
 			}
 
-			if lastBytes == nil {
-				lastBytes = data
+			if firstBytes == nil {
+				firstBytes = data
 				continue
 			}
 
-			if !bytes.Equal(lastBytes, data) {
+			if !bytes.Equal(firstBytes, data) {
 				boolValue = false
 				break
 			}
@@ -71,7 +74,8 @@ func (app *application) Execute(frame stacks.Frame, assignable assignable_bytes.
 		variable := assignable.HashBytes()
 		data, err := frame.FetchBytes(variable)
 		if err != nil {
-			return nil, nil, err
+			code := failures.CouldNotFetchHashVariableFromFrame
+			return nil, &code, err
 		}
 
 		pHash, err := app.hashAdapter.FromBytes(data)
