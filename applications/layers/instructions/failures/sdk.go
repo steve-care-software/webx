@@ -48,4 +48,7 @@ const (
 
 	// CouldNotFetchRingFromFrame represents a could not fetch ring from frame
 	CouldNotFetchRingFromFrame
+
+	// CouldNotFetchGenerateRingFromFrame represents a could not fetch generate ring from frame
+	CouldNotFetchGenerateRingFromFrame
 )

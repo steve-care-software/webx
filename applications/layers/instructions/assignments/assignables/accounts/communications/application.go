@@ -3,6 +3,7 @@ package communications
 import (
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/accounts/communications/signs"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/accounts/communications/votes"
+	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/accounts/communications"
 	"github.com/steve-care-software/datastencil/domain/stacks"
@@ -53,7 +54,8 @@ func (app *application) Execute(frame stacks.Frame, assignable communications.Co
 		amountVariable := assignable.GenerateRing()
 		pAmount, err := frame.FetchUnsignedInt(amountVariable)
 		if err != nil {
-			return nil, nil, err
+			code := failures.CouldNotFetchGenerateRingFromFrame
+			return nil, &code, err
 		}
 
 		casted := int(*pAmount)
