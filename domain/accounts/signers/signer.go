@@ -2,7 +2,7 @@ package signers
 
 import (
 	"errors"
-	"strconv"
+	"fmt"
 
 	kyber "go.dedis.ch/kyber/v3"
 )
@@ -26,11 +26,11 @@ func (app *signer) PublicKey() PublicKey {
 	return createPublicKey(p)
 }
 
-// Vote signs a vote on the given message, using the provided ring
-func (app *signer) Vote(msg []byte, ring []PublicKey) (Vote, error) {
-	retrieveSignerIndexFn := func(ring []PublicKey, pk Signer) int {
+// Vote signs a ring signature on the given message, in the given ring pubKey
+func (app *signer) Vote(msg string, ringPubKeys []PublicKey) (Vote, error) {
+	retrieveSignerIndexFn := func(ringPubKeys []PublicKey, pk Signer) int {
 		pubKey := pk.PublicKey()
-		for index, oneRingPubKey := range ring {
+		for index, oneRingPubKey := range ringPubKeys {
 			if oneRingPubKey.Equals(pubKey) {
 				return index
 			}
@@ -40,22 +40,19 @@ func (app *signer) Vote(msg []byte, ring []PublicKey) (Vote, error) {
 	}
 
 	// retrieve our signerIndex:
-	signerIndex := retrieveSignerIndexFn(ring, app)
+	signerIndex := retrieveSignerIndexFn(ringPubKeys, app)
 	if signerIndex == -1 {
 		return nil, errors.New("the signer PublicKey is not in the ring")
 	}
 
 	// generate k:
-	k, err := genK(app.x, msg)
-	if err != nil {
-		return nil, err
-	}
+	k := genK(app.x, msg)
 
 	// random base:
 	g := curve.Point().Base()
 
 	// length:
-	r := len(ring)
+	r := len(ringPubKeys)
 
 	// initialize:
 	es := make([]kyber.Scalar, r)
@@ -63,57 +60,31 @@ func (app *signer) Vote(msg []byte, ring []PublicKey) (Vote, error) {
 	beginIndex := (signerIndex + 1) % r
 
 	// ei = H(m || k * G)
-	mulBytes, err := curve.Point().Mul(k, g).MarshalBinary()
-	if err != nil {
-		return nil, err
-	}
-
-	combine := []byte{}
-	combine = append(combine, msg...)
-	combine = append(combine, mulBytes...)
-	es[beginIndex] = createHash(combine)
+	es[beginIndex] = createHash(msg + curve.Point().Mul(k, g).String())
 
 	// loop:
 	for i := beginIndex; i != signerIndex; i = (i + 1) % r {
 		// si = random value
-		siCombine := []byte{}
-		siCombine = append(siCombine, msg...)
-		siCombine = append(siCombine, []byte(strconv.Itoa(i))...)
-		ss[i], err = genK(app.x, siCombine)
-		if err != nil {
-			return nil, err
-		}
+		ss[i] = genK(app.x, fmt.Sprintf("%s%d", msg, i))
 
 		//eiPlus1ModR = H(m || si * G + ei * Pi)
 		sig := curve.Point().Mul(ss[i], g)
-		eipi := curve.Point().Mul(es[i], ring[i].Point())
-
-		addBytes, err := curve.Point().Add(sig, eipi).MarshalBinary()
-		if err != nil {
-			return nil, err
-		}
-
-		combine := []byte{}
-		combine = append(combine, msg...)
-		combine = append(combine, addBytes...)
-		es[(i+1)%r] = createHash(combine)
+		eipi := curve.Point().Mul(es[i], ringPubKeys[i].Point())
+		es[(i+1)%r] = createHash(msg + curve.Point().Add(sig, eipi).String())
 
 	}
 
 	// close the ring:
 	esx := curve.Scalar().Mul(es[signerIndex], app.x)
 	ss[signerIndex] = curve.Scalar().Sub(k, esx)
-	out := createVote(ring, ss, es[0])
+	out := createVote(ringPubKeys, ss, es[0])
 	return out, nil
 }
 
 // Sign signs a message
-func (app *signer) Sign(msg []byte) (Signature, error) {
+func (app *signer) Sign(msg string) (Signature, error) {
 	// generate k:
-	k, err := genK(app.x, msg)
-	if err != nil {
-		return nil, err
-	}
+	k := genK(app.x, msg)
 
 	// random base:
 	g := curve.Point().Base()
@@ -122,15 +93,7 @@ func (app *signer) Sign(msg []byte) (Signature, error) {
 	r := curve.Point().Mul(k, g)
 
 	// hash(m || r)
-	rBytes, err := r.MarshalBinary()
-	if err != nil {
-		return nil, err
-	}
-
-	combine := []byte{}
-	combine = append(combine, msg...)
-	combine = append(combine, rBytes...)
-	e := createHash(combine)
+	e := createHash(msg + r.String())
 
 	// s = k - e * x
 	s := curve.Scalar().Sub(k, curve.Scalar().Mul(e, app.x))
@@ -140,7 +103,7 @@ func (app *signer) Sign(msg []byte) (Signature, error) {
 	return createSignature(pubKey, s)
 }
 
-// Bytes returns the bytes representation of the Signer
-func (app *signer) Bytes() ([]byte, error) {
-	return app.x.MarshalBinary()
+// String returns the string representation of the Signer
+func (app *signer) String() string {
+	return app.x.String()
 }

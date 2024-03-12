@@ -1,9 +1,10 @@
 package signers
 
 import (
-	"bytes"
+	"encoding/base64"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	kyber "go.dedis.ch/kyber/v3"
@@ -13,9 +14,7 @@ type voteAdapter struct {
 	hashAdapter hash.Adapter
 }
 
-func createVoteAdapter(
-	hashAdapter hash.Adapter,
-) VoteAdapter {
+func createVoteAdapter(hashAdapter hash.Adapter) VoteAdapter {
 	out := voteAdapter{
 		hashAdapter: hashAdapter,
 	}
@@ -23,22 +22,27 @@ func createVoteAdapter(
 	return &out
 }
 
-// ToVote converts bytes to vote
-func (app *voteAdapter) ToVote(input []byte) (Vote, error) {
-	splitted := bytes.Split(input, []byte(delimiter))
+// ToSignature converts a string to a Vote
+func (app *voteAdapter) ToSignature(sig string) (Vote, error) {
+	decoded, err := base64.StdEncoding.DecodeString(sig)
+	if err != nil {
+		return nil, err
+	}
+
+	splitted := strings.Split(string(decoded), delimiter)
 	if len(splitted) != 3 {
 		str := fmt.Sprintf("the ring signature string was expected to have %d sections, %d found", 3, len(splitted))
 		return nil, errors.New(str)
 	}
 
 	ring := []PublicKey{}
-	ringPointBytes := bytes.Split(splitted[0], []byte(elementDelimiter))
-	for _, oneRingPointBytes := range ringPointBytes {
-		if len(oneRingPointBytes) <= 0 {
+	ringPointsStr := strings.Split(splitted[0], elementDelimiter)
+	for _, oneRingPointStr := range ringPointsStr {
+		if oneRingPointStr == "" {
 			continue
 		}
 
-		point, err := fromBytesToPoint(oneRingPointBytes)
+		point, err := fromStringToPoint(oneRingPointStr)
 		if err != nil {
 			return nil, err
 		}
@@ -48,13 +52,13 @@ func (app *voteAdapter) ToVote(input []byte) (Vote, error) {
 	}
 
 	s := []kyber.Scalar{}
-	scalarBytes := bytes.Split(splitted[1], []byte(elementDelimiter))
-	for _, oneScalarBytes := range scalarBytes {
-		if len(oneScalarBytes) <= 0 {
+	sScalarsStr := strings.Split(splitted[1], elementDelimiter)
+	for _, oneScalarStr := range sScalarsStr {
+		if oneScalarStr == "" {
 			continue
 		}
 
-		scalar, err := fromBytesToScalar(oneScalarBytes)
+		scalar, err := fromStringToScalar(oneScalarStr)
 		if err != nil {
 			return nil, err
 		}
@@ -62,7 +66,7 @@ func (app *voteAdapter) ToVote(input []byte) (Vote, error) {
 		s = append(s, scalar)
 	}
 
-	e, err := fromBytesToScalar(splitted[2])
+	e, err := fromStringToScalar(splitted[2])
 	if err != nil {
 		return nil, err
 	}
@@ -70,29 +74,20 @@ func (app *voteAdapter) ToVote(input []byte) (Vote, error) {
 	return createVote(ring, s, e), nil
 }
 
-// ToVerification executes a verification on the vote
-func (app *voteAdapter) ToVerification(
-	vote Vote,
-	msg []byte,
-	pubKeyHashes []hash.Hash,
-) (bool, error) {
-	if !vote.Verify(msg) {
+// ToVerification verifies that the signature is valid and that it contains exactly the same publicKey hashes
+func (app *voteAdapter) ToVerification(sig Vote, msg string, pubKeyHashes []hash.Hash) (bool, error) {
+	if !sig.Verify(msg) {
 		return false, errors.New("the signature could not be validated against the message")
 	}
 
-	ringPubKeys := vote.Ring()
+	ringPubKeys := sig.Ring()
 	if len(pubKeyHashes) != len(ringPubKeys) {
 		str := fmt.Sprintf("the length of the given hashes (%d) do not match the length of the signature's []PublicKey (%d)", len(pubKeyHashes), len(ringPubKeys))
 		return false, errors.New(str)
 	}
 
 	for index, oneRingPubKey := range ringPubKeys {
-		bytes, err := oneRingPubKey.Bytes()
-		if err != nil {
-			return false, err
-		}
-
-		ringPubKeyHash, err := app.hashAdapter.FromBytes(bytes)
+		ringPubKeyHash, err := app.hashAdapter.FromString(oneRingPubKey.String())
 		if err != nil {
 			str := fmt.Sprintf("there was an error while hashing a ring PublicKey: %s", err.Error())
 			return false, errors.New(str)

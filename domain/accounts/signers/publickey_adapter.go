@@ -8,9 +8,9 @@ func createPublicKeyAdapter() PublicKeyAdapter {
 	return &out
 }
 
-// ToPublicKey converts []byte to a publicKey
-func (app *publicKeyAdapter) ToPublicKey(pubKey []byte) (PublicKey, error) {
-	point, err := fromBytesToPoint(pubKey)
+// ToPublicKey converts a string to a publicKey
+func (app *publicKeyAdapter) ToPublicKey(pubKey string) (PublicKey, error) {
+	point, err := fromStringToPoint(pubKey)
 	if err != nil {
 		return nil, err
 	}

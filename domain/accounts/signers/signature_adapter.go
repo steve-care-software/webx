@@ -1,9 +1,10 @@
 package signers
 
 import (
-	"bytes"
+	"encoding/base64"
 	"errors"
 	"fmt"
+	"strings"
 )
 
 type signatureAdapter struct {
@@ -14,20 +15,25 @@ func createSignatureAdapter() SignatureAdapter {
 	return &out
 }
 
-// ToSignature converts bytes to a Signature instance
-func (app *signatureAdapter) ToSignature(sig []byte) (Signature, error) {
-	splitted := bytes.Split(sig, []byte(delimiter))
+// ToSignature converts a string to a Signature instance
+func (app *signatureAdapter) ToSignature(sig string) (Signature, error) {
+	decoded, err := base64.StdEncoding.DecodeString(sig)
+	if err != nil {
+		return nil, err
+	}
+
+	splitted := strings.Split(string(decoded), delimiter)
 	if len(splitted) != 2 {
 		str := fmt.Sprintf("the signature string was expected to have %d sections, %d found", 2, len(splitted))
 		return nil, errors.New(str)
 	}
 
-	point, err := fromBytesToPoint(splitted[0])
+	point, err := fromStringToPoint(splitted[0])
 	if err != nil {
 		return nil, err
 	}
 
-	scalar, err := fromBytesToScalar(splitted[1])
+	scalar, err := fromStringToScalar(splitted[1])
 	if err != nil {
 		return nil, err
 	}

@@ -2,11 +2,12 @@ package signers
 
 import (
 	"bytes"
+	"encoding/hex"
 
 	kyber "go.dedis.ch/kyber/v3"
 )
 
-func createHash(msg []byte) kyber.Scalar {
+func createHash(msg string) kyber.Scalar {
 	sha256 := curve.Hash()
 	sha256.Reset()
 	sha256.Write([]byte(msg))
@@ -14,21 +15,18 @@ func createHash(msg []byte) kyber.Scalar {
 	return curve.Scalar().SetBytes(sha256.Sum(nil))
 }
 
-func genK(x kyber.Scalar, msg []byte) (kyber.Scalar, error) {
-	xBytes, err := x.MarshalBinary()
-	if err != nil {
-		return nil, err
-	}
-
-	combine := []byte{}
-	combine = append(combine, msg...)
-	combine = append(combine, xBytes...)
-	return createHash(combine), nil
+func genK(x kyber.Scalar, msg string) kyber.Scalar {
+	return createHash(msg + x.String())
 }
 
-func fromBytesToScalar(input []byte) (kyber.Scalar, error) {
+func fromStringToScalar(str string) (kyber.Scalar, error) {
+	decoded, decodedErr := hex.DecodeString(str)
+	if decodedErr != nil {
+		return nil, decodedErr
+	}
+
 	x := curve.Scalar()
-	reader := bytes.NewReader(input)
+	reader := bytes.NewReader(decoded)
 	_, err := x.UnmarshalFrom(reader)
 	if err != nil {
 		return nil, err
@@ -37,9 +35,14 @@ func fromBytesToScalar(input []byte) (kyber.Scalar, error) {
 	return x, nil
 }
 
-func fromBytesToPoint(input []byte) (kyber.Point, error) {
+func fromStringToPoint(str string) (kyber.Point, error) {
+	decoded, decodedErr := hex.DecodeString(str)
+	if decodedErr != nil {
+		return nil, decodedErr
+	}
+
 	p := curve.Point()
-	err := p.UnmarshalBinary(input)
+	err := p.UnmarshalBinary(decoded)
 	if err != nil {
 		return nil, err
 	}

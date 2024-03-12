@@ -1,6 +1,9 @@
 package signers
 
 import (
+	"encoding/base64"
+	"fmt"
+
 	kyber "go.dedis.ch/kyber/v3"
 )
 
@@ -10,11 +13,7 @@ type vote struct {
 	e    kyber.Scalar
 }
 
-func createVote(
-	ring []PublicKey,
-	s []kyber.Scalar,
-	e kyber.Scalar,
-) Vote {
+func createVote(ring []PublicKey, s []kyber.Scalar, e kyber.Scalar) Vote {
 	out := vote{
 		ring: ring,
 		s:    s,
@@ -30,7 +29,7 @@ func (app *vote) Ring() []PublicKey {
 }
 
 // Verify verifies if the message has been signed by at least 1 shared signature
-func (app *vote) Verify(msg []byte) bool {
+func (app *vote) Verify(msg string) bool {
 	// random base:
 	g := curve.Point().Base()
 
@@ -42,53 +41,25 @@ func (app *vote) Verify(msg []byte) bool {
 	for i := 0; i < amount; i++ {
 		sg := curve.Point().Mul(app.s[i], g)
 		ep := curve.Point().Mul(e, app.ring[i].Point())
-		added, err := curve.Point().Add(sg, ep).MarshalBinary()
-		if err != nil {
-			return false
-		}
-
-		combine := []byte{}
-		combine = append(combine, msg...)
-		combine = append(combine, added...)
+		added := curve.Point().Add(sg, ep)
+		e = createHash(msg + added.String())
 	}
 
 	return app.e.Equal(e)
 }
 
-// Bytes returns the string representation of the vote
-func (app *vote) Bytes() ([]byte, error) {
-	ringBytes := []byte{}
+// String returns the string representation of the ring signature
+func (app *vote) String() string {
+	ringStr := ""
 	for _, onePubKey := range app.ring {
-		onePubKeyBytes, err := onePubKey.Bytes()
-		if err != nil {
-			return nil, err
-		}
-
-		ringBytes = append(ringBytes, onePubKeyBytes...)
-		ringBytes = append(ringBytes, []byte(elementDelimiter)...)
+		ringStr = fmt.Sprintf("%s%s%s", ringStr, onePubKey.String(), elementDelimiter)
 	}
 
-	scalarBytes := []byte{}
+	sScalarStr := ""
 	for _, oneScalar := range app.s {
-		oneScalarBytes, err := oneScalar.MarshalBinary()
-		if err != nil {
-			return nil, err
-		}
-
-		scalarBytes = append(scalarBytes, oneScalarBytes...)
-		scalarBytes = append(scalarBytes, []byte(elementDelimiter)...)
+		sScalarStr = fmt.Sprintf("%s%s%s", sScalarStr, oneScalar.String(), elementDelimiter)
 	}
 
-	eBytes, err := app.e.MarshalBinary()
-	if err != nil {
-		return nil, err
-	}
-
-	output := []byte{}
-	output = append(output, ringBytes...)
-	output = append(output, []byte(delimiter)...)
-	output = append(output, scalarBytes...)
-	output = append(output, []byte(delimiter)...)
-	output = append(output, eBytes...)
-	return output, nil
+	str := fmt.Sprintf("%s%s%s%s%s", ringStr, delimiter, sScalarStr, delimiter, app.e.String())
+	return base64.StdEncoding.EncodeToString([]byte(str))
 }

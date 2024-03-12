@@ -43,7 +43,7 @@ func (app *application) Execute(frame stacks.Frame, assignable votes.Vote) (stac
 		return nil, err
 	}
 
-	vote, err := account.Signer().Vote(message, ring)
+	vote, err := account.Signer().Vote(string(message), ring)
 	if err != nil {
 		return nil, err
 	}

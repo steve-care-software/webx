@@ -37,7 +37,7 @@ func (app *application) Execute(frame stacks.Frame, assignable signs.Sign) (stac
 		return nil, err
 	}
 
-	sig, err := account.Signer().Sign(message)
+	sig, err := account.Signer().Sign(string(message))
 	if err != nil {
 		return nil, err
 	}

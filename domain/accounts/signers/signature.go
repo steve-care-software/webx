@@ -1,7 +1,9 @@
 package signers
 
 import (
+	"encoding/base64"
 	"errors"
+	"fmt"
 	"math/rand"
 	"strconv"
 
@@ -23,53 +25,34 @@ func createSignature(r PublicKey, s kyber.Scalar) (Signature, error) {
 }
 
 // PublicKey returns the public key of the signature
-func (app *signature) PublicKey(msg []byte) (PublicKey, error) {
+func (app *signature) PublicKey(msg string) PublicKey {
 	// Create a generator.
 	g := curve.Point().Base()
 
 	// e = Hash(m || r)
-	pubKeyBytes, err := app.r.Bytes()
-	if err != nil {
-		return nil, err
-	}
-
-	combine := []byte{}
-	combine = append(combine, []byte(msg)...)
-	combine = append(combine, pubKeyBytes...)
-	e := createHash(combine)
+	e := createHash(msg + app.r.String())
 
 	// y = (r - s * G) * (1 / e)
 	y := curve.Point().Sub(app.r.Point(), curve.Point().Mul(app.s, g))
 	y = curve.Point().Mul(curve.Scalar().Div(curve.Scalar().One(), e), y)
 
-	return createPublicKey(y), nil
+	return createPublicKey(y)
 }
 
 // Verify verifies if the signature has been made by the given public key
 func (app *signature) Verify() bool {
 
 	// generate a message:
-	msg := []byte(strconv.Itoa(rand.Int()))
+	msg := strconv.Itoa(rand.Int())
 
 	// retrieve pubKey:
-	p, err := app.PublicKey(msg)
-	if err != nil {
-		return false
-	}
+	p := app.PublicKey(msg)
 
 	// Create a generator.
 	g := curve.Point().Base()
 
 	// e = Hash(m || r)
-	pubKeyBytes, err := app.r.Bytes()
-	if err != nil {
-		return false
-	}
-
-	combine := []byte{}
-	combine = append(combine, []byte(msg)...)
-	combine = append(combine, pubKeyBytes...)
-	e := createHash(combine)
+	e := createHash(msg + app.r.String())
 
 	// Attempt to reconstruct 's * G' with a provided signature; s * G = r - e * p
 	sGv := curve.Point().Sub(app.r.Point(), curve.Point().Mul(e, p.Point()))
@@ -81,21 +64,8 @@ func (app *signature) Verify() bool {
 	return sG.Equal(sGv)
 }
 
-// Bytes returns the bytes representation of the signature
-func (app *signature) Bytes() ([]byte, error) {
-	pubKeyBytes, err := app.r.Bytes()
-	if err != nil {
-		return nil, err
-	}
-
-	sBytes, err := app.s.MarshalBinary()
-	if err != nil {
-		return nil, err
-	}
-
-	output := []byte{}
-	output = append(output, pubKeyBytes...)
-	output = append(output, []byte(delimiter)...)
-	output = append(output, sBytes...)
-	return output, nil
+// String returns the string representation of the signature
+func (app *signature) String() string {
+	str := fmt.Sprintf("%s%s%s", app.r.String(), delimiter, app.s.String())
+	return base64.StdEncoding.EncodeToString([]byte(str))
 }

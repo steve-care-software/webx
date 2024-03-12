@@ -10,15 +10,11 @@ func TestPublicKey_Success(t *testing.T) {
 
 	// execute:
 	pKey := createPublicKey(p)
-	pubKeyBytes, err := pKey.Bytes()
-	if err != nil {
-		t.Errorf("the returned error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
+	pubKeyStr := pKey.String()
+	samePubKey, samePubKeyErr := NewPublicKeyAdapter().ToPublicKey(pubKeyStr)
 
-	samePubKey, err := NewPublicKeyAdapter().ToPublicKey(pubKeyBytes)
-	if err != nil {
-		t.Errorf("the returned error was expected to be nil, error returned: %s", err.Error())
+	if samePubKeyErr != nil {
+		t.Errorf("the returned error was expected to be nil, error returned: %s", samePubKeyErr.Error())
 		return
 	}
 

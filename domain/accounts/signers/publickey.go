@@ -26,7 +26,7 @@ func (obj *publicKey) Equals(pubKey PublicKey) bool {
 	return obj.p.Equal(pubKey.Point())
 }
 
-// Bytes returns the bytes representation of the public key
-func (obj *publicKey) Bytes() ([]byte, error) {
-	return obj.p.MarshalBinary()
+// String returns the string representation of the public key
+func (obj *publicKey) String() string {
+	return obj.p.String()
 }

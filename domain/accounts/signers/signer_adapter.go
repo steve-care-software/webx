@@ -8,9 +8,9 @@ func createAdapter() Adapter {
 	return &out
 }
 
-// ToSigner converts bytes to a Signer instance
-func (app *adapter) ToSigner(pk []byte) (Signer, error) {
-	scalar, err := fromBytesToScalar(pk)
+// ToSigner converts a string to a signer instance
+func (app *adapter) ToSigner(pk string) (Signer, error) {
+	scalar, err := fromStringToScalar(pk)
 	if err != nil {
 		return nil, err
 	}

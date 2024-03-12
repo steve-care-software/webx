@@ -1,13 +1,12 @@
 package signers
 
 import (
-	"bytes"
 	"testing"
 )
 
 func TestSignature_Success(t *testing.T) {
 	// variables:
-	msg := []byte("this is a message to sign")
+	msg := "this is a message to sign"
 	pk := NewFactory().Create()
 
 	// create the signature:
@@ -18,11 +17,7 @@ func TestSignature_Success(t *testing.T) {
 	}
 
 	// derive a PublicKey from the signature:
-	derivedPubKey, err := sig.PublicKey(msg)
-	if err != nil {
-		t.Errorf("the returned error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
+	derivedPubKey := sig.PublicKey(msg)
 
 	// make sure the original PublicKey and the derived PublicKey are the same:
 	if !pk.PublicKey().Equals(derivedPubKey) {
@@ -37,26 +32,15 @@ func TestSignature_Success(t *testing.T) {
 	}
 
 	// convert back and forth to string:
-	sigBytes, err := sig.Bytes()
+	sigStr := sig.String()
+	newSig, err := NewSignatureAdapter().ToSignature(sigStr)
 	if err != nil {
 		t.Errorf("the returned error was expected to be nil, error returned: %s", err.Error())
 		return
 	}
 
-	newSig, err := NewSignatureAdapter().ToSignature(sigBytes)
-	if err != nil {
-		t.Errorf("the returned error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	newSigBytes, err := newSig.Bytes()
-	if err != nil {
-		t.Errorf("the returned error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	if !bytes.Equal(sigBytes, newSigBytes) {
-		t.Errorf("the signatures were expected to be the same.  Expected: %s, Actual: %s", sigBytes, newSigBytes)
+	if sigStr != newSig.String() {
+		t.Errorf("the signatures were expected to be the same.  Expected: %s, Actual: %s", sigStr, newSig.String())
 		return
 	}
 
