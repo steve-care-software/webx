@@ -10,25 +10,31 @@ type application struct {
 }
 
 // Execute executes the application
-func (app *application) Execute(frame stacks.Frame, assignable decrypts.Decrypt) (stacks.Assignable, error) {
+func (app *application) Execute(frame stacks.Frame, assignable decrypts.Decrypt) (stacks.Assignable, *uint, error) {
 	cipherVar := assignable.Cipher()
 	cipher, err := frame.FetchBytes(cipherVar)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	accountVar := assignable.Account()
 	account, err := frame.FetchAccount(accountVar)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	result, err := account.Encryptor().Decrypt(cipher)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return app.assignableBuilder.Create().
+	ins, err := app.assignableBuilder.Create().
 		WithBytes(result).
 		Now()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, nil, nil
 }

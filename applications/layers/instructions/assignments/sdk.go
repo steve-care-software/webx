@@ -7,5 +7,5 @@ import (
 
 // Application represents an execution account application
 type Application interface {
-	Execute(frame stacks.Frame, assignment assignments.Assignment) (stacks.Assignment, error)
+	Execute(frame stacks.Frame, assignment assignments.Assignment) (stacks.Assignment, *uint, error)
 }

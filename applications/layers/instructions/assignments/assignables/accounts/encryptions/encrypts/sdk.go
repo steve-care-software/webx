@@ -7,5 +7,5 @@ import (
 
 // Application represents an execution account application
 type Application interface {
-	Execute(frame stacks.Frame, assignable encrypts.Encrypt) (stacks.Assignable, error)
+	Execute(frame stacks.Frame, assignable encrypts.Encrypt) (stacks.Assignable, *uint, error)
 }

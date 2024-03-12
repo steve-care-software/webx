@@ -24,18 +24,18 @@ func createApplication(
 }
 
 // Execute executes the application
-func (app *application) Execute(frame stacks.Frame, assignable compilers.Compiler) (stacks.Assignable, error) {
+func (app *application) Execute(frame stacks.Frame, assignable compilers.Compiler) (stacks.Assignable, *uint, error) {
 	builder := app.assignableBuilder.Create()
 	if assignable.IsCompile() {
 		comVar := assignable.Compile()
 		data, err := frame.FetchBytes(comVar)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		ins, err := app.instanceAdapter.ToInstance(data)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		builder.WithInstance(ins)
@@ -45,16 +45,21 @@ func (app *application) Execute(frame stacks.Frame, assignable compilers.Compile
 		decVar := assignable.Decompile()
 		ins, err := frame.FetchInstance(decVar)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		data, err := app.instanceAdapter.ToData(ins)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		builder.WithBytes(data)
 	}
 
-	return builder.Now()
+	ins, err := builder.Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, nil, nil
 }

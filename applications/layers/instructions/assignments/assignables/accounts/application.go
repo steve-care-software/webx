@@ -44,18 +44,18 @@ func createApplication(
 }
 
 // Execute executes the application
-func (app *application) Execute(frame stacks.Frame, assignable assignables_accounts.Account) (stacks.Assignable, error) {
+func (app *application) Execute(frame stacks.Frame, assignable assignables_accounts.Account) (stacks.Assignable, *uint, error) {
 	builder := app.assignableBuilder.Create()
 	if assignable.IsList() {
 		variable := assignable.List()
 		password, err := frame.FetchBytes(variable)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		strList, err := app.repository.List(password)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		builder = builder.WithStringList(strList)
@@ -83,8 +83,8 @@ func (app *application) Execute(frame stacks.Frame, assignable assignables_accou
 
 	ins, err := builder.Now()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return ins, err
+	return ins, nil, nil
 }

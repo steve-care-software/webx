@@ -40,7 +40,7 @@ func createApplication(
 }
 
 // Execute executes the application
-func (app *application) Execute(frame stacks.Frame, assignable assignables.Assignable) (stacks.Assignable, error) {
+func (app *application) Execute(frame stacks.Frame, assignable assignables.Assignable) (stacks.Assignable, *uint, error) {
 	if assignable.IsBytes() {
 		bytesIns := assignable.Bytes()
 		return app.execBytesApp.Execute(frame, bytesIns)
@@ -67,7 +67,13 @@ func (app *application) Execute(frame stacks.Frame, assignable assignables.Assig
 	}
 
 	query := assignable.Query()
-	return app.assignableBuilder.Create().
+	ins, err := app.assignableBuilder.Create().
 		WithQuery(query).
 		Now()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, nil, nil
 }

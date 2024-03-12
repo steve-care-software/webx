@@ -24,28 +24,28 @@ func createApplication(
 }
 
 // Execute executes the application
-func (app *application) Execute(frame stacks.Frame, assignable votes.Vote) (stacks.Assignable, error) {
+func (app *application) Execute(frame stacks.Frame, assignable votes.Vote) (stacks.Assignable, *uint, error) {
 	messageVar := assignable.Message()
 	message, err := frame.FetchBytes(messageVar)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	ringVar := assignable.Ring()
 	ring, err := frame.FetchRing(ringVar)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	accountVar := assignable.Account()
 	account, err := frame.FetchAccount(accountVar)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	vote, err := account.Signer().Vote(string(message), ring)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	retStackAccount, err := app.accountBuilder.Create().
@@ -53,11 +53,17 @@ func (app *application) Execute(frame stacks.Frame, assignable votes.Vote) (stac
 		Now()
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return app.assignableBuilder.Create().
+	ins, err := app.assignableBuilder.Create().
 		WithAccount(retStackAccount).
 		Now()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, nil, nil
 
 }

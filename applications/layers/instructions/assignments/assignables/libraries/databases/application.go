@@ -25,7 +25,7 @@ func createApplication(
 }
 
 // Execute executes the application
-func (app *application) Execute(frame stacks.Frame, assignable databases.Database) (stacks.Assignable, error) {
+func (app *application) Execute(frame stacks.Frame, assignable databases.Database) (stacks.Assignable, *uint, error) {
 	if assignable.IsRepository() {
 		repository := assignable.Repository()
 		return app.execRepositoryApp.Execute(frame, repository)

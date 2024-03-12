@@ -28,22 +28,22 @@ func createApplication(
 }
 
 // Execute executes the application
-func (app *application) Execute(frame stacks.Frame, assignable retrieves.Retrieve) (stacks.Assignable, error) {
+func (app *application) Execute(frame stacks.Frame, assignable retrieves.Retrieve) (stacks.Assignable, *uint, error) {
 	passVar := assignable.Password()
 	password, err := frame.FetchBytes(passVar)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	credVar := assignable.Credentials()
 	credentials, err := frame.FetchCredentials(credVar)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	accountIns, err := app.repository.Retrieve(password, credentials)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	account, err := app.accountBuilder.Create().
@@ -51,10 +51,16 @@ func (app *application) Execute(frame stacks.Frame, assignable retrieves.Retriev
 		Now()
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return app.assignableBuilder.Create().
+	ins, err := app.assignableBuilder.Create().
 		WithAccount(account).
 		Now()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, nil, nil
 }

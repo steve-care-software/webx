@@ -163,7 +163,7 @@ func (app *application) instruction(idx uint, stack stacks.Stack, instruction in
 		database := instruction.Database()
 		pCode, err := app.execDatabaseApp.Execute(frame, database)
 		if err != nil {
-			return false, nil, nil, err
+			// log
 		}
 
 		if pCode != nil {
@@ -179,9 +179,22 @@ func (app *application) instruction(idx uint, stack stacks.Stack, instruction in
 	}
 
 	assignment := instruction.Assignment()
-	retAssignment, err := app.execAssignmentApp.Execute(frame, assignment)
+	retAssignment, pCode, err := app.execAssignmentApp.Execute(frame, assignment)
 	if err != nil {
 		return true, nil, nil, err
+	}
+
+	if err != nil {
+		// log
+	}
+
+	if pCode != nil {
+		failure, err := app.failureBuilder.Create().WithIndex(idx).WithCode(*pCode).Now()
+		if err != nil {
+			return false, nil, nil, err
+		}
+
+		return false, stack, failure, nil
 	}
 
 	assignmentsList := []stacks.Assignment{}

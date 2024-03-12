@@ -24,16 +24,26 @@ func createApplication(
 }
 
 // Execute executes the application
-func (app *application) Execute(frame stacks.Frame, assignment assignments.Assignment) (stacks.Assignment, error) {
+func (app *application) Execute(frame stacks.Frame, assignment assignments.Assignment) (stacks.Assignment, *uint, error) {
 	assignable := assignment.Assignable()
-	retAssignable, err := app.execAssignableApp.Execute(frame, assignable)
+	retAssignable, pCode, err := app.execAssignableApp.Execute(frame, assignable)
 	if err != nil {
-		return nil, err
+		return nil, pCode, err
+	}
+
+	if pCode != nil {
+		return nil, pCode, nil
 	}
 
 	name := assignment.Name()
-	return app.assignmentBuilder.Create().
+	ins, err := app.assignmentBuilder.Create().
 		WithName(name).
 		WithAssignable(retAssignable).
 		Now()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, nil, nil
 }

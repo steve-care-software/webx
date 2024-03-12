@@ -24,25 +24,31 @@ func createApplication(
 }
 
 // Execute executes the application
-func (app *application) Execute(frame stacks.Frame, assignable encrypts.Encrypt) (stacks.Assignable, error) {
+func (app *application) Execute(frame stacks.Frame, assignable encrypts.Encrypt) (stacks.Assignable, *uint, error) {
 	msgVar := assignable.Message()
 	message, err := frame.FetchBytes(msgVar)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	passVar := assignable.Password()
 	password, err := frame.FetchBytes(passVar)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	cipher, err := app.encryptor.Encrypt(message, password)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return app.assignableBuilder.Create().
+	ins, err := app.assignableBuilder.Create().
 		WithBytes(cipher).
 		Now()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, nil, nil
 }

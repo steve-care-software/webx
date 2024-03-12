@@ -26,7 +26,7 @@ func createApplication(
 }
 
 // Execute executes the application
-func (app *application) Execute(frame stacks.Frame, assignable assignable_bytes.Bytes) (stacks.Assignable, error) {
+func (app *application) Execute(frame stacks.Frame, assignable assignable_bytes.Bytes) (stacks.Assignable, *uint, error) {
 	builder := app.assignableBuilder.Create()
 	if assignable.IsJoin() {
 		output := []byte{}
@@ -34,7 +34,7 @@ func (app *application) Execute(frame stacks.Frame, assignable assignable_bytes.
 		for _, oneVariable := range variables {
 			data, err := frame.FetchBytes(oneVariable)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 
 			output = append(output, data...)
@@ -50,7 +50,7 @@ func (app *application) Execute(frame stacks.Frame, assignable assignable_bytes.
 		for _, oneVariable := range variables {
 			data, err := frame.FetchBytes(oneVariable)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 
 			if lastBytes == nil {
@@ -71,16 +71,21 @@ func (app *application) Execute(frame stacks.Frame, assignable assignable_bytes.
 		variable := assignable.HashBytes()
 		data, err := frame.FetchBytes(variable)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		pHash, err := app.hashAdapter.FromBytes(data)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		builder.WithHash(*pHash)
 	}
 
-	return builder.Now()
+	ins, err := builder.Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, nil, nil
 }

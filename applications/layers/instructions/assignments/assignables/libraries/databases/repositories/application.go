@@ -28,7 +28,7 @@ func createApplication(
 }
 
 // Execute executes the application
-func (app *application) Execute(frame stacks.Frame, assignable repositories.Repository) (stacks.Assignable, error) {
+func (app *application) Execute(frame stacks.Frame, assignable repositories.Repository) (stacks.Assignable, *uint, error) {
 	builder := app.assignableBuilder.Create()
 	if assignable.IsSkeleton() {
 		builder.WithSkeleton(app.skeleton)
@@ -37,7 +37,7 @@ func (app *application) Execute(frame stacks.Frame, assignable repositories.Repo
 	if assignable.IsHeight() {
 		height, err := app.repository.Height()
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		builder.WithUnsignedInt(height)
@@ -47,12 +47,12 @@ func (app *application) Execute(frame stacks.Frame, assignable repositories.Repo
 		listVar := assignable.List()
 		query, err := frame.FetchQuery(listVar)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		retHashList, err := app.repository.List(query)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		builder.WithHashList(retHashList)
@@ -63,16 +63,21 @@ func (app *application) Execute(frame stacks.Frame, assignable repositories.Repo
 		retrieveVar := assignable.Retrieve()
 		query, err := frame.FetchQuery(retrieveVar)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		retIns, err := app.repository.Retrieve(query)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		builder.WithInstance(retIns)
 	}
 
-	return builder.Now()
+	ins, err := builder.Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, nil, nil
 }

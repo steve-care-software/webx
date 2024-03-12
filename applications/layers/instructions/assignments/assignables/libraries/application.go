@@ -25,7 +25,7 @@ func createApplication(
 }
 
 // Execute executes the application
-func (app *application) Execute(frame stacks.Frame, assignable libraries.Library) (stacks.Assignable, error) {
+func (app *application) Execute(frame stacks.Frame, assignable libraries.Library) (stacks.Assignable, *uint, error) {
 	if assignable.IsCompiler() {
 		compiler := assignable.Compiler()
 		return app.execCompilerApp.Execute(frame, compiler)

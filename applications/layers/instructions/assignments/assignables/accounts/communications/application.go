@@ -36,7 +36,7 @@ func createApplication(
 }
 
 // Execute executes the application
-func (app *application) Execute(frame stacks.Frame, assignable communications.Communication) (stacks.Assignable, error) {
+func (app *application) Execute(frame stacks.Frame, assignable communications.Communication) (stacks.Assignable, *uint, error) {
 	if assignable.IsSign() {
 		sign := assignable.Sign()
 		return app.execSignApp.Execute(frame, sign)
@@ -53,7 +53,7 @@ func (app *application) Execute(frame stacks.Frame, assignable communications.Co
 		amountVariable := assignable.GenerateRing()
 		pAmount, err := frame.FetchUnsignedInt(amountVariable)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		casted := int(*pAmount)
@@ -64,11 +64,16 @@ func (app *application) Execute(frame stacks.Frame, assignable communications.Co
 
 		account, err := app.accountBuilder.Create().WithRing(ring).Now()
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		builder.WithAccount(account)
 	}
 
-	return builder.Now()
+	ins, err := builder.Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, nil, nil
 }

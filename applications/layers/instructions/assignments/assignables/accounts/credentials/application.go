@@ -28,17 +28,17 @@ func createApplication(
 }
 
 // Execute executes the application
-func (app *application) Execute(frame stacks.Frame, assignable credentials.Credentials) (stacks.Assignable, error) {
+func (app *application) Execute(frame stacks.Frame, assignable credentials.Credentials) (stacks.Assignable, *uint, error) {
 	userVar := assignable.Username()
 	userBytes, err := frame.FetchBytes(userVar)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	passVar := assignable.Password()
 	password, err := frame.FetchBytes(passVar)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	username := string(userBytes)
@@ -48,7 +48,7 @@ func (app *application) Execute(frame stacks.Frame, assignable credentials.Crede
 		Now()
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	account, err := app.accountBuilder.Create().
@@ -56,10 +56,16 @@ func (app *application) Execute(frame stacks.Frame, assignable credentials.Crede
 		Now()
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return app.assignableBuilder.Create().
+	ins, err := app.assignableBuilder.Create().
 		WithAccount(account).
 		Now()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, nil, nil
 }

@@ -24,16 +24,21 @@ func createApplication(
 }
 
 // Execute executes the application
-func (app *application) Execute(frame stacks.Frame, assignable services.Service) (stacks.Assignable, error) {
+func (app *application) Execute(frame stacks.Frame, assignable services.Service) (stacks.Assignable, *uint, error) {
 	builder := app.assignableBuilder.Create()
 	if assignable.IsBegin() {
 		context, err := app.service.Begin()
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		builder.WithUnsignedInt(context)
 	}
 
-	return builder.Now()
+	ins, err := builder.Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, nil, nil
 }

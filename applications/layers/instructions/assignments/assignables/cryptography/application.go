@@ -25,7 +25,7 @@ func createApplication(
 }
 
 // Execute executes the application
-func (app *application) Execute(frame stacks.Frame, assignable cryptography.Cryptography) (stacks.Assignable, error) {
+func (app *application) Execute(frame stacks.Frame, assignable cryptography.Cryptography) (stacks.Assignable, *uint, error) {
 	if assignable.IsDecrypt() {
 		decrypt := assignable.Decrypt()
 		return app.execDecryptApp.Execute(frame, decrypt)
