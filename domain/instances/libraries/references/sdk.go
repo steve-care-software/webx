@@ -4,6 +4,22 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
+// NewReferenceBuilder creates a new reference builder
+func NewReferenceBuilder() ReferenceBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createReferenceBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder represents an references builder
 type Builder interface {
 	Create() Builder
@@ -15,13 +31,13 @@ type Builder interface {
 type References interface {
 	Hash() hash.Hash
 	List() []Reference
-	Retrieve(name string) (Reference, error)
+	Fetch(name string) (Reference, error)
 }
 
 // ReferenceBuilder represents an reference builder
 type ReferenceBuilder interface {
 	Create() ReferenceBuilder
-	WithVariable(variale string) ReferenceBuilder
+	WithVariable(variable string) ReferenceBuilder
 	WithIdentifier(identifier hash.Hash) ReferenceBuilder
 	Now() (Reference, error)
 }
