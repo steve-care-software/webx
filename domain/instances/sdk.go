@@ -35,7 +35,7 @@ type Repository interface {
 	List(query queries.Query) ([]hash.Hash, error)
 
 	// Exists returns true if the instance exists, false otherwise
-	Exists(path []string, hash hash.Hash) (bool, error)
+	Exists(path []string, hash hash.Hash) bool
 
 	// Retrieve returns the instance by query
 	Retrieve(query queries.Query) (Instance, error)

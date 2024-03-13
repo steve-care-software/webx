@@ -98,9 +98,11 @@ func NewInstanceRepository(
 // NewInstanceService creates a new instance service
 func NewInstanceService(
 	pBeginContext *uint,
+	fails bool,
 ) instances.Service {
 	return createInstanceService(
 		pBeginContext,
+		fails,
 	)
 }
 

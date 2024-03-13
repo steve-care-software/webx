@@ -105,4 +105,28 @@ const (
 
 	// CouldNotFetchQueryFromFrame represents a could not fetch query from frame
 	CouldNotFetchQueryFromFrame
+
+	// CouldNotCancelInDatabase represents a could not cancel in database service
+	CouldNotCancelInDatabase
+
+	// CouldNotCommitInDatabase represents a could not commit in database service
+	CouldNotCommitInDatabase
+
+	// CouldNotFetchIndexFromFrame could not fetch index from frame
+	CouldNotFetchIndexFromFrame
+
+	// CouldNotRevertToIndexInDatabase could not revert to index in database service
+	CouldNotRevertToIndexInDatabase
+
+	// CouldNotRevertInDatabase could not revert in database service
+	CouldNotRevertInDatabase
+
+	// CouldNotFetchInstanceFromFrame could not fetch instance from frame
+	CouldNotFetchInstanceFromFrame
+
+	// CouldNotInsertInDatabase could not insert in database service
+	CouldNotInsertInDatabase
+
+	// CouldNotDeleteFromDatabase could not delete from database service
+	CouldNotDeleteFromDatabase
 )

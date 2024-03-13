@@ -1,6 +1,7 @@
 package reverts
 
 import (
+	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/databases/reverts"
 	"github.com/steve-care-software/datastencil/domain/stacks"
@@ -26,12 +27,14 @@ func (app *application) Execute(frame stacks.Frame, instruction reverts.Revert) 
 		indexVar := instruction.Index()
 		pIndex, err := frame.FetchUnsignedInt(indexVar)
 		if err != nil {
-
+			code := failures.CouldNotFetchIndexFromFrame
+			return &code, err
 		}
 
 		err = app.service.RevertToIndex(*pIndex)
 		if err != nil {
-			return nil, err
+			code := failures.CouldNotRevertToIndexInDatabase
+			return &code, err
 		}
 
 		return nil, nil
@@ -39,7 +42,8 @@ func (app *application) Execute(frame stacks.Frame, instruction reverts.Revert) 
 
 	err := app.service.Revert()
 	if err != nil {
-		return nil, err
+		code := failures.CouldNotRevertInDatabase
+		return &code, err
 	}
 
 	return nil, nil

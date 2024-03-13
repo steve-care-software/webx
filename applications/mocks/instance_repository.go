@@ -44,8 +44,13 @@ func (app *instanceRepository) List(query queries.Query) ([]hash.Hash, error) {
 }
 
 // Exists returns true if the instance exists, false otherwise
-func (app *instanceRepository) Exists(path []string, hash hash.Hash) (bool, error) {
-	return false, nil
+func (app *instanceRepository) Exists(path []string, hash hash.Hash) bool {
+	_, err := app.RetrieveByPathAndHash(path, hash)
+	if err != nil {
+		return false
+	}
+
+	return true
 }
 
 // Retrieve returns the instance by query
@@ -54,10 +59,14 @@ func (app *instanceRepository) Retrieve(query queries.Query) (instances.Instance
 		return ins, nil
 	}
 
-	return nil, errors.New("the Query is invalid")
+	return nil, errors.New("the Retrieve was requested to fail")
 }
 
 // RetrieveByPathAndHash returns the instance by path and hash
 func (app *instanceRepository) RetrieveByPathAndHash(path []string, hash hash.Hash) (instances.Instance, error) {
-	return nil, nil
+	if ins, ok := app.instances[hash.String()]; ok {
+		return ins, nil
+	}
+
+	return nil, errors.New("the RetrieveByPathAndHash was requested to fail")
 }

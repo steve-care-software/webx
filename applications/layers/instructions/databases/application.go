@@ -1,9 +1,9 @@
 package databases
 
 import (
-	"github.com/steve-care-software/datastencil/applications/layers/instructions/databases/deletes"
-	"github.com/steve-care-software/datastencil/applications/layers/instructions/databases/inserts"
-	"github.com/steve-care-software/datastencil/applications/layers/instructions/databases/reverts"
+	application_deletes "github.com/steve-care-software/datastencil/applications/layers/instructions/databases/deletes"
+	application_inserts "github.com/steve-care-software/datastencil/applications/layers/instructions/databases/inserts"
+	application_reverts "github.com/steve-care-software/datastencil/applications/layers/instructions/databases/reverts"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/databases"
@@ -11,25 +11,22 @@ import (
 )
 
 type application struct {
-	execDeleteApp deletes.Application
-	execInsertApp inserts.Application
-	execRevertApp reverts.Application
-	repository    instances.Repository
+	execDeleteApp application_deletes.Application
+	execInsertApp application_inserts.Application
+	execRevertApp application_reverts.Application
 	service       instances.Service
 }
 
 func createApplication(
-	execDeleteApp deletes.Application,
-	execInsertApp inserts.Application,
-	execRevertApp reverts.Application,
-	repository instances.Repository,
+	execDeleteApp application_deletes.Application,
+	execInsertApp application_inserts.Application,
+	execRevertApp application_reverts.Application,
 	service instances.Service,
 ) Application {
 	out := application{
 		execDeleteApp: execDeleteApp,
 		execInsertApp: execInsertApp,
 		execRevertApp: execRevertApp,
-		repository:    repository,
 		service:       service,
 	}
 
@@ -63,14 +60,15 @@ func (app *application) Execute(frame stacks.Frame, instruction databases.Databa
 
 		err = app.service.Commit(*pContext)
 		if err != nil {
-			return nil, err
+			code := failures.CouldNotCommitInDatabase
+			return &code, err
 		}
 
 		return nil, nil
 	}
 
-	commitVar := instruction.Cancel()
-	pContext, err := frame.FetchUnsignedInt(commitVar)
+	cancelVar := instruction.Cancel()
+	pContext, err := frame.FetchUnsignedInt(cancelVar)
 	if err != nil {
 		code := failures.CouldNotFetchContextFromFrame
 		return &code, err
@@ -78,7 +76,8 @@ func (app *application) Execute(frame stacks.Frame, instruction databases.Databa
 
 	err = app.service.Cancel(*pContext)
 	if err != nil {
-		return nil, err
+		code := failures.CouldNotCancelInDatabase
+		return &code, err
 	}
 
 	return nil, nil

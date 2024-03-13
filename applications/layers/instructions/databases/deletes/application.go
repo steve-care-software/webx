@@ -1,6 +1,10 @@
 package deletes
 
 import (
+	"errors"
+	"fmt"
+	"strings"
+
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/databases/deletes"
@@ -47,19 +51,18 @@ func (app *application) Execute(frame stacks.Frame, instruction deletes.Delete) 
 		return &code, err
 	}
 
-	exists, err := app.repository.Exists(path, hash)
-	if err != nil {
-		return nil, err
-	}
-
+	exists := app.repository.Exists(path, hash)
 	if !exists {
 		code := failures.InstanceDoesNotExistsInDatabase
-		return &code, err
+		pathStr := strings.Join(path, "/")
+		str := fmt.Sprintf("the instance (path: %s, hash: %s) does not exists in database", pathStr, hash.String())
+		return &code, errors.New(str)
 	}
 
 	err = app.service.Delete(*pContext, path, hash)
 	if err != nil {
-		return nil, err
+		code := failures.CouldNotDeleteFromDatabase
+		return &code, err
 	}
 
 	return nil, nil

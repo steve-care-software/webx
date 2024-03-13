@@ -78,6 +78,7 @@ func TestExecute_Success(t *testing.T) {
 	context := uint(33)
 	instanceService := mocks.NewInstanceService(
 		&context,
+		false,
 	)
 
 	encryptor := mocks.NewEncryptor(
@@ -193,6 +194,7 @@ func TestExecute_isMistake_returnsError(t *testing.T) {
 	context := uint(33)
 	instanceService := mocks.NewInstanceService(
 		&context,
+		false,
 	)
 
 	encryptor := mocks.NewEncryptor(
