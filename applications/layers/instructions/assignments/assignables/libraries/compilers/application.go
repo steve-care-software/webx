@@ -1,6 +1,7 @@
 package compilers
 
 import (
+	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/libraries/compilers"
 	"github.com/steve-care-software/datastencil/domain/stacks"
@@ -30,12 +31,14 @@ func (app *application) Execute(frame stacks.Frame, assignable compilers.Compile
 		comVar := assignable.Compile()
 		data, err := frame.FetchBytes(comVar)
 		if err != nil {
-			return nil, nil, err
+			code := failures.CouldNotFetchCompileFromFrame
+			return nil, &code, err
 		}
 
 		ins, err := app.instanceAdapter.ToInstance(data)
 		if err != nil {
-			return nil, nil, err
+			code := failures.CouldNotCompileBytesToInstance
+			return nil, &code, err
 		}
 
 		builder.WithInstance(ins)
@@ -45,12 +48,14 @@ func (app *application) Execute(frame stacks.Frame, assignable compilers.Compile
 		decVar := assignable.Decompile()
 		ins, err := frame.FetchInstance(decVar)
 		if err != nil {
-			return nil, nil, err
+			code := failures.CouldNotFetchDecompileFromFrame
+			return nil, &code, err
 		}
 
 		data, err := app.instanceAdapter.ToData(ins)
 		if err != nil {
-			return nil, nil, err
+			code := failures.CouldNotDecompileInstanceToBytes
+			return nil, &code, err
 		}
 
 		builder.WithBytes(data)

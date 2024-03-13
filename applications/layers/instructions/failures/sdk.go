@@ -75,4 +75,16 @@ const (
 
 	// CouldNotFetchHashVariableFromFrame represents a could not fetch a hash variable from frame
 	CouldNotFetchHashVariableFromFrame
+
+	// CouldNotFetchCompileFromFrame represents a could not fetch a compile from frame
+	CouldNotFetchCompileFromFrame
+
+	// CouldNotFetchDecompileFromFrame represents a could not fetch a decompile from frame
+	CouldNotFetchDecompileFromFrame
+
+	// CouldNotCompileBytesToInstance represents a could not compile bytes to instance
+	CouldNotCompileBytesToInstance
+
+	// CouldNotDecompileInstanceToBytes represents a could not fetch a decompile instance to bytes
+	CouldNotDecompileInstanceToBytes
 )
