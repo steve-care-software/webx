@@ -29,7 +29,7 @@ func TestExecute_withCompile_compileExistsInFrame_adapterSucceeds_Success(t *tes
 	)
 
 	instruction := compilers.NewCompilerWithCompileForTests(compileVar)
-	insatnceAdapter := mocks.NewInstanceAdapter(
+	instanceAdapter := mocks.NewInstanceAdapter(
 		map[string][]byte{},
 		map[string]instances.Instance{
 			string(compile): compiledInstance,
@@ -37,7 +37,7 @@ func TestExecute_withCompile_compileExistsInFrame_adapterSucceeds_Success(t *tes
 	)
 
 	application := NewApplication(
-		insatnceAdapter,
+		instanceAdapter,
 	)
 
 	retAssignable, pCode, err := application.Execute(frame, instruction)
@@ -78,13 +78,13 @@ func TestExecute_withCompile_compileExistsInFrame_adapterFails_returnsError(t *t
 	)
 
 	instruction := compilers.NewCompilerWithCompileForTests(compileVar)
-	insatnceAdapter := mocks.NewInstanceAdapter(
+	instanceAdapter := mocks.NewInstanceAdapter(
 		map[string][]byte{},
 		map[string]instances.Instance{},
 	)
 
 	application := NewApplication(
-		insatnceAdapter,
+		instanceAdapter,
 	)
 
 	_, pCode, err := application.Execute(frame, instruction)
@@ -112,7 +112,7 @@ func TestExecute_withCompile_compileDoesNotExistsInFrame_returnsError(t *testing
 
 	frame := stacks.NewFrameForTests()
 	instruction := compilers.NewCompilerWithCompileForTests(compileVar)
-	insatnceAdapter := mocks.NewInstanceAdapter(
+	instanceAdapter := mocks.NewInstanceAdapter(
 		map[string][]byte{},
 		map[string]instances.Instance{
 			string(compile): compiledInstance,
@@ -120,7 +120,7 @@ func TestExecute_withCompile_compileDoesNotExistsInFrame_returnsError(t *testing
 	)
 
 	application := NewApplication(
-		insatnceAdapter,
+		instanceAdapter,
 	)
 
 	_, pCode, err := application.Execute(frame, instruction)
@@ -158,7 +158,7 @@ func TestExecute_withDecompile_decompileExistsInFrame_adapterSucceeds_Success(t 
 	)
 
 	instruction := compilers.NewCompilerWithDecompileForTests(decompileVar)
-	insatnceAdapter := mocks.NewInstanceAdapter(
+	instanceAdapter := mocks.NewInstanceAdapter(
 		map[string][]byte{
 			compiledInstance.Hash().String(): compile,
 		},
@@ -166,7 +166,7 @@ func TestExecute_withDecompile_decompileExistsInFrame_adapterSucceeds_Success(t 
 	)
 
 	application := NewApplication(
-		insatnceAdapter,
+		instanceAdapter,
 	)
 
 	retAssignable, pCode, err := application.Execute(frame, instruction)
@@ -208,13 +208,13 @@ func TestExecute_withDecompile_decompileExistsInFrame_adapterFails_returnsError(
 	)
 
 	instruction := compilers.NewCompilerWithDecompileForTests(decompileVar)
-	insatnceAdapter := mocks.NewInstanceAdapter(
+	instanceAdapter := mocks.NewInstanceAdapter(
 		map[string][]byte{},
 		map[string]instances.Instance{},
 	)
 
 	application := NewApplication(
-		insatnceAdapter,
+		instanceAdapter,
 	)
 
 	_, pCode, err := application.Execute(frame, instruction)
@@ -242,7 +242,7 @@ func TestExecute_withDecompile_decompileDoesNotExistsInFrame_returnsError(t *tes
 
 	frame := stacks.NewFrameForTests()
 	instruction := compilers.NewCompilerWithDecompileForTests(decompileVar)
-	insatnceAdapter := mocks.NewInstanceAdapter(
+	instanceAdapter := mocks.NewInstanceAdapter(
 		map[string][]byte{
 			compiledInstance.Hash().String(): compile,
 		},
@@ -250,7 +250,7 @@ func TestExecute_withDecompile_decompileDoesNotExistsInFrame_returnsError(t *tes
 	)
 
 	application := NewApplication(
-		insatnceAdapter,
+		instanceAdapter,
 	)
 
 	_, pCode, err := application.Execute(frame, instruction)
