@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/libraries/databases/services"
 	"github.com/steve-care-software/datastencil/domain/stacks"
@@ -27,12 +28,13 @@ func createApplication(
 func (app *application) Execute(frame stacks.Frame, assignable services.Service) (stacks.Assignable, *uint, error) {
 	builder := app.assignableBuilder.Create()
 	if assignable.IsBegin() {
-		context, err := app.service.Begin()
+		pContext, err := app.service.Begin()
 		if err != nil {
-			return nil, nil, err
+			code := failures.CouldNotBeginTransactionInDatabase
+			return nil, &code, err
 		}
 
-		builder.WithUnsignedInt(context)
+		builder.WithUnsignedInt(*pContext)
 	}
 
 	ins, err := builder.Now()

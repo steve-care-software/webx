@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/libraries/databases/repositories"
 	"github.com/steve-care-software/datastencil/domain/skeletons"
@@ -35,24 +36,26 @@ func (app *application) Execute(frame stacks.Frame, assignable repositories.Repo
 	}
 
 	if assignable.IsHeight() {
-		height, err := app.repository.Height()
+		pHeight, err := app.repository.Height()
 		if err != nil {
 			return nil, nil, err
 		}
 
-		builder.WithUnsignedInt(height)
+		builder.WithUnsignedInt(*pHeight)
 	}
 
 	if assignable.IsList() {
 		listVar := assignable.List()
 		query, err := frame.FetchQuery(listVar)
 		if err != nil {
-			return nil, nil, err
+			code := failures.CouldNotFetchListQueryFromFrame
+			return nil, &code, err
 		}
 
 		retHashList, err := app.repository.List(query)
 		if err != nil {
-			return nil, nil, err
+			code := failures.CouldNotListInstancesFromDatabase
+			return nil, &code, err
 		}
 
 		builder.WithHashList(retHashList)
@@ -63,12 +66,14 @@ func (app *application) Execute(frame stacks.Frame, assignable repositories.Repo
 		retrieveVar := assignable.Retrieve()
 		query, err := frame.FetchQuery(retrieveVar)
 		if err != nil {
-			return nil, nil, err
+			code := failures.CouldNotFetchRetrieveQueryFromFrame
+			return nil, &code, err
 		}
 
 		retIns, err := app.repository.Retrieve(query)
 		if err != nil {
-			return nil, nil, err
+			code := failures.CouldNotRetrieveInstanceFromDatabase
+			return nil, &code, err
 		}
 
 		builder.WithInstance(retIns)

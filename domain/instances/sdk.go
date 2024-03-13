@@ -29,7 +29,7 @@ type RepositoryBuilder interface {
 // Repository represents an instance repository
 type Repository interface {
 	// Height returns the current commit height
-	Height() (uint, error)
+	Height() (*uint, error)
 
 	// List returns the hashes list related to the query
 	List(query queries.Query) ([]hash.Hash, error)
@@ -58,7 +58,7 @@ type Service interface {
 	Init() error
 
 	// Begin begins a transaction
-	Begin() (uint, error)
+	Begin() (*uint, error)
 
 	// Insert inserts an instance
 	Insert(context uint, ins Instance, path []string) error

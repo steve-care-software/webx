@@ -87,4 +87,19 @@ const (
 
 	// CouldNotDecompileInstanceToBytes represents a could not fetch a decompile instance to bytes
 	CouldNotDecompileInstanceToBytes
+
+	// CouldNotFetchListQueryFromFrame represents a could not fetch list query from frame
+	CouldNotFetchListQueryFromFrame
+
+	// CouldNotFetchRetrieveQueryFromFrame represents a could not fetch retrieve query from frame
+	CouldNotFetchRetrieveQueryFromFrame
+
+	// CouldNotListInstancesFromDatabase represents a could not list instances from database
+	CouldNotListInstancesFromDatabase
+
+	// CouldNotRetrieveInstanceFromDatabase represents a could not retrieve instance from database
+	CouldNotRetrieveInstanceFromDatabase
+
+	// CouldNotBeginTransactionInDatabase represents a could not begin transaction in database
+	CouldNotBeginTransactionInDatabase
 )

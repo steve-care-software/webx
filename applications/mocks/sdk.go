@@ -3,7 +3,10 @@ package mocks
 import (
 	"github.com/steve-care-software/datastencil/domain/accounts"
 	"github.com/steve-care-software/datastencil/domain/encryptors"
+	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/queries"
+	"github.com/steve-care-software/datastencil/domain/skeletons"
 )
 
 // NewAccountRepositoryWithExistsForTests creates a new account repository with exists for tests
@@ -77,4 +80,36 @@ func NewInstanceAdapter(
 		toData,
 		toInstance,
 	)
+}
+
+// NewInstanceRepository creates a new instance repository
+func NewInstanceRepository(
+	height uint,
+	hashList []hash.Hash,
+	instances map[string]instances.Instance,
+) instances.Repository {
+	return createInstanceRepository(
+		height,
+		hashList,
+		instances,
+	)
+}
+
+// NewInstanceService creates a new instance service
+func NewInstanceService(
+	pBeginContext *uint,
+) instances.Service {
+	return createInstanceService(
+		pBeginContext,
+	)
+}
+
+// NewSkeleton creates a new skeleton
+func NewSkeleton() skeletons.Skeleton {
+	return createSkeleton()
+}
+
+// NewQuery creates a new query
+func NewQuery() queries.Query {
+	return createQuery()
 }
