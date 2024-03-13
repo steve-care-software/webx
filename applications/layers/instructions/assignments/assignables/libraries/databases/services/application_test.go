@@ -14,12 +14,12 @@ func TestExecute_withBegin_beginSucceeds_Success(t *testing.T) {
 	context := uint(45)
 	frame := stacks.NewFrameForTests()
 	instruction := services.NewServiceWithBeginForTests()
-	repository := mocks.NewInstanceService(
+	service := mocks.NewInstanceService(
 		&context,
 	)
 
 	application := NewApplication(
-		repository,
+		service,
 	)
 
 	retAssignable, pCode, err := application.Execute(frame, instruction)
