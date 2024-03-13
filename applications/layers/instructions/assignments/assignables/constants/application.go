@@ -20,7 +20,7 @@ func createApplication(
 }
 
 // Execute executes the application
-func (app *application) Execute(frame stacks.Frame, assignable constants.Constant) (stacks.Assignable, *uint, error) {
+func (app *application) Execute(assignable constants.Constant) (stacks.Assignable, *uint, error) {
 	builder := app.assignableBuilder.Create()
 	if assignable.IsBool() {
 		pBool := assignable.Bool()
