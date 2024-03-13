@@ -5,7 +5,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/encryptors"
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/queries"
+	"github.com/steve-care-software/datastencil/domain/instances/queries"
 	"github.com/steve-care-software/datastencil/domain/skeletons"
 )
 

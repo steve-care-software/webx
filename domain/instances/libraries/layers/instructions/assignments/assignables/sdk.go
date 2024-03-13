@@ -7,7 +7,6 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/cryptography"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/libraries"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/queries"
 )
 
 // NewBuilder creates a new assignable builder
@@ -26,7 +25,7 @@ type Builder interface {
 	WithAccount(account accounts.Account) Builder
 	WithCryptography(cryptography cryptography.Cryptography) Builder
 	WithLibrary(library libraries.Library) Builder
-	WithQuery(query queries.Query) Builder
+	WithQuery(query string) Builder
 	Now() (Assignable, error)
 }
 
@@ -44,5 +43,5 @@ type Assignable interface {
 	IsLibrary() bool
 	Library() libraries.Library
 	IsQuery() bool
-	Query() queries.Query
+	Query() string
 }

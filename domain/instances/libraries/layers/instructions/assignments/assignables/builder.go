@@ -9,7 +9,6 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/cryptography"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/libraries"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/queries"
 )
 
 type builder struct {
@@ -19,7 +18,7 @@ type builder struct {
 	account     accounts.Account
 	crypto      cryptography.Cryptography
 	library     libraries.Library
-	query       queries.Query
+	query       string
 }
 
 func createBuilder(
@@ -32,7 +31,7 @@ func createBuilder(
 		account:     nil,
 		crypto:      nil,
 		library:     nil,
-		query:       nil,
+		query:       "",
 	}
 
 	return &out
@@ -76,7 +75,7 @@ func (app *builder) WithLibrary(library libraries.Library) Builder {
 }
 
 // WithQuery adds a query to the builder
-func (app *builder) WithQuery(query queries.Query) Builder {
+func (app *builder) WithQuery(query string) Builder {
 	app.query = query
 	return app
 }
@@ -109,12 +108,12 @@ func (app *builder) Now() (Assignable, error) {
 		data = append(data, app.library.Hash().Bytes())
 	}
 
-	if app.query != nil {
+	if app.query != "" {
 		data = append(data, []byte("query"))
-		data = append(data, app.query.Hash().Bytes())
+		data = append(data, []byte(app.query))
 	}
 
-	if len(data) <= 0 {
+	if len(data) != 2 {
 		return nil, errors.New("the Assignable is invalid")
 	}
 
@@ -131,11 +130,19 @@ func (app *builder) Now() (Assignable, error) {
 		return createAssignableWithConstant(*pHash, app.constant), nil
 	}
 
+	if app.account != nil {
+		return createAssignableWithAccount(*pHash, app.account), nil
+	}
+
+	if app.crypto != nil {
+		return createAssignableWithCryptography(*pHash, app.crypto), nil
+	}
+
 	if app.library != nil {
 		return createAssignableWithLibrary(*pHash, app.library), nil
 	}
 
-	if app.query != nil {
+	if app.query != "" {
 		return createAssignableWithQuery(*pHash, app.query), nil
 	}
 

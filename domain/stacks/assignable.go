@@ -3,7 +3,7 @@ package stacks
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/queries"
+	"github.com/steve-care-software/datastencil/domain/instances/queries"
 	"github.com/steve-care-software/datastencil/domain/skeletons"
 	stack_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )

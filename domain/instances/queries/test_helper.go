@@ -1,6 +1,6 @@
 package queries
 
-import "github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/queries/conditions"
+import "github.com/steve-care-software/datastencil/domain/instances/queries/conditions"
 
 // NewQueryWithFieldsForTests creates a new query with fields for tests
 func NewQueryWithFieldsForTests(entity string, condition conditions.Condition, fields []string) Query {

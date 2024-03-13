@@ -102,4 +102,7 @@ const (
 
 	// CouldNotBeginTransactionInDatabase represents a could not begin transaction in database
 	CouldNotBeginTransactionInDatabase
+
+	// CouldNotFetchQueryFromFrame represents a could not fetch query from frame
+	CouldNotFetchQueryFromFrame
 )

@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/queries/conditions"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions"
 )
 
 func TestQuery_Success(t *testing.T) {

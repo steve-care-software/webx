@@ -6,6 +6,7 @@ import (
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/cryptography"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/libraries"
+	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
@@ -48,7 +49,7 @@ func (app *application) Execute(frame stacks.Frame, assignable assignables.Assig
 
 	if assignable.IsConstant() {
 		constant := assignable.Constant()
-		return app.execConstantApp.Execute(frame, constant)
+		return app.execConstantApp.Execute(constant)
 	}
 
 	if assignable.IsCryptography() {
@@ -66,7 +67,13 @@ func (app *application) Execute(frame stacks.Frame, assignable assignables.Assig
 		return app.execAccountApp.Execute(frame, account)
 	}
 
-	query := assignable.Query()
+	queryVar := assignable.Query()
+	query, err := frame.FetchQuery(queryVar)
+	if err != nil {
+		code := failures.CouldNotFetchQueryFromFrame
+		return nil, &code, err
+	}
+
 	ins, err := app.assignableBuilder.Create().
 		WithQuery(query).
 		Now()

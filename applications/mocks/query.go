@@ -2,8 +2,8 @@ package mocks
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/queries"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/queries/conditions"
+	"github.com/steve-care-software/datastencil/domain/instances/queries"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions"
 )
 
 type query struct {
