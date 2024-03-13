@@ -11,6 +11,11 @@ import (
 	stack_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )
 
+// NewFactory creates a new factory
+func NewFactory() Factory {
+	return createFactory()
+}
+
 // NewBuilder creates a new builder
 func NewBuilder() Builder {
 	framesBuilder := NewFramesBuilder()
