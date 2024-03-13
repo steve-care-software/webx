@@ -91,11 +91,7 @@ func (app *application) Execute(frame stacks.Frame, instruction updates.Update) 
 		}
 
 		username := string(userBytes)
-		exists, err := app.repository.Exists(username)
-		if err != nil {
-			return nil, err
-		}
-
+		exists := app.repository.Exists(username)
 		if exists {
 			code := failures.AccountWithSameUsernameAlreadyExists
 			str := fmt.Sprintf("the account (name: %s) already exists", username)

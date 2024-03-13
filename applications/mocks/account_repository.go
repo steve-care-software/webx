@@ -37,12 +37,12 @@ func (app *accountRepository) List(password []byte) ([]string, error) {
 }
 
 // Exists returns true if exists, false otherwise
-func (app *accountRepository) Exists(username string) (bool, error) {
+func (app *accountRepository) Exists(username string) bool {
 	if value, ok := app.exists[username]; ok {
-		return value, nil
+		return value
 	}
 
-	return false, nil
+	return false
 }
 
 // Retrieve retrieves an account

@@ -79,6 +79,7 @@ func TestExecute_withBytes_Success(t *testing.T) {
 	context := uint(33)
 	instanceService := mocks.NewInstanceService(
 		&context,
+		false,
 	)
 
 	encryptor := mocks.NewEncryptor(
@@ -180,6 +181,7 @@ func TestExecute_withConstant_Success(t *testing.T) {
 	context := uint(33)
 	instanceService := mocks.NewInstanceService(
 		&context,
+		false,
 	)
 
 	encryptor := mocks.NewEncryptor(
@@ -304,6 +306,7 @@ func TestExecute_withCryptography_Success(t *testing.T) {
 	context := uint(33)
 	instanceService := mocks.NewInstanceService(
 		&context,
+		false,
 	)
 
 	encryptor := mocks.NewEncryptor(
@@ -421,6 +424,7 @@ func TestExecute_withLibrary_Success(t *testing.T) {
 
 	instanceService := mocks.NewInstanceService(
 		&context,
+		false,
 	)
 
 	encryptor := mocks.NewEncryptor(
@@ -536,6 +540,7 @@ func TestExecute_withAccount_Success(t *testing.T) {
 	context := uint(33)
 	instanceService := mocks.NewInstanceService(
 		&context,
+		false,
 	)
 
 	encryptor := mocks.NewEncryptor(
@@ -644,6 +649,7 @@ func TestExecute_withQuery_queryExistsInFrame_Success(t *testing.T) {
 	context := uint(33)
 	instanceService := mocks.NewInstanceService(
 		&context,
+		false,
 	)
 
 	encryptor := mocks.NewEncryptor(
@@ -740,6 +746,7 @@ func TestExecute_withQuery_queryDoesNotExistsInFrame_returnsError(t *testing.T) 
 	context := uint(33)
 	instanceService := mocks.NewInstanceService(
 		&context,
+		false,
 	)
 
 	encryptor := mocks.NewEncryptor(

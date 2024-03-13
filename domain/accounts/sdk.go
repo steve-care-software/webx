@@ -37,7 +37,7 @@ type Account interface {
 // Repository represents the account repository
 type Repository interface {
 	List(password []byte) ([]string, error)
-	Exists(username string) (bool, error)
+	Exists(username string) bool
 	Retrieve(password []byte, credentials credentials.Credentials) (Account, error)
 }
 

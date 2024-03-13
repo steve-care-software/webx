@@ -36,6 +36,7 @@ func TestExecute_WithRepository_Success(t *testing.T) {
 		application_services.NewApplication(
 			mocks.NewInstanceService(
 				&context,
+				false,
 			),
 		),
 	)
@@ -82,6 +83,7 @@ func TestExecute_WithService_Success(t *testing.T) {
 		application_services.NewApplication(
 			mocks.NewInstanceService(
 				&context,
+				false,
 			),
 		),
 	)

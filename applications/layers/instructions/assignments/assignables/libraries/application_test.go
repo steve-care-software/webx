@@ -62,6 +62,7 @@ func TestExecute_WithCompiler_Success(t *testing.T) {
 			application_services.NewApplication(
 				mocks.NewInstanceService(
 					&context,
+					false,
 				),
 			),
 		),
@@ -125,6 +126,7 @@ func TestExecute_WithDatabase_Success(t *testing.T) {
 			application_services.NewApplication(
 				mocks.NewInstanceService(
 					&context,
+					false,
 				),
 			),
 		),
