@@ -2,6 +2,7 @@ package mocks
 
 import (
 	"github.com/steve-care-software/datastencil/domain/accounts"
+	"github.com/steve-care-software/datastencil/domain/encryptors"
 )
 
 // NewAccountRepositoryWithExistsForTests creates a new account repository with exists for tests
@@ -52,5 +53,16 @@ func NewAccountServiceForTests(
 		insertWorks,
 		updateWorks,
 		deleteWorks,
+	)
+}
+
+// NewEncryptor creates a new encryptor
+func NewEncryptor(
+	encrypt map[string]map[string][]byte,
+	decrypt map[string]map[string][]byte,
+) encryptors.Encryptor {
+	return createEncryptor(
+		encrypt,
+		decrypt,
 	)
 }

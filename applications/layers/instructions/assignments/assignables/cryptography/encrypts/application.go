@@ -1,6 +1,7 @@
 package encrypts
 
 import (
+	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/domain/encryptors"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/cryptography/encrypts"
 	"github.com/steve-care-software/datastencil/domain/stacks"
@@ -28,18 +29,21 @@ func (app *application) Execute(frame stacks.Frame, assignable encrypts.Encrypt)
 	msgVar := assignable.Message()
 	message, err := frame.FetchBytes(msgVar)
 	if err != nil {
-		return nil, nil, err
+		code := failures.CouldNotFetchMessageFromFrame
+		return nil, &code, err
 	}
 
 	passVar := assignable.Password()
 	password, err := frame.FetchBytes(passVar)
 	if err != nil {
-		return nil, nil, err
+		code := failures.CouldNotFetchPasswordFromFrame
+		return nil, &code, err
 	}
 
 	cipher, err := app.encryptor.Encrypt(message, password)
 	if err != nil {
-		return nil, nil, err
+		code := failures.CouldNotEncryptMessage
+		return nil, &code, err
 	}
 
 	ins, err := app.assignableBuilder.Create().
