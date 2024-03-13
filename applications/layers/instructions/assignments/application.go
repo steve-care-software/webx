@@ -27,12 +27,8 @@ func createApplication(
 func (app *application) Execute(frame stacks.Frame, assignment assignments.Assignment) (stacks.Assignment, *uint, error) {
 	assignable := assignment.Assignable()
 	retAssignable, pCode, err := app.execAssignableApp.Execute(frame, assignable)
-	if err != nil {
+	if pCode != nil || err != nil {
 		return nil, pCode, err
-	}
-
-	if pCode != nil {
-		return nil, pCode, nil
 	}
 
 	name := assignment.Name()
