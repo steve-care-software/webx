@@ -2,6 +2,7 @@ package outputs
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/outputs/kinds"
@@ -33,7 +34,10 @@ func TestOutput_Success(t *testing.T) {
 func TestOutput_withExecute_Success(t *testing.T) {
 	variable := "myVariable"
 	kind := kinds.NewKindWithPromptForTests()
-	execute := "this is a command to execute"
+	execute := []string{
+		"this is a command to execute",
+	}
+
 	output := NewOutputWithExecuteForTests(variable, kind, execute)
 
 	retVariable := output.Variable()
@@ -54,8 +58,8 @@ func TestOutput_withExecute_Success(t *testing.T) {
 	}
 
 	retExecute := output.Execute()
-	if execute != retExecute {
-		t.Errorf("the returned execute was expected to be '%s', '%s' returned", execute, retExecute)
+	if !reflect.DeepEqual(execute, retExecute) {
+		t.Errorf("the returned execute was expected to be '%s', '%s' returned", strings.Join(execute, ","), strings.Join(retExecute, ","))
 		return
 	}
 }

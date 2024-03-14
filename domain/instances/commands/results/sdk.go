@@ -36,6 +36,14 @@ func NewSuccessBuilder() SuccessBuilder {
 	)
 }
 
+// NewOutputBuilder creates a new output builder
+func NewOutputBuilder() OutputBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createOutputBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder represents the result builder
 type Builder interface {
 	Create() Builder
@@ -56,7 +64,7 @@ type Result interface {
 // SuccessBuilder represents the success builder
 type SuccessBuilder interface {
 	Create() SuccessBuilder
-	WithBytes(bytes []byte) SuccessBuilder
+	WithOutput(output Output) SuccessBuilder
 	WithKind(kind kinds.Kind) SuccessBuilder
 	Now() (Success, error)
 }
@@ -64,6 +72,23 @@ type SuccessBuilder interface {
 // Success represents success result
 type Success interface {
 	Hash() hash.Hash
-	Bytes() []byte
+	Output() Output
 	Kind() kinds.Kind
+}
+
+// OutputBuilder represents an output builder
+type OutputBuilder interface {
+	Create() OutputBuilder
+	WithInput(input []byte) OutputBuilder
+	WithExecute(execute []byte) OutputBuilder
+	Now() (Output, error)
+}
+
+// Output represents an output
+type Output interface {
+	Hash() hash.Hash
+	Value() []byte
+	Input() []byte
+	HasExecute() bool
+	Execute() []byte
 }

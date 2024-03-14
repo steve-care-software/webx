@@ -11,7 +11,7 @@ type builder struct {
 	hashAdapter hash.Adapter
 	variable    string
 	kind        kinds.Kind
-	execute     string
+	execute     []string
 }
 
 func createBuilder(
@@ -21,7 +21,7 @@ func createBuilder(
 		hashAdapter: hashAdapter,
 		variable:    "",
 		kind:        nil,
-		execute:     "",
+		execute:     nil,
 	}
 
 	return &out
@@ -47,7 +47,7 @@ func (app *builder) WithKind(kind kinds.Kind) Builder {
 }
 
 // WithExecute adds an execute to the builder
-func (app *builder) WithExecute(execute string) Builder {
+func (app *builder) WithExecute(execute []string) Builder {
 	app.execute = execute
 	return app
 }
@@ -67,8 +67,14 @@ func (app *builder) Now() (Output, error) {
 		app.kind.Hash().Bytes(),
 	}
 
-	if app.execute != "" {
-		data = append(data, []byte(app.execute))
+	if app.execute != nil && len(app.execute) <= 0 {
+		app.execute = nil
+	}
+
+	if app.execute != nil {
+		for _, oneArg := range app.execute {
+			data = append(data, []byte(oneArg))
+		}
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes(data)
@@ -76,7 +82,7 @@ func (app *builder) Now() (Output, error) {
 		return nil, err
 	}
 
-	if app.execute != "" {
+	if app.execute != nil {
 		return createOutputWithExecute(*pHash, app.variable, app.kind, app.execute), nil
 	}
 

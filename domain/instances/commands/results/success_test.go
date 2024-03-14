@@ -1,7 +1,6 @@
 package results
 
 import (
-	"bytes"
 	"reflect"
 	"testing"
 
@@ -9,12 +8,12 @@ import (
 )
 
 func TestSuccess_Success(t *testing.T) {
-	value := []byte("this is some bytes")
+	value := NewOutputForTests([]byte("this is some bytes"))
 	kind := kinds.NewKindWithPromptForTests()
 	ins := NewSuccessForTests(value, kind)
-	retBytes := ins.Bytes()
-	if !bytes.Equal(value, retBytes) {
-		t.Errorf("the returned bytes are invalid")
+	retOutput := ins.Output()
+	if !reflect.DeepEqual(value, retOutput) {
+		t.Errorf("the returned output are invalid")
 		return
 	}
 
@@ -25,7 +24,7 @@ func TestSuccess_Success(t *testing.T) {
 	}
 }
 
-func TestSuccess_withoutBytes_returnsError(t *testing.T) {
+func TestSuccess_withoutOutput_returnsError(t *testing.T) {
 	kind := kinds.NewKindWithPromptForTests()
 	_, err := NewSuccessBuilder().Create().WithKind(kind).Now()
 	if err == nil {
@@ -35,8 +34,8 @@ func TestSuccess_withoutBytes_returnsError(t *testing.T) {
 }
 
 func TestSuccess_withoutKind_returnsError(t *testing.T) {
-	value := []byte("this is some bytes")
-	_, err := NewSuccessBuilder().Create().WithBytes(value).Now()
+	value := NewOutputForTests([]byte("this is some bytes"))
+	_, err := NewSuccessBuilder().Create().WithOutput(value).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

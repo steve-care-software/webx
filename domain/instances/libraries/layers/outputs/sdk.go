@@ -18,7 +18,7 @@ type Builder interface {
 	Create() Builder
 	WithVariable(variable string) Builder
 	WithKind(kind kinds.Kind) Builder
-	WithExecute(execute string) Builder
+	WithExecute(execute []string) Builder
 	Now() (Output, error)
 }
 
@@ -28,5 +28,5 @@ type Output interface {
 	Variable() string
 	Kind() kinds.Kind
 	HasExecute() bool
-	Execute() string
+	Execute() []string
 }

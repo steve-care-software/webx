@@ -6,20 +6,20 @@ import (
 )
 
 type success struct {
-	hash  hash.Hash
-	bytes []byte
-	kind  kinds.Kind
+	hash   hash.Hash
+	output Output
+	kind   kinds.Kind
 }
 
 func createSuccess(
 	hash hash.Hash,
-	bytes []byte,
+	output Output,
 	kind kinds.Kind,
 ) Success {
 	out := success{
-		hash:  hash,
-		bytes: bytes,
-		kind:  kind,
+		hash:   hash,
+		output: output,
+		kind:   kind,
 	}
 
 	return &out
@@ -30,9 +30,9 @@ func (obj *success) Hash() hash.Hash {
 	return obj.hash
 }
 
-// Bytes returns the bytes
-func (obj *success) Bytes() []byte {
-	return obj.bytes
+// Output returns the output
+func (obj *success) Output() Output {
+	return obj.output
 }
 
 // Kind returns the kind

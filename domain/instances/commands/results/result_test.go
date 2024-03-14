@@ -10,7 +10,7 @@ import (
 
 func TestResult_withSuccess_Success(t *testing.T) {
 	success := NewSuccessForTests(
-		[]byte("this is some bytes"),
+		NewOutputForTests([]byte("this is some bytes")),
 		kinds.NewKindWithPromptForTests(),
 	)
 

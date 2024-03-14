@@ -9,7 +9,7 @@ import (
 
 type successBuilder struct {
 	hashAdapter hash.Adapter
-	bytes       []byte
+	output      Output
 	kind        kinds.Kind
 }
 
@@ -18,7 +18,7 @@ func createSuccessBuilder(
 ) SuccessBuilder {
 	out := successBuilder{
 		hashAdapter: hashAdapter,
-		bytes:       nil,
+		output:      nil,
 		kind:        nil,
 	}
 
@@ -32,9 +32,9 @@ func (app *successBuilder) Create() SuccessBuilder {
 	)
 }
 
-// WithBytes add bytes to the builder
-func (app *successBuilder) WithBytes(bytes []byte) SuccessBuilder {
-	app.bytes = bytes
+// WithOutput adds an output to the builder
+func (app *successBuilder) WithOutput(output Output) SuccessBuilder {
+	app.output = output
 	return app
 }
 
@@ -46,12 +46,8 @@ func (app *successBuilder) WithKind(kind kinds.Kind) SuccessBuilder {
 
 // Now builds a new Success instance
 func (app *successBuilder) Now() (Success, error) {
-	if app.bytes != nil && len(app.bytes) <= 0 {
-		app.bytes = nil
-	}
-
-	if app.bytes == nil {
-		return nil, errors.New("the bytes are mandatory in order to build a Success instance")
+	if app.output == nil {
+		return nil, errors.New("the output is mandatory in order to build a Success instance")
 	}
 
 	if app.kind == nil {
@@ -59,7 +55,7 @@ func (app *successBuilder) Now() (Success, error) {
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
-		app.bytes,
+		app.output.Hash().Bytes(),
 		app.kind.Hash().Bytes(),
 	})
 
@@ -67,5 +63,5 @@ func (app *successBuilder) Now() (Success, error) {
 		return nil, err
 	}
 
-	return createSuccess(*pHash, app.bytes, app.kind), nil
+	return createSuccess(*pHash, app.output, app.kind), nil
 }

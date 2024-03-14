@@ -9,7 +9,7 @@ type output struct {
 	hash     hash.Hash
 	variable string
 	kind     kinds.Kind
-	execute  string
+	execute  []string
 }
 
 func createOutput(
@@ -17,14 +17,14 @@ func createOutput(
 	variable string,
 	kind kinds.Kind,
 ) Output {
-	return createOutputInternally(hash, variable, kind, "")
+	return createOutputInternally(hash, variable, kind, nil)
 }
 
 func createOutputWithExecute(
 	hash hash.Hash,
 	variable string,
 	kind kinds.Kind,
-	execute string,
+	execute []string,
 ) Output {
 	return createOutputInternally(hash, variable, kind, execute)
 }
@@ -33,7 +33,7 @@ func createOutputInternally(
 	hash hash.Hash,
 	variable string,
 	kind kinds.Kind,
-	execute string,
+	execute []string,
 ) Output {
 	out := output{
 		hash:     hash,
@@ -62,10 +62,10 @@ func (obj *output) Kind() kinds.Kind {
 
 // HasExecute returns true if there is an execute, false otherwise
 func (obj *output) HasExecute() bool {
-	return obj.execute != ""
+	return obj.execute != nil
 }
 
 // Execute returns the execute, if any
-func (obj *output) Execute() string {
+func (obj *output) Execute() []string {
 	return obj.execute
 }
