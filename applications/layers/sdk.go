@@ -2,6 +2,7 @@ package layers
 
 import (
 	applications_instructions "github.com/steve-care-software/datastencil/applications/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/instances/commands"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/stacks"
@@ -12,6 +13,7 @@ func NewApplication(
 	execInsApp applications_instructions.Application,
 	tempBaseDir string,
 ) Application {
+	stackFactory := stacks.NewFactory()
 	stackBuilder := stacks.NewBuilder()
 	framesBuilder := stacks.NewFramesBuilder()
 	frameBuilder := stacks.NewFrameBuilder()
@@ -23,6 +25,7 @@ func NewApplication(
 	outputBuilder := results.NewOutputBuilder()
 	return createApplication(
 		execInsApp,
+		stackFactory,
 		stackBuilder,
 		framesBuilder,
 		frameBuilder,
@@ -38,5 +41,5 @@ func NewApplication(
 
 // Application represents an application
 type Application interface {
-	Execute(input []byte, layer layers.Layer, stack stacks.Stack) (results.Result, error)
+	Execute(input []byte, layer layers.Layer, context commands.Commands) (results.Result, error)
 }

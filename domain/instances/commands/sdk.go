@@ -1,10 +1,10 @@
 package commands
 
 import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/links"
-	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
-	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
 // NewBuilder creates a new builder instance
@@ -43,6 +43,7 @@ type Commands interface {
 	Hash() hash.Hash
 	List() []Command
 	Last() Command
+	OriginBytes() [][]byte
 }
 
 // CommandBuilder represents a command builder
@@ -61,7 +62,6 @@ type Command interface {
 	Input() []byte
 	Layer() layers.Layer
 	Result() results.Result
-	HasParent() bool
 	Parent() Link
 }
 
@@ -79,5 +79,6 @@ type Link interface {
 	Hash() hash.Hash
 	Input() []byte
 	Link() links.Link
+	HasCommand() bool
 	Command() Command
 }

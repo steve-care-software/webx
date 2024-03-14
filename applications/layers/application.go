@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/steve-care-software/datastencil/applications/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/instances/commands"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/stacks"
@@ -13,6 +14,7 @@ import (
 
 type application struct {
 	execInsApp         instructions.Application
+	stackFactory       stacks.Factory
 	stackBuilder       stacks.Builder
 	framesBuilder      stacks.FramesBuilder
 	frameBuilder       stacks.FrameBuilder
@@ -27,6 +29,7 @@ type application struct {
 
 func createApplication(
 	execInsApp instructions.Application,
+	stackFactory stacks.Factory,
 	stackBuilder stacks.Builder,
 	framesBuilder stacks.FramesBuilder,
 	frameBuilder stacks.FrameBuilder,
@@ -40,6 +43,7 @@ func createApplication(
 ) Application {
 	out := application{
 		execInsApp:         execInsApp,
+		stackFactory:       stackFactory,
 		stackBuilder:       stackBuilder,
 		framesBuilder:      framesBuilder,
 		frameBuilder:       frameBuilder,
@@ -56,9 +60,14 @@ func createApplication(
 }
 
 // Execute executes the application
-func (app *application) Execute(input []byte, layer layers.Layer, stack stacks.Stack) (results.Result, error) {
+func (app *application) Execute(input []byte, layer layers.Layer, context commands.Commands) (results.Result, error) {
+	previousFrame, err := app.commandsToFrame(context)
+	if err != nil {
+		return nil, err
+	}
+
 	inName := layer.Input()
-	retStack, err := app.newStack(input, inName, stack)
+	retStack, err := app.newStack(input, inName, previousFrame)
 	if err != nil {
 		return nil, err
 	}
@@ -127,38 +136,53 @@ func (app *application) executeThenReturn(value []byte, args []string) ([]byte, 
 	return exec.Command(path, args...).Output()
 }
 
-func (app *application) newStack(input []byte, variable string, context stacks.Stack) (stacks.Stack, error) {
+func (app *application) newStack(input []byte, variable string, previousFrame stacks.Frame) (stacks.Stack, error) {
+	assignments, err := app.buildAssignmentsWithByteVariables(map[string][]byte{
+		variable: input,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
 	currentFrames := []stacks.Frame{}
-	if context != nil {
-		currentFrames = context.Frames().List()
+	if previousFrame != nil {
+		currentFrames = append(currentFrames, previousFrame)
 	}
 
-	assignable, err := app.assignableBuilder.Create().
-		WithBytes(input).
+	return app.buildStackWithAssignmentsAndPreviousFrames(
+		assignments,
+		currentFrames,
+	)
+}
+
+func (app *application) commandsToFrame(commands commands.Commands) (stacks.Frame, error) {
+	if commands == nil {
+		return nil, nil
+	}
+
+	variables := map[string][]byte{}
+	list := commands.List()
+	for _, oneCommand := range list {
+		input := oneCommand.Input()
+		variable := oneCommand.Layer().Input()
+		variables[variable] = input
+	}
+
+	assignments, err := app.buildAssignmentsWithByteVariables(variables)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.frameBuilder.Create().
+		WithAssignments(assignments).
 		Now()
+}
 
-	if err != nil {
-		return nil, err
-	}
-
-	assignment, err := app.assignmentBuilder.Create().
-		WithName(variable).
-		WithAssignable(assignable).
-		Now()
-
-	if err != nil {
-		return nil, err
-	}
-
-	assignments, err := app.assignmentsBuilder.Create().
-		WithList([]stacks.Assignment{
-			assignment,
-		}).Now()
-
-	if err != nil {
-		return nil, err
-	}
-
+func (app *application) buildStackWithAssignmentsAndPreviousFrames(
+	assignments stacks.Assignments,
+	previous []stacks.Frame,
+) (stacks.Stack, error) {
 	newFrame, err := app.frameBuilder.Create().
 		WithAssignments(assignments).
 		Now()
@@ -167,9 +191,9 @@ func (app *application) newStack(input []byte, variable string, context stacks.S
 		return nil, err
 	}
 
-	currentFrames = append(currentFrames, newFrame)
+	previous = append(previous, newFrame)
 	frames, err := app.framesBuilder.Create().
-		WithList(currentFrames).
+		WithList(previous).
 		Now()
 
 	if err != nil {
@@ -178,5 +202,33 @@ func (app *application) newStack(input []byte, variable string, context stacks.S
 
 	return app.stackBuilder.Create().
 		WithFrames(frames).
+		Now()
+}
+
+func (app *application) buildAssignmentsWithByteVariables(input map[string][]byte) (stacks.Assignments, error) {
+	list := []stacks.Assignment{}
+	for variable, data := range input {
+		assignable, err := app.assignableBuilder.Create().
+			WithBytes(data).
+			Now()
+
+		if err != nil {
+			return nil, err
+		}
+
+		assignment, err := app.assignmentBuilder.Create().
+			WithName(variable).
+			WithAssignable(assignable).
+			Now()
+
+		if err != nil {
+			return nil, err
+		}
+
+		list = append(list, assignment)
+	}
+
+	return app.assignmentsBuilder.Create().
+		WithList(list).
 		Now()
 }

@@ -32,57 +32,7 @@ func TestCommand_Success(t *testing.T) {
 
 	result := results.NewResultWithSuccessForTests(
 		results.NewSuccessForTests(
-			[]byte("this is some bytes"),
-			kinds.NewKindWithPromptForTests(),
-		),
-	)
-
-	ins := NewCommandForTests(
-		input,
-		layer,
-		result,
-	)
-
-	retInput := ins.Input()
-	if !reflect.DeepEqual(input, retInput) {
-		t.Errorf("the returned input is invalid")
-		return
-	}
-
-	retLayer := ins.Layer()
-	if !reflect.DeepEqual(layer, retLayer) {
-		t.Errorf("the returned layer is invalid")
-		return
-	}
-
-	retResult := ins.Result()
-	if !reflect.DeepEqual(result, retResult) {
-		t.Errorf("the returned result is invalid")
-		return
-	}
-
-	if ins.HasParent() {
-		t.Errorf("the command was expected to NOT contain a parent")
-		return
-	}
-}
-
-func TestCommand_withParent_Success(t *testing.T) {
-	input := []byte("this is the command input")
-	layer := layers.NewLayerForTests(
-		instructions.NewInstructionsForTests([]instructions.Instruction{
-			instructions.NewInstructionWithStopForTests(),
-		}),
-		outputs.NewOutputForTests(
-			"myVariable",
-			kinds.NewKindWithContinueForTests(),
-		),
-		"someInput",
-	)
-
-	result := results.NewResultWithSuccessForTests(
-		results.NewSuccessForTests(
-			[]byte("this is some bytes"),
+			results.NewOutputForTests([]byte("this is some bytes")),
 			kinds.NewKindWithPromptForTests(),
 		),
 	)
@@ -91,7 +41,7 @@ func TestCommand_withParent_Success(t *testing.T) {
 	pFirstLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for first layer"))
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
 
-	parent := NewLinkForTests(
+	parent := NewLinkWithCommandForTests(
 		[]byte("this is an input"),
 		links.NewLinkForTests(
 			origins.NewOriginForTests(
@@ -119,14 +69,29 @@ func TestCommand_withParent_Success(t *testing.T) {
 			),
 			results.NewResultWithSuccessForTests(
 				results.NewSuccessForTests(
-					[]byte("this is some bytes"),
+					results.NewOutputForTests([]byte("this is some bytes")),
 					kinds.NewKindWithPromptForTests(),
+				),
+			),
+			NewLinkForTests(
+				[]byte("some input"),
+				links.NewLinkForTests(
+					origins.NewOriginForTests(
+						resources.NewResourceForTests(*pFirstLayer),
+						operators.NewOperatorWithAndForTests(),
+						origins.NewValueWithResourceForTests(
+							resources.NewResourceForTests(*pSecondLayer),
+						),
+					),
+					elements.NewElementsForTests([]elements.Element{
+						elements.NewElementForTests(*pLayer),
+					}),
 				),
 			),
 		),
 	)
 
-	ins := NewCommandWithParentForTests(
+	ins := NewCommandForTests(
 		input,
 		layer,
 		result,
@@ -151,14 +116,36 @@ func TestCommand_withParent_Success(t *testing.T) {
 		return
 	}
 
-	if !ins.HasParent() {
-		t.Errorf("the command was expected to contain a parent")
-		return
-	}
-
 	retParent := ins.Parent()
 	if !reflect.DeepEqual(parent, retParent) {
 		t.Errorf("the returned parent Link is invalid")
+		return
+	}
+}
+
+func TestCommand_withoutParent_returnsError(t *testing.T) {
+	input := []byte("this is the command input")
+	layer := layers.NewLayerForTests(
+		instructions.NewInstructionsForTests([]instructions.Instruction{
+			instructions.NewInstructionWithStopForTests(),
+		}),
+		outputs.NewOutputForTests(
+			"myVariable",
+			kinds.NewKindWithContinueForTests(),
+		),
+		"someInput",
+	)
+
+	result := results.NewResultWithSuccessForTests(
+		results.NewSuccessForTests(
+			results.NewOutputForTests([]byte("this is some bytes")),
+			kinds.NewKindWithPromptForTests(),
+		),
+	)
+
+	_, err := NewCommandBuilder().Create().WithInput(input).WithLayer(layer).WithResult(result).Now()
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
 		return
 	}
 }
@@ -177,7 +164,7 @@ func TestCommand_withoutInput_returnsError(t *testing.T) {
 
 	result := results.NewResultWithSuccessForTests(
 		results.NewSuccessForTests(
-			[]byte("this is some bytes"),
+			results.NewOutputForTests([]byte("this is some bytes")),
 			kinds.NewKindWithPromptForTests(),
 		),
 	)
@@ -203,7 +190,7 @@ func TestCommand_withEmptyInput_returnsError(t *testing.T) {
 
 	result := results.NewResultWithSuccessForTests(
 		results.NewSuccessForTests(
-			[]byte("this is some bytes"),
+			results.NewOutputForTests([]byte("this is some bytes")),
 			kinds.NewKindWithPromptForTests(),
 		),
 	)
@@ -219,7 +206,7 @@ func TestCommand_withoutLayer_returnsError(t *testing.T) {
 	input := []byte("this is the command input")
 	result := results.NewResultWithSuccessForTests(
 		results.NewSuccessForTests(
-			[]byte("this is some bytes"),
+			results.NewOutputForTests([]byte("this is some bytes")),
 			kinds.NewKindWithPromptForTests(),
 		),
 	)

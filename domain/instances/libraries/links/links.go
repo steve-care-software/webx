@@ -47,8 +47,3 @@ func (obj *links) Fetch(hash hash.Hash) (Link, error) {
 	str := fmt.Sprintf("the requested Link (hash: %s) does not exists", keyname)
 	return nil, errors.New(str)
 }
-
-// FetchByExecutedLayers fetches link by executed layers
-func (obj *links) FetchByExecutedLayers(layerHashes []hash.Hash) (Link, error) {
-	return nil, nil
-}

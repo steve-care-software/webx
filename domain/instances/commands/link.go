@@ -16,6 +16,23 @@ func createLink(
 	hash hash.Hash,
 	input []byte,
 	linkIns links.Link,
+) Link {
+	return createLinkInternally(hash, input, linkIns, nil)
+}
+
+func createLinkWithCommand(
+	hash hash.Hash,
+	input []byte,
+	linkIns links.Link,
+	command Command,
+) Link {
+	return createLinkInternally(hash, input, linkIns, command)
+}
+
+func createLinkInternally(
+	hash hash.Hash,
+	input []byte,
+	linkIns links.Link,
 	command Command,
 ) Link {
 	out := link{
@@ -41,6 +58,11 @@ func (obj *link) Input() []byte {
 // Link returns the link
 func (obj *link) Link() links.Link {
 	return obj.link
+}
+
+// HasCommand returns true if there is a command, false otherwise
+func (obj *link) HasCommand() bool {
+	return obj.command != nil
 }
 
 // Command returns the command

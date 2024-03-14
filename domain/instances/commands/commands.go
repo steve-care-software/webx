@@ -35,3 +35,13 @@ func (obj *commands) List() []Command {
 func (obj *commands) Last() Command {
 	return obj.list[len(obj.list)-1]
 }
+
+// OriginBytes returns the origin bytes
+func (obj *commands) OriginBytes() [][]byte {
+	output := [][]byte{}
+	for _, oneCommand := range obj.list {
+		output = append(output, oneCommand.Layer().Hash().Bytes())
+	}
+
+	return output
+}

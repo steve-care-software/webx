@@ -72,5 +72,5 @@ type Layer interface {
 
 // LayerRepository represents the layer repository
 type LayerRepository interface {
-	Retrieve(path []string) (Layer, error)
+	Retrieve(hash hash.Hash) (Layer, error)
 }

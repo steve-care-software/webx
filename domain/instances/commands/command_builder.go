@@ -4,8 +4,8 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers"
 )
 
 type commandBuilder struct {
@@ -79,14 +79,15 @@ func (app *commandBuilder) Now() (Command, error) {
 		return nil, errors.New("the result is mandatory in order to build a Command instance")
 	}
 
+	if app.parent == nil {
+		return nil, errors.New("the parent is mandatory in order to build a Command instance")
+	}
+
 	data := [][]byte{
 		app.input,
 		app.layer.Hash().Bytes(),
 		app.result.Hash().Bytes(),
-	}
-
-	if app.parent != nil {
-		data = append(data, app.parent.Hash().Bytes())
+		app.parent.Hash().Bytes(),
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes(data)
@@ -94,9 +95,5 @@ func (app *commandBuilder) Now() (Command, error) {
 		return nil, err
 	}
 
-	if app.parent != nil {
-		return createCommandWithParent(*pHash, app.input, app.layer, app.result, app.parent), nil
-	}
-
-	return createCommand(*pHash, app.input, app.layer, app.result), nil
+	return createCommand(*pHash, app.input, app.layer, app.result, app.parent), nil
 }

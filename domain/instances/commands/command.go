@@ -19,21 +19,6 @@ func createCommand(
 	input []byte,
 	layer layers.Layer,
 	result results.Result,
-) Command {
-	return createCommandInternally(
-		hash,
-		input,
-		layer,
-		result,
-		nil,
-	)
-}
-
-func createCommandWithParent(
-	hash hash.Hash,
-	input []byte,
-	layer layers.Layer,
-	result results.Result,
 	parent Link,
 ) Command {
 	return createCommandInternally(
@@ -81,11 +66,6 @@ func (obj *command) Layer() layers.Layer {
 // Result returns the result
 func (obj *command) Result() results.Result {
 	return obj.result
-}
-
-// HasParent returns true if there is parent, false otherwise
-func (obj *command) HasParent() bool {
-	return obj.parent != nil
 }
 
 // Parent returns the parent, if any

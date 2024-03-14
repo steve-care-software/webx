@@ -40,7 +40,6 @@ type Links interface {
 	Hash() hash.Hash
 	List() []Link
 	Fetch(hash hash.Hash) (Link, error)
-	FetchByExecutedLayers(layerHashes []hash.Hash) (Link, error)
 }
 
 // Repository represents the links repository
@@ -71,5 +70,6 @@ type Link interface {
 
 // LinkRepository represents the link repository
 type LinkRepository interface {
-	Retrieve(path []string) (Link, error)
+	Retrieve() (Link, error)
+	RetrieveFromPath(path hash.Hash) (Link, error)
 }

@@ -66,19 +66,23 @@ func (app *linkBuilder) Now() (Link, error) {
 		return nil, errors.New("the link is mandatory in order to build a Link instance")
 	}
 
-	if app.command == nil {
-		return nil, errors.New("the command is mandatory in order to build a Link instance")
-	}
-
-	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+	data := [][]byte{
 		app.input,
 		app.link.Hash().Bytes(),
-		app.command.Hash().Bytes(),
-	})
+	}
 
+	if app.command != nil {
+		data = append(data, app.command.Hash().Bytes())
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
 	}
 
-	return createLink(*pHash, app.input, app.link, app.command), nil
+	if app.command != nil {
+		return createLinkWithCommand(*pHash, app.input, app.link, app.command), nil
+	}
+
+	return createLink(*pHash, app.input, app.link), nil
 }
