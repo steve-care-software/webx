@@ -6,9 +6,10 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/accounts"
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/compilers"
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/cryptography"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/libraries"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/databases"
 )
 
 type builder struct {
@@ -17,7 +18,8 @@ type builder struct {
 	constant    constants.Constant
 	account     accounts.Account
 	crypto      cryptography.Cryptography
-	library     libraries.Library
+	compiler    compilers.Compiler
+	database    databases.Database
 	query       string
 }
 
@@ -30,7 +32,8 @@ func createBuilder(
 		constant:    nil,
 		account:     nil,
 		crypto:      nil,
-		library:     nil,
+		compiler:    nil,
+		database:    nil,
 		query:       "",
 	}
 
@@ -68,9 +71,15 @@ func (app *builder) WithCryptography(cryptography cryptography.Cryptography) Bui
 	return app
 }
 
-// WithLibrary adds a library to the builder
-func (app *builder) WithLibrary(library libraries.Library) Builder {
-	app.library = library
+// WithCompiler adds a compiler to the builder
+func (app *builder) WithCompiler(compiler compilers.Compiler) Builder {
+	app.compiler = compiler
+	return app
+}
+
+// WithDatabase adds a database to the builder
+func (app *builder) WithDatabase(database databases.Database) Builder {
+	app.database = database
 	return app
 }
 
@@ -103,9 +112,14 @@ func (app *builder) Now() (Assignable, error) {
 		data = append(data, app.crypto.Hash().Bytes())
 	}
 
-	if app.library != nil {
-		data = append(data, []byte("library"))
-		data = append(data, app.library.Hash().Bytes())
+	if app.compiler != nil {
+		data = append(data, []byte("compiler"))
+		data = append(data, app.compiler.Hash().Bytes())
+	}
+
+	if app.database != nil {
+		data = append(data, []byte("database"))
+		data = append(data, app.database.Hash().Bytes())
 	}
 
 	if app.query != "" {
@@ -138,8 +152,12 @@ func (app *builder) Now() (Assignable, error) {
 		return createAssignableWithCryptography(*pHash, app.crypto), nil
 	}
 
-	if app.library != nil {
-		return createAssignableWithLibrary(*pHash, app.library), nil
+	if app.compiler != nil {
+		return createAssignableWithCompiler(*pHash, app.compiler), nil
+	}
+
+	if app.database != nil {
+		return createAssignableWithDatabase(*pHash, app.database), nil
 	}
 
 	if app.query != "" {

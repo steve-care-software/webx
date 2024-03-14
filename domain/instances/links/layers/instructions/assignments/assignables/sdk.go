@@ -4,9 +4,10 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/accounts"
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/compilers"
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/cryptography"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/libraries"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/databases"
 )
 
 // NewBuilder creates a new assignable builder
@@ -24,7 +25,8 @@ type Builder interface {
 	WithConsant(constant constants.Constant) Builder
 	WithAccount(account accounts.Account) Builder
 	WithCryptography(cryptography cryptography.Cryptography) Builder
-	WithLibrary(library libraries.Library) Builder
+	WithCompiler(compiler compilers.Compiler) Builder
+	WithDatabase(database databases.Database) Builder
 	WithQuery(query string) Builder
 	Now() (Assignable, error)
 }
@@ -40,8 +42,10 @@ type Assignable interface {
 	Account() accounts.Account
 	IsCryptography() bool
 	Cryptography() cryptography.Cryptography
-	IsLibrary() bool
-	Library() libraries.Library
 	IsQuery() bool
 	Query() string
+	IsCompiler() bool
+	Compiler() compilers.Compiler
+	IsDatabase() bool
+	Database() databases.Database
 }

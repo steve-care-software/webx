@@ -1,8 +1,8 @@
 package databases
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/libraries/databases/repositories"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/libraries/databases/services"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/databases/repositories"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/databases/services"
 )
 
 // NewDatabaseWithRepositoryForTests creates a new database with repository for tests

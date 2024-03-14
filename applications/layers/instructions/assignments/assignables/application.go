@@ -3,37 +3,41 @@ package assignables
 import (
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/accounts"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/compilers"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/cryptography"
-	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/libraries"
+	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/databases"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 
 type application struct {
+	execCompilerApp   compilers.Application
+	execDatabaseApp   databases.Application
 	execAccountApp    accounts.Application
 	execBytesApp      bytes.Application
 	execConstantApp   constants.Application
 	execCryptoApp     cryptography.Application
-	execLibraryApp    libraries.Application
 	assignableBuilder stacks.AssignableBuilder
 }
 
 func createApplication(
+	execCompilerApp compilers.Application,
+	execDatabaseApp databases.Application,
 	execAccountApp accounts.Application,
 	execBytesApp bytes.Application,
 	execConstantApp constants.Application,
 	execCryptoApp cryptography.Application,
-	execLibraryApp libraries.Application,
 	assignableBuilder stacks.AssignableBuilder,
 ) Application {
 	out := application{
+		execCompilerApp:   execCompilerApp,
+		execDatabaseApp:   execDatabaseApp,
 		execAccountApp:    execAccountApp,
 		execBytesApp:      execBytesApp,
 		execConstantApp:   execConstantApp,
 		execCryptoApp:     execCryptoApp,
-		execLibraryApp:    execLibraryApp,
 		assignableBuilder: assignableBuilder,
 	}
 
@@ -57,14 +61,19 @@ func (app *application) Execute(frame stacks.Frame, assignable assignables.Assig
 		return app.execCryptoApp.Execute(frame, crypto)
 	}
 
-	if assignable.IsLibrary() {
-		library := assignable.Library()
-		return app.execLibraryApp.Execute(frame, library)
-	}
-
 	if assignable.IsAccount() {
 		account := assignable.Account()
 		return app.execAccountApp.Execute(frame, account)
+	}
+
+	if assignable.IsCompiler() {
+		compiler := assignable.Compiler()
+		return app.execCompilerApp.Execute(frame, compiler)
+	}
+
+	if assignable.IsDatabase() {
+		database := assignable.Database()
+		return app.execDatabaseApp.Execute(frame, database)
 	}
 
 	queryVar := assignable.Query()

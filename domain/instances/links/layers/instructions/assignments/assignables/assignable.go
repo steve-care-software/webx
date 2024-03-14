@@ -4,9 +4,10 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/accounts"
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/compilers"
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/cryptography"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/libraries"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/databases"
 )
 
 type assignable struct {
@@ -15,7 +16,8 @@ type assignable struct {
 	constant constants.Constant
 	account  accounts.Account
 	crypto   cryptography.Cryptography
-	library  libraries.Library
+	compiler compilers.Compiler
+	database databases.Database
 	query    string
 }
 
@@ -23,42 +25,49 @@ func createAssignableWithBytes(
 	hash hash.Hash,
 	bytes bytes.Bytes,
 ) Assignable {
-	return createAssignableInternally(hash, bytes, nil, nil, nil, nil, "")
+	return createAssignableInternally(hash, bytes, nil, nil, nil, nil, nil, "")
 }
 
 func createAssignableWithConstant(
 	hash hash.Hash,
 	constant constants.Constant,
 ) Assignable {
-	return createAssignableInternally(hash, nil, constant, nil, nil, nil, "")
+	return createAssignableInternally(hash, nil, constant, nil, nil, nil, nil, "")
 }
 
 func createAssignableWithAccount(
 	hash hash.Hash,
 	account accounts.Account,
 ) Assignable {
-	return createAssignableInternally(hash, nil, nil, account, nil, nil, "")
+	return createAssignableInternally(hash, nil, nil, account, nil, nil, nil, "")
 }
 
 func createAssignableWithCryptography(
 	hash hash.Hash,
 	crypto cryptography.Cryptography,
 ) Assignable {
-	return createAssignableInternally(hash, nil, nil, nil, crypto, nil, "")
+	return createAssignableInternally(hash, nil, nil, nil, crypto, nil, nil, "")
 }
 
-func createAssignableWithLibrary(
+func createAssignableWithCompiler(
 	hash hash.Hash,
-	library libraries.Library,
+	compiler compilers.Compiler,
 ) Assignable {
-	return createAssignableInternally(hash, nil, nil, nil, nil, library, "")
+	return createAssignableInternally(hash, nil, nil, nil, nil, compiler, nil, "")
+}
+
+func createAssignableWithDatabase(
+	hash hash.Hash,
+	database databases.Database,
+) Assignable {
+	return createAssignableInternally(hash, nil, nil, nil, nil, nil, database, "")
 }
 
 func createAssignableWithQuery(
 	hash hash.Hash,
 	query string,
 ) Assignable {
-	return createAssignableInternally(hash, nil, nil, nil, nil, nil, query)
+	return createAssignableInternally(hash, nil, nil, nil, nil, nil, nil, query)
 }
 
 func createAssignableInternally(
@@ -67,7 +76,8 @@ func createAssignableInternally(
 	constant constants.Constant,
 	account accounts.Account,
 	crypto cryptography.Cryptography,
-	library libraries.Library,
+	compiler compilers.Compiler,
+	database databases.Database,
 	query string,
 ) Assignable {
 	out := assignable{
@@ -76,7 +86,8 @@ func createAssignableInternally(
 		constant: constant,
 		account:  account,
 		crypto:   crypto,
-		library:  library,
+		compiler: compiler,
+		database: database,
 		query:    query,
 	}
 
@@ -128,14 +139,24 @@ func (obj *assignable) Cryptography() cryptography.Cryptography {
 	return obj.crypto
 }
 
-// IsLibrary returns true if there is a library, false otherwise
-func (obj *assignable) IsLibrary() bool {
-	return obj.library != nil
+// IsCompiler returns true if there is a compiler, false otherwise
+func (obj *assignable) IsCompiler() bool {
+	return obj.compiler != nil
 }
 
-// Library returns the library, if any
-func (obj *assignable) Library() libraries.Library {
-	return obj.library
+// Compiler returns the compiler, if any
+func (obj *assignable) Compiler() compilers.Compiler {
+	return obj.compiler
+}
+
+// IsDatabase returns true if there is a database, false otherwise
+func (obj *assignable) IsDatabase() bool {
+	return obj.database != nil
+}
+
+// Database returns the database, if any
+func (obj *assignable) Database() databases.Database {
+	return obj.database
 }
 
 // IsQuery returns true if there is a query, false otherwise

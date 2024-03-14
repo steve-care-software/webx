@@ -3,9 +3,10 @@ package assignables
 import (
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/accounts"
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/compilers"
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/cryptography"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/libraries"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/databases"
 )
 
 // NewAssignableWithBytesForTests creates a new assignable with bytes for tests
@@ -48,9 +49,19 @@ func NewAssignableWithCryptographyForTests(cryptography cryptography.Cryptograph
 	return ins
 }
 
-// NewAssignableWithLibraryForTests creates a new assignable with library for tests
-func NewAssignableWithLibraryForTests(library libraries.Library) Assignable {
-	ins, err := NewBuilder().Create().WithLibrary(library).Now()
+// NewAssignableWithCompilerForTests creates a new assignable with compiler for tests
+func NewAssignableWithCompilerForTests(compiler compilers.Compiler) Assignable {
+	ins, err := NewBuilder().Create().WithCompiler(compiler).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewAssignableWithDatabaseForTests creates a new assignable with database for tests
+func NewAssignableWithDatabaseForTests(database databases.Database) Assignable {
+	ins, err := NewBuilder().Create().WithDatabase(database).Now()
 	if err != nil {
 		panic(err)
 	}
