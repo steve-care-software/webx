@@ -1,7 +1,7 @@
 package constants
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/constants"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

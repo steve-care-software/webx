@@ -10,9 +10,9 @@ import (
 	"github.com/steve-care-software/datastencil/domain/accounts"
 	"github.com/steve-care-software/datastencil/domain/accounts/encryptors"
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/accounts/communications"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/accounts/communications/signs"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/accounts/communications/votes"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/instructions/assignments/assignables/accounts/communications"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/instructions/assignments/assignables/accounts/communications/signs"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/instructions/assignments/assignables/accounts/communications/votes"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	stacks_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )

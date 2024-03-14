@@ -9,7 +9,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/accounts"
 	"github.com/steve-care-software/datastencil/domain/accounts/credentials"
 	"github.com/steve-care-software/datastencil/domain/accounts/encryptors"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/accounts/retrieves"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/instructions/assignments/assignables/accounts/retrieves"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	stack_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )

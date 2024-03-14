@@ -5,7 +5,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/accounts/criterias"
 	"github.com/steve-care-software/datastencil/domain/accounts/encryptors"
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/accounts/updates"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/instructions/accounts/updates"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

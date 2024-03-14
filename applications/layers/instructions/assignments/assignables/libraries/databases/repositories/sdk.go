@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"github.com/steve-care-software/datastencil/domain/instances"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/libraries/databases/repositories"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/instructions/assignments/assignables/libraries/databases/repositories"
 	"github.com/steve-care-software/datastencil/domain/skeletons"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )

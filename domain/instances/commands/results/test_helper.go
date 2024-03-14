@@ -2,7 +2,7 @@ package results
 
 import (
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/outputs/kinds"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/outputs/kinds"
 )
 
 // NewResultWithInterruptionForTests creates a new result with interruption for tests

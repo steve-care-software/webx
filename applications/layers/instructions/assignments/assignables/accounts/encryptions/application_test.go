@@ -8,9 +8,9 @@ import (
 	application_encrypts "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/accounts/encryptions/encrypts"
 	"github.com/steve-care-software/datastencil/domain/accounts"
 	"github.com/steve-care-software/datastencil/domain/accounts/encryptors"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/accounts/encryptions"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/accounts/encryptions/decrypts"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/accounts/encryptions/encrypts"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/instructions/assignments/assignables/accounts/encryptions"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/instructions/assignments/assignables/accounts/encryptions/decrypts"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/instructions/assignments/assignables/accounts/encryptions/encrypts"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	stacks_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )

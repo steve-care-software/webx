@@ -2,7 +2,7 @@ package results
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/outputs/kinds"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/outputs/kinds"
 )
 
 type success struct {

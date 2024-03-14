@@ -5,7 +5,7 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers"
 )
 
 type commandBuilder struct {

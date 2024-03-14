@@ -2,7 +2,7 @@ package encrypts
 
 import (
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/accounts/encryptions/encrypts"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/instructions/assignments/assignables/accounts/encryptions/encrypts"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

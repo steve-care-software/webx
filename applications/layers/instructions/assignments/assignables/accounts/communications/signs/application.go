@@ -2,7 +2,7 @@ package signs
 
 import (
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/accounts/communications/signs"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/instructions/assignments/assignables/accounts/communications/signs"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	stacks_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/outputs/kinds"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/outputs/kinds"
 )
 
 func TestResult_withSuccess_Success(t *testing.T) {

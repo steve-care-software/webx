@@ -28,9 +28,9 @@ import (
 	"github.com/steve-care-software/datastencil/applications/mocks"
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables"
-	assignable_bytes "github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/instructions/assignments"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/instructions/assignments/assignables"
+	assignable_bytes "github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

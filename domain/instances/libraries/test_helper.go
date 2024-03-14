@@ -1,7 +1,7 @@
 package libraries
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/links"
 )
 
