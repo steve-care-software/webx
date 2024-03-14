@@ -31,6 +31,6 @@ func NewApplication(
 
 // Application represents a link application
 type Application interface {
-	Root(input []byte) (commands.Commands, error)
-	Execute(input []byte, context commands.Commands) (commands.Commands, error)
+	Execute(input []byte) (commands.Commands, error)
+	ExecuteWithContext(input []byte, context commands.Commands) (commands.Commands, error)
 }

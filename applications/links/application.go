@@ -41,8 +41,8 @@ func createApplication(
 	return &out
 }
 
-// Root executes the root link
-func (app *application) Root(input []byte) (commands.Commands, error) {
+// Execute executes the link
+func (app *application) Execute(input []byte) (commands.Commands, error) {
 	link, err := app.repository.Retrieve()
 	if err != nil {
 		return nil, err
@@ -51,8 +51,8 @@ func (app *application) Root(input []byte) (commands.Commands, error) {
 	return app.execute(input, link, nil)
 }
 
-// Execute executes the lnk with context
-func (app *application) Execute(input []byte, context commands.Commands) (commands.Commands, error) {
+// ExecuteWithContext executes the lnk with context
+func (app *application) ExecuteWithContext(input []byte, context commands.Commands) (commands.Commands, error) {
 	originBytes := context.OriginBytes()
 	pPath, err := app.hashAdapter.FromMultiBytes(originBytes)
 	if err != nil {
