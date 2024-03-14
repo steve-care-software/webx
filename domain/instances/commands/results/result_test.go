@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/outputs/kinds"
 )
 
@@ -20,8 +21,8 @@ func TestResult_withSuccess_Success(t *testing.T) {
 		return
 	}
 
-	if ins.IsFailure() {
-		t.Errorf("the result was expected to NOT be failure")
+	if ins.IsInterruption() {
+		t.Errorf("the result was expected to NOT be an interruption")
 		return
 	}
 
@@ -33,22 +34,22 @@ func TestResult_withSuccess_Success(t *testing.T) {
 }
 
 func TestResult_withFailure_Success(t *testing.T) {
-	failure := NewFailureForTests(1, 56, true)
-	ins := NewResultWithFailureForTests(failure)
+	interruption := interruptions.NewInterruptionWithStopForTests(45)
+	ins := NewResultWithInterruptionForTests(interruption)
 
 	if ins.IsSuccess() {
 		t.Errorf("the result was expected to NOT be success")
 		return
 	}
 
-	if !ins.IsFailure() {
-		t.Errorf("the result was expected to be failure")
+	if !ins.IsInterruption() {
+		t.Errorf("the result was expected to be an interruption")
 		return
 	}
 
-	retFailure := ins.Failure()
-	if !reflect.DeepEqual(failure, retFailure) {
-		t.Errorf("the returned failure is invalid")
+	retInterruption := ins.Interruption()
+	if !reflect.DeepEqual(interruption, retInterruption) {
+		t.Errorf("the returned interruption is invalid")
 		return
 	}
 }

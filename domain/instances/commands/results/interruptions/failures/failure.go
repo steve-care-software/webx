@@ -1,4 +1,4 @@
-package results
+package failures
 
 import "github.com/steve-care-software/datastencil/domain/hash"
 
@@ -7,6 +7,7 @@ type failure struct {
 	index           uint
 	code            uint
 	isRaisedInLayer bool
+	message         string
 }
 
 func createFailure(
@@ -15,7 +16,17 @@ func createFailure(
 	code uint,
 	isRaisedInLayer bool,
 ) Failure {
-	return createFailureInternally(hash, index, code, isRaisedInLayer)
+	return createFailureInternally(hash, index, code, isRaisedInLayer, "")
+}
+
+func createFailureWithMessage(
+	hash hash.Hash,
+	index uint,
+	code uint,
+	isRaisedInLayer bool,
+	message string,
+) Failure {
+	return createFailureInternally(hash, index, code, isRaisedInLayer, message)
 }
 
 func createFailureInternally(
@@ -23,12 +34,14 @@ func createFailureInternally(
 	index uint,
 	code uint,
 	isRaisedInLayer bool,
+	message string,
 ) Failure {
 	out := failure{
 		hash:            hash,
 		index:           index,
 		code:            code,
 		isRaisedInLayer: isRaisedInLayer,
+		message:         message,
 	}
 
 	return &out
@@ -52,4 +65,14 @@ func (obj *failure) Code() uint {
 // IsRaisedInLayer returns true if raisedInLayer, false otherwise
 func (obj *failure) IsRaisedInLayer() bool {
 	return obj.isRaisedInLayer
+}
+
+// HasMessage returns true if there is a message, false otherwise
+func (obj *failure) HasMessage() bool {
+	return obj.message != ""
+}
+
+// Message returns the message, if any
+func (obj *failure) Message() string {
+	return obj.message
 }

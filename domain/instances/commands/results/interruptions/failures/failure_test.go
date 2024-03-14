@@ -1,4 +1,4 @@
-package results
+package failures
 
 import (
 	"testing"
@@ -53,7 +53,7 @@ func TestFailure_isRaisedInLayer_Success(t *testing.T) {
 }
 
 func TestFailure_withoutCode_returnsError(t *testing.T) {
-	_, err := NewFailureBuilder().Create().WithIndex(uint(54)).Now()
+	_, err := NewBuilder().Create().WithIndex(uint(54)).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
@@ -61,7 +61,7 @@ func TestFailure_withoutCode_returnsError(t *testing.T) {
 }
 
 func TestFailure_withoutIndex_returnsError(t *testing.T) {
-	_, err := NewFailureBuilder().Create().WithCode(uint(22)).Now()
+	_, err := NewBuilder().Create().WithCode(uint(22)).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

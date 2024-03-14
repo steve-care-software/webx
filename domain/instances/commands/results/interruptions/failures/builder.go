@@ -1,4 +1,4 @@
-package results
+package failures
 
 import (
 	"errors"
@@ -7,53 +7,61 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
-type failureBuilder struct {
+type builder struct {
 	hashAdapter     hash.Adapter
 	pIndex          *uint
 	pCode           *uint
 	isRaisedInLayer bool
+	message         string
 }
 
-func createFailureBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) FailureBuilder {
-	out := failureBuilder{
+) Builder {
+	out := builder{
 		hashAdapter:     hashAdapter,
 		pIndex:          nil,
 		pCode:           nil,
 		isRaisedInLayer: false,
+		message:         "",
 	}
 
 	return &out
 }
 
 // Create initializes the builder
-func (app *failureBuilder) Create() FailureBuilder {
-	return createFailureBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithIndex adds an index to the builder
-func (app *failureBuilder) WithIndex(index uint) FailureBuilder {
+func (app *builder) WithIndex(index uint) Builder {
 	app.pIndex = &index
 	return app
 }
 
 // WithCode adds a code to the builder
-func (app *failureBuilder) WithCode(code uint) FailureBuilder {
+func (app *builder) WithCode(code uint) Builder {
 	app.pCode = &code
 	return app
 }
 
 // IsRaisedInLayer flags the builder as isRaisedInLayer
-func (app *failureBuilder) IsRaisedInLayer() FailureBuilder {
+func (app *builder) IsRaisedInLayer() Builder {
 	app.isRaisedInLayer = true
 	return app
 }
 
+// WithMessage adds a message to the builder
+func (app *builder) WithMessage(message string) Builder {
+	app.message = message
+	return app
+}
+
 // Now builds a new Failure instance
-func (app *failureBuilder) Now() (Failure, error) {
+func (app *builder) Now() (Failure, error) {
 	if app.pCode == nil {
 		return nil, errors.New("the code is mandatory in order to build a Failure instance")
 	}
@@ -67,14 +75,23 @@ func (app *failureBuilder) Now() (Failure, error) {
 		isRaisedInLayer = "true"
 	}
 
-	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+	data := [][]byte{
 		[]byte(strconv.Itoa(int(*app.pIndex))),
 		[]byte(strconv.Itoa(int(*app.pCode))),
 		[]byte(isRaisedInLayer),
-	})
+	}
 
+	if app.message != "" {
+		data = append(data, []byte(app.message))
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
+	}
+
+	if app.message != "" {
+		return createFailureWithMessage(*pHash, *app.pIndex, *app.pCode, app.isRaisedInLayer, app.message), nil
 	}
 
 	return createFailure(*pHash, *app.pIndex, *app.pCode, app.isRaisedInLayer), nil

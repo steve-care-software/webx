@@ -1,11 +1,14 @@
 package results
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions"
+)
 
 type result struct {
-	hash    hash.Hash
-	success Success
-	failure Failure
+	hash         hash.Hash
+	success      Success
+	interruption interruptions.Interruption
 }
 
 func createResultWithSuccess(
@@ -15,22 +18,22 @@ func createResultWithSuccess(
 	return createResultInternally(hash, success, nil)
 }
 
-func createResultWithFailure(
+func createResultWithInterruption(
 	hash hash.Hash,
-	failure Failure,
+	interruption interruptions.Interruption,
 ) Result {
-	return createResultInternally(hash, nil, failure)
+	return createResultInternally(hash, nil, interruption)
 }
 
 func createResultInternally(
 	hash hash.Hash,
 	success Success,
-	failure Failure,
+	interruption interruptions.Interruption,
 ) Result {
 	out := result{
-		hash:    hash,
-		success: success,
-		failure: failure,
+		hash:         hash,
+		success:      success,
+		interruption: interruption,
 	}
 
 	return &out
@@ -51,12 +54,12 @@ func (obj *result) Success() Success {
 	return obj.success
 }
 
-// IsFailure returns true if there is a failure, false otherwise
-func (obj *result) IsFailure() bool {
-	return obj.failure != nil
+// IsInterruption returns true if there is an interruption, false otherwise
+func (obj *result) IsInterruption() bool {
+	return obj.interruption != nil
 }
 
-// Failure returns the failure, if any
-func (obj *result) Failure() Failure {
-	return obj.failure
+// Interruption returns the interruption, if any
+func (obj *result) Interruption() interruptions.Interruption {
+	return obj.interruption
 }

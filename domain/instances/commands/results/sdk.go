@@ -2,6 +2,7 @@ package results
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/outputs/kinds"
 )
 
@@ -35,19 +36,11 @@ func NewSuccessBuilder() SuccessBuilder {
 	)
 }
 
-// NewFailureBuilder creates a new failure builder
-func NewFailureBuilder() FailureBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createFailureBuilder(
-		hashAdapter,
-	)
-}
-
 // Builder represents the result builder
 type Builder interface {
 	Create() Builder
 	WithSuccess(success Success) Builder
-	WithFailure(failure Failure) Builder
+	WithInterruption(interruption interruptions.Interruption) Builder
 	Now() (Result, error)
 }
 
@@ -56,8 +49,8 @@ type Result interface {
 	Hash() hash.Hash
 	IsSuccess() bool
 	Success() Success
-	IsFailure() bool
-	Failure() Failure
+	IsInterruption() bool
+	Interruption() interruptions.Interruption
 }
 
 // SuccessBuilder represents the success builder
@@ -73,21 +66,4 @@ type Success interface {
 	Hash() hash.Hash
 	Bytes() []byte
 	Kind() kinds.Kind
-}
-
-// FailureBuilder represents the failure builder
-type FailureBuilder interface {
-	Create() FailureBuilder
-	WithIndex(index uint) FailureBuilder
-	WithCode(code uint) FailureBuilder
-	IsRaisedInLayer() FailureBuilder
-	Now() (Failure, error)
-}
-
-// Failure represents failure result
-type Failure interface {
-	Hash() hash.Hash
-	Index() uint
-	Code() uint
-	IsRaisedInLayer() bool
 }

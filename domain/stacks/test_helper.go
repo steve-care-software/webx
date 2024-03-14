@@ -8,6 +8,26 @@ import (
 	stack_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )
 
+// NewStackForTests creates a new stack for tests
+func NewStackForTests(frames Frames) Stack {
+	ins, err := NewBuilder().Create().WithFrames(frames).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewFramesForTests creates a new frames for tests
+func NewFramesForTests(frames []Frame) Frames {
+	ins, err := NewFramesBuilder().Create().WithList(frames).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
 // NewFrameForTests creates a new frame for tests
 func NewFrameForTests() Frame {
 	ins, err := NewFrameBuilder().Create().Now()

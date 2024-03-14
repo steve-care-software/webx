@@ -4,21 +4,22 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions"
 )
 
 type builder struct {
-	hashAdapter hash.Adapter
-	success     Success
-	failure     Failure
+	hashAdapter  hash.Adapter
+	success      Success
+	interruption interruptions.Interruption
 }
 
 func createBuilder(
 	hashAdapter hash.Adapter,
 ) Builder {
 	out := builder{
-		hashAdapter: hashAdapter,
-		success:     nil,
-		failure:     nil,
+		hashAdapter:  hashAdapter,
+		success:      nil,
+		interruption: nil,
 	}
 
 	return &out
@@ -37,9 +38,9 @@ func (app *builder) WithSuccess(success Success) Builder {
 	return app
 }
 
-// WithFailure adds a failure to the builder
-func (app *builder) WithFailure(failure Failure) Builder {
-	app.failure = failure
+// WithInterruption adds an interruption to the builder
+func (app *builder) WithInterruption(interruption interruptions.Interruption) Builder {
+	app.interruption = interruption
 	return app
 }
 
@@ -51,9 +52,9 @@ func (app *builder) Now() (Result, error) {
 		data = append(data, app.success.Hash().Bytes())
 	}
 
-	if app.failure != nil {
-		data = append(data, []byte("isFailure"))
-		data = append(data, app.failure.Hash().Bytes())
+	if app.interruption != nil {
+		data = append(data, []byte("IsInterruption"))
+		data = append(data, app.interruption.Hash().Bytes())
 	}
 
 	if len(data) <= 0 {
@@ -69,5 +70,5 @@ func (app *builder) Now() (Result, error) {
 		return createResultWithSuccess(*pHash, app.success), nil
 	}
 
-	return createResultWithFailure(*pHash, app.failure), nil
+	return createResultWithInterruption(*pHash, app.interruption), nil
 }

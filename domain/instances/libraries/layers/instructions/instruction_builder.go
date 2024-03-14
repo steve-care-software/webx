@@ -106,7 +106,13 @@ func (app *instructionBuilder) Now() (Instruction, error) {
 		data = append(data, app.account.Hash().Bytes())
 	}
 
-	if len(data) <= 0 {
+	if app.database != nil {
+		data = append(data, []byte("database"))
+		data = append(data, app.database.Hash().Bytes())
+	}
+
+	dataLength := len(data)
+	if dataLength != 1 && dataLength != 2 {
 		return nil, errors.New("the Instruction is invalid")
 	}
 

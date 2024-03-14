@@ -1,13 +1,13 @@
 package instructions
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions"
-	"github.com/steve-care-software/datastencil/domain/stacks"
-
 	application_accounts "github.com/steve-care-software/datastencil/applications/layers/instructions/accounts"
 	application_assignments "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments"
 	application_databases "github.com/steve-care-software/datastencil/applications/layers/instructions/databases"
+	"github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions"
+	results_failures "github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions/failures"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 
 // NewApplication creates a new application
@@ -20,7 +20,8 @@ func NewApplication(
 	framesBuilder := stacks.NewFramesBuilder()
 	frameBuilder := stacks.NewFrameBuilder()
 	assignmentsBuilder := stacks.NewAssignmentsBuilder()
-	failureBuilder := results.NewFailureBuilder()
+	interruptionBuilder := interruptions.NewBuilder()
+	failureBuilder := results_failures.NewBuilder()
 	return createApplication(
 		execAccountApp,
 		execAssignmentApp,
@@ -29,11 +30,12 @@ func NewApplication(
 		framesBuilder,
 		frameBuilder,
 		assignmentsBuilder,
+		interruptionBuilder,
 		failureBuilder,
 	)
 }
 
 // Application represents an execution account application
 type Application interface {
-	Execute(stack stacks.Stack, instructions instructions.Instructions) (bool, stacks.Stack, results.Failure, error)
+	Execute(stack stacks.Stack, instructions instructions.Instructions) (stacks.Stack, interruptions.Interruption, error)
 }
