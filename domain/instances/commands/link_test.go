@@ -6,15 +6,15 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/instructions"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/outputs"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/outputs/kinds"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/elements"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/origins"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/origins/operators"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/origins/resources"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/outputs/kinds"
+	"github.com/steve-care-software/datastencil/domain/instances/links"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements"
+	"github.com/steve-care-software/datastencil/domain/instances/links/origins"
+	"github.com/steve-care-software/datastencil/domain/instances/links/origins/operators"
+	"github.com/steve-care-software/datastencil/domain/instances/links/origins/resources"
 )
 
 func TestLink_withCommand_Success(t *testing.T) {

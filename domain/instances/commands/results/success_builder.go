@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/outputs/kinds"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/outputs/kinds"
 )
 
 type successBuilder struct {

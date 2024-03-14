@@ -2,7 +2,7 @@ package inserts
 
 import (
 	"github.com/steve-care-software/datastencil/domain/instances"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/instructions/databases/inserts"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/databases/inserts"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

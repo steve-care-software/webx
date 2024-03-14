@@ -6,7 +6,7 @@ import (
 
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/domain/hash"
-	assignable_bytes "github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/instructions/assignments/assignables/bytes"
+	assignable_bytes "github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

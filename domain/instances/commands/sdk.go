@@ -3,8 +3,8 @@ package commands
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/links"
 )
 
 // NewBuilder creates a new builder instance

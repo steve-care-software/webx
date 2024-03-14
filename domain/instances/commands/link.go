@@ -2,7 +2,7 @@ package commands
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links"
+	"github.com/steve-care-software/datastencil/domain/instances/links"
 )
 
 type link struct {

@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/elements"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/elements/conditions"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/elements/conditions/resources"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/origins"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/origins/operators"
-	origins_resources "github.com/steve-care-software/datastencil/domain/instances/libraries/links/origins/resources"
+	"github.com/steve-care-software/datastencil/domain/instances/links"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/conditions"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/conditions/resources"
+	"github.com/steve-care-software/datastencil/domain/instances/links/origins"
+	"github.com/steve-care-software/datastencil/domain/instances/links/origins/operators"
+	origins_resources "github.com/steve-care-software/datastencil/domain/instances/links/origins/resources"
 	structs "github.com/steve-care-software/datastencil/infrastructure/jsons/structs/libraries/links"
 )
 

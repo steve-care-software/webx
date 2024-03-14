@@ -2,7 +2,7 @@ package compilers
 
 import (
 	"github.com/steve-care-software/datastencil/domain/instances"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/instructions/assignments/assignables/libraries/compilers"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/libraries/compilers"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

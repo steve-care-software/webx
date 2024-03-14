@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers/outputs/kinds"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/outputs/kinds"
 )
 
 func TestSuccess_Success(t *testing.T) {
