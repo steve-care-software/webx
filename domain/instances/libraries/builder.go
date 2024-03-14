@@ -6,7 +6,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/layers"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/links"
-	"github.com/steve-care-software/datastencil/domain/instances/libraries/references"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/references"
 )
 
 type builder struct {

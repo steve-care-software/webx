@@ -6,12 +6,14 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/origins"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/references"
 )
 
 type linkBuilder struct {
 	hashAdapter hash.Adapter
 	origin      origins.Origin
 	elements    elements.Elements
+	references  references.References
 }
 
 func createLinkBuilder(
@@ -21,6 +23,7 @@ func createLinkBuilder(
 		hashAdapter: hashAdapter,
 		origin:      nil,
 		elements:    nil,
+		references:  nil,
 	}
 
 	return &out
@@ -45,6 +48,12 @@ func (app *linkBuilder) WithElements(elements elements.Elements) LinkBuilder {
 	return app
 }
 
+// WithReferences add references to the builder
+func (app *linkBuilder) WithReferences(references references.References) LinkBuilder {
+	app.references = references
+	return app
+}
+
 // Now builds a new Link instance
 func (app *linkBuilder) Now() (Link, error) {
 	if app.origin == nil {
@@ -55,13 +64,22 @@ func (app *linkBuilder) Now() (Link, error) {
 		return nil, errors.New("the elements is mandatory in order to build a Link instance")
 	}
 
-	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+	data := [][]byte{
 		app.origin.Hash().Bytes(),
 		app.elements.Hash().Bytes(),
-	})
+	}
 
+	if app.references != nil {
+		data = append(data, app.references.Hash().Bytes())
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
+	}
+
+	if app.references != nil {
+		return createLinkWithReferences(*pHash, app.origin, app.elements, app.references), nil
 	}
 
 	return createLink(*pHash, app.origin, app.elements), nil

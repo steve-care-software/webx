@@ -4,6 +4,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/elements"
 	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/origins"
+	"github.com/steve-care-software/datastencil/domain/instances/libraries/links/references"
 )
 
 // NewBuilder creates a new builder instance
@@ -58,6 +59,7 @@ type LinkBuilder interface {
 	Create() LinkBuilder
 	WithOrigin(origin origins.Origin) LinkBuilder
 	WithElements(elements elements.Elements) LinkBuilder
+	WithReferences(references references.References) LinkBuilder
 	Now() (Link, error)
 }
 
@@ -66,6 +68,8 @@ type Link interface {
 	Hash() hash.Hash
 	Origin() origins.Origin
 	Elements() elements.Elements
+	HasReferences() bool
+	References() references.References
 }
 
 // LinkRepository represents the link repository
