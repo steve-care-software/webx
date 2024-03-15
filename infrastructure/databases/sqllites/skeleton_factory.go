@@ -666,13 +666,11 @@ func (app *skeletonFactory) concreteConnections() connections.Connections {
 				"link",
 				[]string{
 					"link",
-					"link",
 				},
 			),
 			app.connectionField(
 				"elements",
 				[]string{
-					"link",
 					"link",
 					"element",
 				},

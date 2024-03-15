@@ -278,7 +278,7 @@ func NewInstanceRepository(
 
 			return builder.Now()
 		},
-		"link_layeroutput": func(values map[string]interface{}) (instances.Instance, error) {
+		"link_layer_output": func(values map[string]interface{}) (instances.Instance, error) {
 			builder := outputs.NewBuilder()
 			if value, ok := values["variable"]; ok {
 				builder.WithVariable(value.(string))
@@ -301,7 +301,7 @@ func NewInstanceRepository(
 
 			return builder.Now()
 		},
-		"link_layeroutput_kind": func(values map[string]interface{}) (instances.Instance, error) {
+		"link_layer_output_kind": func(values map[string]interface{}) (instances.Instance, error) {
 			builder := kinds.NewBuilder()
 			if value, ok := values["prompt"]; ok {
 				if value.(int64) != 0 {
@@ -317,7 +317,7 @@ func NewInstanceRepository(
 
 			return builder.Now()
 		},
-		"link_layerinstruction": func(values map[string]interface{}) (instances.Instance, error) {
+		"link_layer_instruction": func(values map[string]interface{}) (instances.Instance, error) {
 			builder := instructions.NewInstructionBuilder()
 			if value, ok := values["assignment"]; ok {
 				if pIns, ok := value.(*instances.Instance); ok {
@@ -330,7 +330,7 @@ func NewInstanceRepository(
 
 			return builder.Now()
 		},
-		"link_layerinstruction_assignment": func(values map[string]interface{}) (instances.Instance, error) {
+		"link_layer_instruction_assignment": func(values map[string]interface{}) (instances.Instance, error) {
 			builder := assignments.NewBuilder()
 			if value, ok := values["name"]; ok {
 				builder.WithName(value.(string))
@@ -347,7 +347,7 @@ func NewInstanceRepository(
 
 			return builder.Now()
 		},
-		"link_layerinstruction_assignment_assignable": func(values map[string]interface{}) (instances.Instance, error) {
+		"link_layer_instruction_assignment_assignable": func(values map[string]interface{}) (instances.Instance, error) {
 			builder := assignables.NewBuilder()
 			if value, ok := values["bytes"]; ok {
 				if pIns, ok := value.(*instances.Instance); ok {
@@ -360,7 +360,7 @@ func NewInstanceRepository(
 
 			return builder.Now()
 		},
-		"link_layerinstruction_assignment_assignable_bytes": func(values map[string]interface{}) (instances.Instance, error) {
+		"link_layer_instruction_assignment_assignable_bytes": func(values map[string]interface{}) (instances.Instance, error) {
 			builder := layers_bytes.NewBuilder()
 			if value, ok := values["joins"]; ok {
 				if value != nil {
@@ -419,7 +419,7 @@ func NewInstanceRepository(
 				WithList(output).
 				Now()
 		},
-		"link_layerinstructions": func(input []interface{}) (instances.Instance, error) {
+		"layer_instructions": func(input []interface{}) (instances.Instance, error) {
 			output := []instructions.Instruction{}
 			for _, oneIns := range input {
 				output = append(output, oneIns.(instructions.Instruction))
@@ -766,7 +766,7 @@ func NewInstanceService(
 
 			return nil, errors.New("the Instance was expected to contain a Layers instance")
 		},
-		"link_layer_instructions": func(ins instances.Instance) ([]hash.Hash, error) {
+		"layer_instructions": func(ins instances.Instance) ([]hash.Hash, error) {
 			if ins, ok := ins.(instructions.Instructions); ok {
 				output := []hash.Hash{}
 				list := ins.List()
