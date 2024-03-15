@@ -3,37 +3,38 @@ package elements
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/conditions"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/logics"
 )
 
 type element struct {
 	hash      hash.Hash
-	layer     hash.Hash
+	logic     logics.Logic
 	condition conditions.Condition
 }
 
 func createElement(
 	hash hash.Hash,
-	layer hash.Hash,
+	logic logics.Logic,
 ) Element {
-	return createElementInternally(hash, layer, nil)
+	return createElementInternally(hash, logic, nil)
 }
 
 func createElementWithCondition(
 	hash hash.Hash,
-	layer hash.Hash,
+	logic logics.Logic,
 	condition conditions.Condition,
 ) Element {
-	return createElementInternally(hash, layer, condition)
+	return createElementInternally(hash, logic, condition)
 }
 
 func createElementInternally(
 	hash hash.Hash,
-	layer hash.Hash,
+	logic logics.Logic,
 	condition conditions.Condition,
 ) Element {
 	out := element{
 		hash:      hash,
-		layer:     layer,
+		logic:     logic,
 		condition: condition,
 	}
 
@@ -45,9 +46,9 @@ func (obj *element) Hash() hash.Hash {
 	return obj.hash
 }
 
-// Layer returns the layer
-func (obj *element) Layer() hash.Hash {
-	return obj.layer
+// Logic returns the logic
+func (obj *element) Logic() logics.Logic {
+	return obj.logic
 }
 
 // HasCondition returns true if there is a condition, false otheriwse

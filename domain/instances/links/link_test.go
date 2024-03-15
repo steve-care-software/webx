@@ -6,15 +6,34 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/logics"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/logics/locations"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/outputs/kinds"
 	"github.com/steve-care-software/datastencil/domain/instances/links/origins"
 	"github.com/steve-care-software/datastencil/domain/instances/links/origins/operators"
 	"github.com/steve-care-software/datastencil/domain/instances/links/origins/resources"
 )
 
 func TestLink_Success(t *testing.T) {
-	pLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
 	elements := elements.NewElementsForTests([]elements.Element{
-		elements.NewElementForTests(*pLayer),
+		elements.NewElementForTests(
+			logics.NewLogicForTests(
+				layers.NewLayerForTests(
+					instructions.NewInstructionsForTests([]instructions.Instruction{
+						instructions.NewInstructionWithStopForTests(),
+					}),
+					outputs.NewOutputForTests(
+						"myVariable",
+						kinds.NewKindWithContinueForTests(),
+					),
+					"myInput",
+				),
+				locations.NewLocationWithSingleForTests([]byte("this is some command")),
+			),
+		),
 	})
 
 	pFirstLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for first layer"))
@@ -61,9 +80,22 @@ func TestLink_withoutElements_returnsError(t *testing.T) {
 }
 
 func TestLink_withoutOrigin_returnsError(t *testing.T) {
-	pLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
 	elements := elements.NewElementsForTests([]elements.Element{
-		elements.NewElementForTests(*pLayer),
+		elements.NewElementForTests(
+			logics.NewLogicForTests(
+				layers.NewLayerForTests(
+					instructions.NewInstructionsForTests([]instructions.Instruction{
+						instructions.NewInstructionWithStopForTests(),
+					}),
+					outputs.NewOutputForTests(
+						"myVariable",
+						kinds.NewKindWithContinueForTests(),
+					),
+					"myInput",
+				),
+				locations.NewLocationWithSingleForTests([]byte("this is some command")),
+			),
+		),
 	})
 
 	_, err := NewLinkBuilder().Create().WithElements(elements).Now()
