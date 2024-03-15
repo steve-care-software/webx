@@ -1,31 +1,42 @@
 package resources
 
+import "github.com/steve-care-software/datastencil/domain/hash"
+
 type field struct {
+	hash     hash.Hash
 	name     string
 	kind     Kind
 	canBeNil bool
 }
 
 func createField(
+	hash hash.Hash,
 	name string,
 	kind Kind,
 	canBeNil bool,
 ) Field {
-	return createFieldInternally(name, kind, canBeNil)
+	return createFieldInternally(hash, name, kind, canBeNil)
 }
 
 func createFieldInternally(
+	hash hash.Hash,
 	name string,
 	kind Kind,
 	canBeNil bool,
 ) Field {
 	out := field{
+		hash:     hash,
 		name:     name,
 		kind:     kind,
 		canBeNil: canBeNil,
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *field) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Name returns the name

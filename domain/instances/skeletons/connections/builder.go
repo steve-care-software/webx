@@ -4,15 +4,21 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+
+	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
 type builder struct {
-	list []Connection
+	hashAdapter hash.Adapter
+	list        []Connection
 }
 
-func createBuilder() Builder {
+func createBuilder(
+	hashAdapter hash.Adapter,
+) Builder {
 	out := builder{
-		list: nil,
+		hashAdapter: hashAdapter,
+		list:        nil,
 	}
 
 	return &out
@@ -20,7 +26,9 @@ func createBuilder() Builder {
 
 // Create initializes the builder
 func (app *builder) Create() Builder {
-	return createBuilder()
+	return createBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithList adds a list to the builder
@@ -63,5 +71,15 @@ func (app *builder) Now() (Connections, error) {
 		mpByPaths[keyname] = oneConnection
 	}
 
-	return createConnections(mpByPaths, mp, app.list), nil
+	data := [][]byte{}
+	for _, oneConnection := range app.list {
+		data = append(data, oneConnection.Hash().Bytes())
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	return createConnections(*pHash, mpByPaths, mp, app.list), nil
 }

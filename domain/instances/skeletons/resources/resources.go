@@ -4,23 +4,33 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+
+	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
 type resources struct {
+	hash hash.Hash
 	mp   map[string]Resource
 	list []Resource
 }
 
 func createResources(
+	hash hash.Hash,
 	mp map[string]Resource,
 	list []Resource,
 ) Resources {
 	out := resources{
+		hash: hash,
 		mp:   mp,
 		list: list,
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *resources) Hash() hash.Hash {
+	return obj.hash
 }
 
 // List returns the list

@@ -6,7 +6,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/instances/queries"
-	"github.com/steve-care-software/datastencil/domain/skeletons"
+	"github.com/steve-care-software/datastencil/domain/instances/skeletons"
 	"github.com/steve-care-software/datastencil/domain/stacks/accounts"
 	stack_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )

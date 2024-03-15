@@ -1,41 +1,54 @@
 package resources
 
+import "github.com/steve-care-software/datastencil/domain/hash"
+
 type kind struct {
+	hash       hash.Hash
 	native     Native
 	reference  []string
 	connection string
 }
 
 func createKindWithNative(
+	hash hash.Hash,
 	native Native,
 ) Kind {
-	return createKindInternally(native, nil, "")
+	return createKindInternally(hash, native, nil, "")
 }
 
 func createKindWithReference(
+	hash hash.Hash,
 	reference []string,
 ) Kind {
-	return createKindInternally(nil, reference, "")
+	return createKindInternally(hash, nil, reference, "")
 }
 
 func createKindWithConnection(
+	hash hash.Hash,
 	connection string,
 ) Kind {
-	return createKindInternally(nil, nil, connection)
+	return createKindInternally(hash, nil, nil, connection)
 }
 
 func createKindInternally(
+	hash hash.Hash,
 	native Native,
 	reference []string,
 	connection string,
 ) Kind {
 	out := kind{
+		hash:       hash,
 		native:     native,
 		reference:  reference,
 		connection: connection,
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *kind) Hash() hash.Hash {
+	return obj.hash
 }
 
 // IsNative returns true if there is a native, false otherwise

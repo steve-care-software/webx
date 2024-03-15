@@ -1,5 +1,7 @@
 package resources
 
+import "github.com/steve-care-software/datastencil/domain/hash"
+
 const (
 	// NativeInteger represents the integer
 	NativeInteger (uint8) = iota
@@ -16,37 +18,58 @@ const (
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
-	return createBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
 }
 
 // NewResourceBuilder creates a new resource builder
 func NewResourceBuilder() ResourceBuilder {
-	return createResourceBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createResourceBuilder(
+		hashAdapter,
+	)
 }
 
 // NewFieldsBuilder creates a new fields builder
 func NewFieldsBuilder() FieldsBuilder {
-	return createFieldsBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createFieldsBuilder(
+		hashAdapter,
+	)
 }
 
 // NewFieldBuilder creates a new field builder
 func NewFieldBuilder() FieldBuilder {
-	return createFieldBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createFieldBuilder(
+		hashAdapter,
+	)
 }
 
 // NewKindBuilder creates a new kind builder
 func NewKindBuilder() KindBuilder {
-	return createKindBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createKindBuilder(
+		hashAdapter,
+	)
 }
 
 // NewNativeBuilder creates a new native builder
 func NewNativeBuilder() NativeBuilder {
-	return createNativeBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createNativeBuilder(
+		hashAdapter,
+	)
 }
 
 // NewListBuilder creates a new list builder
 func NewListBuilder() ListBuilder {
-	return createListBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createListBuilder(
+		hashAdapter,
+	)
 }
 
 // Builder represents a resources builder
@@ -58,6 +81,7 @@ type Builder interface {
 
 // Resources represents resources
 type Resources interface {
+	Hash() hash.Hash
 	List() []Resource
 	FetchByName(name string) (Resource, error)
 	FetchByPath(path []string) (Resource, error)
@@ -75,6 +99,7 @@ type ResourceBuilder interface {
 
 // Resource represents a schema resource
 type Resource interface {
+	Hash() hash.Hash
 	Name() string
 	Key() Field
 	Fields() Fields
@@ -91,6 +116,7 @@ type FieldsBuilder interface {
 
 // Fields represents fields
 type Fields interface {
+	Hash() hash.Hash
 	List() []Field
 }
 
@@ -105,15 +131,10 @@ type FieldBuilder interface {
 
 // Field represents a field
 type Field interface {
+	Hash() hash.Hash
 	Name() string
 	Kind() Kind
 	CanBeNil() bool
-}
-
-// BuilderInstruction represents a builder instruction
-type BuilderInstruction interface {
-	Method() string
-	ContainsParam() bool
 }
 
 // KindBuilder represents a kind builder
@@ -127,6 +148,7 @@ type KindBuilder interface {
 
 // Kind represents a kind
 type Kind interface {
+	Hash() hash.Hash
 	IsNative() bool
 	Native() Native
 	IsReference() bool
@@ -145,6 +167,7 @@ type NativeBuilder interface {
 
 // Native represents a native kind
 type Native interface {
+	Hash() hash.Hash
 	IsSingle() bool
 	Single() *uint8
 	IsList() bool
@@ -161,6 +184,7 @@ type ListBuilder interface {
 
 // List represents a list
 type List interface {
+	Hash() hash.Hash
 	Value() uint8
 	Delimiter() string
 }

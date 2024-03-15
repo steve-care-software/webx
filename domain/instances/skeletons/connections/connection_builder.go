@@ -1,18 +1,26 @@
 package connections
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/datastencil/domain/hash"
+)
 
 type connectionBuilder struct {
-	name string
-	from Field
-	to   Field
+	hashAdapter hash.Adapter
+	name        string
+	from        Field
+	to          Field
 }
 
-func createConnectionBuilder() ConnectionBuilder {
+func createConnectionBuilder(
+	hashAdapter hash.Adapter,
+) ConnectionBuilder {
 	out := connectionBuilder{
-		name: "",
-		from: nil,
-		to:   nil,
+		hashAdapter: hashAdapter,
+		name:        "",
+		from:        nil,
+		to:          nil,
 	}
 
 	return &out
@@ -20,7 +28,9 @@ func createConnectionBuilder() ConnectionBuilder {
 
 // Create initializes the builder
 func (app *connectionBuilder) Create() ConnectionBuilder {
-	return createConnectionBuilder()
+	return createConnectionBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithName adds a name to the builder
@@ -55,7 +65,18 @@ func (app *connectionBuilder) Now() (Connection, error) {
 		return nil, errors.New("the to field is mandatory in order to build a Connection instance")
 	}
 
+	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+		[]byte(app.name),
+		app.from.Hash().Bytes(),
+		app.to.Hash().Bytes(),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
 	return createConnection(
+		*pHash,
 		app.name,
 		app.from,
 		app.to,

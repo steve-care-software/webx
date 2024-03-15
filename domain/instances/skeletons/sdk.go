@@ -1,13 +1,17 @@
 package skeletons
 
 import (
-	"github.com/steve-care-software/datastencil/domain/skeletons/connections"
-	"github.com/steve-care-software/datastencil/domain/skeletons/resources"
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances/skeletons/connections"
+	"github.com/steve-care-software/datastencil/domain/instances/skeletons/resources"
 )
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
-	return createBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
 }
 
 // Factory represents the skeleton factory
@@ -26,6 +30,7 @@ type Builder interface {
 
 // Skeleton represents a skeleton
 type Skeleton interface {
+	Hash() hash.Hash
 	Version() uint
 	Resources() resources.Resources
 	HasConnections() bool

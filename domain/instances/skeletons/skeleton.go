@@ -1,11 +1,13 @@
 package skeletons
 
 import (
-	"github.com/steve-care-software/datastencil/domain/skeletons/connections"
-	"github.com/steve-care-software/datastencil/domain/skeletons/resources"
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances/skeletons/connections"
+	"github.com/steve-care-software/datastencil/domain/instances/skeletons/resources"
 )
 
 type skeleton struct {
+	hash        hash.Hash
 	version     uint
 	resources   resources.Resources
 	connections connections.Connections
@@ -13,44 +15,50 @@ type skeleton struct {
 }
 
 func createSkeleton(
+	hash hash.Hash,
 	version uint,
 	resources resources.Resources,
 ) Skeleton {
-	return createSkeletonInternally(version, resources, nil, nil)
+	return createSkeletonInternally(hash, version, resources, nil, nil)
 }
 
 func createSkeletonWithConnections(
+	hash hash.Hash,
 	version uint,
 	resources resources.Resources,
 	connections connections.Connections,
 ) Skeleton {
-	return createSkeletonInternally(version, resources, connections, nil)
+	return createSkeletonInternally(hash, version, resources, connections, nil)
 }
 
 func createSkeletonWithPrevious(
+	hash hash.Hash,
 	version uint,
 	resources resources.Resources,
 	previous Skeleton,
 ) Skeleton {
-	return createSkeletonInternally(version, resources, nil, previous)
+	return createSkeletonInternally(hash, version, resources, nil, previous)
 }
 
 func createSkeletonWithConnectionsAndPrevious(
+	hash hash.Hash,
 	version uint,
 	resources resources.Resources,
 	connections connections.Connections,
 	previous Skeleton,
 ) Skeleton {
-	return createSkeletonInternally(version, resources, connections, previous)
+	return createSkeletonInternally(hash, version, resources, connections, previous)
 }
 
 func createSkeletonInternally(
+	hash hash.Hash,
 	version uint,
 	resources resources.Resources,
 	connections connections.Connections,
 	previous Skeleton,
 ) Skeleton {
 	out := skeleton{
+		hash:        hash,
 		version:     version,
 		resources:   resources,
 		connections: connections,
@@ -58,6 +66,11 @@ func createSkeletonInternally(
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *skeleton) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Version returns the version

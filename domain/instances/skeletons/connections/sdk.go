@@ -1,18 +1,29 @@
 package connections
 
+import "github.com/steve-care-software/datastencil/domain/hash"
+
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
-	return createBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
 }
 
 // NewConnectionBuilder creates a new connection builder
 func NewConnectionBuilder() ConnectionBuilder {
-	return createConnectionBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createConnectionBuilder(
+		hashAdapter,
+	)
 }
 
 // NewFieldBuilder creates a new field builder
 func NewFieldBuilder() FieldBuilder {
-	return createFieldBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createFieldBuilder(
+		hashAdapter,
+	)
 }
 
 // Builder represents the connections builder
@@ -24,6 +35,7 @@ type Builder interface {
 
 // Connections represents connections
 type Connections interface {
+	Hash() hash.Hash
 	List() []Connection
 	Fetch(name string) (Connection, error)
 	FetchByPaths(from []string, to []string) (Connection, error)
@@ -40,6 +52,7 @@ type ConnectionBuilder interface {
 
 // Connection represents a connection
 type Connection interface {
+	Hash() hash.Hash
 	Name() string
 	From() Field
 	To() Field
@@ -55,6 +68,7 @@ type FieldBuilder interface {
 
 // Field represents a connection field
 type Field interface {
+	Hash() hash.Hash
 	Name() string
 	Path() []string
 }

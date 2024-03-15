@@ -1,14 +1,22 @@
 package resources
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/datastencil/domain/hash"
+)
 
 type fieldsBuilder struct {
-	list []Field
+	hashAdapter hash.Adapter
+	list        []Field
 }
 
-func createFieldsBuilder() FieldsBuilder {
+func createFieldsBuilder(
+	hashAdapter hash.Adapter,
+) FieldsBuilder {
 	out := fieldsBuilder{
-		list: nil,
+		hashAdapter: hashAdapter,
+		list:        nil,
 	}
 
 	return &out
@@ -16,7 +24,9 @@ func createFieldsBuilder() FieldsBuilder {
 
 // Create initializes the fieldsBuilder
 func (app *fieldsBuilder) Create() FieldsBuilder {
-	return createFieldsBuilder()
+	return createFieldsBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithList adds a list to the fieldsBuilder
@@ -35,5 +45,15 @@ func (app *fieldsBuilder) Now() (Fields, error) {
 		return nil, errors.New("there must be at least 1 Field in order to build a Fields instance")
 	}
 
-	return createFields(app.list), nil
+	data := [][]byte{}
+	for _, oneField := range app.list {
+		data = append(data, oneField.Hash().Bytes())
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	return createFields(*pHash, app.list), nil
 }

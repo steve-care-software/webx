@@ -1,23 +1,33 @@
 package connections
 
+import "github.com/steve-care-software/datastencil/domain/hash"
+
 type connection struct {
+	hash hash.Hash
 	name string
 	from Field
 	to   Field
 }
 
 func createConnection(
+	hash hash.Hash,
 	name string,
 	from Field,
 	to Field,
 ) Connection {
 	out := connection{
+		hash: hash,
 		name: name,
 		from: from,
 		to:   to,
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *connection) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Name returns the name

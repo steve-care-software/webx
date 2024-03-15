@@ -1,20 +1,28 @@
 package resources
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/datastencil/domain/hash"
+)
 
 type resourceBuilder struct {
-	name     string
-	key      Field
-	fields   Fields
-	children Resources
+	hashAdapter hash.Adapter
+	name        string
+	key         Field
+	fields      Fields
+	children    Resources
 }
 
-func createResourceBuilder() ResourceBuilder {
+func createResourceBuilder(
+	hashAdapter hash.Adapter,
+) ResourceBuilder {
 	out := resourceBuilder{
-		name:     "",
-		key:      nil,
-		fields:   nil,
-		children: nil,
+		hashAdapter: hashAdapter,
+		name:        "",
+		key:         nil,
+		fields:      nil,
+		children:    nil,
 	}
 
 	return &out
@@ -22,7 +30,9 @@ func createResourceBuilder() ResourceBuilder {
 
 // Create initializes the builder
 func (app *resourceBuilder) Create() ResourceBuilder {
-	return createResourceBuilder()
+	return createResourceBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithName adds a name to the builder
@@ -63,8 +73,24 @@ func (app *resourceBuilder) Now() (Resource, error) {
 		return nil, errors.New("the fields is mandatory in order to build a Resource instance")
 	}
 
+	data := [][]byte{
+		[]byte(app.name),
+		app.key.Hash().Bytes(),
+		app.fields.Hash().Bytes(),
+	}
+
+	if app.children != nil {
+		data = append(data, app.children.Hash().Bytes())
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
 	if app.children != nil {
 		return createResourceWithChildren(
+			*pHash,
 			app.name,
 			app.key,
 			app.fields,
@@ -73,6 +99,7 @@ func (app *resourceBuilder) Now() (Resource, error) {
 	}
 
 	return createResource(
+		*pHash,
 		app.name,
 		app.key,
 		app.fields,

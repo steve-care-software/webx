@@ -1,18 +1,26 @@
 package resources
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/datastencil/domain/hash"
+)
 
 type fieldBuilder struct {
-	name     string
-	kind     Kind
-	canBeNil bool
+	hashAdapter hash.Adapter
+	name        string
+	kind        Kind
+	canBeNil    bool
 }
 
-func createFieldBuilder() FieldBuilder {
+func createFieldBuilder(
+	hashAdapter hash.Adapter,
+) FieldBuilder {
 	out := fieldBuilder{
-		name:     "",
-		kind:     nil,
-		canBeNil: false,
+		hashAdapter: hashAdapter,
+		name:        "",
+		kind:        nil,
+		canBeNil:    false,
 	}
 
 	return &out
@@ -20,7 +28,9 @@ func createFieldBuilder() FieldBuilder {
 
 // Create initializes the builder
 func (app *fieldBuilder) Create() FieldBuilder {
-	return createFieldBuilder()
+	return createFieldBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithName adds a name to the builder
@@ -51,7 +61,17 @@ func (app *fieldBuilder) Now() (Field, error) {
 		return nil, errors.New("the kind is mandatory in order to build a Field instance")
 	}
 
+	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+		[]byte(app.name),
+		app.kind.Hash().Bytes(),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
 	return createField(
+		*pHash,
 		app.name,
 		app.kind,
 		app.canBeNil,

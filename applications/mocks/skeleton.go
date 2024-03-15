@@ -1,9 +1,10 @@
 package mocks
 
 import (
-	"github.com/steve-care-software/datastencil/domain/skeletons"
-	"github.com/steve-care-software/datastencil/domain/skeletons/connections"
-	"github.com/steve-care-software/datastencil/domain/skeletons/resources"
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances/skeletons"
+	"github.com/steve-care-software/datastencil/domain/instances/skeletons/connections"
+	"github.com/steve-care-software/datastencil/domain/instances/skeletons/resources"
 )
 
 type skeleton struct {
@@ -15,6 +16,11 @@ func createSkeleton() skeletons.Skeleton {
 		version: 1,
 	}
 	return &out
+}
+
+// Hash returns the hash
+func (obj *skeleton) Hash() hash.Hash {
+	return nil
 }
 
 // Version returns the version

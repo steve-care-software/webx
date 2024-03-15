@@ -1,16 +1,24 @@
 package resources
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/datastencil/domain/hash"
+)
 
 type listBuilder struct {
-	pValue    *uint8
-	delimiter string
+	hashAdapter hash.Adapter
+	pValue      *uint8
+	delimiter   string
 }
 
-func createListBuilder() ListBuilder {
+func createListBuilder(
+	hashAdapter hash.Adapter,
+) ListBuilder {
 	out := listBuilder{
-		pValue:    nil,
-		delimiter: "",
+		hashAdapter: hashAdapter,
+		pValue:      nil,
+		delimiter:   "",
 	}
 
 	return &out
@@ -18,7 +26,9 @@ func createListBuilder() ListBuilder {
 
 // Create initializes the builder
 func (app *listBuilder) Create() ListBuilder {
-	return createListBuilder()
+	return createListBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithValue adds a value to the builder
@@ -43,5 +53,16 @@ func (app *listBuilder) Now() (List, error) {
 		return nil, errors.New("the delimiter is mandatory in order to build a List instance")
 	}
 
-	return createList(*app.pValue, app.delimiter), nil
+	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+		[]byte{
+			*app.pValue,
+		},
+		[]byte(app.delimiter),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return createList(*pHash, *app.pValue, app.delimiter), nil
 }

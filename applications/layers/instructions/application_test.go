@@ -18,15 +18,14 @@ import (
 	application_assignments_assignables_accounts_encryptions_encrypts "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/accounts/encryptions/encrypts"
 	application_assignments_assignables_accounts_retrieves "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/accounts/retrieves"
 	application_assignments_assignables_bytes "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/bytes"
+	application_assignments_compilers "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/compilers"
 	application_assignments_assignables_constants "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/constants"
 	application_assignments_assignables_cryptography "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/cryptography"
 	application_assignments_assignables_cryptography_decrypts "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/cryptography/decrypts"
 	application_assignments_assignables_cryptography_encrypts "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/cryptography/encrypts"
-	application_assignments_libraries "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/libraries"
-	application_assignments_libraries_compilers "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/libraries/compilers"
-	application_assignments_libraries_databases "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/libraries/databases"
-	application_assignments_libraries_databases_repositories "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/libraries/databases/repositories"
-	application_assignments_libraries_databases_services "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/libraries/databases/services"
+	application_assignments_databases "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/databases"
+	application_assignments_databases_repositories "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/databases/repositories"
+	application_assignments_databases_services "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/databases/services"
 	application_databases "github.com/steve-care-software/datastencil/applications/layers/instructions/databases"
 	application_databases_deletes "github.com/steve-care-software/datastencil/applications/layers/instructions/databases/deletes"
 	application_databases_inserts "github.com/steve-care-software/datastencil/applications/layers/instructions/databases/inserts"
@@ -97,6 +96,18 @@ func TestExecute_WithIsStop_Success(t *testing.T) {
 		),
 		application_assignments.NewApplication(
 			application_assignments_assignables.NewApplication(
+				application_assignments_compilers.NewApplication(
+					instanceAdapter,
+				),
+				application_assignments_databases.NewApplication(
+					application_assignments_databases_repositories.NewApplication(
+						instanceRepository,
+						skeleton,
+					),
+					application_assignments_databases_services.NewApplication(
+						instanceService,
+					),
+				),
 				application_assignments_assignables_accounts.NewApplication(
 					application_assignments_assignables_accounts_communications.NewApplication(
 						application_assignments_assignables_accounts_communications_signs.NewApplication(),
@@ -120,20 +131,6 @@ func TestExecute_WithIsStop_Success(t *testing.T) {
 					),
 					application_assignments_assignables_cryptography_encrypts.NewApplication(
 						encryptor,
-					),
-				),
-				application_assignments_libraries.NewApplication(
-					application_assignments_libraries_compilers.NewApplication(
-						instanceAdapter,
-					),
-					application_assignments_libraries_databases.NewApplication(
-						application_assignments_libraries_databases_repositories.NewApplication(
-							instanceRepository,
-							skeleton,
-						),
-						application_assignments_libraries_databases_services.NewApplication(
-							instanceService,
-						),
 					),
 				),
 			),
@@ -231,6 +228,18 @@ func TestExecute_WithRaisedError_Success(t *testing.T) {
 		),
 		application_assignments.NewApplication(
 			application_assignments_assignables.NewApplication(
+				application_assignments_compilers.NewApplication(
+					instanceAdapter,
+				),
+				application_assignments_databases.NewApplication(
+					application_assignments_databases_repositories.NewApplication(
+						instanceRepository,
+						skeleton,
+					),
+					application_assignments_databases_services.NewApplication(
+						instanceService,
+					),
+				),
 				application_assignments_assignables_accounts.NewApplication(
 					application_assignments_assignables_accounts_communications.NewApplication(
 						application_assignments_assignables_accounts_communications_signs.NewApplication(),
@@ -254,20 +263,6 @@ func TestExecute_WithRaisedError_Success(t *testing.T) {
 					),
 					application_assignments_assignables_cryptography_encrypts.NewApplication(
 						encryptor,
-					),
-				),
-				application_assignments_libraries.NewApplication(
-					application_assignments_libraries_compilers.NewApplication(
-						instanceAdapter,
-					),
-					application_assignments_libraries_databases.NewApplication(
-						application_assignments_libraries_databases_repositories.NewApplication(
-							instanceRepository,
-							skeleton,
-						),
-						application_assignments_libraries_databases_services.NewApplication(
-							instanceService,
-						),
 					),
 				),
 			),
@@ -359,6 +354,18 @@ func TestExecute_WithAccount_Succeeds_Success(t *testing.T) {
 		),
 		application_assignments.NewApplication(
 			application_assignments_assignables.NewApplication(
+				application_assignments_compilers.NewApplication(
+					instanceAdapter,
+				),
+				application_assignments_databases.NewApplication(
+					application_assignments_databases_repositories.NewApplication(
+						instanceRepository,
+						skeleton,
+					),
+					application_assignments_databases_services.NewApplication(
+						instanceService,
+					),
+				),
 				application_assignments_assignables_accounts.NewApplication(
 					application_assignments_assignables_accounts_communications.NewApplication(
 						application_assignments_assignables_accounts_communications_signs.NewApplication(),
@@ -382,20 +389,6 @@ func TestExecute_WithAccount_Succeeds_Success(t *testing.T) {
 					),
 					application_assignments_assignables_cryptography_encrypts.NewApplication(
 						encryptor,
-					),
-				),
-				application_assignments_libraries.NewApplication(
-					application_assignments_libraries_compilers.NewApplication(
-						instanceAdapter,
-					),
-					application_assignments_libraries_databases.NewApplication(
-						application_assignments_libraries_databases_repositories.NewApplication(
-							instanceRepository,
-							skeleton,
-						),
-						application_assignments_libraries_databases_services.NewApplication(
-							instanceService,
-						),
 					),
 				),
 			),
@@ -504,6 +497,18 @@ func TestExecute_WithAccount_Fails_ReturnsFailure(t *testing.T) {
 		),
 		application_assignments.NewApplication(
 			application_assignments_assignables.NewApplication(
+				application_assignments_compilers.NewApplication(
+					instanceAdapter,
+				),
+				application_assignments_databases.NewApplication(
+					application_assignments_databases_repositories.NewApplication(
+						instanceRepository,
+						skeleton,
+					),
+					application_assignments_databases_services.NewApplication(
+						instanceService,
+					),
+				),
 				application_assignments_assignables_accounts.NewApplication(
 					application_assignments_assignables_accounts_communications.NewApplication(
 						application_assignments_assignables_accounts_communications_signs.NewApplication(),
@@ -527,20 +532,6 @@ func TestExecute_WithAccount_Fails_ReturnsFailure(t *testing.T) {
 					),
 					application_assignments_assignables_cryptography_encrypts.NewApplication(
 						encryptor,
-					),
-				),
-				application_assignments_libraries.NewApplication(
-					application_assignments_libraries_compilers.NewApplication(
-						instanceAdapter,
-					),
-					application_assignments_libraries_databases.NewApplication(
-						application_assignments_libraries_databases_repositories.NewApplication(
-							instanceRepository,
-							skeleton,
-						),
-						application_assignments_libraries_databases_services.NewApplication(
-							instanceService,
-						),
 					),
 				),
 			),
@@ -660,6 +651,18 @@ func TestExecute_WithDatabase_Succeeds_Success(t *testing.T) {
 		),
 		application_assignments.NewApplication(
 			application_assignments_assignables.NewApplication(
+				application_assignments_compilers.NewApplication(
+					instanceAdapter,
+				),
+				application_assignments_databases.NewApplication(
+					application_assignments_databases_repositories.NewApplication(
+						instanceRepository,
+						skeleton,
+					),
+					application_assignments_databases_services.NewApplication(
+						instanceService,
+					),
+				),
 				application_assignments_assignables_accounts.NewApplication(
 					application_assignments_assignables_accounts_communications.NewApplication(
 						application_assignments_assignables_accounts_communications_signs.NewApplication(),
@@ -683,20 +686,6 @@ func TestExecute_WithDatabase_Succeeds_Success(t *testing.T) {
 					),
 					application_assignments_assignables_cryptography_encrypts.NewApplication(
 						encryptor,
-					),
-				),
-				application_assignments_libraries.NewApplication(
-					application_assignments_libraries_compilers.NewApplication(
-						instanceAdapter,
-					),
-					application_assignments_libraries_databases.NewApplication(
-						application_assignments_libraries_databases_repositories.NewApplication(
-							instanceRepository,
-							skeleton,
-						),
-						application_assignments_libraries_databases_services.NewApplication(
-							instanceService,
-						),
 					),
 				),
 			),
@@ -822,6 +811,18 @@ func TestExecute_WithDatabase_Fails_ReturnsFailure(t *testing.T) {
 		),
 		application_assignments.NewApplication(
 			application_assignments_assignables.NewApplication(
+				application_assignments_compilers.NewApplication(
+					instanceAdapter,
+				),
+				application_assignments_databases.NewApplication(
+					application_assignments_databases_repositories.NewApplication(
+						instanceRepository,
+						skeleton,
+					),
+					application_assignments_databases_services.NewApplication(
+						instanceService,
+					),
+				),
 				application_assignments_assignables_accounts.NewApplication(
 					application_assignments_assignables_accounts_communications.NewApplication(
 						application_assignments_assignables_accounts_communications_signs.NewApplication(),
@@ -845,20 +846,6 @@ func TestExecute_WithDatabase_Fails_ReturnsFailure(t *testing.T) {
 					),
 					application_assignments_assignables_cryptography_encrypts.NewApplication(
 						encryptor,
-					),
-				),
-				application_assignments_libraries.NewApplication(
-					application_assignments_libraries_compilers.NewApplication(
-						instanceAdapter,
-					),
-					application_assignments_libraries_databases.NewApplication(
-						application_assignments_libraries_databases_repositories.NewApplication(
-							instanceRepository,
-							skeleton,
-						),
-						application_assignments_libraries_databases_services.NewApplication(
-							instanceService,
-						),
 					),
 				),
 			),
@@ -991,6 +978,18 @@ func TestExecute_WithAssignment_Succeeds_Success(t *testing.T) {
 		),
 		application_assignments.NewApplication(
 			application_assignments_assignables.NewApplication(
+				application_assignments_compilers.NewApplication(
+					instanceAdapter,
+				),
+				application_assignments_databases.NewApplication(
+					application_assignments_databases_repositories.NewApplication(
+						instanceRepository,
+						skeleton,
+					),
+					application_assignments_databases_services.NewApplication(
+						instanceService,
+					),
+				),
 				application_assignments_assignables_accounts.NewApplication(
 					application_assignments_assignables_accounts_communications.NewApplication(
 						application_assignments_assignables_accounts_communications_signs.NewApplication(),
@@ -1014,20 +1013,6 @@ func TestExecute_WithAssignment_Succeeds_Success(t *testing.T) {
 					),
 					application_assignments_assignables_cryptography_encrypts.NewApplication(
 						encryptor,
-					),
-				),
-				application_assignments_libraries.NewApplication(
-					application_assignments_libraries_compilers.NewApplication(
-						instanceAdapter,
-					),
-					application_assignments_libraries_databases.NewApplication(
-						application_assignments_libraries_databases_repositories.NewApplication(
-							instanceRepository,
-							skeleton,
-						),
-						application_assignments_libraries_databases_services.NewApplication(
-							instanceService,
-						),
 					),
 				),
 			),
@@ -1165,6 +1150,18 @@ func TestExecute_WithAssignment_Fails_ReturnsFailure(t *testing.T) {
 		),
 		application_assignments.NewApplication(
 			application_assignments_assignables.NewApplication(
+				application_assignments_compilers.NewApplication(
+					instanceAdapter,
+				),
+				application_assignments_databases.NewApplication(
+					application_assignments_databases_repositories.NewApplication(
+						instanceRepository,
+						skeleton,
+					),
+					application_assignments_databases_services.NewApplication(
+						instanceService,
+					),
+				),
 				application_assignments_assignables_accounts.NewApplication(
 					application_assignments_assignables_accounts_communications.NewApplication(
 						application_assignments_assignables_accounts_communications_signs.NewApplication(),
@@ -1188,20 +1185,6 @@ func TestExecute_WithAssignment_Fails_ReturnsFailure(t *testing.T) {
 					),
 					application_assignments_assignables_cryptography_encrypts.NewApplication(
 						encryptor,
-					),
-				),
-				application_assignments_libraries.NewApplication(
-					application_assignments_libraries_compilers.NewApplication(
-						instanceAdapter,
-					),
-					application_assignments_libraries_databases.NewApplication(
-						application_assignments_libraries_databases_repositories.NewApplication(
-							instanceRepository,
-							skeleton,
-						),
-						application_assignments_libraries_databases_services.NewApplication(
-							instanceService,
-						),
 					),
 				),
 			),
@@ -1332,6 +1315,18 @@ func TestExecute_WithCondition_ConditionIsFalse_WithAssignment_Succeeds_Success(
 		),
 		application_assignments.NewApplication(
 			application_assignments_assignables.NewApplication(
+				application_assignments_compilers.NewApplication(
+					instanceAdapter,
+				),
+				application_assignments_databases.NewApplication(
+					application_assignments_databases_repositories.NewApplication(
+						instanceRepository,
+						skeleton,
+					),
+					application_assignments_databases_services.NewApplication(
+						instanceService,
+					),
+				),
 				application_assignments_assignables_accounts.NewApplication(
 					application_assignments_assignables_accounts_communications.NewApplication(
 						application_assignments_assignables_accounts_communications_signs.NewApplication(),
@@ -1355,20 +1350,6 @@ func TestExecute_WithCondition_ConditionIsFalse_WithAssignment_Succeeds_Success(
 					),
 					application_assignments_assignables_cryptography_encrypts.NewApplication(
 						encryptor,
-					),
-				),
-				application_assignments_libraries.NewApplication(
-					application_assignments_libraries_compilers.NewApplication(
-						instanceAdapter,
-					),
-					application_assignments_libraries_databases.NewApplication(
-						application_assignments_libraries_databases_repositories.NewApplication(
-							instanceRepository,
-							skeleton,
-						),
-						application_assignments_libraries_databases_services.NewApplication(
-							instanceService,
-						),
 					),
 				),
 			),
@@ -1523,6 +1504,18 @@ func TestExecute_WithCondition_ConditionIsTrue_WithAssignment_ExecutesConditionI
 		),
 		application_assignments.NewApplication(
 			application_assignments_assignables.NewApplication(
+				application_assignments_compilers.NewApplication(
+					instanceAdapter,
+				),
+				application_assignments_databases.NewApplication(
+					application_assignments_databases_repositories.NewApplication(
+						instanceRepository,
+						skeleton,
+					),
+					application_assignments_databases_services.NewApplication(
+						instanceService,
+					),
+				),
 				application_assignments_assignables_accounts.NewApplication(
 					application_assignments_assignables_accounts_communications.NewApplication(
 						application_assignments_assignables_accounts_communications_signs.NewApplication(),
@@ -1546,20 +1539,6 @@ func TestExecute_WithCondition_ConditionIsTrue_WithAssignment_ExecutesConditionI
 					),
 					application_assignments_assignables_cryptography_encrypts.NewApplication(
 						encryptor,
-					),
-				),
-				application_assignments_libraries.NewApplication(
-					application_assignments_libraries_compilers.NewApplication(
-						instanceAdapter,
-					),
-					application_assignments_libraries_databases.NewApplication(
-						application_assignments_libraries_databases_repositories.NewApplication(
-							instanceRepository,
-							skeleton,
-						),
-						application_assignments_libraries_databases_services.NewApplication(
-							instanceService,
-						),
 					),
 				),
 			),
@@ -1708,6 +1687,18 @@ func TestExecute_WithCondition_ConditionIsTrue_WithAssignment_ExecutesConditionI
 		),
 		application_assignments.NewApplication(
 			application_assignments_assignables.NewApplication(
+				application_assignments_compilers.NewApplication(
+					instanceAdapter,
+				),
+				application_assignments_databases.NewApplication(
+					application_assignments_databases_repositories.NewApplication(
+						instanceRepository,
+						skeleton,
+					),
+					application_assignments_databases_services.NewApplication(
+						instanceService,
+					),
+				),
 				application_assignments_assignables_accounts.NewApplication(
 					application_assignments_assignables_accounts_communications.NewApplication(
 						application_assignments_assignables_accounts_communications_signs.NewApplication(),
@@ -1731,20 +1722,6 @@ func TestExecute_WithCondition_ConditionIsTrue_WithAssignment_ExecutesConditionI
 					),
 					application_assignments_assignables_cryptography_encrypts.NewApplication(
 						encryptor,
-					),
-				),
-				application_assignments_libraries.NewApplication(
-					application_assignments_libraries_compilers.NewApplication(
-						instanceAdapter,
-					),
-					application_assignments_libraries_databases.NewApplication(
-						application_assignments_libraries_databases_repositories.NewApplication(
-							instanceRepository,
-							skeleton,
-						),
-						application_assignments_libraries_databases_services.NewApplication(
-							instanceService,
-						),
 					),
 				),
 			),
@@ -1893,6 +1870,18 @@ func TestExecute_WithCondition_ConditionIsTrue_WithAssignment_ExecutesConditionI
 		),
 		application_assignments.NewApplication(
 			application_assignments_assignables.NewApplication(
+				application_assignments_compilers.NewApplication(
+					instanceAdapter,
+				),
+				application_assignments_databases.NewApplication(
+					application_assignments_databases_repositories.NewApplication(
+						instanceRepository,
+						skeleton,
+					),
+					application_assignments_databases_services.NewApplication(
+						instanceService,
+					),
+				),
 				application_assignments_assignables_accounts.NewApplication(
 					application_assignments_assignables_accounts_communications.NewApplication(
 						application_assignments_assignables_accounts_communications_signs.NewApplication(),
@@ -1916,20 +1905,6 @@ func TestExecute_WithCondition_ConditionIsTrue_WithAssignment_ExecutesConditionI
 					),
 					application_assignments_assignables_cryptography_encrypts.NewApplication(
 						encryptor,
-					),
-				),
-				application_assignments_libraries.NewApplication(
-					application_assignments_libraries_compilers.NewApplication(
-						instanceAdapter,
-					),
-					application_assignments_libraries_databases.NewApplication(
-						application_assignments_libraries_databases_repositories.NewApplication(
-							instanceRepository,
-							skeleton,
-						),
-						application_assignments_libraries_databases_services.NewApplication(
-							instanceService,
-						),
 					),
 				),
 			),

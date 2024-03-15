@@ -1,32 +1,44 @@
 package resources
 
+import "github.com/steve-care-software/datastencil/domain/hash"
+
 type native struct {
+	hash    hash.Hash
 	pSingle *uint8
 	list    List
 }
 
 func createNativeWithSingle(
+	hash hash.Hash,
 	pSingle *uint8,
 ) Native {
-	return createNativeInternally(pSingle, nil)
+	return createNativeInternally(hash, pSingle, nil)
 }
 
 func createNativeWithList(
+	hash hash.Hash,
 	list List,
 ) Native {
-	return createNativeInternally(nil, list)
+	return createNativeInternally(hash, nil, list)
 }
 
 func createNativeInternally(
+	hash hash.Hash,
 	pSingle *uint8,
 	list List,
 ) Native {
 	out := native{
+		hash:    hash,
 		pSingle: pSingle,
 		list:    list,
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *native) Hash() hash.Hash {
+	return obj.hash
 }
 
 // IsSingle returns true if there is a single, flase otherwise

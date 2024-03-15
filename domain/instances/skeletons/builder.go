@@ -2,19 +2,25 @@ package skeletons
 
 import (
 	"errors"
+	"strconv"
 
-	"github.com/steve-care-software/datastencil/domain/skeletons/connections"
-	"github.com/steve-care-software/datastencil/domain/skeletons/resources"
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances/skeletons/connections"
+	"github.com/steve-care-software/datastencil/domain/instances/skeletons/resources"
 )
 
 type builder struct {
+	hashAdapter hash.Adapter
 	resources   resources.Resources
 	connections connections.Connections
 	previous    Skeleton
 }
 
-func createBuilder() Builder {
+func createBuilder(
+	hashAdapter hash.Adapter,
+) Builder {
 	out := builder{
+		hashAdapter: hashAdapter,
 		resources:   nil,
 		connections: nil,
 		previous:    nil,
@@ -25,7 +31,9 @@ func createBuilder() Builder {
 
 // Create initializes the builder
 func (app *builder) Create() Builder {
-	return createBuilder()
+	return createBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithResources add resources to the builder
@@ -57,8 +65,27 @@ func (app *builder) Now() (Skeleton, error) {
 		version = app.previous.Version() + 1
 	}
 
+	data := [][]byte{
+		app.resources.Hash().Bytes(),
+		[]byte(strconv.Itoa(int(version))),
+	}
+
+	if app.connections != nil {
+		data = append(data, app.connections.Hash().Bytes())
+	}
+
+	if app.previous != nil {
+		data = append(data, app.previous.Hash().Bytes())
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
 	if app.previous != nil && app.connections != nil {
 		return createSkeletonWithConnectionsAndPrevious(
+			*pHash,
 			version,
 			app.resources,
 			app.connections,
@@ -68,6 +95,7 @@ func (app *builder) Now() (Skeleton, error) {
 
 	if app.connections != nil {
 		return createSkeletonWithConnections(
+			*pHash,
 			version,
 			app.resources,
 			app.connections,
@@ -76,6 +104,7 @@ func (app *builder) Now() (Skeleton, error) {
 
 	if app.previous != nil {
 		return createSkeletonWithPrevious(
+			*pHash,
 			version,
 			app.resources,
 			app.previous,
@@ -83,6 +112,7 @@ func (app *builder) Now() (Skeleton, error) {
 	}
 
 	return createSkeleton(
+		*pHash,
 		version,
 		app.resources,
 	), nil

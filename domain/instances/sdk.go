@@ -4,7 +4,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/queries"
-	"github.com/steve-care-software/datastencil/domain/skeletons"
+	"github.com/steve-care-software/datastencil/domain/instances/skeletons"
 )
 
 // Adapter represents the instance adapter

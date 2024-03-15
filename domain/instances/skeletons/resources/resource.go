@@ -1,6 +1,9 @@
 package resources
 
+import "github.com/steve-care-software/datastencil/domain/hash"
+
 type resource struct {
+	hash     hash.Hash
 	name     string
 	key      Field
 	fields   Fields
@@ -8,29 +11,33 @@ type resource struct {
 }
 
 func createResource(
+	hash hash.Hash,
 	name string,
 	key Field,
 	fields Fields,
 ) Resource {
-	return createResourceInternally(name, key, fields, nil)
+	return createResourceInternally(hash, name, key, fields, nil)
 }
 
 func createResourceWithChildren(
+	hash hash.Hash,
 	name string,
 	key Field,
 	fields Fields,
 	children Resources,
 ) Resource {
-	return createResourceInternally(name, key, fields, children)
+	return createResourceInternally(hash, name, key, fields, children)
 }
 
 func createResourceInternally(
+	hash hash.Hash,
 	name string,
 	key Field,
 	fields Fields,
 	children Resources,
 ) Resource {
 	out := resource{
+		hash:     hash,
 		name:     name,
 		key:      key,
 		fields:   fields,
@@ -38,6 +45,11 @@ func createResourceInternally(
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *resource) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Name returns the name

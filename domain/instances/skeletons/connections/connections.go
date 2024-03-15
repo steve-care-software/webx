@@ -4,26 +4,36 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+
+	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
 type connections struct {
+	hash      hash.Hash
 	mpByPaths map[string]Connection
 	mp        map[string]Connection
 	list      []Connection
 }
 
 func createConnections(
+	hash hash.Hash,
 	mpByPaths map[string]Connection,
 	mp map[string]Connection,
 	list []Connection,
 ) Connections {
 	out := connections{
+		hash:      hash,
 		mpByPaths: mpByPaths,
 		mp:        mp,
 		list:      list,
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *connections) Hash() hash.Hash {
+	return obj.hash
 }
 
 // List returns the list
