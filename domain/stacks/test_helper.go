@@ -4,7 +4,6 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/instances/queries"
-	"github.com/steve-care-software/datastencil/domain/instances/skeletons"
 	stack_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )
 
@@ -141,16 +140,6 @@ func NewAssignableWithAccountForTests(value stack_accounts.Account) Assignable {
 // NewAssignableWithInstanceForTests creates a new assignable with instance for tests
 func NewAssignableWithInstanceForTests(value instances.Instance) Assignable {
 	ins, err := NewAssignableBuilder().Create().WithInstance(value).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewAssignableWithSkeletonForTests creates a new assignable with skeleton for tests
-func NewAssignableWithSkeletonForTests(value skeletons.Skeleton) Assignable {
-	ins, err := NewAssignableBuilder().Create().WithSkeleton(value).Now()
 	if err != nil {
 		panic(err)
 	}

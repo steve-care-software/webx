@@ -7,7 +7,6 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/instances/queries"
-	"github.com/steve-care-software/datastencil/domain/instances/skeletons"
 	stack_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )
 
@@ -143,7 +142,6 @@ type AssignableBuilder interface {
 	WithUnsignedInt(unsignedInt uint) AssignableBuilder
 	WithAccount(account stack_accounts.Account) AssignableBuilder
 	WithInstance(ins instances.Instance) AssignableBuilder
-	WithSkeleton(skeleton skeletons.Skeleton) AssignableBuilder
 	WithQuery(query queries.Query) AssignableBuilder
 	Now() (Assignable, error)
 }
@@ -166,8 +164,6 @@ type Assignable interface {
 	Account() stack_accounts.Account
 	IsInstance() bool
 	Instance() instances.Instance
-	IsSkeleton() bool
-	Skeleton() skeletons.Skeleton
 	IsQuery() bool
 	Query() queries.Query
 }

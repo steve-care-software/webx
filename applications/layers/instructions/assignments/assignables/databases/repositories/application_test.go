@@ -9,6 +9,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/databases/repositories"
+	"github.com/steve-care-software/datastencil/domain/instances/skeletons"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 
@@ -38,12 +39,12 @@ func TestExecute_withSkeleton_Success(t *testing.T) {
 		return
 	}
 
-	if !retAssignable.IsSkeleton() {
-		t.Errorf("the assignable was expected to contain a skeleton")
+	if !retAssignable.IsInstance() {
+		t.Errorf("the assignable was expected to contain an instance")
 		return
 	}
 
-	retSkeleton := retAssignable.Skeleton()
+	retSkeleton := retAssignable.Instance().(skeletons.Skeleton)
 	if !reflect.DeepEqual(skeleton, retSkeleton) {
 		t.Errorf("the returned skeleton is invalid")
 		return

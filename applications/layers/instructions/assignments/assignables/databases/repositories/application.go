@@ -32,7 +32,7 @@ func createApplication(
 func (app *application) Execute(frame stacks.Frame, assignable repositories.Repository) (stacks.Assignable, *uint, error) {
 	builder := app.assignableBuilder.Create()
 	if assignable.IsSkeleton() {
-		builder.WithSkeleton(app.skeleton)
+		builder.WithInstance(app.skeleton)
 	}
 
 	if assignable.IsHeight() {

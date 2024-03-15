@@ -4,8 +4,8 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/commits/contents/actions/pointers"
-	"github.com/steve-care-software/datastencil/domain/instances/commits/contents/actions/resources"
+	"github.com/steve-care-software/datastencil/domain/instances/commits/actions/pointers"
+	"github.com/steve-care-software/datastencil/domain/instances/commits/actions/resources"
 )
 
 type actionBuilder struct {

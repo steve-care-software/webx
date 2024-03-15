@@ -3,18 +3,17 @@ package commits
 import (
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/commits/contents"
 )
 
 type commit struct {
 	hash      hash.Hash
-	content   contents.Content
+	content   Content
 	signature signers.Signature
 }
 
 func createCommit(
 	hash hash.Hash,
-	content contents.Content,
+	content Content,
 	signature signers.Signature,
 ) Commit {
 	out := commit{
@@ -32,7 +31,7 @@ func (obj *commit) Hash() hash.Hash {
 }
 
 // Content returns the content
-func (obj *commit) Content() contents.Content {
+func (obj *commit) Content() Content {
 	return obj.content
 }
 
@@ -49,5 +48,5 @@ func (obj *commit) Index() uint {
 // PublicKey returns the signature's publicKey
 func (obj *commit) PublicKey() (signers.PublicKey, error) {
 	msg := obj.Content().Hash().Bytes()
-	return obj.signature.PublicKey(msg)
+	return obj.signature.PublicKey(string(msg)), nil
 }

@@ -22,6 +22,7 @@ type Factory interface {
 // Builder represents the skeleton builder
 type Builder interface {
 	Create() Builder
+	WithCommit(commit []string) Builder
 	WithResources(resources resources.Resources) Builder
 	WithConnections(connections connections.Connections) Builder
 	WithPrevious(previous Skeleton) Builder
@@ -32,6 +33,7 @@ type Builder interface {
 type Skeleton interface {
 	Hash() hash.Hash
 	Version() uint
+	Commit() []string
 	Resources() resources.Resources
 	HasConnections() bool
 	Connections() connections.Connections

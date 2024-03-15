@@ -9,6 +9,7 @@ import (
 type skeleton struct {
 	hash        hash.Hash
 	version     uint
+	commit      []string
 	resources   resources.Resources
 	connections connections.Connections
 	previous    Skeleton
@@ -17,42 +18,47 @@ type skeleton struct {
 func createSkeleton(
 	hash hash.Hash,
 	version uint,
+	commit []string,
 	resources resources.Resources,
 ) Skeleton {
-	return createSkeletonInternally(hash, version, resources, nil, nil)
+	return createSkeletonInternally(hash, version, commit, resources, nil, nil)
 }
 
 func createSkeletonWithConnections(
 	hash hash.Hash,
 	version uint,
+	commit []string,
 	resources resources.Resources,
 	connections connections.Connections,
 ) Skeleton {
-	return createSkeletonInternally(hash, version, resources, connections, nil)
+	return createSkeletonInternally(hash, version, commit, resources, connections, nil)
 }
 
 func createSkeletonWithPrevious(
 	hash hash.Hash,
 	version uint,
+	commit []string,
 	resources resources.Resources,
 	previous Skeleton,
 ) Skeleton {
-	return createSkeletonInternally(hash, version, resources, nil, previous)
+	return createSkeletonInternally(hash, version, commit, resources, nil, previous)
 }
 
 func createSkeletonWithConnectionsAndPrevious(
 	hash hash.Hash,
 	version uint,
+	commit []string,
 	resources resources.Resources,
 	connections connections.Connections,
 	previous Skeleton,
 ) Skeleton {
-	return createSkeletonInternally(hash, version, resources, connections, previous)
+	return createSkeletonInternally(hash, version, commit, resources, connections, previous)
 }
 
 func createSkeletonInternally(
 	hash hash.Hash,
 	version uint,
+	commit []string,
 	resources resources.Resources,
 	connections connections.Connections,
 	previous Skeleton,
@@ -60,6 +66,7 @@ func createSkeletonInternally(
 	out := skeleton{
 		hash:        hash,
 		version:     version,
+		commit:      commit,
 		resources:   resources,
 		connections: connections,
 		previous:    previous,
@@ -76,6 +83,11 @@ func (obj *skeleton) Hash() hash.Hash {
 // Version returns the version
 func (obj *skeleton) Version() uint {
 	return obj.version
+}
+
+// Commit returns the commit
+func (obj *skeleton) Commit() []string {
+	return obj.commit
 }
 
 // Resources returns the resources

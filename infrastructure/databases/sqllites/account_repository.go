@@ -20,8 +20,8 @@ func (app *accountRepository) List(password []byte) ([]string, error) {
 }
 
 // Exists returns true if exists, false otherwise
-func (app *accountRepository) Exists(username string) (bool, error) {
-	return false, nil
+func (app *accountRepository) Exists(username string) bool {
+	return false
 }
 
 // Retrieve retrieves an account

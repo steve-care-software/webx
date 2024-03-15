@@ -4,7 +4,6 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/instances/queries"
-	"github.com/steve-care-software/datastencil/domain/instances/skeletons"
 	stack_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )
 
@@ -17,7 +16,6 @@ type assignable struct {
 	pUnsignedInt *uint
 	account      stack_accounts.Account
 	instance     instances.Instance
-	skeleton     skeletons.Skeleton
 	query        queries.Query
 }
 
@@ -26,7 +24,6 @@ func createAssignableWithBool(
 ) Assignable {
 	return createAssignableInternally(
 		pBool,
-		nil,
 		nil,
 		nil,
 		nil,
@@ -51,7 +48,6 @@ func createAssignableWithBytes(
 		nil,
 		nil,
 		nil,
-		nil,
 	)
 }
 
@@ -62,7 +58,6 @@ func createAssignableWithHash(
 		nil,
 		nil,
 		hash,
-		nil,
 		nil,
 		nil,
 		nil,
@@ -85,7 +80,6 @@ func createAssignableWithHashList(
 		nil,
 		nil,
 		nil,
-		nil,
 	)
 }
 
@@ -98,7 +92,6 @@ func createAssignableWithStringList(
 		nil,
 		nil,
 		stringList,
-		nil,
 		nil,
 		nil,
 		nil,
@@ -119,7 +112,6 @@ func createAssignableWithUnsignedInt(
 		nil,
 		nil,
 		nil,
-		nil,
 	)
 }
 
@@ -134,7 +126,6 @@ func createAssignableWithAccount(
 		nil,
 		nil,
 		account,
-		nil,
 		nil,
 		nil,
 	)
@@ -153,24 +144,6 @@ func createAssignableWithInstance(
 		nil,
 		instance,
 		nil,
-		nil,
-	)
-}
-
-func createAssignableWithSkeleton(
-	skeleton skeletons.Skeleton,
-) Assignable {
-	return createAssignableInternally(
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		skeleton,
-		nil,
 	)
 }
 
@@ -178,7 +151,6 @@ func createAssignableWithQuery(
 	query queries.Query,
 ) Assignable {
 	return createAssignableInternally(
-		nil,
 		nil,
 		nil,
 		nil,
@@ -200,7 +172,6 @@ func createAssignableInternally(
 	pUnsignedInt *uint,
 	account stack_accounts.Account,
 	instance instances.Instance,
-	skeleton skeletons.Skeleton,
 	query queries.Query,
 ) Assignable {
 	out := assignable{
@@ -212,7 +183,6 @@ func createAssignableInternally(
 		pUnsignedInt: pUnsignedInt,
 		account:      account,
 		instance:     instance,
-		skeleton:     skeleton,
 		query:        query,
 	}
 
@@ -297,16 +267,6 @@ func (obj *assignable) IsInstance() bool {
 // Instance returns instance, if any
 func (obj *assignable) Instance() instances.Instance {
 	return obj.instance
-}
-
-// IsSkeleton returns true if skeleton, false otherwise
-func (obj *assignable) IsSkeleton() bool {
-	return obj.skeleton != nil
-}
-
-// Skeleton returns skeleton, if any
-func (obj *assignable) Skeleton() skeletons.Skeleton {
-	return obj.skeleton
 }
 
 // IsQuery returns true if query, false otherwise

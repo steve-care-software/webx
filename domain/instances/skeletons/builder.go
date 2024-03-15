@@ -11,6 +11,7 @@ import (
 
 type builder struct {
 	hashAdapter hash.Adapter
+	commit      []string
 	resources   resources.Resources
 	connections connections.Connections
 	previous    Skeleton
@@ -21,6 +22,7 @@ func createBuilder(
 ) Builder {
 	out := builder{
 		hashAdapter: hashAdapter,
+		commit:      nil,
 		resources:   nil,
 		connections: nil,
 		previous:    nil,
@@ -34,6 +36,12 @@ func (app *builder) Create() Builder {
 	return createBuilder(
 		app.hashAdapter,
 	)
+}
+
+// WithCommit add commit resource to the builder
+func (app *builder) WithCommit(commit []string) Builder {
+	app.commit = commit
+	return app
 }
 
 // WithResources add resources to the builder
@@ -60,6 +68,14 @@ func (app *builder) Now() (Skeleton, error) {
 		return nil, errors.New("the resources is mandatory in order to build a Skeleton instance")
 	}
 
+	if app.commit != nil && len(app.commit) <= 0 {
+		app.commit = nil
+	}
+
+	if app.commit == nil {
+		return nil, errors.New("the commit is mandatory in order to build a Skeleton instance")
+	}
+
 	version := uint(0)
 	if app.previous != nil {
 		version = app.previous.Version() + 1
@@ -68,6 +84,10 @@ func (app *builder) Now() (Skeleton, error) {
 	data := [][]byte{
 		app.resources.Hash().Bytes(),
 		[]byte(strconv.Itoa(int(version))),
+	}
+
+	for _, oneElement := range app.commit {
+		data = append(data, []byte(oneElement))
 	}
 
 	if app.connections != nil {
@@ -87,6 +107,7 @@ func (app *builder) Now() (Skeleton, error) {
 		return createSkeletonWithConnectionsAndPrevious(
 			*pHash,
 			version,
+			app.commit,
 			app.resources,
 			app.connections,
 			app.previous,
@@ -97,6 +118,7 @@ func (app *builder) Now() (Skeleton, error) {
 		return createSkeletonWithConnections(
 			*pHash,
 			version,
+			app.commit,
 			app.resources,
 			app.connections,
 		), nil
@@ -106,6 +128,7 @@ func (app *builder) Now() (Skeleton, error) {
 		return createSkeletonWithPrevious(
 			*pHash,
 			version,
+			app.commit,
 			app.resources,
 			app.previous,
 		), nil
@@ -114,6 +137,7 @@ func (app *builder) Now() (Skeleton, error) {
 	return createSkeleton(
 		*pHash,
 		version,
+		app.commit,
 		app.resources,
 	), nil
 }

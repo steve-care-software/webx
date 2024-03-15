@@ -5,12 +5,11 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/commits/contents"
 )
 
 type builder struct {
 	hashAdapter hash.Adapter
-	content     contents.Content
+	content     Content
 	signature   signers.Signature
 }
 
@@ -34,7 +33,7 @@ func (app *builder) Create() Builder {
 }
 
 // WithContent adds content to the builder
-func (app *builder) WithContent(content contents.Content) Builder {
+func (app *builder) WithContent(content Content) Builder {
 	app.content = content
 	return app
 }
@@ -55,14 +54,9 @@ func (app *builder) Now() (Commit, error) {
 		return nil, errors.New("the signature is mandatory in order to build a Commit instance")
 	}
 
-	sigBytes, err := app.signature.Bytes()
-	if err != nil {
-		return nil, err
-	}
-
 	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
 		app.content.Hash().Bytes(),
-		sigBytes,
+		[]byte(app.signature.String()),
 	})
 
 	if err != nil {

@@ -6,7 +6,6 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/instances/queries"
-	"github.com/steve-care-software/datastencil/domain/instances/skeletons"
 	"github.com/steve-care-software/datastencil/domain/stacks/accounts"
 	stack_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )
@@ -20,7 +19,6 @@ type assignableBuilder struct {
 	pUnsignedInt *uint
 	account      stack_accounts.Account
 	instance     instances.Instance
-	skeleton     skeletons.Skeleton
 	query        queries.Query
 }
 
@@ -34,7 +32,6 @@ func createAssignableBuilder() AssignableBuilder {
 		pUnsignedInt: nil,
 		account:      nil,
 		instance:     nil,
-		skeleton:     nil,
 		query:        nil,
 	}
 
@@ -94,12 +91,6 @@ func (app *assignableBuilder) WithInstance(instance instances.Instance) Assignab
 	return app
 }
 
-// WithSkeleton adds a skeleton to the builder
-func (app *assignableBuilder) WithSkeleton(skeleton skeletons.Skeleton) AssignableBuilder {
-	app.skeleton = skeleton
-	return app
-}
-
 // WithQuery adds a query to the builder
 func (app *assignableBuilder) WithQuery(query queries.Query) AssignableBuilder {
 	app.query = query
@@ -146,10 +137,6 @@ func (app *assignableBuilder) Now() (Assignable, error) {
 
 	if app.instance != nil {
 		return createAssignableWithInstance(app.instance), nil
-	}
-
-	if app.skeleton != nil {
-		return createAssignableWithSkeleton(app.skeleton), nil
 	}
 
 	if app.query != nil {
