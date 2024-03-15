@@ -37,8 +37,11 @@ type Repository interface {
 	// ListByPath returns the hashes list related to the path
 	ListByPath(path []string) ([]hash.Hash, error)
 
-	// Exists returns true if the instance exists, false otherwise
-	Exists(path []string, hash hash.Hash) bool
+	// Exists returns true if the instance exists by query, false otherwise
+	Exists(query queries.Query) bool
+
+	// ExistsByPathAndHash returns true if the instance exists by path and hash, false otherwise
+	ExistsByPathAndHash(path []string, hash hash.Hash) bool
 
 	// Retrieve returns the instance by query
 	Retrieve(query queries.Query) (Instance, error)
