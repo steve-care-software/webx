@@ -4,6 +4,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/skeletons/connections"
 	"github.com/steve-care-software/datastencil/domain/instances/skeletons/resources"
+	"github.com/steve-care-software/datastencil/domain/instances/skeletons/scopes"
 )
 
 type skeleton struct {
@@ -11,6 +12,7 @@ type skeleton struct {
 	version     uint
 	commit      []string
 	resources   resources.Resources
+	blacklist   scopes.Scopes
 	connections connections.Connections
 	previous    Skeleton
 }
@@ -21,7 +23,7 @@ func createSkeleton(
 	commit []string,
 	resources resources.Resources,
 ) Skeleton {
-	return createSkeletonInternally(hash, version, commit, resources, nil, nil)
+	return createSkeletonInternally(hash, version, commit, resources, nil, nil, nil)
 }
 
 func createSkeletonWithConnections(
@@ -31,7 +33,17 @@ func createSkeletonWithConnections(
 	resources resources.Resources,
 	connections connections.Connections,
 ) Skeleton {
-	return createSkeletonInternally(hash, version, commit, resources, connections, nil)
+	return createSkeletonInternally(hash, version, commit, resources, nil, connections, nil)
+}
+
+func createSkeletonWithBlacklist(
+	hash hash.Hash,
+	version uint,
+	commit []string,
+	resources resources.Resources,
+	blacklist scopes.Scopes,
+) Skeleton {
+	return createSkeletonInternally(hash, version, commit, resources, blacklist, nil, nil)
 }
 
 func createSkeletonWithPrevious(
@@ -41,7 +53,7 @@ func createSkeletonWithPrevious(
 	resources resources.Resources,
 	previous Skeleton,
 ) Skeleton {
-	return createSkeletonInternally(hash, version, commit, resources, nil, previous)
+	return createSkeletonInternally(hash, version, commit, resources, nil, nil, previous)
 }
 
 func createSkeletonWithConnectionsAndPrevious(
@@ -52,7 +64,41 @@ func createSkeletonWithConnectionsAndPrevious(
 	connections connections.Connections,
 	previous Skeleton,
 ) Skeleton {
-	return createSkeletonInternally(hash, version, commit, resources, connections, previous)
+	return createSkeletonInternally(hash, version, commit, resources, nil, connections, previous)
+}
+
+func createSkeletonWithConnectionsAndBlacklist(
+	hash hash.Hash,
+	version uint,
+	commit []string,
+	resources resources.Resources,
+	connections connections.Connections,
+	blacklist scopes.Scopes,
+) Skeleton {
+	return createSkeletonInternally(hash, version, commit, resources, blacklist, connections, nil)
+}
+
+func createSkeletonWithBlacklistAndPrevious(
+	hash hash.Hash,
+	version uint,
+	commit []string,
+	resources resources.Resources,
+	blacklist scopes.Scopes,
+	previous Skeleton,
+) Skeleton {
+	return createSkeletonInternally(hash, version, commit, resources, blacklist, nil, previous)
+}
+
+func createSkeletonWithConnectionsAndBlacklistAndPrevious(
+	hash hash.Hash,
+	version uint,
+	commit []string,
+	resources resources.Resources,
+	connections connections.Connections,
+	blacklist scopes.Scopes,
+	previous Skeleton,
+) Skeleton {
+	return createSkeletonInternally(hash, version, commit, resources, blacklist, connections, previous)
 }
 
 func createSkeletonInternally(
@@ -60,6 +106,7 @@ func createSkeletonInternally(
 	version uint,
 	commit []string,
 	resources resources.Resources,
+	blacklist scopes.Scopes,
 	connections connections.Connections,
 	previous Skeleton,
 ) Skeleton {
@@ -68,6 +115,7 @@ func createSkeletonInternally(
 		version:     version,
 		commit:      commit,
 		resources:   resources,
+		blacklist:   blacklist,
 		connections: connections,
 		previous:    previous,
 	}
@@ -93,6 +141,16 @@ func (obj *skeleton) Commit() []string {
 // Resources returns the resources
 func (obj *skeleton) Resources() resources.Resources {
 	return obj.resources
+}
+
+// HasBlacklist returns true if there is a blacklist, false otherwise
+func (obj *skeleton) HasBlacklist() bool {
+	return obj.blacklist != nil
+}
+
+// Blacklist returns the blacklist, if any
+func (obj *skeleton) Blacklist() scopes.Scopes {
+	return obj.blacklist
 }
 
 // HasConnections returns true if there is connections, false otherwise

@@ -7,6 +7,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/skeletons/connections"
 	"github.com/steve-care-software/datastencil/domain/instances/skeletons/resources"
+	"github.com/steve-care-software/datastencil/domain/instances/skeletons/scopes"
 )
 
 type builder struct {
@@ -14,6 +15,7 @@ type builder struct {
 	commit      []string
 	resources   resources.Resources
 	connections connections.Connections
+	blacklist   scopes.Scopes
 	previous    Skeleton
 }
 
@@ -25,6 +27,7 @@ func createBuilder(
 		commit:      nil,
 		resources:   nil,
 		connections: nil,
+		blacklist:   nil,
 		previous:    nil,
 	}
 
@@ -50,7 +53,13 @@ func (app *builder) WithResources(resources resources.Resources) Builder {
 	return app
 }
 
-// WithConnections add connections skeleton to the builder
+// WithBlacklist add blacklist to the builder
+func (app *builder) WithBlacklist(blacklist scopes.Scopes) Builder {
+	app.blacklist = blacklist
+	return app
+}
+
+// WithConnections add connections to the builder
 func (app *builder) WithConnections(connections connections.Connections) Builder {
 	app.connections = connections
 	return app
@@ -94,6 +103,10 @@ func (app *builder) Now() (Skeleton, error) {
 		data = append(data, app.connections.Hash().Bytes())
 	}
 
+	if app.blacklist != nil {
+		data = append(data, app.blacklist.Hash().Bytes())
+	}
+
 	if app.previous != nil {
 		data = append(data, app.previous.Hash().Bytes())
 	}
@@ -101,6 +114,18 @@ func (app *builder) Now() (Skeleton, error) {
 	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
+	}
+
+	if app.connections != nil && app.blacklist != nil && app.previous != nil {
+		return createSkeletonWithConnectionsAndBlacklistAndPrevious(
+			*pHash,
+			version,
+			app.commit,
+			app.resources,
+			app.connections,
+			app.blacklist,
+			app.previous,
+		), nil
 	}
 
 	if app.previous != nil && app.connections != nil {
@@ -111,6 +136,28 @@ func (app *builder) Now() (Skeleton, error) {
 			app.resources,
 			app.connections,
 			app.previous,
+		), nil
+	}
+
+	if app.previous != nil && app.blacklist != nil {
+		return createSkeletonWithBlacklistAndPrevious(
+			*pHash,
+			version,
+			app.commit,
+			app.resources,
+			app.blacklist,
+			app.previous,
+		), nil
+	}
+
+	if app.connections != nil && app.blacklist != nil {
+		return createSkeletonWithConnectionsAndBlacklist(
+			*pHash,
+			version,
+			app.commit,
+			app.resources,
+			app.connections,
+			app.blacklist,
 		), nil
 	}
 

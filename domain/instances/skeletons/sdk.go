@@ -4,6 +4,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/skeletons/connections"
 	"github.com/steve-care-software/datastencil/domain/instances/skeletons/resources"
+	"github.com/steve-care-software/datastencil/domain/instances/skeletons/scopes"
 )
 
 // NewBuilder creates a new builder instance
@@ -24,6 +25,7 @@ type Builder interface {
 	Create() Builder
 	WithCommit(commit []string) Builder
 	WithResources(resources resources.Resources) Builder
+	WithBlacklist(blacklist scopes.Scopes) Builder
 	WithConnections(connections connections.Connections) Builder
 	WithPrevious(previous Skeleton) Builder
 	Now() (Skeleton, error)
@@ -35,6 +37,8 @@ type Skeleton interface {
 	Version() uint
 	Commit() []string
 	Resources() resources.Resources
+	HasBlacklist() bool
+	Blacklist() scopes.Scopes
 	HasConnections() bool
 	Connections() connections.Connections
 	HasPrevious() bool

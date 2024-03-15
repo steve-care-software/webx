@@ -4,10 +4,13 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/skeletons"
 	"github.com/steve-care-software/datastencil/domain/instances/skeletons/connections"
 	"github.com/steve-care-software/datastencil/domain/instances/skeletons/resources"
+	"github.com/steve-care-software/datastencil/domain/instances/skeletons/scopes"
 )
 
 type skeletonFactory struct {
 	builder                skeletons.Builder
+	scopesBuilder          scopes.Builder
+	scopeBuilder           scopes.ScopeBuilder
 	resourcesBuilder       resources.Builder
 	resourceBuilder        resources.ResourceBuilder
 	fieldsBuilder          resources.FieldsBuilder
@@ -22,6 +25,8 @@ type skeletonFactory struct {
 
 func createSkeletonFactory(
 	builder skeletons.Builder,
+	scopesBuilder scopes.Builder,
+	scopeBuilder scopes.ScopeBuilder,
 	resourcesBuilder resources.Builder,
 	resourceBuilder resources.ResourceBuilder,
 	fieldsBuilder resources.FieldsBuilder,
@@ -35,6 +40,8 @@ func createSkeletonFactory(
 ) skeletons.Factory {
 	out := skeletonFactory{
 		builder:                builder,
+		scopesBuilder:          scopesBuilder,
+		scopeBuilder:           scopeBuilder,
 		resourcesBuilder:       resourcesBuilder,
 		resourceBuilder:        resourceBuilder,
 		fieldsBuilder:          fieldsBuilder,
@@ -55,20 +62,190 @@ func (app *skeletonFactory) Create() (skeletons.Skeleton, error) {
 	resources := app.concreteResources()
 	connections := app.concreteConnections()
 	commit := []string{
-		"commits",
+		"comit",
 	}
+
+	blacklist := app.scopes([]scopes.Scope{
+		app.scope([]string{
+			"comit",
+			"skeleton",
+		}),
+	})
 
 	return app.builder.Create().
 		WithCommit(commit).
 		WithResources(resources).
 		WithConnections(connections).
+		WithBlacklist(blacklist).
 		Now()
 }
 
 func (app *skeletonFactory) concreteResources() resources.Resources {
 	return app.resources([]resources.Resource{
+		app.concreteCommit(),
 		app.concreteLink(),
 	})
+}
+
+func (app *skeletonFactory) concreteCommit() resources.Resource {
+	return app.resourceWithChildren(
+		"comit",
+		app.field(
+			"hash",
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.field(
+				"content",
+				app.kindWithReference([]string{
+					"comit",
+					"content",
+				}),
+			),
+			app.field(
+				"signature",
+				app.kindWithNative(
+					app.nativeWithSingle(
+						resources.NativeString,
+					),
+				),
+			),
+		}),
+		app.resources([]resources.Resource{
+			app.concreteCommitContent(),
+		}),
+	)
+}
+
+func (app *skeletonFactory) concreteCommitContent() resources.Resource {
+	return app.resourceWithChildren(
+		"content",
+		app.field(
+			"hash",
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.fieldWithCanBeNil(
+				"previous",
+				app.kindWithReference([]string{
+					"comit",
+				}),
+			),
+		}),
+		app.resources([]resources.Resource{
+			app.concreteCommitContentAction(),
+		}),
+	)
+}
+
+func (app *skeletonFactory) concreteCommitContentAction() resources.Resource {
+	return app.resourceWithChildren(
+		"action",
+		app.field(
+			"hash",
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.fieldWithCanBeNil(
+				"insrt",
+				app.kindWithReference([]string{
+					"comit",
+					"content",
+					"action",
+					"resource",
+				}),
+			),
+			app.fieldWithCanBeNil(
+				"del",
+				app.kindWithReference([]string{
+					"comit",
+					"content",
+					"action",
+					"pointer",
+				}),
+			),
+		}),
+		app.resources([]resources.Resource{
+			app.concreteCommitContentActionResource(),
+			app.concreteCommitContentActionPointer(),
+		}),
+	)
+}
+
+func (app *skeletonFactory) concreteCommitContentActionResource() resources.Resource {
+	return app.resource(
+		"resource",
+		app.field(
+			"hash",
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.field(
+				"path",
+				app.kindWithNative(
+					app.nativeWithList(
+						app.list(resources.NativeString, elementInListDelimiter),
+					),
+				),
+			),
+			app.fieldWithCanBeNil(
+				"instance",
+				app.kindWithNative(
+					app.nativeWithSingle(
+						resources.NativeBytes,
+					),
+				),
+			),
+		}),
+	)
+}
+
+func (app *skeletonFactory) concreteCommitContentActionPointer() resources.Resource {
+	return app.resource(
+		"pointer",
+		app.field(
+			"hash",
+			app.kindWithNative(
+				app.nativeWithSingle(
+					resources.NativeBytes,
+				),
+			),
+		),
+		app.fields([]resources.Field{
+			app.field(
+				"path",
+				app.kindWithNative(
+					app.nativeWithList(
+						app.list(resources.NativeString, elementInListDelimiter),
+					),
+				),
+			),
+			app.fieldWithCanBeNil(
+				"identifier",
+				app.kindWithNative(
+					app.nativeWithSingle(
+						resources.NativeBytes,
+					),
+				),
+			),
+		}),
+	)
 }
 
 func (app *skeletonFactory) concreteLink() resources.Resource {
@@ -616,7 +793,7 @@ func (app *skeletonFactory) createLibraryLayerBytes() resources.Resource {
 				"joins",
 				app.kindWithNative(
 					app.nativeWithList(
-						app.list(resources.NativeString, "_"),
+						app.list(resources.NativeString, elementInListDelimiter),
 					),
 				),
 			),
@@ -624,7 +801,7 @@ func (app *skeletonFactory) createLibraryLayerBytes() resources.Resource {
 				"compares",
 				app.kindWithNative(
 					app.nativeWithList(
-						app.list(resources.NativeString, "_"),
+						app.list(resources.NativeString, elementInListDelimiter),
 					),
 				),
 			),
@@ -677,6 +854,24 @@ func (app *skeletonFactory) concreteConnections() connections.Connections {
 			),
 		),
 	})
+}
+
+func (app *skeletonFactory) scopes(list []scopes.Scope) scopes.Scopes {
+	ins, err := app.scopesBuilder.Create().WithList(list).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+func (app *skeletonFactory) scope(prefix []string) scopes.Scope {
+	ins, err := app.scopeBuilder.Create().WithPrefix(prefix).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
 }
 
 func (app *skeletonFactory) connections(

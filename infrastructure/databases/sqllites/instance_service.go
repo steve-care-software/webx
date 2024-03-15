@@ -126,6 +126,12 @@ func (app *instanceService) Begin() (*uint, error) {
 
 // Insert inserts an instance
 func (app *instanceService) Insert(context uint, ins instances.Instance, path []string) error {
+	if app.skeleton.Blacklist().Contains(path) {
+		pathStr := strings.Join(path, "/")
+		str := fmt.Sprintf("instances of the path (%s) cannot be inserted in the database because it is blacklisted", pathStr)
+		return errors.New(str)
+	}
+
 	if pTrx, ok := app.contextsMap[context]; ok {
 		allResources := app.skeleton.Resources()
 		resource, err := allResources.FetchByPath(path)

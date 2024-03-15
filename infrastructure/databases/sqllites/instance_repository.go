@@ -51,7 +51,46 @@ func (app *instanceRepository) List(query queries.Query) ([]hash.Hash, error) {
 
 // ListByPath returns the hashes list related to the path
 func (app *instanceRepository) ListByPath(path []string) ([]hash.Hash, error) {
-	return nil, nil
+	allResources := app.skeleton.Resources()
+	resource, err := allResources.FetchByPath(path)
+	if err != nil {
+		return nil, err
+	}
+
+	tableName := app.createTableName(path)
+	queryStr := fmt.Sprintf("SELECT %s FROM %s", resource.Key().Name(), tableName)
+	rows, err := app.pDB.Query(queryStr)
+	if err != nil {
+		return nil, err
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	hashesList := []hash.Hash{}
+	for {
+		if !rows.Next() {
+			break
+		}
+
+		bytes := []byte{}
+		err = rows.Scan(&bytes)
+		if err != nil {
+			return nil, err
+		}
+
+		pHash, err := app.hashAdapter.FromBytes(bytes)
+		if err != nil {
+			return nil, err
+		}
+
+		hashesList = append(hashesList, *pHash)
+	}
+
+	return hashesList, nil
 }
 
 // Exists returns true if the instance exists by query, false otherwise
@@ -162,7 +201,7 @@ func (app *instanceRepository) retrieveByResourceAndHash(
 		return fnToBuild(valuesMap)
 	}
 
-	str := fmt.Sprintf("there is no builderInstances fn for the provided table (name: %s)", table)
+	str := fmt.Sprintf("there is no builder Instances for the provided table (name: %s)", table)
 	return nil, errors.New(str)
 }
 

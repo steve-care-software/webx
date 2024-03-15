@@ -32,6 +32,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/skeletons"
 	"github.com/steve-care-software/datastencil/domain/instances/skeletons/connections"
 	"github.com/steve-care-software/datastencil/domain/instances/skeletons/resources"
+	"github.com/steve-care-software/datastencil/domain/instances/skeletons/scopes"
 )
 
 const contextDoesNotExistsErrorStr = "the context (%d) does NOT exists"
@@ -51,6 +52,7 @@ type callMethodOnInstanceFn func(ins instances.Instance, fieldName string) (bool
 const resourceNameDelimiter = "_"
 const endOfLine = "\n"
 const connectionNameDelimiter = "$"
+const elementInListDelimiter = "_"
 
 // NewInstanceRepository creates a new instance reposiotry
 func NewInstanceRepository(
@@ -59,6 +61,13 @@ func NewInstanceRepository(
 ) instances.Repository {
 	hashAdapter := hash.NewAdapter()
 	buildInstances := map[string]buildInstanceFn{
+		"comit": func(values map[string]interface{}) (instances.Instance, error) {
+			builder := commits.NewBuilder()
+
+			fmt.Printf("\n++%v\n", values)
+
+			return builder.Now()
+		},
 		"link": func(values map[string]interface{}) (instances.Instance, error) {
 			builder := links.NewLinkBuilder()
 			if value, ok := values["origin"]; ok {
@@ -389,6 +398,16 @@ func NewInstanceRepository(
 	}
 
 	listInstances := map[string]elementsToListInstanceFn{
+		"comit_actions": func(input []interface{}) (instances.Instance, error) {
+			output := []actions.Action{}
+			for _, oneIns := range input {
+				output = append(output, oneIns.(actions.Action))
+			}
+
+			return actions.NewBuilder().Create().
+				WithList(output).
+				Now()
+		},
 		"links": func(input []interface{}) (instances.Instance, error) {
 			output := []links.Link{}
 			for _, oneIns := range input {
@@ -448,6 +467,23 @@ func NewInstanceService(
 	pDB *sql.DB,
 ) instances.Service {
 	callMethodsOnInstances := map[string]callMethodOnInstanceFn{
+		"comit": func(ins instances.Instance, fieldName string) (bool, interface{}, error) {
+			if casted, ok := ins.(commits.Commit); ok {
+				switch fieldName {
+				case "hash":
+					return true, casted.Hash().Bytes(), nil
+				case "content":
+					return true, casted.Content().Hash().Bytes(), nil
+				case "signature":
+					return true, casted.Signature().String(), nil
+				}
+
+				str := fmt.Sprintf("link: the fieldName is invalid: %s", fieldName)
+				return false, nil, errors.New(str)
+			}
+
+			return false, nil, errors.New("the Instance was expected to contain a Commit instance")
+		},
 		"link": func(ins instances.Instance, fieldName string) (bool, interface{}, error) {
 			if casted, ok := ins.(links.Link); ok {
 				switch fieldName {
@@ -753,6 +789,19 @@ func NewInstanceService(
 	}
 
 	listInstanceToElementHashesListFn := map[string]listInstanceToElementHashesListFn{
+		"comit_actions": func(ins instances.Instance) ([]hash.Hash, error) {
+			if ins, ok := ins.(actions.Actions); ok {
+				output := []hash.Hash{}
+				list := ins.List()
+				for _, oneIns := range list {
+					output = append(output, oneIns.Hash())
+				}
+
+				return output, nil
+			}
+
+			return nil, errors.New("the Instance was expected to contain an Actions instance")
+		},
 		"layers": func(ins instances.Instance) ([]hash.Hash, error) {
 			if ins, ok := ins.(layers.Layers); ok {
 				output := []hash.Hash{}
@@ -834,6 +883,8 @@ func NewInstanceService(
 // NewSkeletonFactory creates a new skeleton factory
 func NewSkeletonFactory() skeletons.Factory {
 	builder := skeletons.NewBuilder()
+	scopesBuilder := scopes.NewBuilder()
+	scopeBuilder := scopes.NewScopeBuilder()
 	resourcesBuilder := resources.NewBuilder()
 	resourceBuilder := resources.NewResourceBuilder()
 	fieldsBuilder := resources.NewFieldsBuilder()
@@ -846,6 +897,8 @@ func NewSkeletonFactory() skeletons.Factory {
 	connectionFieldBuilder := connections.NewFieldBuilder()
 	return createSkeletonFactory(
 		builder,
+		scopesBuilder,
+		scopeBuilder,
 		resourcesBuilder,
 		resourceBuilder,
 		fieldsBuilder,
