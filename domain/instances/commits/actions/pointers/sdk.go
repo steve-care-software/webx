@@ -8,7 +8,7 @@ func NewBuilder() Builder {
 	return createBuilder(hashAdapter)
 }
 
-//  represents the pointer adapter
+// Adapter represents the pointer adapter
 type Adapter interface {
 	ToBytes(ins Pointer) ([]byte, error)
 	ToInstance(bytes []byte) (Pointer, error)

@@ -9,8 +9,8 @@ import (
 
 // Adapter represents the instance adapter
 type Adapter interface {
-	ToData(ins Instance) ([]byte, error)
-	ToInstance(data []byte) (Instance, error)
+	ToBytes(path []string, ins Instance) ([]byte, error)
+	ToInstance(path []string, data []byte) (Instance, error)
 }
 
 // Instance represents an instance
