@@ -8,7 +8,8 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/commits/actions/resources"
 )
 
-type adapter struct {
+// Adapter represents an adapter
+type Adapter struct {
 	builder         resources.Builder
 	instanceAdapter instances.Adapter
 }
@@ -17,7 +18,7 @@ func createAdapter(
 	builder resources.Builder,
 	instanceAdapter instances.Adapter,
 ) resources.Adapter {
-	out := adapter{
+	out := Adapter{
 		builder:         builder,
 		instanceAdapter: instanceAdapter,
 	}
@@ -26,7 +27,7 @@ func createAdapter(
 }
 
 // ToBytes converts instance to bytes
-func (app *adapter) ToBytes(ins resources.Resource) ([]byte, error) {
+func (app *Adapter) ToBytes(ins resources.Resource) ([]byte, error) {
 	str, err := app.ResourceToStruct(ins)
 	if err != nil {
 		return nil, err
@@ -41,7 +42,7 @@ func (app *adapter) ToBytes(ins resources.Resource) ([]byte, error) {
 }
 
 // ToInstance converts bytes to instance
-func (app *adapter) ToInstance(bytes []byte) (resources.Resource, error) {
+func (app *Adapter) ToInstance(bytes []byte) (resources.Resource, error) {
 	ins := new(Resource)
 	err := json.Unmarshal(bytes, ins)
 	if err != nil {
@@ -52,7 +53,7 @@ func (app *adapter) ToInstance(bytes []byte) (resources.Resource, error) {
 }
 
 // ResourceToStruct converts a resource to struct
-func (app *adapter) ResourceToStruct(ins resources.Resource) (*Resource, error) {
+func (app *Adapter) ResourceToStruct(ins resources.Resource) (*Resource, error) {
 	bytes, err := app.instanceAdapter.ToBytes(ins.Path(), ins.Instance())
 	if err != nil {
 		return nil, err
@@ -66,7 +67,7 @@ func (app *adapter) ResourceToStruct(ins resources.Resource) (*Resource, error) 
 }
 
 // StructToResource converts a struct to resource
-func (app *adapter) StructToResource(str Resource) (resources.Resource, error) {
+func (app *Adapter) StructToResource(str Resource) (resources.Resource, error) {
 	decoded, err := base64.StdEncoding.DecodeString(str.Instance)
 	if err != nil {
 		return nil, err

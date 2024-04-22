@@ -58,13 +58,19 @@ func (app *actionBuilder) Now() (Action, error) {
 		data = append(data, app.delete.Hash().Bytes())
 	}
 
-	if len(data) != 2 {
+	if app.insert == nil && app.delete == nil {
 		return nil, errors.New("the Action is invalid")
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
+	}
+
+	if app.insert != nil && app.delete != nil {
+		return createActionWithInsertAndDelete(
+			*pHash, app.insert, app.delete,
+		), nil
 	}
 
 	if app.insert != nil {

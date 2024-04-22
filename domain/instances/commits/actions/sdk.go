@@ -18,6 +18,12 @@ func NewActionBuilder() ActionBuilder {
 	return createActionBuilder(hashAdapter)
 }
 
+// Adapter represents the actions adapter
+type Adapter interface {
+	ToBytes(ins Actions) ([]byte, error)
+	ToInstance(bytes []byte) (Actions, error)
+}
+
 // Builder represents an actions builder
 type Builder interface {
 	Create() Builder
@@ -29,6 +35,12 @@ type Builder interface {
 type Actions interface {
 	Hash() hash.Hash
 	List() []Action
+}
+
+// ActionAdapter represents the action adapter
+type ActionAdapter interface {
+	ToBytes(ins Action) ([]byte, error)
+	ToInstance(bytes []byte) (Action, error)
 }
 
 // ActionBuilder represents an action builder

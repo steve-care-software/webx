@@ -7,7 +7,8 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/commits/actions/pointers"
 )
 
-type adapter struct {
+// Adapter represents an adapter
+type Adapter struct {
 	hashAdapter hash.Adapter
 	builder     pointers.Builder
 }
@@ -16,7 +17,7 @@ func createAdapter(
 	hashAdapter hash.Adapter,
 	builder pointers.Builder,
 ) pointers.Adapter {
-	out := adapter{
+	out := Adapter{
 		hashAdapter: hashAdapter,
 		builder:     builder,
 	}
@@ -25,7 +26,7 @@ func createAdapter(
 }
 
 // ToBytes converts an intance to bytes
-func (app *adapter) ToBytes(ins pointers.Pointer) ([]byte, error) {
+func (app *Adapter) ToBytes(ins pointers.Pointer) ([]byte, error) {
 	str := app.PointerToStruct(ins)
 	js, err := json.Marshal(str)
 	if err != nil {
@@ -36,7 +37,7 @@ func (app *adapter) ToBytes(ins pointers.Pointer) ([]byte, error) {
 }
 
 // ToInstance converts a bytes to instance
-func (app *adapter) ToInstance(bytes []byte) (pointers.Pointer, error) {
+func (app *Adapter) ToInstance(bytes []byte) (pointers.Pointer, error) {
 	ins := new(Pointer)
 	err := json.Unmarshal(bytes, ins)
 	if err != nil {
@@ -47,7 +48,7 @@ func (app *adapter) ToInstance(bytes []byte) (pointers.Pointer, error) {
 }
 
 // PointerToStruct converts a pointer to struct
-func (app *adapter) PointerToStruct(ins pointers.Pointer) Pointer {
+func (app *Adapter) PointerToStruct(ins pointers.Pointer) Pointer {
 	return Pointer{
 		Path:       ins.Path(),
 		Identifier: ins.Identifier().String(),
@@ -55,7 +56,7 @@ func (app *adapter) PointerToStruct(ins pointers.Pointer) Pointer {
 }
 
 // StructToPointer converts a struct to pointer
-func (app *adapter) StructToPointer(str Pointer) (pointers.Pointer, error) {
+func (app *Adapter) StructToPointer(str Pointer) (pointers.Pointer, error) {
 	pHash, err := app.hashAdapter.FromString(str.Identifier)
 	if err != nil {
 		return nil, err

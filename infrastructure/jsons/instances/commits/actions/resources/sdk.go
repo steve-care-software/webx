@@ -2,6 +2,7 @@ package resources
 
 import (
 	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/commits/actions/pointers"
 	"github.com/steve-care-software/datastencil/domain/instances/commits/actions/resources"
 )
 
@@ -13,5 +14,14 @@ func NewAdapter(
 	return createAdapter(
 		builder,
 		instanceAdapter,
+	)
+}
+
+// NewTestInstanceAdapter creates a new test instance adapter
+func NewTestInstanceAdapter(
+	pointerAdapter pointers.Adapter,
+) instances.Adapter {
+	return createTestInstanceAdapter(
+		pointerAdapter,
 	)
 }

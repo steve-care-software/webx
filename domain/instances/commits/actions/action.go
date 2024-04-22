@@ -26,6 +26,14 @@ func createActionWithDelete(
 	return createActionInternally(hash, nil, delete)
 }
 
+func createActionWithInsertAndDelete(
+	hash hash.Hash,
+	insert resources.Resource,
+	delete pointers.Pointer,
+) Action {
+	return createActionInternally(hash, insert, delete)
+}
+
 func createActionInternally(
 	hash hash.Hash,
 	insert resources.Resource,
