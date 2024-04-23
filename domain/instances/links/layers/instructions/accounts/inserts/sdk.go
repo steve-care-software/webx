@@ -8,6 +8,12 @@ func NewBuilder() Builder {
 	return createBuilder(hashAdapter)
 }
 
+// Adapter represents the insert adapter
+type Adapter interface {
+	ToBytes(ins Insert) ([]byte, error)
+	ToInstance(bytes []byte) (Insert, error)
+}
+
 // Builder represents an insert builder
 type Builder interface {
 	Create() Builder
