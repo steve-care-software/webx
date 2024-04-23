@@ -8,6 +8,12 @@ func NewBuilder() Builder {
 	return createBuilder(hashAdapter)
 }
 
+// Adapter represents the criteria adapter
+type Adapter interface {
+	ToBytes(ins Criteria) ([]byte, error)
+	ToInstance(bytes []byte) (Criteria, error)
+}
+
 // Builder represents a criteria builder
 type Builder interface {
 	Create() Builder
