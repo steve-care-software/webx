@@ -12,6 +12,12 @@ func NewBuilder() Builder {
 	return createBuilder(hashAdapter)
 }
 
+// Adapter represents the communication adapter
+type Adapter interface {
+	ToBytes(ins Communication) ([]byte, error)
+	ToInstance(bytes []byte) (Communication, error)
+}
+
 // Builder represents a communication builder
 type Builder interface {
 	Create() Builder
