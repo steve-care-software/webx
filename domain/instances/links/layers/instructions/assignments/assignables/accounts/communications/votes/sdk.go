@@ -8,6 +8,12 @@ func NewBuilder() Builder {
 	return createBuilder(hashAdapter)
 }
 
+// Adapter represents the vote adapter
+type Adapter interface {
+	ToBytes(ins Vote) ([]byte, error)
+	ToInstance(bytes []byte) (Vote, error)
+}
+
 // Builder represents a vote builder
 type Builder interface {
 	Create() Builder
