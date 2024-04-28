@@ -8,6 +8,12 @@ func NewBuilder() Builder {
 	return createBuilder(hashAdapter)
 }
 
+// Adapter represents the encrypt adapter
+type Adapter interface {
+	ToBytes(ins Encrypt) ([]byte, error)
+	ToInstance(bytes []byte) (Encrypt, error)
+}
+
 // Builder represents an encrypt builder
 type Builder interface {
 	Create() Builder
