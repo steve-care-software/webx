@@ -12,6 +12,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the constant adapter
+type Adapter interface {
+	ToBytes(ins Constant) ([]byte, error)
+	ToInstance(bytes []byte) (Constant, error)
+}
+
 // Builder represents a constant builder
 type Builder interface {
 	Create() Builder
