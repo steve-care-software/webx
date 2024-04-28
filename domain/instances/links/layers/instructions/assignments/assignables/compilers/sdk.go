@@ -12,6 +12,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the compiler adapter
+type Adapter interface {
+	ToBytes(ins Compiler) ([]byte, error)
+	ToInstance(bytes []byte) (Compiler, error)
+}
+
 // Builder represents the compiler application
 type Builder interface {
 	Create() Builder
