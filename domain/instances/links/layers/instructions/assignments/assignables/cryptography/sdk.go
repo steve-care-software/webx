@@ -14,6 +14,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the cryptography adapter
+type Adapter interface {
+	ToBytes(ins Cryptography) ([]byte, error)
+	ToInstance(bytes []byte) (Cryptography, error)
+}
+
 // Builder represents a cryptography builder
 type Builder interface {
 	Create() Builder
