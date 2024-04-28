@@ -10,6 +10,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the decrypt adapter
+type Adapter interface {
+	ToBytes(ins Decrypt) ([]byte, error)
+	ToInstance(bytes []byte) (Decrypt, error)
+}
+
 // Builder represents a decrypt builder
 type Builder interface {
 	Create() Builder
