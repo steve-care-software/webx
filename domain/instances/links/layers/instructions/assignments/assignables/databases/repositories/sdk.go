@@ -12,6 +12,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the repository adapter
+type Adapter interface {
+	ToBytes(ins Repository) ([]byte, error)
+	ToInstance(bytes []byte) (Repository, error)
+}
+
 // Builder represents a repository builder
 type Builder interface {
 	Create() Builder
