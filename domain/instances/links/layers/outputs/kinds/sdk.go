@@ -12,6 +12,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the kind adapter
+type Adapter interface {
+	ToBytes(ins Kind) ([]byte, error)
+	ToInstance(bytes []byte) (Kind, error)
+}
+
 // Builder represents a kind builder
 type Builder interface {
 	Create() Builder

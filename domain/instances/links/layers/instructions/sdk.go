@@ -62,12 +62,6 @@ type InstructionBuilder interface {
 	Now() (Instruction, error)
 }
 
-// InstructionAdapter represents the instruction adapter
-type InstructionAdapter interface {
-	ToBytes(ins Instruction) ([]byte, error)
-	ToInstance(bytes []byte) (Instruction, error)
-}
-
 // Instruction represents an instruction
 type Instruction interface {
 	Hash() hash.Hash
