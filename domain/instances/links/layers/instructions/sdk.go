@@ -31,6 +31,12 @@ func NewConditionBuilder() ConditionBuilder {
 	)
 }
 
+// Adapter represents the instructions adapter
+type Adapter interface {
+	ToBytes(ins Instructions) ([]byte, error)
+	ToInstance(bytes []byte) (Instructions, error)
+}
+
 // Builder represents instructions builder
 type Builder interface {
 	Create() Builder
@@ -54,6 +60,12 @@ type InstructionBuilder interface {
 	WithDatabase(database databases.Database) InstructionBuilder
 	IsStop() InstructionBuilder
 	Now() (Instruction, error)
+}
+
+// InstructionAdapter represents the instruction adapter
+type InstructionAdapter interface {
+	ToBytes(ins Instruction) ([]byte, error)
+	ToInstance(bytes []byte) (Instruction, error)
 }
 
 // Instruction represents an instruction
