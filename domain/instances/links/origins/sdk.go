@@ -22,6 +22,12 @@ func NewValueBuilder() ValueBuilder {
 	)
 }
 
+// Adapter represents the origin adapter
+type Adapter interface {
+	ToBytes(ins Origin) ([]byte, error)
+	ToInstance(bytes []byte) (Origin, error)
+}
+
 // Builder represents the origin builder
 type Builder interface {
 	Create() Builder
