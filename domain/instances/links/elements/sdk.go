@@ -22,6 +22,12 @@ func NewElementBuilder() ElementBuilder {
 	)
 }
 
+// Adapter represents the elements adapter
+type Adapter interface {
+	ToBytes(ins Elements) ([]byte, error)
+	ToInstance(bytes []byte) (Elements, error)
+}
+
 // Builder represents elements builder
 type Builder interface {
 	Create() Builder
