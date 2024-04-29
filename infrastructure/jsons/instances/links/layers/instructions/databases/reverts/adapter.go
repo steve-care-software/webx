@@ -44,7 +44,7 @@ func (app *Adapter) ToInstance(bytes []byte) (reverts.Revert, error) {
 		return nil, err
 	}
 
-	return app.StructToInsert(*ins)
+	return app.StructToRevert(*ins)
 }
 
 // RevertToStruct converts a revert to struct
@@ -57,8 +57,8 @@ func (app *Adapter) RevertToStruct(ins reverts.Revert) (*Revert, error) {
 	return &out, nil
 }
 
-// StructToInsert converts a struct to insert
-func (app *Adapter) StructToInsert(str Revert) (reverts.Revert, error) {
+// StructToRevert converts a struct to revert
+func (app *Adapter) StructToRevert(str Revert) (reverts.Revert, error) {
 	builder := app.builder.Create()
 	if str.Index != "" {
 		builder.WithIndex(str.Index)
