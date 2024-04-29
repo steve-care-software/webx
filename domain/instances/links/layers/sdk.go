@@ -24,8 +24,8 @@ func NewLayerBuilder() LayerBuilder {
 
 // Adapter represents the layers adapter
 type Adapter interface {
-	ToData(ins Layers) ([]byte, error)
-	ToInstance(data []byte) (Layers, error)
+	ToBytes(ins Layers) ([]byte, error)
+	ToInstance(bytes []byte) (Layers, error)
 }
 
 // Builder represents the layers builder
@@ -45,12 +45,6 @@ type Layers interface {
 // Repository represents the layers repository
 type Repository interface {
 	Retrieve(path []string) (Layers, error)
-}
-
-// LayerAdapter represents the layer adapter
-type LayerAdapter interface {
-	ToData(ins Layer) ([]byte, error)
-	ToInstance(data []byte) (Layer, error)
 }
 
 // LayerBuilder represents a layer builder
