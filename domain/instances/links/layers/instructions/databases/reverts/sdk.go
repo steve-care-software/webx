@@ -10,6 +10,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the revert adapter
+type Adapter interface {
+	ToBytes(ins Revert) ([]byte, error)
+	ToInstance(bytes []byte) (Revert, error)
+}
+
 // Builder represents a revert builder
 type Builder interface {
 	Create() Builder
