@@ -5,8 +5,6 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/logics"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/logics/locations"
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers"
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions"
 	"github.com/steve-care-software/datastencil/domain/instances/links/layers/outputs"
@@ -30,18 +28,15 @@ func TestLinks_withList_Success(t *testing.T) {
 			),
 			elements.NewElementsForTests([]elements.Element{
 				elements.NewElementForTests(
-					logics.NewLogicForTests(
-						layers.NewLayerForTests(
-							instructions.NewInstructionsForTests([]instructions.Instruction{
-								instructions.NewInstructionWithStopForTests(),
-							}),
-							outputs.NewOutputForTests(
-								"myVariable",
-								kinds.NewKindWithContinueForTests(),
-							),
-							"myInput",
+					layers.NewLayerForTests(
+						instructions.NewInstructionsForTests([]instructions.Instruction{
+							instructions.NewInstructionWithStopForTests(),
+						}),
+						outputs.NewOutputForTests(
+							"myVariable",
+							kinds.NewKindWithContinueForTests(),
 						),
-						locations.NewLocationWithSingleForTests([]byte("this is some command")),
+						"myInput",
 					),
 				),
 			}),

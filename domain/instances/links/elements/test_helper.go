@@ -2,7 +2,7 @@ package elements
 
 import (
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/conditions"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/logics"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers"
 )
 
 // NewElementsForTests creates new elements for tests
@@ -16,8 +16,8 @@ func NewElementsForTests(list []Element) Elements {
 }
 
 // NewElementWithConditionForTests creates a new element with condition  for tests
-func NewElementWithConditionForTests(logic logics.Logic, condition conditions.Condition) Element {
-	ins, err := NewElementBuilder().Create().WithLogic(logic).WithCondition(condition).Now()
+func NewElementWithConditionForTests(layer layers.Layer, condition conditions.Condition) Element {
+	ins, err := NewElementBuilder().Create().WithLayer(layer).WithCondition(condition).Now()
 	if err != nil {
 		panic(err)
 	}
@@ -26,8 +26,8 @@ func NewElementWithConditionForTests(logic logics.Logic, condition conditions.Co
 }
 
 // NewElementForTests creates a new element for tests
-func NewElementForTests(logic logics.Logic) Element {
-	ins, err := NewElementBuilder().Create().WithLogic(logic).Now()
+func NewElementForTests(layer layers.Layer) Element {
+	ins, err := NewElementBuilder().Create().WithLayer(layer).Now()
 	if err != nil {
 		panic(err)
 	}

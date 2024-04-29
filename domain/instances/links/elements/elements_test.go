@@ -3,13 +3,28 @@ package elements
 import (
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/outputs/kinds"
 )
 
 func TestElements_Success(t *testing.T) {
-	pLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
+	layer := layers.NewLayerForTests(
+		instructions.NewInstructionsForTests([]instructions.Instruction{
+			instructions.NewInstructionWithStopForTests(),
+		}),
+		outputs.NewOutputForTests(
+			"myVariable",
+			kinds.NewKindWithContinueForTests(),
+		),
+		"myInput",
+	)
+
 	elements := NewElementsForTests([]Element{
-		NewElementForTests(*pLayer),
+		NewElementForTests(
+			layer,
+		),
 	})
 
 	retList := elements.List()

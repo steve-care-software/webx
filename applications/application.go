@@ -86,8 +86,7 @@ func (app *application) execute(input []byte, link links.Link, context commands.
 	currentContext := context
 	elements := link.Elements().List()
 	for _, oneElement := range elements {
-		logic := oneElement.Logic()
-		layer := logic.Layer()
+		layer := oneElement.Layer()
 		retResult, err := app.execLayerApp.Execute(currentInput, layer, currentContext)
 		if err != nil {
 			return nil, err

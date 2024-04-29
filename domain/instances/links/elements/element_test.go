@@ -5,16 +5,32 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/conditions"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/conditions/resources"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers/outputs/kinds"
 )
 
 func TestElement_Success(t *testing.T) {
-	pLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
-	element := NewElementForTests(*pLayer)
+	layer := layers.NewLayerForTests(
+		instructions.NewInstructionsForTests([]instructions.Instruction{
+			instructions.NewInstructionWithStopForTests(),
+		}),
+		outputs.NewOutputForTests(
+			"myVariable",
+			kinds.NewKindWithContinueForTests(),
+		),
+		"myInput",
+	)
+
+	element := NewElementForTests(
+		layer,
+	)
+
 	retLayer := element.Layer()
-	if !bytes.Equal(pLayer.Bytes(), retLayer.Bytes()) {
+	if !bytes.Equal(layer.Hash().Bytes(), retLayer.Hash().Bytes()) {
 		t.Errorf("the returned layer is invalid")
 		return
 	}
@@ -26,14 +42,24 @@ func TestElement_Success(t *testing.T) {
 }
 
 func TestElement_withCondition_Success(t *testing.T) {
+	layer := layers.NewLayerForTests(
+		instructions.NewInstructionsForTests([]instructions.Instruction{
+			instructions.NewInstructionWithStopForTests(),
+		}),
+		outputs.NewOutputForTests(
+			"myVariable",
+			kinds.NewKindWithContinueForTests(),
+		),
+		"myInput",
+	)
+
 	condition := conditions.NewConditionForTests(
 		resources.NewResourceForTests(23),
 	)
 
-	pLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
-	element := NewElementWithConditionForTests(*pLayer, condition)
+	element := NewElementWithConditionForTests(layer, condition)
 	retLayer := element.Layer()
-	if !bytes.Equal(pLayer.Bytes(), retLayer.Bytes()) {
+	if !bytes.Equal(layer.Hash().Bytes(), retLayer.Hash().Bytes()) {
 		t.Errorf("the returned layer is invalid")
 		return
 	}

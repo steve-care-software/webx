@@ -5,12 +5,12 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/conditions"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/logics"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers"
 )
 
 type elementBuilder struct {
 	hashAdapter hash.Adapter
-	logic       logics.Logic
+	layer       layers.Layer
 	condition   conditions.Condition
 }
 
@@ -19,7 +19,7 @@ func createElementBuilder(
 ) ElementBuilder {
 	out := elementBuilder{
 		hashAdapter: hashAdapter,
-		logic:       nil,
+		layer:       nil,
 		condition:   nil,
 	}
 
@@ -33,9 +33,9 @@ func (app *elementBuilder) Create() ElementBuilder {
 	)
 }
 
-// WithLogic adds a logic to the builder
-func (app *elementBuilder) WithLogic(logic logics.Logic) ElementBuilder {
-	app.logic = logic
+// WithLayer adds a layer to the builder
+func (app *elementBuilder) WithLayer(layer layers.Layer) ElementBuilder {
+	app.layer = layer
 	return app
 }
 
@@ -47,12 +47,12 @@ func (app *elementBuilder) WithCondition(condition conditions.Condition) Element
 
 // Now builds a new Element instance
 func (app *elementBuilder) Now() (Element, error) {
-	if app.logic == nil {
-		return nil, errors.New("the logic is mandatory in order to build an Element instance")
+	if app.layer == nil {
+		return nil, errors.New("the layer is mandatory in order to build an Element instance")
 	}
 
 	data := [][]byte{
-		app.logic.Hash().Bytes(),
+		app.layer.Hash().Bytes(),
 	}
 
 	if app.condition != nil {
@@ -65,8 +65,8 @@ func (app *elementBuilder) Now() (Element, error) {
 	}
 
 	if app.condition != nil {
-		return createElementWithCondition(*pHash, app.logic, app.condition), nil
+		return createElementWithCondition(*pHash, app.layer, app.condition), nil
 	}
 
-	return createElement(*pHash, app.logic), nil
+	return createElement(*pHash, app.layer), nil
 }

@@ -3,7 +3,7 @@ package elements
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/conditions"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/logics"
+	"github.com/steve-care-software/datastencil/domain/instances/links/layers"
 )
 
 // NewBuilder creates a new elements builder
@@ -38,7 +38,7 @@ type Elements interface {
 // ElementBuilder represents the element builder
 type ElementBuilder interface {
 	Create() ElementBuilder
-	WithLogic(logic logics.Logic) ElementBuilder
+	WithLayer(layer layers.Layer) ElementBuilder
 	WithCondition(condition conditions.Condition) ElementBuilder
 	Now() (Element, error)
 }
@@ -46,7 +46,7 @@ type ElementBuilder interface {
 // Element represents an element
 type Element interface {
 	Hash() hash.Hash
-	Logic() logics.Logic
+	Layer() layers.Layer
 	HasCondition() bool
 	Condition() conditions.Condition
 }
