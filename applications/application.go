@@ -6,7 +6,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/commands"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
 	"github.com/steve-care-software/datastencil/domain/instances/links"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers"
 )
 
 type application struct {

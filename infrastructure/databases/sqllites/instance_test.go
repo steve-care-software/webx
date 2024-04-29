@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/steve-care-software/datastencil/domain/accounts/signers"
 	"github.com/steve-care-software/datastencil/domain/instances"
-    "github.com/steve-care-software/datastencil/domain/accounts/signers"
-	layers_bytes "github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/bytes"
+	layers_bytes "github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/bytes"
 )
 
 type testInstance struct {
@@ -83,7 +83,7 @@ func TestInstance_Success(t *testing.T) {
 		return
 	}
 
-    signer:=  signers.NewFactory().Create()
+	signer := signers.NewFactory().Create()
 	repository := NewInstanceRepository(skeleton, pDB)
 	service := NewInstanceService(repository, signer, skeleton, pDB)
 
@@ -96,19 +96,19 @@ func TestInstance_Success(t *testing.T) {
 
 	for name, oneSection := range instances {
 		for idx, oneInstance := range oneSection {
-            // begin the context:
-            pContext, err := service.Begin()
-            if err != nil {
-                t.Errorf("section: %s: index: %d, the error was expected to be nil, error returned: %s", name, idx, err.Error())
+			// begin the context:
+			pContext, err := service.Begin()
+			if err != nil {
+				t.Errorf("section: %s: index: %d, the error was expected to be nil, error returned: %s", name, idx, err.Error())
 				return
-            }
+			}
 
 			// insert instance:
-        	err = service.Insert(*pContext, oneInstance.instance, oneInstance.path)
-        	if err != nil {
-        		t.Errorf("section: %s: index: %d, the error was expected to be nil, error returned: %s", name, idx, fmt.Sprintln(err.Error()))
-                return
-        	}
+			err = service.Insert(*pContext, oneInstance.instance, oneInstance.path)
+			if err != nil {
+				t.Errorf("section: %s: index: %d, the error was expected to be nil, error returned: %s", name, idx, fmt.Sprintln(err.Error()))
+				return
+			}
 
 			// commit:
 			err = service.Commit(*pContext)

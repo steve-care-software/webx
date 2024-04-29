@@ -3,7 +3,7 @@ package databases
 import (
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/databases/repositories"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/databases/services"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/databases"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/databases"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

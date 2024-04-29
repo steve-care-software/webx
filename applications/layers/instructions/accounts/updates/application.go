@@ -11,7 +11,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/accounts/criterias"
 	"github.com/steve-care-software/datastencil/domain/accounts/encryptors"
 	"github.com/steve-care-software/datastencil/domain/accounts/signers"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/accounts/updates"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/accounts/updates"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

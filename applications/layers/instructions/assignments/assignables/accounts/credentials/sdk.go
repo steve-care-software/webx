@@ -2,7 +2,7 @@ package credentials
 
 import (
 	account_credentials "github.com/steve-care-software/datastencil/domain/accounts/credentials"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/assignments/assignables/accounts/credentials"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/accounts/credentials"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	"github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )

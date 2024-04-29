@@ -6,8 +6,8 @@ import (
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/applications/mocks"
 	"github.com/steve-care-software/datastencil/domain/accounts/credentials"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/accounts/updates"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/accounts/updates/criterias"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/accounts/updates"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/accounts/updates/criterias"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	stack_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )

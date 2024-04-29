@@ -7,7 +7,7 @@ import (
 	"github.com/steve-care-software/datastencil/applications/mocks"
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions/databases/inserts"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/databases/inserts"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

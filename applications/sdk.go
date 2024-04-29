@@ -4,8 +4,8 @@ import (
 	application_layers "github.com/steve-care-software/datastencil/applications/layers"
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/commands"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers"
 	"github.com/steve-care-software/datastencil/domain/instances/links"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers"
 )
 
 // NewApplication creates a new application

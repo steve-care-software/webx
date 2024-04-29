@@ -7,10 +7,10 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/conditions"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/conditions/resources"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers/outputs"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers/outputs/kinds"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/outputs/kinds"
 )
 
 func TestElement_Success(t *testing.T) {

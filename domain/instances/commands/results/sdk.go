@@ -3,7 +3,7 @@ package results
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers/outputs/kinds"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/outputs/kinds"
 )
 
 const (

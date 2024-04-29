@@ -6,7 +6,7 @@ import (
 	application_databases "github.com/steve-care-software/datastencil/applications/layers/instructions/databases"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions"
 	results_failures "github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions/failures"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

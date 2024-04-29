@@ -2,8 +2,8 @@ package commands
 
 import (
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers"
 	"github.com/steve-care-software/datastencil/domain/instances/links"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers"
 )
 
 // NewCommandsForTests creates a new commands for tests

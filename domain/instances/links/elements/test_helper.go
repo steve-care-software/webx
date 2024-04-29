@@ -2,7 +2,7 @@ package elements
 
 import (
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/conditions"
-	"github.com/steve-care-software/datastencil/domain/instances/links/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers"
 )
 
 // NewElementsForTests creates new elements for tests
