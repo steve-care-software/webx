@@ -21,6 +21,12 @@ func NewConditionValueBuilder() ConditionValueBuilder {
 	)
 }
 
+// Adapter represents the condition adapter
+type Adapter interface {
+	ToBytes(ins Condition) ([]byte, error)
+	ToInstance(bytes []byte) (Condition, error)
+}
+
 // Builder represents condition builder
 type Builder interface {
 	Create() Builder
