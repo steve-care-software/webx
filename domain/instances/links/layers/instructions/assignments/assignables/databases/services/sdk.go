@@ -12,6 +12,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the service adapter
+type Adapter interface {
+	ToBytes(ins Service) ([]byte, error)
+	ToInstance(bytes []byte) (Service, error)
+}
+
 // Builder represents a service builder
 type Builder interface {
 	Create() Builder
