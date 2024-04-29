@@ -13,6 +13,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the assignment adapter
+type Adapter interface {
+	ToBytes(ins Assignment) ([]byte, error)
+	ToInstance(bytes []byte) (Assignment, error)
+}
+
 // Builder represents an assignment builder
 type Builder interface {
 	Create() Builder
