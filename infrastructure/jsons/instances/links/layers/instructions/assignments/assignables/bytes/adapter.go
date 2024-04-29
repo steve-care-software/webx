@@ -44,7 +44,7 @@ func (app *Adapter) ToInstance(bytes []byte) (bytes.Bytes, error) {
 		return nil, err
 	}
 
-	return app.StructToRetrieve(*ins)
+	return app.StructToBytes(*ins)
 }
 
 // BytesToStruct converts a bytes to struct
@@ -65,8 +65,8 @@ func (app *Adapter) BytesToStruct(ins bytes.Bytes) (*Bytes, error) {
 	return &out, nil
 }
 
-// StructToRetrieve converts a struct to retrieve
-func (app *Adapter) StructToRetrieve(str Bytes) (bytes.Bytes, error) {
+// StructToBytes converts a struct to bytes
+func (app *Adapter) StructToBytes(str Bytes) (bytes.Bytes, error) {
 	builder := app.builder.Create()
 	if str.Join != nil {
 		builder.WithJoin(str.Join)

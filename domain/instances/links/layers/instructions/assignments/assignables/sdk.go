@@ -18,6 +18,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the assignable adapter
+type Adapter interface {
+	ToBytes(ins Assignable) ([]byte, error)
+	ToInstance(bytes []byte) (Assignable, error)
+}
+
 // Builder represents an assignable builder
 type Builder interface {
 	Create() Builder

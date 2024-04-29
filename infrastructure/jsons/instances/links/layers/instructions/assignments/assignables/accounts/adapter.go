@@ -60,7 +60,7 @@ func (app *Adapter) ToInstance(bytes []byte) (accounts.Account, error) {
 		return nil, err
 	}
 
-	return app.StructToRetrieve(*ins)
+	return app.StructToAccount(*ins)
 }
 
 // AccountToStruct converts an account to struct
@@ -101,8 +101,8 @@ func (app *Adapter) AccountToStruct(ins accounts.Account) (*Account, error) {
 	return &out, nil
 }
 
-// StructToRetrieve converts a struct to retrieve
-func (app *Adapter) StructToRetrieve(str Account) (accounts.Account, error) {
+// StructToAccount converts a struct to account
+func (app *Adapter) StructToAccount(str Account) (accounts.Account, error) {
 	builder := app.builder.Create()
 	if str.List != "" {
 		builder.WithList(str.List)
