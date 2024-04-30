@@ -30,8 +30,8 @@ func TestAdapter_withResource_Success(t *testing.T) {
 			resources.NewResourceWithIsMandatoryForTests(*pSecondHash),
 		),
 	)
-	adapter := NewAdapter()
 
+	adapter := NewAdapter()
 	retBytes, err := adapter.ToBytes(ins)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())

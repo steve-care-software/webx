@@ -8,7 +8,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/links/references"
 )
 
-func TestAdapter_withResource_Success(t *testing.T) {
+func TestAdapter_Success(t *testing.T) {
 	pHash, err := hash.NewAdapter().FromBytes([]byte("this is a layer hash"))
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())

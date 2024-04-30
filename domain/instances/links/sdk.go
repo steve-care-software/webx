@@ -25,8 +25,8 @@ func NewLinkBuilder() LinkBuilder {
 
 // Adapter represents the links adapter
 type Adapter interface {
-	ToData(ins Links) ([]byte, error)
-	ToInstance(data []byte) (Links, error)
+	ToBytes(ins Links) ([]byte, error)
+	ToInstance(bytes []byte) (Links, error)
 }
 
 // Builder represents the links builder
@@ -46,12 +46,6 @@ type Links interface {
 // Repository represents the links repository
 type Repository interface {
 	Retrieve(path []string) (Links, error)
-}
-
-// LinkAdapter represents the link adapter
-type LinkAdapter interface {
-	ToData(ins Link) ([]byte, error)
-	ToInstance(data []byte) (Link, error)
 }
 
 // LinkBuilder represents a link builder
