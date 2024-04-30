@@ -19,7 +19,6 @@ import (
 
 func TestLink_withCommand_Success(t *testing.T) {
 	input := []byte("this is an input")
-	pLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
 
 	pFirstLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for first layer"))
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
@@ -32,7 +31,18 @@ func TestLink_withCommand_Success(t *testing.T) {
 			),
 		),
 		elements.NewElementsForTests([]elements.Element{
-			elements.NewElementForTests(*pLayer),
+			elements.NewElementForTests(
+				layers.NewLayerForTests(
+					instructions.NewInstructionsForTests([]instructions.Instruction{
+						instructions.NewInstructionWithStopForTests(),
+					}),
+					outputs.NewOutputForTests(
+						"myVariable",
+						kinds.NewKindWithContinueForTests(),
+					),
+					"myInput",
+				),
+			),
 		}),
 	)
 
@@ -65,7 +75,18 @@ func TestLink_withCommand_Success(t *testing.T) {
 					),
 				),
 				elements.NewElementsForTests([]elements.Element{
-					elements.NewElementForTests(*pLayer),
+					elements.NewElementForTests(
+						layers.NewLayerForTests(
+							instructions.NewInstructionsForTests([]instructions.Instruction{
+								instructions.NewInstructionWithStopForTests(),
+							}),
+							outputs.NewOutputForTests(
+								"myVariable",
+								kinds.NewKindWithContinueForTests(),
+							),
+							"myInput",
+						),
+					),
 				}),
 			),
 		),
@@ -93,8 +114,6 @@ func TestLink_withCommand_Success(t *testing.T) {
 }
 
 func TestLink_withoutInput_returnsError(t *testing.T) {
-	pLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
-
 	pFirstLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for first layer"))
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
 	link := links.NewLinkForTests(
@@ -106,7 +125,18 @@ func TestLink_withoutInput_returnsError(t *testing.T) {
 			),
 		),
 		elements.NewElementsForTests([]elements.Element{
-			elements.NewElementForTests(*pLayer),
+			elements.NewElementForTests(
+				layers.NewLayerForTests(
+					instructions.NewInstructionsForTests([]instructions.Instruction{
+						instructions.NewInstructionWithStopForTests(),
+					}),
+					outputs.NewOutputForTests(
+						"myVariable",
+						kinds.NewKindWithContinueForTests(),
+					),
+					"myInput",
+				),
+			),
 		}),
 	)
 
@@ -139,7 +169,18 @@ func TestLink_withoutInput_returnsError(t *testing.T) {
 					),
 				),
 				elements.NewElementsForTests([]elements.Element{
-					elements.NewElementForTests(*pLayer),
+					elements.NewElementForTests(
+						layers.NewLayerForTests(
+							instructions.NewInstructionsForTests([]instructions.Instruction{
+								instructions.NewInstructionWithStopForTests(),
+							}),
+							outputs.NewOutputForTests(
+								"myVariable",
+								kinds.NewKindWithContinueForTests(),
+							),
+							"myInput",
+						),
+					),
 				}),
 			),
 		),
@@ -153,7 +194,6 @@ func TestLink_withoutInput_returnsError(t *testing.T) {
 }
 
 func TestLink_withoutLink_returnsError(t *testing.T) {
-	pLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
 	pFirstLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for first layer"))
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
 
@@ -187,7 +227,18 @@ func TestLink_withoutLink_returnsError(t *testing.T) {
 					),
 				),
 				elements.NewElementsForTests([]elements.Element{
-					elements.NewElementForTests(*pLayer),
+					elements.NewElementForTests(
+						layers.NewLayerForTests(
+							instructions.NewInstructionsForTests([]instructions.Instruction{
+								instructions.NewInstructionWithStopForTests(),
+							}),
+							outputs.NewOutputForTests(
+								"myVariable",
+								kinds.NewKindWithContinueForTests(),
+							),
+							"myInput",
+						),
+					),
 				}),
 			),
 		),

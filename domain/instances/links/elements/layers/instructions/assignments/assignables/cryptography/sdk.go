@@ -4,6 +4,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/cryptography/decrypts"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/cryptography/encrypts"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/cryptography/keys"
 )
 
 // NewBuilder creates a new builder
@@ -25,6 +26,7 @@ type Builder interface {
 	Create() Builder
 	WithEncrypt(encrypt encrypts.Encrypt) Builder
 	WithDecrypt(decrypt decrypts.Decrypt) Builder
+	WithKey(key keys.Key) Builder
 	Now() (Cryptography, error)
 }
 
@@ -35,4 +37,6 @@ type Cryptography interface {
 	Encrypt() encrypts.Encrypt
 	IsDecrypt() bool
 	Decrypt() decrypts.Decrypt
+	IsKey() bool
+	Key() keys.Key
 }

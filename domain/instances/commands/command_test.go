@@ -37,7 +37,6 @@ func TestCommand_Success(t *testing.T) {
 		),
 	)
 
-	pLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
 	pFirstLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for first layer"))
 	pSecondLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes for second layer"))
 
@@ -52,7 +51,18 @@ func TestCommand_Success(t *testing.T) {
 				),
 			),
 			elements.NewElementsForTests([]elements.Element{
-				elements.NewElementForTests(*pLayer),
+				elements.NewElementForTests(
+					layers.NewLayerForTests(
+						instructions.NewInstructionsForTests([]instructions.Instruction{
+							instructions.NewInstructionWithStopForTests(),
+						}),
+						outputs.NewOutputForTests(
+							"myVariable",
+							kinds.NewKindWithContinueForTests(),
+						),
+						"myInput",
+					),
+				),
 			}),
 		),
 		NewCommandForTests(
@@ -84,7 +94,18 @@ func TestCommand_Success(t *testing.T) {
 						),
 					),
 					elements.NewElementsForTests([]elements.Element{
-						elements.NewElementForTests(*pLayer),
+						elements.NewElementForTests(
+							layers.NewLayerForTests(
+								instructions.NewInstructionsForTests([]instructions.Instruction{
+									instructions.NewInstructionWithStopForTests(),
+								}),
+								outputs.NewOutputForTests(
+									"myVariable",
+									kinds.NewKindWithContinueForTests(),
+								),
+								"myInput",
+							),
+						),
 					}),
 				),
 			),

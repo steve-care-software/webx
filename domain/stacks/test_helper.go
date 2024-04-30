@@ -3,8 +3,6 @@ package stacks
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
-	"github.com/steve-care-software/datastencil/domain/instances/queries"
-	stack_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )
 
 // NewStackForTests creates a new stack for tests
@@ -127,29 +125,9 @@ func NewAssignableWithUnsignedIntForTests(value uint) Assignable {
 	return ins
 }
 
-// NewAssignableWithAccountForTests creates a new assignable with account for tests
-func NewAssignableWithAccountForTests(value stack_accounts.Account) Assignable {
-	ins, err := NewAssignableBuilder().Create().WithAccount(value).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
 // NewAssignableWithInstanceForTests creates a new assignable with instance for tests
 func NewAssignableWithInstanceForTests(value instances.Instance) Assignable {
 	ins, err := NewAssignableBuilder().Create().WithInstance(value).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewAssignableWithQueryForTests creates a new assignable with query for tests
-func NewAssignableWithQueryForTests(value queries.Query) Assignable {
-	ins, err := NewAssignableBuilder().Create().WithQuery(value).Now()
 	if err != nil {
 		panic(err)
 	}

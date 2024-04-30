@@ -1,8 +1,8 @@
 package commits
 
 import (
-	"github.com/steve-care-software/datastencil/domain/accounts/signers"
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/keys/signers"
 )
 
 type commit struct {

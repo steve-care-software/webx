@@ -52,7 +52,7 @@ func (app *application) Execute(frame stacks.Frame, assignable compilers.Compile
 			return nil, &code, err
 		}
 
-		data, err := app.instanceAdapter.ToData(ins)
+		data, err := app.instanceAdapter.ToBytes(ins)
 		if err != nil {
 			code := failures.CouldNotDecompileInstanceToBytes
 			return nil, &code, err

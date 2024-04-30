@@ -4,41 +4,33 @@ import (
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables"
-	json_accounts "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/assignments/assignables/accounts"
 	json_bytes "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/assignments/assignables/bytes"
 	json_compiler "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/assignments/assignables/compilers"
 	json_constants "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/assignments/assignables/constants"
 	json_cryptography "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/assignments/assignables/cryptography"
-	json_databases "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/assignments/assignables/databases"
 )
 
 // Adapter represents an adapter
 type Adapter struct {
-	accountAdapter      *json_accounts.Adapter
 	bytesAdapter        *json_bytes.Adapter
 	compilerAdapter     *json_compiler.Adapter
 	constantAdapter     *json_constants.Adapter
 	cryptographyAdapter *json_cryptography.Adapter
-	databaseAdapter     *json_databases.Adapter
 	builder             assignables.Builder
 }
 
 func createAdapter(
-	accountAdapter *json_accounts.Adapter,
 	bytesAdapter *json_bytes.Adapter,
 	compilerAdapter *json_compiler.Adapter,
 	constantAdapter *json_constants.Adapter,
 	cryptographyAdapter *json_cryptography.Adapter,
-	databaseAdapter *json_databases.Adapter,
 	builder assignables.Builder,
 ) assignables.Adapter {
 	out := Adapter{
-		accountAdapter:      accountAdapter,
 		bytesAdapter:        bytesAdapter,
 		compilerAdapter:     compilerAdapter,
 		constantAdapter:     constantAdapter,
 		cryptographyAdapter: cryptographyAdapter,
-		databaseAdapter:     databaseAdapter,
 		builder:             builder,
 	}
 
@@ -92,15 +84,6 @@ func (app *Adapter) AssignableToStruct(ins assignables.Assignable) (*Assignable,
 		out.Constant = ptr
 	}
 
-	if ins.IsAccount() {
-		ptr, err := app.accountAdapter.AccountToStruct(ins.Account())
-		if err != nil {
-			return nil, err
-		}
-
-		out.Account = ptr
-	}
-
 	if ins.IsCryptography() {
 		ptr, err := app.cryptographyAdapter.CryptographyToStruct(ins.Cryptography())
 		if err != nil {
@@ -110,10 +93,6 @@ func (app *Adapter) AssignableToStruct(ins assignables.Assignable) (*Assignable,
 		out.Cryptography = ptr
 	}
 
-	if ins.IsQuery() {
-		out.Query = ins.Query()
-	}
-
 	if ins.IsCompiler() {
 		ptr, err := app.compilerAdapter.CompilerToStruct(ins.Compiler())
 		if err != nil {
@@ -121,15 +100,6 @@ func (app *Adapter) AssignableToStruct(ins assignables.Assignable) (*Assignable,
 		}
 
 		out.Compiler = ptr
-	}
-
-	if ins.IsDatabase() {
-		ptr, err := app.databaseAdapter.DatabaseToStruct(ins.Database())
-		if err != nil {
-			return nil, err
-		}
-
-		out.Database = ptr
 	}
 
 	return &out, nil
@@ -156,15 +126,6 @@ func (app *Adapter) StructToAssignable(str Assignable) (assignables.Assignable, 
 		builder.WithConsant(ins)
 	}
 
-	if str.Account != nil {
-		ins, err := app.accountAdapter.StructToAccount(*str.Account)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithAccount(ins)
-	}
-
 	if str.Cryptography != nil {
 		ins, err := app.cryptographyAdapter.StructToCryptography(*str.Cryptography)
 		if err != nil {
@@ -174,10 +135,6 @@ func (app *Adapter) StructToAssignable(str Assignable) (assignables.Assignable, 
 		builder.WithCryptography(ins)
 	}
 
-	if str.Query != "" {
-		builder.WithQuery(str.Query)
-	}
-
 	if str.Compiler != nil {
 		ins, err := app.compilerAdapter.StructToCompiler(*str.Compiler)
 		if err != nil {
@@ -185,15 +142,6 @@ func (app *Adapter) StructToAssignable(str Assignable) (assignables.Assignable, 
 		}
 
 		builder.WithCompiler(ins)
-	}
-
-	if str.Database != nil {
-		ins, err := app.databaseAdapter.StructToDatabase(*str.Database)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithDatabase(ins)
 	}
 
 	return builder.Now()

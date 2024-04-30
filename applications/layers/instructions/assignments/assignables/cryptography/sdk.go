@@ -3,6 +3,7 @@ package cryptography
 import (
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/cryptography/decrypts"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/cryptography/encrypts"
+	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/cryptography/keys"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/cryptography"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
@@ -11,10 +12,12 @@ import (
 func NewApplication(
 	execDecryptApp decrypts.Application,
 	execEncryptApp encrypts.Application,
+	keyApp keys.Application,
 ) Application {
 	return createApplication(
 		execDecryptApp,
 		execEncryptApp,
+		keyApp,
 	)
 }
 

@@ -3,8 +3,6 @@ package stacks
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
-	"github.com/steve-care-software/datastencil/domain/instances/queries"
-	stack_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
 )
 
 type assignable struct {
@@ -14,9 +12,7 @@ type assignable struct {
 	hashList     []hash.Hash
 	stringList   []string
 	pUnsignedInt *uint
-	account      stack_accounts.Account
 	instance     instances.Instance
-	query        queries.Query
 }
 
 func createAssignableWithBool(
@@ -24,8 +20,6 @@ func createAssignableWithBool(
 ) Assignable {
 	return createAssignableInternally(
 		pBool,
-		nil,
-		nil,
 		nil,
 		nil,
 		nil,
@@ -46,8 +40,6 @@ func createAssignableWithBytes(
 		nil,
 		nil,
 		nil,
-		nil,
-		nil,
 	)
 }
 
@@ -58,8 +50,6 @@ func createAssignableWithHash(
 		nil,
 		nil,
 		hash,
-		nil,
-		nil,
 		nil,
 		nil,
 		nil,
@@ -78,8 +68,6 @@ func createAssignableWithHashList(
 		nil,
 		nil,
 		nil,
-		nil,
-		nil,
 	)
 }
 
@@ -92,8 +80,6 @@ func createAssignableWithStringList(
 		nil,
 		nil,
 		stringList,
-		nil,
-		nil,
 		nil,
 		nil,
 	)
@@ -110,24 +96,6 @@ func createAssignableWithUnsignedInt(
 		nil,
 		pUnsignedInt,
 		nil,
-		nil,
-		nil,
-	)
-}
-
-func createAssignableWithAccount(
-	account stack_accounts.Account,
-) Assignable {
-	return createAssignableInternally(
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		account,
-		nil,
-		nil,
 	)
 }
 
@@ -141,25 +109,7 @@ func createAssignableWithInstance(
 		nil,
 		nil,
 		nil,
-		nil,
 		instance,
-		nil,
-	)
-}
-
-func createAssignableWithQuery(
-	query queries.Query,
-) Assignable {
-	return createAssignableInternally(
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		query,
 	)
 }
 
@@ -170,9 +120,7 @@ func createAssignableInternally(
 	hashList []hash.Hash,
 	stringList []string,
 	pUnsignedInt *uint,
-	account stack_accounts.Account,
 	instance instances.Instance,
-	query queries.Query,
 ) Assignable {
 	out := assignable{
 		pBool:        pBool,
@@ -181,9 +129,7 @@ func createAssignableInternally(
 		hashList:     hashList,
 		stringList:   stringList,
 		pUnsignedInt: pUnsignedInt,
-		account:      account,
 		instance:     instance,
-		query:        query,
 	}
 
 	return &out
@@ -249,16 +195,6 @@ func (obj *assignable) UnsignedInt() *uint {
 	return obj.pUnsignedInt
 }
 
-// IsAccount returns true if account, false otherwise
-func (obj *assignable) IsAccount() bool {
-	return obj.account != nil
-}
-
-// Account returns account, if any
-func (obj *assignable) Account() stack_accounts.Account {
-	return obj.account
-}
-
 // IsInstance returns true if instance, false otherwise
 func (obj *assignable) IsInstance() bool {
 	return obj.instance != nil
@@ -267,14 +203,4 @@ func (obj *assignable) IsInstance() bool {
 // Instance returns instance, if any
 func (obj *assignable) Instance() instances.Instance {
 	return obj.instance
-}
-
-// IsQuery returns true if query, false otherwise
-func (obj *assignable) IsQuery() bool {
-	return obj.query != nil
-}
-
-// Query returns query, if any
-func (obj *assignable) Query() queries.Query {
-	return obj.query
 }

@@ -1,8 +1,8 @@
 package commits
 
 import (
-	"github.com/steve-care-software/datastencil/domain/accounts/signers"
 	"github.com/steve-care-software/datastencil/domain/instances/commits/actions"
+	"github.com/steve-care-software/datastencil/domain/keys/signers"
 )
 
 // NewCommitForTests creates new commit for tests

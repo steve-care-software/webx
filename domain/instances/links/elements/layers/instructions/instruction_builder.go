@@ -5,9 +5,7 @@ import (
 	"strconv"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/accounts"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/databases"
 )
 
 type instructionBuilder struct {
@@ -16,8 +14,6 @@ type instructionBuilder struct {
 	pRaiseError *uint
 	condition   Condition
 	assignment  assignments.Assignment
-	account     accounts.Account
-	database    databases.Database
 }
 
 func createInstructionBuilder(
@@ -29,8 +25,6 @@ func createInstructionBuilder(
 		pRaiseError: nil,
 		condition:   nil,
 		assignment:  nil,
-		account:     nil,
-		database:    nil,
 	}
 
 	return &out
@@ -58,18 +52,6 @@ func (app *instructionBuilder) WithCondition(condition Condition) InstructionBui
 // WithAssignment adds an assignment to the builder
 func (app *instructionBuilder) WithAssignment(assignment assignments.Assignment) InstructionBuilder {
 	app.assignment = assignment
-	return app
-}
-
-// WithAccount adds an account to the builder
-func (app *instructionBuilder) WithAccount(account accounts.Account) InstructionBuilder {
-	app.account = account
-	return app
-}
-
-// WithDatabase adds a database to the builder
-func (app *instructionBuilder) WithDatabase(database databases.Database) InstructionBuilder {
-	app.database = database
 	return app
 }
 
@@ -101,16 +83,6 @@ func (app *instructionBuilder) Now() (Instruction, error) {
 		data = append(data, app.assignment.Hash().Bytes())
 	}
 
-	if app.account != nil {
-		data = append(data, []byte("account"))
-		data = append(data, app.account.Hash().Bytes())
-	}
-
-	if app.database != nil {
-		data = append(data, []byte("database"))
-		data = append(data, app.database.Hash().Bytes())
-	}
-
 	dataLength := len(data)
 	if dataLength != 1 && dataLength != 2 {
 		return nil, errors.New("the Instruction is invalid")
@@ -131,14 +103,6 @@ func (app *instructionBuilder) Now() (Instruction, error) {
 
 	if app.condition != nil {
 		return createInstructionWithCondition(*pHash, app.condition), nil
-	}
-
-	if app.account != nil {
-		return createInstructionWithAccount(*pHash, app.account), nil
-	}
-
-	if app.database != nil {
-		return createInstructionWithDatabase(*pHash, app.database), nil
 	}
 
 	return createInstructionWithAssignment(*pHash, app.assignment), nil

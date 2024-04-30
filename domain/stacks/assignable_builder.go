@@ -5,34 +5,43 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
-	"github.com/steve-care-software/datastencil/domain/instances/queries"
-	"github.com/steve-care-software/datastencil/domain/stacks/accounts"
-	stack_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
+	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
+	"github.com/steve-care-software/datastencil/domain/keys/signers"
 )
 
 type assignableBuilder struct {
-	pBool        *bool
-	bytes        []byte
-	hash         hash.Hash
-	hashList     []hash.Hash
-	stringList   []string
-	pUnsignedInt *uint
-	account      stack_accounts.Account
-	instance     instances.Instance
-	query        queries.Query
+	pBool           *bool
+	bytes           []byte
+	hash            hash.Hash
+	hashList        []hash.Hash
+	stringList      []string
+	pUnsignedInt    *uint
+	instance        instances.Instance
+	encryptor       encryptors.Encryptor
+	encryptorPubKey encryptors.PublicKey
+	signer          signers.Signer
+	signerPubKey    signers.PublicKey
+	signature       signers.Signature
+	vote            signers.Vote
+	list            Assignables
 }
 
 func createAssignableBuilder() AssignableBuilder {
 	out := assignableBuilder{
-		pBool:        nil,
-		bytes:        nil,
-		hash:         nil,
-		hashList:     nil,
-		stringList:   nil,
-		pUnsignedInt: nil,
-		account:      nil,
-		instance:     nil,
-		query:        nil,
+		pBool:           nil,
+		bytes:           nil,
+		hash:            nil,
+		hashList:        nil,
+		stringList:      nil,
+		pUnsignedInt:    nil,
+		instance:        nil,
+		encryptor:       nil,
+		encryptorPubKey: nil,
+		signer:          nil,
+		signerPubKey:    nil,
+		signature:       nil,
+		vote:            nil,
+		list:            nil,
 	}
 
 	return &out
@@ -79,21 +88,51 @@ func (app *assignableBuilder) WithUnsignedInt(unsignedInt uint) AssignableBuilde
 	return app
 }
 
-// WithAccount adds an account to the builder
-func (app *assignableBuilder) WithAccount(account accounts.Account) AssignableBuilder {
-	app.account = account
-	return app
-}
-
 // WithInstance adds an instance to the builder
 func (app *assignableBuilder) WithInstance(instance instances.Instance) AssignableBuilder {
 	app.instance = instance
 	return app
 }
 
-// WithQuery adds a query to the builder
-func (app *assignableBuilder) WithQuery(query queries.Query) AssignableBuilder {
-	app.query = query
+// WithEncryptor adds an encryptor to the builder
+func (app *assignableBuilder) WithEncryptor(encryptor encryptors.Encryptor) AssignableBuilder {
+	app.encryptor = encryptor
+	return app
+}
+
+// WithEncryptorPubKey adds an encryptor pubKey to the builder
+func (app *assignableBuilder) WithEncryptorPubKey(encryptorPubKey encryptors.PublicKey) AssignableBuilder {
+	app.encryptorPubKey = encryptorPubKey
+	return app
+}
+
+// WithSigner adds a signer pk to the builder
+func (app *assignableBuilder) WithSigner(signer signers.Signer) AssignableBuilder {
+	app.signer = signer
+	return app
+}
+
+// WithSignerPubKey adds a signer pubKey to the builder
+func (app *assignableBuilder) WithSignerPubKey(signerPubKey signers.PublicKey) AssignableBuilder {
+	app.signerPubKey = signerPubKey
+	return app
+}
+
+// WithSignature adds a signature to the builder
+func (app *assignableBuilder) WithSignature(signature signers.Signature) AssignableBuilder {
+	app.signature = signature
+	return app
+}
+
+// WithVote adds a vote to the builder
+func (app *assignableBuilder) WithVote(vote signers.Vote) AssignableBuilder {
+	app.vote = vote
+	return app
+}
+
+// WithList adds a list to the builder
+func (app *assignableBuilder) WithList(list Assignables) AssignableBuilder {
+	app.list = list
 	return app
 }
 
@@ -131,16 +170,36 @@ func (app *assignableBuilder) Now() (Assignable, error) {
 		return createAssignableWithUnsignedInt(app.pUnsignedInt), nil
 	}
 
-	if app.account != nil {
-		return createAssignableWithAccount(app.account), nil
-	}
-
 	if app.instance != nil {
 		return createAssignableWithInstance(app.instance), nil
 	}
 
-	if app.query != nil {
-		return createAssignableWithQuery(app.query), nil
+	if app.encryptor != nil {
+
+	}
+
+	if app.encryptorPubKey != nil {
+
+	}
+
+	if app.signer != nil {
+
+	}
+
+	if app.signerPubKey != nil {
+
+	}
+
+	if app.signature != nil {
+
+	}
+
+	if app.vote != nil {
+
+	}
+
+	if app.list != nil {
+
 	}
 
 	return nil, errors.New("the Assignable is invalid")

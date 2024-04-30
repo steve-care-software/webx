@@ -23,8 +23,8 @@ func createInstanceAdapter(
 	return &out
 }
 
-// ToData returns the instance to data
-func (app *instanceAdapter) ToData(ins instances.Instance) ([]byte, error) {
+// ToBytes returns the instance to data
+func (app *instanceAdapter) ToBytes(ins instances.Instance) ([]byte, error) {
 	keyname := ins.Hash().String()
 	if bytes, ok := app.toData[keyname]; ok {
 		return bytes, nil

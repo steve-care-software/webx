@@ -6,12 +6,14 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/cryptography/decrypts"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/cryptography/encrypts"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/cryptography/keys"
 )
 
 type builder struct {
 	hashAdapter hash.Adapter
 	encrypt     encrypts.Encrypt
 	decrypt     decrypts.Decrypt
+	key         keys.Key
 }
 
 func createBuilder(
@@ -21,6 +23,7 @@ func createBuilder(
 		hashAdapter: hashAdapter,
 		encrypt:     nil,
 		decrypt:     nil,
+		key:         nil,
 	}
 
 	return &out
@@ -45,6 +48,12 @@ func (app *builder) WithDecrypt(decrypt decrypts.Decrypt) Builder {
 	return app
 }
 
+// WithKey adds a key to the builder
+func (app *builder) WithKey(key keys.Key) Builder {
+	app.key = key
+	return app
+}
+
 // Now builds a new Cryptography instance
 func (app *builder) Now() (Cryptography, error) {
 	data := [][]byte{}
@@ -56,6 +65,11 @@ func (app *builder) Now() (Cryptography, error) {
 	if app.decrypt != nil {
 		data = append(data, []byte("decrypt"))
 		data = append(data, app.decrypt.Hash().Bytes())
+	}
+
+	if app.key != nil {
+		data = append(data, []byte("key"))
+		data = append(data, app.key.Hash().Bytes())
 	}
 
 	if len(data) != 2 {
@@ -71,5 +85,9 @@ func (app *builder) Now() (Cryptography, error) {
 		return createCryptographyWithEncrypt(*pHash, app.encrypt), nil
 	}
 
-	return createCryptographyWithDecrypt(*pHash, app.decrypt), nil
+	if app.decrypt != nil {
+		return createCryptographyWithDecrypt(*pHash, app.decrypt), nil
+	}
+
+	return createCryptographyWithKey(*pHash, app.key), nil
 }

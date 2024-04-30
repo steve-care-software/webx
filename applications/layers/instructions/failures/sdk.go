@@ -129,4 +129,28 @@ const (
 
 	// CouldNotDeleteFromDatabase could not delete from database service
 	CouldNotDeleteFromDatabase
+
+	// CouldNotFetchEncryptionPrivateKeyFromFrame could not fetch an encryption private key from frame
+	CouldNotFetchEncryptionPrivateKeyFromFrame
+
+	// CouldNotFetchEncryptionPublicKeyFromFrame could not fetch an encryption public key from frame
+	CouldNotFetchEncryptionPublicKeyFromFrame
+
+	// CouldNotFetchSignerPrivateKeyFromFrame could not fetch a signer private key from frame
+	CouldNotFetchSignerPrivateKeyFromFrame
+
+	// CouldNotFetchSignerPublicKeyFromFrame could not fetch a signer public key from frame
+	CouldNotFetchSignerPublicKeyFromFrame
+
+	// CouldNotSignMessageInFrame could not sign message in frame
+	CouldNotSignMessageInFrame
+
+	// CouldNotVoteOnMessageInFrame could not vote on message in frame
+	CouldNotVoteOnMessageInFrame
+
+	// CouldNotFetchVoteInFrame could not fetch vote in frame
+	CouldNotFetchVoteFromFrame
+
+	// CouldNotFetchHashFromList represents a could not fetch a hash from list
+	CouldNotFetchHashFromList
 )

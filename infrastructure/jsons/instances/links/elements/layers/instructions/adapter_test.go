@@ -5,13 +5,9 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/accounts"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/accounts/inserts"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables"
 	bytes_domain "github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/bytes"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/databases"
-	databases_inserts "github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/databases/inserts"
 )
 
 func TestAdapter_Success(t *testing.T) {
@@ -23,20 +19,6 @@ func TestAdapter_Success(t *testing.T) {
 					bytes_domain.NewBytesWithHashBytesForTests(
 						"myInput",
 					),
-				),
-			),
-		),
-		instructions.NewInstructionWithAccountForTests(
-			accounts.NewAccountWithInsertForTests(
-				inserts.NewInsertForTests("myUser", "myPass"),
-			),
-		),
-		instructions.NewInstructionWithDatabaseForTests(
-			databases.NewDatabaseWithInsertForTests(
-				databases_inserts.NewInsertForTests(
-					"myContext",
-					"myInstance",
-					"myPath",
 				),
 			),
 		),

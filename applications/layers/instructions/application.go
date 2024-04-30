@@ -1,9 +1,7 @@
 package instructions
 
 import (
-	"github.com/steve-care-software/datastencil/applications/layers/instructions/accounts"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments"
-	"github.com/steve-care-software/datastencil/applications/layers/instructions/databases"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions"
 	results_failures "github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions/failures"
@@ -12,9 +10,7 @@ import (
 )
 
 type application struct {
-	execAccountApp      accounts.Application
 	execAssignmentApp   assignments.Application
-	execDatabaseApp     databases.Application
 	stackBuilder        stacks.Builder
 	framesBuilder       stacks.FramesBuilder
 	frameBuilder        stacks.FrameBuilder
@@ -24,9 +20,7 @@ type application struct {
 }
 
 func createApplication(
-	execAccountApp accounts.Application,
 	execAssignmentApp assignments.Application,
-	execDatabaseApp databases.Application,
 	stackBuilder stacks.Builder,
 	framesBuilder stacks.FramesBuilder,
 	frameBuilder stacks.FrameBuilder,
@@ -35,9 +29,7 @@ func createApplication(
 	failureBuilder results_failures.Builder,
 ) Application {
 	out := application{
-		execAccountApp:      execAccountApp,
 		execAssignmentApp:   execAssignmentApp,
-		execDatabaseApp:     execDatabaseApp,
 		stackBuilder:        stackBuilder,
 		framesBuilder:       framesBuilder,
 		frameBuilder:        frameBuilder,
@@ -178,38 +170,6 @@ func (app *application) instruction(
 			}
 
 			return stack, nil, nil
-		}
-
-		return stack, nil, nil
-	}
-
-	if instruction.IsAccount() {
-		account := instruction.Account()
-		pCode, err := app.execAccountApp.Execute(frame, account)
-		if pCode != nil {
-			message := ""
-			if err != nil {
-				message = err.Error()
-			}
-
-			ins, err := app.errorCodeToInterruption(idx, *pCode, message)
-			return stack, ins, err
-		}
-
-		return stack, nil, nil
-	}
-
-	if instruction.IsDatabase() {
-		database := instruction.Database()
-		pCode, err := app.execDatabaseApp.Execute(frame, database)
-		if pCode != nil {
-			message := ""
-			if err != nil {
-				message = err.Error()
-			}
-
-			ins, err := app.errorCodeToInterruption(idx, *pCode, message)
-			return stack, ins, err
 		}
 
 		return stack, nil, nil

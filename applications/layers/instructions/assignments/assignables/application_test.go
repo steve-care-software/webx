@@ -5,37 +5,20 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/accounts"
-	application_execution_communications "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/accounts/communications"
-	application_signs "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/accounts/communications/signs"
-	application_votes "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/accounts/communications/votes"
-	application_execution_credentials "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/accounts/credentials"
-	application_execution_encryptions "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/accounts/encryptions"
-	application_accounts_decrypts "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/accounts/encryptions/decrypts"
-	application_accounts_encrypts "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/accounts/encryptions/encrypts"
-	application_execution_retrieves "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/accounts/retrieves"
 	application_bytes "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/bytes"
 	application_compilers "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/compilers"
 	application_constants "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/constants"
 	application_cryptography "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/cryptography"
 	application_decrypts "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/cryptography/decrypts"
 	application_encrypts "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/cryptography/encrypts"
-	application_databases "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/databases"
-	application_repositories "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/databases/repositories"
-	application_services "github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/databases/services"
-	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/applications/mocks"
-	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables"
-	assignables_accounts "github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/accounts"
 	assignable_bytes "github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/compilers"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/cryptography"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/cryptography/decrypts"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/databases"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/databases/repositories"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 
@@ -44,8 +27,6 @@ func TestExecute_withBytes_Success(t *testing.T) {
 	firstValue := []byte("firstValue")
 	secondVariable := "secondVar"
 	secondValue := []byte("secondValue")
-
-	context := uint(45)
 
 	frame := stacks.NewFrameWithAssignmentsForTests(
 		stacks.NewAssignmentsForTests([]stacks.Assignment{
@@ -71,13 +52,10 @@ func TestExecute_withBytes_Success(t *testing.T) {
 		}),
 	)
 
-	accountRepository := mocks.NewAccountRepositoryWithListForTests(map[string][]string{})
 	encryptor := mocks.NewEncryptor(
 		map[string]map[string][]byte{},
 		map[string]map[string][]byte{},
 	)
-
-	skeleton := mocks.NewSkeleton()
 
 	application := NewApplication(
 		application_compilers.NewApplication(
@@ -85,37 +63,6 @@ func TestExecute_withBytes_Success(t *testing.T) {
 				map[string][]byte{},
 				map[string]instances.Instance{},
 			),
-		),
-		application_databases.NewApplication(
-			application_repositories.NewApplication(
-				mocks.NewInstanceRepository(
-					23,
-					[]hash.Hash{},
-					map[string]instances.Instance{},
-				),
-				skeleton,
-			),
-			application_services.NewApplication(
-				mocks.NewInstanceService(
-					&context,
-					false,
-				),
-			),
-		),
-		accounts.NewApplication(
-			application_execution_communications.NewApplication(
-				application_signs.NewApplication(),
-				application_votes.NewApplication(),
-			),
-			application_execution_credentials.NewApplication(),
-			application_execution_encryptions.NewApplication(
-				application_accounts_decrypts.NewApplication(),
-				application_accounts_encrypts.NewApplication(),
-			),
-			application_execution_retrieves.NewApplication(
-				accountRepository,
-			),
-			accountRepository,
 		),
 		application_bytes.NewApplication(),
 		application_constants.NewApplication(),
@@ -126,6 +73,7 @@ func TestExecute_withBytes_Success(t *testing.T) {
 			application_encrypts.NewApplication(
 				encryptor,
 			),
+			nil,
 		),
 	)
 
@@ -158,21 +106,15 @@ func TestExecute_withBytes_Success(t *testing.T) {
 }
 
 func TestExecute_withConstant_Success(t *testing.T) {
-	context := uint(45)
-
 	instruction := assignables.NewAssignableWithConstantForTests(
 		constants.NewConstantWithBoolForTests(true),
 	)
 
 	frame := stacks.NewFrameForTests()
-
-	accountRepository := mocks.NewAccountRepositoryWithListForTests(map[string][]string{})
 	encryptor := mocks.NewEncryptor(
 		map[string]map[string][]byte{},
 		map[string]map[string][]byte{},
 	)
-
-	skeleton := mocks.NewSkeleton()
 
 	application := NewApplication(
 		application_compilers.NewApplication(
@@ -180,37 +122,6 @@ func TestExecute_withConstant_Success(t *testing.T) {
 				map[string][]byte{},
 				map[string]instances.Instance{},
 			),
-		),
-		application_databases.NewApplication(
-			application_repositories.NewApplication(
-				mocks.NewInstanceRepository(
-					23,
-					[]hash.Hash{},
-					map[string]instances.Instance{},
-				),
-				skeleton,
-			),
-			application_services.NewApplication(
-				mocks.NewInstanceService(
-					&context,
-					false,
-				),
-			),
-		),
-		accounts.NewApplication(
-			application_execution_communications.NewApplication(
-				application_signs.NewApplication(),
-				application_votes.NewApplication(),
-			),
-			application_execution_credentials.NewApplication(),
-			application_execution_encryptions.NewApplication(
-				application_accounts_decrypts.NewApplication(),
-				application_accounts_encrypts.NewApplication(),
-			),
-			application_execution_retrieves.NewApplication(
-				accountRepository,
-			),
-			accountRepository,
 		),
 		application_bytes.NewApplication(),
 		application_constants.NewApplication(),
@@ -221,6 +132,7 @@ func TestExecute_withConstant_Success(t *testing.T) {
 			application_encrypts.NewApplication(
 				encryptor,
 			),
+			nil,
 		),
 	)
 
@@ -259,8 +171,6 @@ func TestExecute_withCryptography_Success(t *testing.T) {
 	password := []byte("this is a password")
 	message := []byte("this is some message")
 
-	context := uint(45)
-
 	frame := stacks.NewFrameWithAssignmentsForTests(
 		stacks.NewAssignmentsForTests([]stacks.Assignment{
 			stacks.NewAssignmentForTests(
@@ -284,8 +194,6 @@ func TestExecute_withCryptography_Success(t *testing.T) {
 		),
 	)
 
-	accountRepository := mocks.NewAccountRepositoryWithListForTests(map[string][]string{})
-
 	encryptor := mocks.NewEncryptor(
 		map[string]map[string][]byte{},
 		map[string]map[string][]byte{
@@ -295,45 +203,12 @@ func TestExecute_withCryptography_Success(t *testing.T) {
 		},
 	)
 
-	skeleton := mocks.NewSkeleton()
-
 	application := NewApplication(
 		application_compilers.NewApplication(
 			mocks.NewInstanceAdapter(
 				map[string][]byte{},
 				map[string]instances.Instance{},
 			),
-		),
-		application_databases.NewApplication(
-			application_repositories.NewApplication(
-				mocks.NewInstanceRepository(
-					23,
-					[]hash.Hash{},
-					map[string]instances.Instance{},
-				),
-				skeleton,
-			),
-			application_services.NewApplication(
-				mocks.NewInstanceService(
-					&context,
-					false,
-				),
-			),
-		),
-		accounts.NewApplication(
-			application_execution_communications.NewApplication(
-				application_signs.NewApplication(),
-				application_votes.NewApplication(),
-			),
-			application_execution_credentials.NewApplication(),
-			application_execution_encryptions.NewApplication(
-				application_accounts_decrypts.NewApplication(),
-				application_accounts_encrypts.NewApplication(),
-			),
-			application_execution_retrieves.NewApplication(
-				accountRepository,
-			),
-			accountRepository,
 		),
 		application_bytes.NewApplication(),
 		application_constants.NewApplication(),
@@ -344,6 +219,7 @@ func TestExecute_withCryptography_Success(t *testing.T) {
 			application_encrypts.NewApplication(
 				encryptor,
 			),
+			nil,
 		),
 	)
 
@@ -370,313 +246,10 @@ func TestExecute_withCryptography_Success(t *testing.T) {
 	}
 }
 
-func TestExecute_withAccount_Success(t *testing.T) {
-	usernameList := []string{
-		"first",
-		"second",
-	}
-
-	passwordVar := "passwordVar"
-	password := "myPassword"
-
-	context := uint(45)
-
-	frame := stacks.NewFrameWithAssignmentsForTests(
-		stacks.NewAssignmentsForTests([]stacks.Assignment{
-			stacks.NewAssignmentForTests(
-				passwordVar,
-				stacks.NewAssignableWithBytesForTests(
-					[]byte(password),
-				),
-			),
-		}),
-	)
-
-	instruction := assignables.NewAssignableWithAccountForTests(
-		assignables_accounts.NewAccountWithListForTests(passwordVar),
-	)
-
-	accountRepository := mocks.NewAccountRepositoryWithListForTests(map[string][]string{
-		password: usernameList,
-	})
-
-	encryptor := mocks.NewEncryptor(
-		map[string]map[string][]byte{},
-		map[string]map[string][]byte{},
-	)
-
-	skeleton := mocks.NewSkeleton()
-
-	application := NewApplication(
-		application_compilers.NewApplication(
-			mocks.NewInstanceAdapter(
-				map[string][]byte{},
-				map[string]instances.Instance{},
-			),
-		),
-		application_databases.NewApplication(
-			application_repositories.NewApplication(
-				mocks.NewInstanceRepository(
-					23,
-					[]hash.Hash{},
-					map[string]instances.Instance{},
-				),
-				skeleton,
-			),
-			application_services.NewApplication(
-				mocks.NewInstanceService(
-					&context,
-					false,
-				),
-			),
-		),
-		accounts.NewApplication(
-			application_execution_communications.NewApplication(
-				application_signs.NewApplication(),
-				application_votes.NewApplication(),
-			),
-			application_execution_credentials.NewApplication(),
-			application_execution_encryptions.NewApplication(
-				application_accounts_decrypts.NewApplication(),
-				application_accounts_encrypts.NewApplication(),
-			),
-			application_execution_retrieves.NewApplication(
-				accountRepository,
-			),
-			accountRepository,
-		),
-		application_bytes.NewApplication(),
-		application_constants.NewApplication(),
-		application_cryptography.NewApplication(
-			application_decrypts.NewApplication(
-				encryptor,
-			),
-			application_encrypts.NewApplication(
-				encryptor,
-			),
-		),
-	)
-
-	retAssignable, pCode, err := application.Execute(frame, instruction)
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	if pCode != nil {
-		t.Errorf("the code was expected to be nil, code returned: %d", *pCode)
-		return
-	}
-
-	if !retAssignable.IsStringList() {
-		t.Errorf("the assignable was expected to contain a string list")
-		return
-	}
-
-	retStringList := retAssignable.StringList()
-	if !reflect.DeepEqual(usernameList, retStringList) {
-		t.Errorf("the returned usernames list is invalid")
-		return
-	}
-}
-
-func TestExecute_withQuery_queryExistsInFrame_Success(t *testing.T) {
-	queryVar := "queryVar"
-	query := mocks.NewQuery()
-
-	context := uint(45)
-
-	frame := stacks.NewFrameWithAssignmentsForTests(
-		stacks.NewAssignmentsForTests([]stacks.Assignment{
-			stacks.NewAssignmentForTests(
-				queryVar,
-				stacks.NewAssignableWithQueryForTests(
-					query,
-				),
-			),
-		}),
-	)
-
-	instruction := assignables.NewAssignableWithQueryForTests(
-		queryVar,
-	)
-
-	accountRepository := mocks.NewAccountRepositoryWithListForTests(map[string][]string{})
-
-	encryptor := mocks.NewEncryptor(
-		map[string]map[string][]byte{},
-		map[string]map[string][]byte{},
-	)
-
-	skeleton := mocks.NewSkeleton()
-
-	application := NewApplication(
-		application_compilers.NewApplication(
-			mocks.NewInstanceAdapter(
-				map[string][]byte{},
-				map[string]instances.Instance{},
-			),
-		),
-		application_databases.NewApplication(
-			application_repositories.NewApplication(
-				mocks.NewInstanceRepository(
-					23,
-					[]hash.Hash{},
-					map[string]instances.Instance{},
-				),
-				skeleton,
-			),
-			application_services.NewApplication(
-				mocks.NewInstanceService(
-					&context,
-					false,
-				),
-			),
-		),
-		accounts.NewApplication(
-			application_execution_communications.NewApplication(
-				application_signs.NewApplication(),
-				application_votes.NewApplication(),
-			),
-			application_execution_credentials.NewApplication(),
-			application_execution_encryptions.NewApplication(
-				application_accounts_decrypts.NewApplication(),
-				application_accounts_encrypts.NewApplication(),
-			),
-			application_execution_retrieves.NewApplication(
-				accountRepository,
-			),
-			accountRepository,
-		),
-		application_bytes.NewApplication(),
-		application_constants.NewApplication(),
-		application_cryptography.NewApplication(
-			application_decrypts.NewApplication(
-				encryptor,
-			),
-			application_encrypts.NewApplication(
-				encryptor,
-			),
-		),
-	)
-
-	retAssignable, pCode, err := application.Execute(frame, instruction)
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	if pCode != nil {
-		t.Errorf("the code was expected to be nil, code returned: %d", *pCode)
-		return
-	}
-
-	if !retAssignable.IsQuery() {
-		t.Errorf("the assignable was expected to contain a query")
-		return
-	}
-
-	retQuery := retAssignable.Query()
-	if !reflect.DeepEqual(query, retQuery) {
-		t.Errorf("the returned query is invalid")
-		return
-	}
-}
-
-func TestExecute_withQuery_queryDoesNotExistsInFrame_returnsError(t *testing.T) {
-	queryVar := "queryVar"
-	frame := stacks.NewFrameForTests()
-
-	context := uint(45)
-
-	instruction := assignables.NewAssignableWithQueryForTests(
-		queryVar,
-	)
-
-	accountRepository := mocks.NewAccountRepositoryWithListForTests(map[string][]string{})
-
-	encryptor := mocks.NewEncryptor(
-		map[string]map[string][]byte{},
-		map[string]map[string][]byte{},
-	)
-
-	skeleton := mocks.NewSkeleton()
-
-	application := NewApplication(
-		application_compilers.NewApplication(
-			mocks.NewInstanceAdapter(
-				map[string][]byte{},
-				map[string]instances.Instance{},
-			),
-		),
-		application_databases.NewApplication(
-			application_repositories.NewApplication(
-				mocks.NewInstanceRepository(
-					23,
-					[]hash.Hash{},
-					map[string]instances.Instance{},
-				),
-				skeleton,
-			),
-			application_services.NewApplication(
-				mocks.NewInstanceService(
-					&context,
-					false,
-				),
-			),
-		),
-		accounts.NewApplication(
-			application_execution_communications.NewApplication(
-				application_signs.NewApplication(),
-				application_votes.NewApplication(),
-			),
-			application_execution_credentials.NewApplication(),
-			application_execution_encryptions.NewApplication(
-				application_accounts_decrypts.NewApplication(),
-				application_accounts_encrypts.NewApplication(),
-			),
-			application_execution_retrieves.NewApplication(
-				accountRepository,
-			),
-			accountRepository,
-		),
-		application_bytes.NewApplication(),
-		application_constants.NewApplication(),
-		application_cryptography.NewApplication(
-			application_decrypts.NewApplication(
-				encryptor,
-			),
-			application_encrypts.NewApplication(
-				encryptor,
-			),
-		),
-	)
-
-	_, pCode, err := application.Execute(frame, instruction)
-	if err == nil {
-		t.Errorf("the error was expected to be valid, nil returned")
-		return
-	}
-
-	if pCode == nil {
-		t.Errorf("the code was expected to be valid, nil returned")
-		return
-	}
-
-	code := *pCode
-	if code != failures.CouldNotFetchQueryFromFrame {
-		t.Errorf("the code was expected to be %d, %d returned", failures.CouldNotFetchQueryFromFrame, code)
-		return
-	}
-}
-
 func TestExecute_WithCompiler_Success(t *testing.T) {
 	compileVar := "compileVar"
 	compile := []byte("this is some data")
 	compiledInstance := compilers.NewCompilerWithDecompileForTests("decompileVar")
-
-	context := uint(45)
-	skeleton := mocks.NewSkeleton()
 
 	frame := stacks.NewFrameWithAssignmentsForTests(
 		stacks.NewAssignmentsForTests([]stacks.Assignment{
@@ -693,8 +266,6 @@ func TestExecute_WithCompiler_Success(t *testing.T) {
 		compilers.NewCompilerWithCompileForTests(compileVar),
 	)
 
-	accountRepository := mocks.NewAccountRepositoryWithListForTests(map[string][]string{})
-
 	encryptor := mocks.NewEncryptor(
 		map[string]map[string][]byte{},
 		map[string]map[string][]byte{},
@@ -709,37 +280,6 @@ func TestExecute_WithCompiler_Success(t *testing.T) {
 				},
 			),
 		),
-		application_databases.NewApplication(
-			application_repositories.NewApplication(
-				mocks.NewInstanceRepository(
-					23,
-					[]hash.Hash{},
-					map[string]instances.Instance{},
-				),
-				skeleton,
-			),
-			application_services.NewApplication(
-				mocks.NewInstanceService(
-					&context,
-					false,
-				),
-			),
-		),
-		accounts.NewApplication(
-			application_execution_communications.NewApplication(
-				application_signs.NewApplication(),
-				application_votes.NewApplication(),
-			),
-			application_execution_credentials.NewApplication(),
-			application_execution_encryptions.NewApplication(
-				application_accounts_decrypts.NewApplication(),
-				application_accounts_encrypts.NewApplication(),
-			),
-			application_execution_retrieves.NewApplication(
-				accountRepository,
-			),
-			accountRepository,
-		),
 		application_bytes.NewApplication(),
 		application_constants.NewApplication(),
 		application_cryptography.NewApplication(
@@ -749,6 +289,7 @@ func TestExecute_WithCompiler_Success(t *testing.T) {
 			application_encrypts.NewApplication(
 				encryptor,
 			),
+			nil,
 		),
 	)
 
@@ -771,97 +312,6 @@ func TestExecute_WithCompiler_Success(t *testing.T) {
 	retInstance := retAssignable.Instance()
 	if !reflect.DeepEqual(compiledInstance.(instances.Instance), retInstance) {
 		t.Errorf("the returned instance is invalid")
-		return
-	}
-}
-
-func TestExecute_WithDatabase_Success(t *testing.T) {
-	context := uint(45)
-	skeleton := mocks.NewSkeleton()
-
-	frame := stacks.NewFrameForTests()
-	instruction := assignables.NewAssignableWithDatabaseForTests(
-		databases.NewDatabaseWithRepositoryForTests(
-			repositories.NewRepositoryWithSkeletonForTests(),
-		),
-	)
-
-	accountRepository := mocks.NewAccountRepositoryWithListForTests(map[string][]string{})
-
-	encryptor := mocks.NewEncryptor(
-		map[string]map[string][]byte{},
-		map[string]map[string][]byte{},
-	)
-
-	application := NewApplication(
-		application_compilers.NewApplication(
-			mocks.NewInstanceAdapter(
-				map[string][]byte{},
-				map[string]instances.Instance{},
-			),
-		),
-		application_databases.NewApplication(
-			application_repositories.NewApplication(
-				mocks.NewInstanceRepository(
-					23,
-					[]hash.Hash{},
-					map[string]instances.Instance{},
-				),
-				skeleton,
-			),
-			application_services.NewApplication(
-				mocks.NewInstanceService(
-					&context,
-					false,
-				),
-			),
-		),
-		accounts.NewApplication(
-			application_execution_communications.NewApplication(
-				application_signs.NewApplication(),
-				application_votes.NewApplication(),
-			),
-			application_execution_credentials.NewApplication(),
-			application_execution_encryptions.NewApplication(
-				application_accounts_decrypts.NewApplication(),
-				application_accounts_encrypts.NewApplication(),
-			),
-			application_execution_retrieves.NewApplication(
-				accountRepository,
-			),
-			accountRepository,
-		),
-		application_bytes.NewApplication(),
-		application_constants.NewApplication(),
-		application_cryptography.NewApplication(
-			application_decrypts.NewApplication(
-				encryptor,
-			),
-			application_encrypts.NewApplication(
-				encryptor,
-			),
-		),
-	)
-
-	retAssignable, pCode, err := application.Execute(frame, instruction)
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	if pCode != nil {
-		t.Errorf("the code was expected to be nil, code returned: %d", *pCode)
-		return
-	}
-
-	if !retAssignable.IsSkeleton() {
-		t.Errorf("the assignable was expected to contain a skeleton")
-		return
-	}
-
-	retSkeleton := retAssignable.Skeleton()
-	if !reflect.DeepEqual(skeleton, retSkeleton) {
-		t.Errorf("the returned skeleton is invalid")
 		return
 	}
 }

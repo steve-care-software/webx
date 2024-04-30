@@ -1,9 +1,7 @@
 package instructions
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/accounts"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/databases"
 )
 
 // NewInstructionsForTests creates new instructions for tests
@@ -19,26 +17,6 @@ func NewInstructionsForTests(list []Instruction) Instructions {
 // NewInstructionWithAssignmentForTests creates a new instruction with assignment for tests
 func NewInstructionWithAssignmentForTests(assignment assignments.Assignment) Instruction {
 	ins, err := NewInstructionBuilder().Create().WithAssignment(assignment).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewInstructionWithAccountForTests creates a new instruction with account for tests
-func NewInstructionWithAccountForTests(account accounts.Account) Instruction {
-	ins, err := NewInstructionBuilder().Create().WithAccount(account).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewInstructionWithDatabaseForTests creates a new instruction with database for tests
-func NewInstructionWithDatabaseForTests(database databases.Database) Instruction {
-	ins, err := NewInstructionBuilder().Create().WithDatabase(database).Now()
 	if err != nil {
 		panic(err)
 	}

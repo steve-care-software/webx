@@ -4,12 +4,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/steve-care-software/datastencil/domain/accounts"
-	"github.com/steve-care-software/datastencil/domain/accounts/credentials"
-	"github.com/steve-care-software/datastencil/domain/accounts/signers"
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
-	"github.com/steve-care-software/datastencil/domain/instances/queries"
+	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
+	"github.com/steve-care-software/datastencil/domain/keys/signers"
 )
 
 type frame struct {
@@ -126,70 +124,6 @@ func (obj *frame) FetchStringList(name string) ([]string, error) {
 	return assignable.StringList(), nil
 }
 
-// FetchAccount fetches an account by name
-func (obj *frame) FetchAccount(name string) (accounts.Account, error) {
-	assignable, err := obj.Fetch(name)
-	if err != nil {
-		return nil, err
-	}
-
-	str := "the assignable (name: %s) was expected to contain an Account"
-	if !assignable.IsAccount() {
-		str := fmt.Sprintf(str, name)
-		return nil, errors.New(str)
-	}
-
-	account := assignable.Account()
-	if !account.IsAccount() {
-		str := fmt.Sprintf(str, name)
-		return nil, errors.New(str)
-	}
-
-	return account.Account(), nil
-}
-
-// FetchRing fetches a ring by name
-func (obj *frame) FetchRing(name string) ([]signers.PublicKey, error) {
-	assignable, err := obj.Fetch(name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !assignable.IsAccount() {
-		str := fmt.Sprintf("the assignable (name: %s) was expected to contain an Account", name)
-		return nil, errors.New(str)
-	}
-
-	account := assignable.Account()
-	if !account.IsRing() {
-		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a PublicKey ring", name)
-		return nil, errors.New(str)
-	}
-
-	return account.Ring(), nil
-}
-
-// FetchCredentials fetches a credentials by name
-func (obj *frame) FetchCredentials(name string) (credentials.Credentials, error) {
-	assignable, err := obj.Fetch(name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !assignable.IsAccount() {
-		str := fmt.Sprintf("the assignable (name: %s) was expected to contain an Account", name)
-		return nil, errors.New(str)
-	}
-
-	account := assignable.Account()
-	if !account.IsCredentials() {
-		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a Credentials", name)
-		return nil, errors.New(str)
-	}
-
-	return account.Credentials(), nil
-}
-
 // FetchInstance fetches an instance by name
 func (obj *frame) FetchInstance(name string) (instances.Instance, error) {
 	assignable, err := obj.Fetch(name)
@@ -205,19 +139,44 @@ func (obj *frame) FetchInstance(name string) (instances.Instance, error) {
 	return assignable.Instance(), nil
 }
 
-// FetchQuery fetches a query by name
-func (obj *frame) FetchQuery(name string) (queries.Query, error) {
-	assignable, err := obj.Fetch(name)
-	if err != nil {
-		return nil, err
-	}
+// FetchEncryptor fetches an encryptor by name
+func (obj *frame) FetchEncryptor(name string) (encryptors.Encryptor, error) {
+	return nil, nil
+}
 
-	if !assignable.IsQuery() {
-		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a Query", name)
-		return nil, errors.New(str)
-	}
+// FetchEncryptorPubKey fetches an encryptor pubKey by name
+func (obj *frame) FetchEncryptorPubKey(name string) (encryptors.PublicKey, error) {
+	return nil, nil
+}
 
-	return assignable.Query(), nil
+// FetchSigner fetches a signer pk by name
+func (obj *frame) FetchSigner(name string) (signers.Signer, error) {
+	return nil, nil
+}
+
+// FetchSignerPubKey fetches a signer pubKey by name
+func (obj *frame) FetchSignerPubKey(name string) (signers.PublicKey, error) {
+	return nil, nil
+}
+
+// FetchSignature fetches a signature by name
+func (obj *frame) FetchSignature(name string) (signers.Signature, error) {
+	return nil, nil
+}
+
+// FetchVote fetches a vote by name
+func (obj *frame) FetchVote(name string) (signers.Vote, error) {
+	return nil, nil
+}
+
+// FetchRing fetches a ring by name
+func (obj *frame) FetchRing(name string) ([]signers.PublicKey, error) {
+	return nil, nil
+}
+
+// FetchList fetches a list by name
+func (obj *frame) FetchList(name string) (Assignables, error) {
+	return nil, nil
 }
 
 // HasAssignments returns true if there is assignments, false otherwise

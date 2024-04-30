@@ -4,33 +4,25 @@ import (
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions"
-	json_accounts "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/accounts"
 	json_assignments "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/assignments"
-	json_databases "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/databases"
 )
 
 // Adapter represents an instructions adapter
 type Adapter struct {
-	accountAdapter     *json_accounts.Adapter
 	assignmnetAdapter  *json_assignments.Adapter
-	databaseAdapter    *json_databases.Adapter
 	conditionBuilder   instructions.ConditionBuilder
 	instructionBuilder instructions.InstructionBuilder
 	builder            instructions.Builder
 }
 
 func createAdapter(
-	accountAdapter *json_accounts.Adapter,
 	assignmnetAdapter *json_assignments.Adapter,
-	databaseAdapter *json_databases.Adapter,
 	conditionBuilder instructions.ConditionBuilder,
 	instructionBuilder instructions.InstructionBuilder,
 	builder instructions.Builder,
 ) instructions.Adapter {
 	out := Adapter{
-		accountAdapter:     accountAdapter,
 		assignmnetAdapter:  assignmnetAdapter,
-		databaseAdapter:    databaseAdapter,
 		conditionBuilder:   conditionBuilder,
 		instructionBuilder: instructionBuilder,
 		builder:            builder,
@@ -128,24 +120,6 @@ func (app *Adapter) InstructionToStruct(ins instructions.Instruction) (*Instruct
 		out.Assignment = ptr
 	}
 
-	if ins.IsAccount() {
-		ptr, err := app.accountAdapter.AccountToStruct(ins.Account())
-		if err != nil {
-			return nil, err
-		}
-
-		out.Account = ptr
-	}
-
-	if ins.IsDatabase() {
-		ptr, err := app.databaseAdapter.DatabaseToStruct(ins.Database())
-		if err != nil {
-			return nil, err
-		}
-
-		out.Database = ptr
-	}
-
 	return &out, nil
 }
 
@@ -176,24 +150,6 @@ func (app *Adapter) StructToInstruction(str Instruction) (instructions.Instructi
 		}
 
 		builder.WithAssignment(ins)
-	}
-
-	if str.Account != nil {
-		ins, err := app.accountAdapter.StructToAccount(*str.Account)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithAccount(ins)
-	}
-
-	if str.Database != nil {
-		ins, err := app.databaseAdapter.StructToDatabase(*str.Database)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithDatabase(ins)
 	}
 
 	return builder.Now()

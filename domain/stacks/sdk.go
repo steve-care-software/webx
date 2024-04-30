@@ -1,13 +1,10 @@
 package stacks
 
 import (
-	"github.com/steve-care-software/datastencil/domain/accounts"
-	"github.com/steve-care-software/datastencil/domain/accounts/credentials"
-	"github.com/steve-care-software/datastencil/domain/accounts/signers"
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
-	"github.com/steve-care-software/datastencil/domain/instances/queries"
-	stack_accounts "github.com/steve-care-software/datastencil/domain/stacks/accounts"
+	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
+	"github.com/steve-care-software/datastencil/domain/keys/signers"
 )
 
 // NewFactory creates a new factory
@@ -95,11 +92,15 @@ type Frame interface {
 	FetchBytes(name string) ([]byte, error)
 	FetchUnsignedInt(name string) (*uint, error)
 	FetchStringList(name string) ([]string, error)
-	FetchAccount(name string) (accounts.Account, error)
 	FetchRing(name string) ([]signers.PublicKey, error)
-	FetchCredentials(name string) (credentials.Credentials, error)
 	FetchInstance(name string) (instances.Instance, error)
-	FetchQuery(name string) (queries.Query, error)
+	FetchEncryptor(name string) (encryptors.Encryptor, error)
+	FetchEncryptorPubKey(name string) (encryptors.PublicKey, error)
+	FetchSigner(name string) (signers.Signer, error)
+	FetchSignerPubKey(name string) (signers.PublicKey, error)
+	FetchSignature(name string) (signers.Signature, error)
+	FetchVote(name string) (signers.Vote, error)
+	FetchList(name string) (Assignables, error)
 	HasAssignments() bool
 	Assignments() Assignments
 }
@@ -131,6 +132,11 @@ type Assignment interface {
 	Assignable() Assignable
 }
 
+// Assignables represents assignables
+type Assignables interface {
+	List() []Assignable
+}
+
 // AssignableBuilder represents the assignable builder
 type AssignableBuilder interface {
 	Create() AssignableBuilder
@@ -140,9 +146,14 @@ type AssignableBuilder interface {
 	WithHashList(hashList []hash.Hash) AssignableBuilder
 	WithStringList(strList []string) AssignableBuilder
 	WithUnsignedInt(unsignedInt uint) AssignableBuilder
-	WithAccount(account stack_accounts.Account) AssignableBuilder
 	WithInstance(ins instances.Instance) AssignableBuilder
-	WithQuery(query queries.Query) AssignableBuilder
+	WithEncryptor(encryptor encryptors.Encryptor) AssignableBuilder
+	WithEncryptorPubKey(encryptorPubKey encryptors.PublicKey) AssignableBuilder
+	WithSigner(signer signers.Signer) AssignableBuilder
+	WithSignerPubKey(signerPubKey signers.PublicKey) AssignableBuilder
+	WithSignature(signature signers.Signature) AssignableBuilder
+	WithVote(vote signers.Vote) AssignableBuilder
+	WithList(list Assignables) AssignableBuilder
 	Now() (Assignable, error)
 }
 
@@ -160,10 +171,6 @@ type Assignable interface {
 	StringList() []string
 	IsUnsignedInt() bool
 	UnsignedInt() *uint
-	IsAccount() bool
-	Account() stack_accounts.Account
 	IsInstance() bool
 	Instance() instances.Instance
-	IsQuery() bool
-	Query() queries.Query
 }

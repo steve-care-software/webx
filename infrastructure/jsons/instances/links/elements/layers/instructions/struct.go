@@ -1,9 +1,7 @@
 package instructions
 
 import (
-	json_accounts "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/accounts"
 	json_assignments "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/assignments"
-	json_databases "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/databases"
 )
 
 // Instruction represents an instruction
@@ -12,8 +10,6 @@ type Instruction struct {
 	RaiseError *uint                        `json:"raise_error"`
 	Condition  *Condition                   `json:"condition"`
 	Assignment *json_assignments.Assignment `json:"assignment"`
-	Account    *json_accounts.Account       `json:"account"`
-	Database   *json_databases.Database     `json:"database"`
 }
 
 // Condition represents a condition

@@ -57,6 +57,7 @@ func TestExecute_withDecrypt_Success(t *testing.T) {
 		application_encrypts.NewApplication(
 			encryptor,
 		),
+		nil,
 	)
 
 	retAssignable, pCode, err := application.Execute(frame, instruction)
@@ -126,6 +127,7 @@ func TestExecute_withEncrypt_Success(t *testing.T) {
 		application_encrypts.NewApplication(
 			encryptor,
 		),
+		nil,
 	)
 
 	retAssignable, pCode, err := application.Execute(frame, instruction)

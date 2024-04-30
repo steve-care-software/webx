@@ -4,23 +4,18 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/accounts"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/compilers"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/cryptography"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/databases"
 )
 
 type builder struct {
 	hashAdapter hash.Adapter
 	bytes       bytes.Bytes
 	constant    constants.Constant
-	account     accounts.Account
 	crypto      cryptography.Cryptography
 	compiler    compilers.Compiler
-	database    databases.Database
-	query       string
 }
 
 func createBuilder(
@@ -30,11 +25,8 @@ func createBuilder(
 		hashAdapter: hashAdapter,
 		bytes:       nil,
 		constant:    nil,
-		account:     nil,
 		crypto:      nil,
 		compiler:    nil,
-		database:    nil,
-		query:       "",
 	}
 
 	return &out
@@ -59,12 +51,6 @@ func (app *builder) WithConsant(constant constants.Constant) Builder {
 	return app
 }
 
-// WithAccount adds an account to the builder
-func (app *builder) WithAccount(account accounts.Account) Builder {
-	app.account = account
-	return app
-}
-
 // WithCryptography adds a cryptography to the builder
 func (app *builder) WithCryptography(cryptography cryptography.Cryptography) Builder {
 	app.crypto = cryptography
@@ -74,18 +60,6 @@ func (app *builder) WithCryptography(cryptography cryptography.Cryptography) Bui
 // WithCompiler adds a compiler to the builder
 func (app *builder) WithCompiler(compiler compilers.Compiler) Builder {
 	app.compiler = compiler
-	return app
-}
-
-// WithDatabase adds a database to the builder
-func (app *builder) WithDatabase(database databases.Database) Builder {
-	app.database = database
-	return app
-}
-
-// WithQuery adds a query to the builder
-func (app *builder) WithQuery(query string) Builder {
-	app.query = query
 	return app
 }
 
@@ -102,11 +76,6 @@ func (app *builder) Now() (Assignable, error) {
 		data = append(data, app.constant.Hash().Bytes())
 	}
 
-	if app.account != nil {
-		data = append(data, []byte("account"))
-		data = append(data, app.account.Hash().Bytes())
-	}
-
 	if app.crypto != nil {
 		data = append(data, []byte("crypto"))
 		data = append(data, app.crypto.Hash().Bytes())
@@ -115,16 +84,6 @@ func (app *builder) Now() (Assignable, error) {
 	if app.compiler != nil {
 		data = append(data, []byte("compiler"))
 		data = append(data, app.compiler.Hash().Bytes())
-	}
-
-	if app.database != nil {
-		data = append(data, []byte("database"))
-		data = append(data, app.database.Hash().Bytes())
-	}
-
-	if app.query != "" {
-		data = append(data, []byte("query"))
-		data = append(data, []byte(app.query))
 	}
 
 	if len(data) != 2 {
@@ -144,25 +103,9 @@ func (app *builder) Now() (Assignable, error) {
 		return createAssignableWithConstant(*pHash, app.constant), nil
 	}
 
-	if app.account != nil {
-		return createAssignableWithAccount(*pHash, app.account), nil
-	}
-
 	if app.crypto != nil {
 		return createAssignableWithCryptography(*pHash, app.crypto), nil
 	}
 
-	if app.compiler != nil {
-		return createAssignableWithCompiler(*pHash, app.compiler), nil
-	}
-
-	if app.database != nil {
-		return createAssignableWithDatabase(*pHash, app.database), nil
-	}
-
-	if app.query != "" {
-		return createAssignableWithQuery(*pHash, app.query), nil
-	}
-
-	return createAssignableWithAccount(*pHash, app.account), nil
+	return createAssignableWithCompiler(*pHash, app.compiler), nil
 }
