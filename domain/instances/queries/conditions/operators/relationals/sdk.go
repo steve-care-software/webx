@@ -12,6 +12,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the relational adapter
+type Adapter interface {
+	ToBytes(ins Relational) ([]byte, error)
+	ToInstance(bytes []byte) (Relational, error)
+}
+
 // Builder represents a relational operator builder
 type Builder interface {
 	Create() Builder
