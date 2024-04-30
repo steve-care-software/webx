@@ -1,8 +1,11 @@
-package conditions
+package operators
 
 import (
 	"reflect"
 	"testing"
+
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/operators/integers"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/operators/relationals"
 )
 
 func TestOperator_isEqual_Success(t *testing.T) {
@@ -25,7 +28,7 @@ func TestOperator_isEqual_Success(t *testing.T) {
 }
 
 func TestOperator_isRelational_Success(t *testing.T) {
-	relational := NewRelationalOperatorWithAndForTests()
+	relational := relationals.NewRelationalWithAndForTests()
 	ins := NewOperatorWithRelationalForTests(
 		relational,
 	)
@@ -53,7 +56,7 @@ func TestOperator_isRelational_Success(t *testing.T) {
 }
 
 func TestOperator_isInteger_Success(t *testing.T) {
-	integer := NewIntegerOperatorWithIsSmallerThanForTests()
+	integer := integers.NewIntegerWithIsSmallerThanForTests()
 	ins := NewOperatorWithIntegerForTests(
 		integer,
 	)
@@ -81,7 +84,7 @@ func TestOperator_isInteger_Success(t *testing.T) {
 }
 
 func TestOperator_withoutParam_returnsError(t *testing.T) {
-	_, err := NewOperatorBuilder().Create().Now()
+	_, err := NewBuilder().Create().Now()
 	if err == nil {
 		t.Errorf("the error was expected to be nil, error returned")
 		return

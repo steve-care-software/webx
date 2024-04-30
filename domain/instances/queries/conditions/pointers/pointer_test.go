@@ -1,4 +1,4 @@
-package conditions
+package pointers
 
 import (
 	"testing"
@@ -24,7 +24,7 @@ func TestPointer_Success(t *testing.T) {
 
 func TestPointer_withoutEntity_returnsError(t *testing.T) {
 	field := "myField"
-	_, err := NewPointerBuilder().Create().WithField(field).Now()
+	_, err := NewBuilder().Create().WithField(field).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be nil, error returned")
 		return
@@ -33,7 +33,7 @@ func TestPointer_withoutEntity_returnsError(t *testing.T) {
 
 func TestPointer_withoutField_returnsError(t *testing.T) {
 	entity := "myEntity"
-	_, err := NewPointerBuilder().Create().WithEntity(entity).Now()
+	_, err := NewBuilder().Create().WithEntity(entity).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be nil, error returned")
 		return

@@ -1,12 +1,16 @@
-package conditions
+package operators
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/operators/integers"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/operators/relationals"
+)
 
 type operator struct {
 	hash       hash.Hash
 	isEqual    bool
-	relational RelationalOperator
-	integer    IntegerOperator
+	relational relationals.Relational
+	integer    integers.Integer
 }
 
 func createOperatorWithEqual(
@@ -17,14 +21,14 @@ func createOperatorWithEqual(
 
 func createOperatorWithRelational(
 	hash hash.Hash,
-	relational RelationalOperator,
+	relational relationals.Relational,
 ) Operator {
 	return createOperatorInternally(hash, false, relational, nil)
 }
 
 func createOperatorWithInteger(
 	hash hash.Hash,
-	integer IntegerOperator,
+	integer integers.Integer,
 ) Operator {
 	return createOperatorInternally(hash, false, nil, integer)
 }
@@ -32,8 +36,8 @@ func createOperatorWithInteger(
 func createOperatorInternally(
 	hash hash.Hash,
 	isEqual bool,
-	relational RelationalOperator,
-	integer IntegerOperator,
+	relational relationals.Relational,
+	integer integers.Integer,
 ) Operator {
 	out := operator{
 		hash:       hash,
@@ -61,7 +65,7 @@ func (obj *operator) IsRelational() bool {
 }
 
 // Relational returns the relational operaotr, if any
-func (obj *operator) Relational() RelationalOperator {
+func (obj *operator) Relational() relationals.Relational {
 	return obj.relational
 }
 
@@ -71,6 +75,6 @@ func (obj *operator) IsInteger() bool {
 }
 
 // Integer returns the integer operaotr, if any
-func (obj *operator) Integer() IntegerOperator {
+func (obj *operator) Integer() integers.Integer {
 	return obj.integer
 }

@@ -1,22 +1,23 @@
-package conditions
+package resources
 
 import (
 	"encoding/json"
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/pointers"
 )
 
-type resourceBuilder struct {
+type builder struct {
 	hashAdapter hash.Adapter
-	field       Pointer
+	field       pointers.Pointer
 	value       interface{}
 }
 
-func createResourceBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) ResourceBuilder {
-	out := resourceBuilder{
+) Builder {
+	out := builder{
 		hashAdapter: hashAdapter,
 		field:       nil,
 		value:       nil,
@@ -26,26 +27,26 @@ func createResourceBuilder(
 }
 
 // Create initializes the builder
-func (app *resourceBuilder) Create() ResourceBuilder {
-	return createResourceBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithField adds a field to the builder
-func (app *resourceBuilder) WithField(field Pointer) ResourceBuilder {
+func (app *builder) WithField(field pointers.Pointer) Builder {
 	app.field = field
 	return app
 }
 
 // WithValue adds a value to the builder
-func (app *resourceBuilder) WithValue(value interface{}) ResourceBuilder {
+func (app *builder) WithValue(value interface{}) Builder {
 	app.value = value
 	return app
 }
 
 // Now builds a new Resource instance
-func (app *resourceBuilder) Now() (Resource, error) {
+func (app *builder) Now() (Resource, error) {
 	data := [][]byte{}
 	if app.field != nil {
 		data = append(data, app.field.Hash().Bytes())

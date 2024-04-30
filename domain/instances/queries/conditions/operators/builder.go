@@ -1,22 +1,24 @@
-package conditions
+package operators
 
 import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/operators/integers"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/operators/relationals"
 )
 
-type operatorBuilder struct {
+type builder struct {
 	hashAdapter hash.Adapter
 	isEqual     bool
-	relational  RelationalOperator
-	integer     IntegerOperator
+	relational  relationals.Relational
+	integer     integers.Integer
 }
 
-func createOperatorBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) OperatorBuilder {
-	out := operatorBuilder{
+) Builder {
+	out := builder{
 		hashAdapter: hashAdapter,
 		isEqual:     false,
 		relational:  nil,
@@ -27,32 +29,32 @@ func createOperatorBuilder(
 }
 
 // Create initializes the builder
-func (app *operatorBuilder) Create() OperatorBuilder {
-	return createOperatorBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithRelational adds a relational to the builder
-func (app *operatorBuilder) WithRelational(relational RelationalOperator) OperatorBuilder {
+func (app *builder) WithRelational(relational relationals.Relational) Builder {
 	app.relational = relational
 	return app
 }
 
 // WithInteger adds an integer to the builder
-func (app *operatorBuilder) WithInteger(integer IntegerOperator) OperatorBuilder {
+func (app *builder) WithInteger(integer integers.Integer) Builder {
 	app.integer = integer
 	return app
 }
 
 // IsEqual flags the builder as equal
-func (app *operatorBuilder) IsEqual() OperatorBuilder {
+func (app *builder) IsEqual() Builder {
 	app.isEqual = true
 	return app
 }
 
 // Now builds a new Operator instance
-func (app *operatorBuilder) Now() (Operator, error) {
+func (app *builder) Now() (Operator, error) {
 	data := [][]byte{}
 	if app.isEqual {
 		data = append(data, []byte("isEqual"))

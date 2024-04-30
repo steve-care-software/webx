@@ -1,11 +1,14 @@
 package conditions
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/resources"
+)
 
 type element struct {
 	hash      hash.Hash
 	condition Condition
-	resource  Resource
+	resource  resources.Resource
 }
 
 func createElementWithCondition(
@@ -17,7 +20,7 @@ func createElementWithCondition(
 
 func createElementWithResource(
 	hash hash.Hash,
-	resource Resource,
+	resource resources.Resource,
 ) Element {
 	return createElementInternally(hash, nil, resource)
 }
@@ -25,7 +28,7 @@ func createElementWithResource(
 func createElementInternally(
 	hash hash.Hash,
 	condition Condition,
-	resource Resource,
+	resource resources.Resource,
 ) Element {
 	out := element{
 		hash:      hash,
@@ -57,6 +60,6 @@ func (obj *element) IsResource() bool {
 }
 
 // Resource returns the resource, if any
-func (obj *element) Resource() Resource {
+func (obj *element) Resource() resources.Resource {
 	return obj.resource
 }

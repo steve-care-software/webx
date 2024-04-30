@@ -5,15 +5,18 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/operators"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/pointers"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/resources"
 )
 
 func TestQuery_Success(t *testing.T) {
 	entity := "myEntity"
 	condition := conditions.NewConditionForTests(
-		conditions.NewPointerForTests("myEntity", "myField"),
-		conditions.NewOperatorWithEqualForTests(),
+		pointers.NewPointerForTests("myEntity", "myField"),
+		operators.NewOperatorWithEqualForTests(),
 		conditions.NewElementWithResourceForTests(
-			conditions.NewResourceWithValueForTests(45),
+			resources.NewResourceWithValueForTests(45),
 		),
 	)
 
@@ -40,10 +43,10 @@ func TestQuery_Success(t *testing.T) {
 func TestQuery_withFields_Success(t *testing.T) {
 	entity := "myEntity"
 	condition := conditions.NewConditionForTests(
-		conditions.NewPointerForTests("myEntity", "myField"),
-		conditions.NewOperatorWithEqualForTests(),
+		pointers.NewPointerForTests("myEntity", "myField"),
+		operators.NewOperatorWithEqualForTests(),
 		conditions.NewElementWithResourceForTests(
-			conditions.NewResourceWithValueForTests(45),
+			resources.NewResourceWithValueForTests(45),
 		),
 	)
 
@@ -80,10 +83,10 @@ func TestQuery_withFields_Success(t *testing.T) {
 
 func TestQuery_withoutEntity_returnsError(t *testing.T) {
 	condition := conditions.NewConditionForTests(
-		conditions.NewPointerForTests("myEntity", "myField"),
-		conditions.NewOperatorWithEqualForTests(),
+		pointers.NewPointerForTests("myEntity", "myField"),
+		operators.NewOperatorWithEqualForTests(),
 		conditions.NewElementWithResourceForTests(
-			conditions.NewResourceWithValueForTests(45),
+			resources.NewResourceWithValueForTests(45),
 		),
 	)
 

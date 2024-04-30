@@ -1,4 +1,4 @@
-package conditions
+package pointers
 
 import (
 	"errors"
@@ -6,16 +6,16 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
-type pointerBuilder struct {
+type builder struct {
 	hashAdapter hash.Adapter
 	entity      string
 	field       string
 }
 
-func createPointerBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) PointerBuilder {
-	out := pointerBuilder{
+) Builder {
+	out := builder{
 		hashAdapter: hashAdapter,
 		entity:      "",
 		field:       "",
@@ -25,26 +25,26 @@ func createPointerBuilder(
 }
 
 // Create initializes the builder
-func (app *pointerBuilder) Create() PointerBuilder {
-	return createPointerBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithEntity adds a entity to the builder
-func (app *pointerBuilder) WithEntity(entity string) PointerBuilder {
+func (app *builder) WithEntity(entity string) Builder {
 	app.entity = entity
 	return app
 }
 
 // WithField adds a field to the builder
-func (app *pointerBuilder) WithField(field string) PointerBuilder {
+func (app *builder) WithField(field string) Builder {
 	app.field = field
 	return app
 }
 
 // Now builds a new Pointer instance
-func (app *pointerBuilder) Now() (Pointer, error) {
+func (app *builder) Now() (Pointer, error) {
 	if app.entity == "" {
 		return nil, errors.New("the entity is mandatory in order to build a Pointer instance")
 	}

@@ -4,12 +4,14 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/operators"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/pointers"
 )
 
 type builder struct {
 	hashAdapter hash.Adapter
-	pointer     Pointer
-	operator    Operator
+	pointer     pointers.Pointer
+	operator    operators.Operator
 	element     Element
 }
 
@@ -34,13 +36,13 @@ func (app *builder) Create() Builder {
 }
 
 // WithPointer adds a pointer to the builder
-func (app *builder) WithPointer(pointer Pointer) Builder {
+func (app *builder) WithPointer(pointer pointers.Pointer) Builder {
 	app.pointer = pointer
 	return app
 }
 
 // WithOperator adds an operator to the builder
-func (app *builder) WithOperator(operator Operator) Builder {
+func (app *builder) WithOperator(operator operators.Operator) Builder {
 	app.operator = operator
 	return app
 }

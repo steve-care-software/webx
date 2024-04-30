@@ -1,4 +1,4 @@
-package conditions
+package relationals
 
 import (
 	"errors"
@@ -6,16 +6,16 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
-type relationalOperatorBuilder struct {
+type builder struct {
 	hashAdapter hash.Adapter
 	isAnd       bool
 	isOr        bool
 }
 
-func createRelationalOperatorBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) RelationalOperatorBuilder {
-	out := relationalOperatorBuilder{
+) Builder {
+	out := builder{
 		hashAdapter: hashAdapter,
 		isAnd:       false,
 		isOr:        false,
@@ -25,26 +25,26 @@ func createRelationalOperatorBuilder(
 }
 
 // Create initializes the builder
-func (app *relationalOperatorBuilder) Create() RelationalOperatorBuilder {
-	return createRelationalOperatorBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // IsAnd adds an and to the builder
-func (app *relationalOperatorBuilder) IsAnd() RelationalOperatorBuilder {
+func (app *builder) IsAnd() Builder {
 	app.isAnd = true
 	return app
 }
 
 // IsOr adds an or to the builder
-func (app *relationalOperatorBuilder) IsOr() RelationalOperatorBuilder {
+func (app *builder) IsOr() Builder {
 	app.isOr = true
 	return app
 }
 
-// Now builds a new RelationalOperator instance
-func (app *relationalOperatorBuilder) Now() (RelationalOperator, error) {
+// Now builds a new Relational instance
+func (app *builder) Now() (Relational, error) {
 	isAnd := "false"
 	isOr := "false"
 	if app.isAnd {
@@ -65,12 +65,12 @@ func (app *relationalOperatorBuilder) Now() (RelationalOperator, error) {
 	}
 
 	if app.isAnd {
-		return createRelationalOperatorWithAnd(*pHash), nil
+		return createRelationalWithAnd(*pHash), nil
 	}
 
 	if app.isOr {
-		return createRelationalOperatorWithOr(*pHash), nil
+		return createRelationalWithOr(*pHash), nil
 	}
 
-	return nil, errors.New("the RelationalOperator is invalid")
+	return nil, errors.New("the Relational is invalid")
 }

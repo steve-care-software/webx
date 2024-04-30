@@ -1,16 +1,19 @@
-package conditions
+package resources
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/pointers"
+)
 
 type resource struct {
 	hash  hash.Hash
-	field Pointer
+	field pointers.Pointer
 	value interface{}
 }
 
 func createResourceWithField(
 	hash hash.Hash,
-	field Pointer,
+	field pointers.Pointer,
 ) Resource {
 	return createResourceInternally(hash, field, nil)
 }
@@ -24,7 +27,7 @@ func createResourceWithValue(
 
 func createResourceInternally(
 	hash hash.Hash,
-	field Pointer,
+	field pointers.Pointer,
 	value interface{},
 ) Resource {
 	out := resource{
@@ -47,7 +50,7 @@ func (obj *resource) IsField() bool {
 }
 
 // Field returns the field, if any
-func (obj *resource) Field() Pointer {
+func (obj *resource) Field() pointers.Pointer {
 	return obj.field
 }
 

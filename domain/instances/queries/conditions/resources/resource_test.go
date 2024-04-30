@@ -1,12 +1,14 @@
-package conditions
+package resources
 
 import (
 	"reflect"
 	"testing"
+
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/pointers"
 )
 
 func TestResource_withField_Success(t *testing.T) {
-	field := NewPointerForTests("myEntity", "myField")
+	field := pointers.NewPointerForTests("myEntity", "myField")
 	ins := NewResourceWithFieldForTests(field)
 
 	if !ins.IsField() {
@@ -48,7 +50,7 @@ func TestResource_withValue_Success(t *testing.T) {
 }
 
 func TestResource_withoutParam_returnsError(t *testing.T) {
-	_, err := NewResourceBuilder().Create().Now()
+	_, err := NewBuilder().Create().Now()
 	if err == nil {
 		t.Errorf("the error was expected to be nil, error returned")
 		return

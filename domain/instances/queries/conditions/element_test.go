@@ -3,11 +3,15 @@ package conditions
 import (
 	"reflect"
 	"testing"
+
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/operators"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/pointers"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/resources"
 )
 
 func TestElement_withResource_Success(t *testing.T) {
-	resource := NewResourceWithFieldForTests(
-		NewPointerForTests("myEntity", "myField"),
+	resource := resources.NewResourceWithFieldForTests(
+		pointers.NewPointerForTests("myEntity", "myField"),
 	)
 
 	ins := NewElementWithResourceForTests(resource)
@@ -31,10 +35,10 @@ func TestElement_withResource_Success(t *testing.T) {
 
 func TestElement_withCondition_Success(t *testing.T) {
 	condition := NewConditionForTests(
-		NewPointerForTests("myEntity", "myField"),
-		NewOperatorWithEqualForTests(),
+		pointers.NewPointerForTests("myEntity", "myField"),
+		operators.NewOperatorWithEqualForTests(),
 		NewElementWithResourceForTests(
-			NewResourceWithValueForTests(45),
+			resources.NewResourceWithValueForTests(45),
 		),
 	)
 

@@ -1,18 +1,22 @@
 package conditions
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/operators"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/pointers"
+)
 
 type condition struct {
 	hash     hash.Hash
-	pointer  Pointer
-	operator Operator
+	pointer  pointers.Pointer
+	operator operators.Operator
 	element  Element
 }
 
 func createCondition(
 	hash hash.Hash,
-	pointer Pointer,
-	operator Operator,
+	pointer pointers.Pointer,
+	operator operators.Operator,
 	element Element,
 ) Condition {
 	out := condition{
@@ -31,12 +35,12 @@ func (obj *condition) Hash() hash.Hash {
 }
 
 // Pointer returns the pointer
-func (obj *condition) Pointer() Pointer {
+func (obj *condition) Pointer() pointers.Pointer {
 	return obj.pointer
 }
 
 // Operator returns the operator
-func (obj *condition) Operator() Operator {
+func (obj *condition) Operator() operators.Operator {
 	return obj.operator
 }
 

@@ -1,18 +1,18 @@
-package conditions
+package integers
 
 import "github.com/steve-care-software/datastencil/domain/hash"
 
-type integerOperator struct {
+type integer struct {
 	hash          hash.Hash
 	isSmallerThan bool
 	isBiggerThan  bool
 	isEqual       bool
 }
 
-func createIntegerOperatorWithSmallerThan(
+func createIntegerWithSmallerThan(
 	hash hash.Hash,
-) IntegerOperator {
-	return createIntegerOperatorInternally(
+) Integer {
+	return createIntegerInternally(
 		hash,
 		true,
 		false,
@@ -20,10 +20,10 @@ func createIntegerOperatorWithSmallerThan(
 	)
 }
 
-func createIntegerOperatorWithSmallerThanAndEqual(
+func createIntegerWithSmallerThanAndEqual(
 	hash hash.Hash,
-) IntegerOperator {
-	return createIntegerOperatorInternally(
+) Integer {
+	return createIntegerInternally(
 		hash,
 		true,
 		false,
@@ -31,10 +31,10 @@ func createIntegerOperatorWithSmallerThanAndEqual(
 	)
 }
 
-func createIntegerOperatorWithBiggerThan(
+func createIntegerWithBiggerThan(
 	hash hash.Hash,
-) IntegerOperator {
-	return createIntegerOperatorInternally(
+) Integer {
+	return createIntegerInternally(
 		hash,
 		false,
 		true,
@@ -42,10 +42,10 @@ func createIntegerOperatorWithBiggerThan(
 	)
 }
 
-func createIntegerOperatorWithBiggerThanAndEqual(
+func createIntegerWithBiggerThanAndEqual(
 	hash hash.Hash,
-) IntegerOperator {
-	return createIntegerOperatorInternally(
+) Integer {
+	return createIntegerInternally(
 		hash,
 		false,
 		true,
@@ -53,10 +53,10 @@ func createIntegerOperatorWithBiggerThanAndEqual(
 	)
 }
 
-func createIntegerOperatorWithEqual(
+func createIntegerWithEqual(
 	hash hash.Hash,
-) IntegerOperator {
-	return createIntegerOperatorInternally(
+) Integer {
+	return createIntegerInternally(
 		hash,
 		false,
 		false,
@@ -64,13 +64,13 @@ func createIntegerOperatorWithEqual(
 	)
 }
 
-func createIntegerOperatorInternally(
+func createIntegerInternally(
 	hash hash.Hash,
 	isSmallerThan bool,
 	isBiggerThan bool,
 	isEqual bool,
-) IntegerOperator {
-	out := integerOperator{
+) Integer {
+	out := integer{
 		hash:          hash,
 		isSmallerThan: isSmallerThan,
 		isBiggerThan:  isBiggerThan,
@@ -81,21 +81,21 @@ func createIntegerOperatorInternally(
 }
 
 // Hash returns the hash
-func (obj *integerOperator) Hash() hash.Hash {
+func (obj *integer) Hash() hash.Hash {
 	return obj.hash
 }
 
 // IsSmallerThan returns true if smaller than, false otherwise
-func (obj *integerOperator) IsSmallerThan() bool {
+func (obj *integer) IsSmallerThan() bool {
 	return obj.isSmallerThan
 }
 
 // IsBiggerThan returns true if bigger than, false otherwise
-func (obj *integerOperator) IsBiggerThan() bool {
+func (obj *integer) IsBiggerThan() bool {
 	return obj.isBiggerThan
 }
 
 // IsEqual returns true if equal, false otherwise
-func (obj *integerOperator) IsEqual() bool {
+func (obj *integer) IsEqual() bool {
 	return obj.isEqual
 }

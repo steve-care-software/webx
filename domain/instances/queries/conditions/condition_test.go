@@ -3,13 +3,17 @@ package conditions
 import (
 	"reflect"
 	"testing"
+
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/operators"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/pointers"
+	"github.com/steve-care-software/datastencil/domain/instances/queries/conditions/resources"
 )
 
 func TestCondition_Success(t *testing.T) {
-	pointer := NewPointerForTests("myEntity", "myField")
-	operator := NewOperatorWithEqualForTests()
+	pointer := pointers.NewPointerForTests("myEntity", "myField")
+	operator := operators.NewOperatorWithEqualForTests()
 	element := NewElementWithResourceForTests(
-		NewResourceWithValueForTests(45),
+		resources.NewResourceWithValueForTests(45),
 	)
 
 	ins := NewConditionForTests(
@@ -38,9 +42,9 @@ func TestCondition_Success(t *testing.T) {
 }
 
 func TestCondition_withoutPointer_returnsError(t *testing.T) {
-	operator := NewOperatorWithEqualForTests()
+	operator := operators.NewOperatorWithEqualForTests()
 	element := NewElementWithResourceForTests(
-		NewResourceWithValueForTests(45),
+		resources.NewResourceWithValueForTests(45),
 	)
 
 	_, err := NewBuilder().Create().WithOperator(operator).WithElement(element).Now()
@@ -51,9 +55,9 @@ func TestCondition_withoutPointer_returnsError(t *testing.T) {
 }
 
 func TestCondition_withoutOperator_returnsError(t *testing.T) {
-	pointer := NewPointerForTests("myEntity", "myField")
+	pointer := pointers.NewPointerForTests("myEntity", "myField")
 	element := NewElementWithResourceForTests(
-		NewResourceWithValueForTests(45),
+		resources.NewResourceWithValueForTests(45),
 	)
 
 	_, err := NewBuilder().Create().WithPointer(pointer).WithElement(element).Now()
@@ -64,8 +68,8 @@ func TestCondition_withoutOperator_returnsError(t *testing.T) {
 }
 
 func TestCondition_withoutElement_returnsError(t *testing.T) {
-	pointer := NewPointerForTests("myEntity", "myField")
-	operator := NewOperatorWithEqualForTests()
+	pointer := pointers.NewPointerForTests("myEntity", "myField")
+	operator := operators.NewOperatorWithEqualForTests()
 
 	_, err := NewBuilder().Create().WithOperator(operator).WithPointer(pointer).Now()
 	if err == nil {

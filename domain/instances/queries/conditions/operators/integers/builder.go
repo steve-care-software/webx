@@ -1,4 +1,4 @@
-package conditions
+package integers
 
 import (
 	"errors"
@@ -6,17 +6,17 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
-type integerOperatorBuilder struct {
+type builder struct {
 	hashAdapter   hash.Adapter
 	isSmallerThan bool
 	isBiggerThan  bool
 	isEqual       bool
 }
 
-func createIntegerOperatorBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) IntegerOperatorBuilder {
-	out := integerOperatorBuilder{
+) Builder {
+	out := builder{
 		hashAdapter:   hashAdapter,
 		isSmallerThan: false,
 		isBiggerThan:  false,
@@ -27,32 +27,32 @@ func createIntegerOperatorBuilder(
 }
 
 // Create initializes the builder
-func (app *integerOperatorBuilder) Create() IntegerOperatorBuilder {
-	return createIntegerOperatorBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // IsSmallerThan adds a smaller than to the builder
-func (app *integerOperatorBuilder) IsSmallerThan() IntegerOperatorBuilder {
+func (app *builder) IsSmallerThan() Builder {
 	app.isSmallerThan = true
 	return app
 }
 
 // IsBiggerThan adds a bigger than to the builder
-func (app *integerOperatorBuilder) IsBiggerThan() IntegerOperatorBuilder {
+func (app *builder) IsBiggerThan() Builder {
 	app.isBiggerThan = true
 	return app
 }
 
 // IsEqual adds an equal to the builder
-func (app *integerOperatorBuilder) IsEqual() IntegerOperatorBuilder {
+func (app *builder) IsEqual() Builder {
 	app.isEqual = true
 	return app
 }
 
-// Now builds a new IntegerOperator instance
-func (app *integerOperatorBuilder) Now() (IntegerOperator, error) {
+// Now builds a new Integer instance
+func (app *builder) Now() (Integer, error) {
 	isSmallerThan := "false"
 	isBiggerThan := "false"
 	isEqual := "false"
@@ -73,7 +73,7 @@ func (app *integerOperatorBuilder) Now() (IntegerOperator, error) {
 	}
 
 	if !isValid {
-		return nil, errors.New("the IntegerOperator is invalid")
+		return nil, errors.New("the Integer is invalid")
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
@@ -87,20 +87,20 @@ func (app *integerOperatorBuilder) Now() (IntegerOperator, error) {
 	}
 
 	if app.isSmallerThan && app.isEqual {
-		return createIntegerOperatorWithSmallerThanAndEqual(*pHash), nil
+		return createIntegerWithSmallerThanAndEqual(*pHash), nil
 	}
 
 	if app.isSmallerThan {
-		return createIntegerOperatorWithSmallerThan(*pHash), nil
+		return createIntegerWithSmallerThan(*pHash), nil
 	}
 
 	if app.isBiggerThan && app.isEqual {
-		return createIntegerOperatorWithBiggerThanAndEqual(*pHash), nil
+		return createIntegerWithBiggerThanAndEqual(*pHash), nil
 	}
 
 	if app.isBiggerThan {
-		return createIntegerOperatorWithBiggerThan(*pHash), nil
+		return createIntegerWithBiggerThan(*pHash), nil
 	}
 
-	return createIntegerOperatorWithEqual(*pHash), nil
+	return createIntegerWithEqual(*pHash), nil
 }
