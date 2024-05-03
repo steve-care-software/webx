@@ -14,6 +14,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the signature adapter
+type Adapter interface {
+	ToBytes(ins Signature) ([]byte, error)
+	ToInstance(bytes []byte) (Signature, error)
+}
+
 // Builder represents the signature builder
 type Builder interface {
 	Create() Builder
