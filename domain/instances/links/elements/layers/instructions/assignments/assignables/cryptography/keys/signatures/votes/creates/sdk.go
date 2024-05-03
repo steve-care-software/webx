@@ -12,6 +12,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the create adapter
+type Adapter interface {
+	ToBytes(ins Create) ([]byte, error)
+	ToInstance(bytes []byte) (Create, error)
+}
+
 // Builder creates a create builder
 type Builder interface {
 	Create() Builder
