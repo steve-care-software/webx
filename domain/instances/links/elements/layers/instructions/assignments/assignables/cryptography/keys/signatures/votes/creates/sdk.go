@@ -4,6 +4,14 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder creates a create builder
 type Builder interface {
 	Create() Builder
