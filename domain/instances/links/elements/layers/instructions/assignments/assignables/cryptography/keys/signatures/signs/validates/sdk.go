@@ -12,6 +12,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the validate adapter
+type Adapter interface {
+	ToBytes(ins Validate) ([]byte, error)
+	ToInstance(bytes []byte) (Validate, error)
+}
+
 // Builder represents a validate builder
 type Builder interface {
 	Create() Builder
