@@ -84,7 +84,7 @@ func (app *builder) Now() (Encryption, error) {
 	}
 
 	length := len(data)
-	if length < 1 || length > 2 {
+	if length != 1 && length != 2 {
 		return nil, errors.New("the Encryption is invalid")
 	}
 
