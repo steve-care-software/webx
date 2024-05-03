@@ -14,29 +14,42 @@ type encryption struct {
 	decrypt     decrypts.Decrypt
 }
 
-func createEncryptionWithGeneratePrivateKey() Encryption {
-	return createEncryptionInternally(true, "", nil, nil)
+func createEncryptionWithGeneratePrivateKey(
+	hash hash.Hash,
+) Encryption {
+	return createEncryptionInternally(hash, true, "", nil, nil)
 }
 
-func createEncryptionWithFetchPublicKey(fetchPubKey string) Encryption {
-	return createEncryptionInternally(false, fetchPubKey, nil, nil)
+func createEncryptionWithFetchPublicKey(
+	hash hash.Hash,
+	fetchPubKey string,
+) Encryption {
+	return createEncryptionInternally(hash, false, fetchPubKey, nil, nil)
 }
 
-func createEncryptionWithEncrypt(encrypt encrypts.Encrypt) Encryption {
-	return createEncryptionInternally(false, "", encrypt, nil)
+func createEncryptionWithEncrypt(
+	hash hash.Hash,
+	encrypt encrypts.Encrypt,
+) Encryption {
+	return createEncryptionInternally(hash, false, "", encrypt, nil)
 }
 
-func createEncryptionWithDecrypt(decrypt decrypts.Decrypt) Encryption {
-	return createEncryptionInternally(false, "", nil, decrypt)
+func createEncryptionWithDecrypt(
+	hash hash.Hash,
+	decrypt decrypts.Decrypt,
+) Encryption {
+	return createEncryptionInternally(hash, false, "", nil, decrypt)
 }
 
 func createEncryptionInternally(
+	hash hash.Hash,
 	isGenPK bool,
 	fetchPubKey string,
 	encrypt encrypts.Encrypt,
 	decrypt decrypts.Decrypt,
 ) Encryption {
 	out := encryption{
+		hash:        hash,
 		isGenPK:     isGenPK,
 		fetchPubKey: fetchPubKey,
 		encrypt:     encrypt,

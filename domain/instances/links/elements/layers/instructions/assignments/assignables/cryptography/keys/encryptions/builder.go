@@ -63,21 +63,47 @@ func (app *builder) WithDecrypt(decrypt decrypts.Decrypt) Builder {
 
 // Now builds a new Encryption instance
 func (app *builder) Now() (Encryption, error) {
+	data := [][]byte{}
 	if app.isGenPK {
-		return createEncryptionWithGeneratePrivateKey(), nil
+		data = append(data, []byte("generatePK"))
 	}
 
 	if app.fetchPubKey != "" {
-		return createEncryptionWithFetchPublicKey(app.fetchPubKey), nil
+		data = append(data, []byte("fetchPubKey"))
+		data = append(data, []byte(app.fetchPubKey))
 	}
 
 	if app.encrypt != nil {
-		return createEncryptionWithEncrypt(app.encrypt), nil
+		data = append(data, []byte("encrypt"))
+		data = append(data, app.encrypt.Hash().Bytes())
 	}
 
 	if app.decrypt != nil {
-		return createEncryptionWithDecrypt(app.decrypt), nil
+		data = append(data, []byte("decrypt"))
+		data = append(data, app.decrypt.Hash().Bytes())
 	}
 
-	return nil, errors.New("the Encryption is invalid")
+	length := len(data)
+	if length < 1 || length > 2 {
+		return nil, errors.New("the Encryption is invalid")
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	if app.isGenPK {
+		return createEncryptionWithGeneratePrivateKey(*pHash), nil
+	}
+
+	if app.fetchPubKey != "" {
+		return createEncryptionWithFetchPublicKey(*pHash, app.fetchPubKey), nil
+	}
+
+	if app.encrypt != nil {
+		return createEncryptionWithEncrypt(*pHash, app.encrypt), nil
+	}
+
+	return createEncryptionWithDecrypt(*pHash, app.decrypt), nil
 }
