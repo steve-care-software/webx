@@ -14,6 +14,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the key adapter
+type Adapter interface {
+	ToBytes(ins Key) ([]byte, error)
+	ToInstance(bytes []byte) (Key, error)
+}
+
 // Builder represents a key builder
 type Builder interface {
 	Create() Builder
