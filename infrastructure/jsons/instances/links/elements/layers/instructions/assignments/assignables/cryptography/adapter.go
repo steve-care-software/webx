@@ -6,23 +6,27 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/cryptography"
 	json_decrypts "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/assignments/assignables/cryptography/decrypts"
 	json_encrypts "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/assignments/assignables/cryptography/encrypts"
+	json_keys "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/assignments/assignables/cryptography/keys"
 )
 
 // Adapter represents a cryptography adapter
 type Adapter struct {
 	encryptAdapter *json_encrypts.Adapter
 	decryptAdapter *json_decrypts.Adapter
+	keyAdapter     *json_keys.Adapter
 	builder        cryptography.Builder
 }
 
 func createAdapter(
 	encryptAdapter *json_encrypts.Adapter,
 	decryptAdapter *json_decrypts.Adapter,
+	keyAdapter *json_keys.Adapter,
 	builder cryptography.Builder,
 ) cryptography.Adapter {
 	out := Adapter{
 		encryptAdapter: encryptAdapter,
 		decryptAdapter: decryptAdapter,
+		keyAdapter:     keyAdapter,
 		builder:        builder,
 	}
 
@@ -68,6 +72,15 @@ func (app *Adapter) CryptographyToStruct(ins cryptography.Cryptography) (*Crypto
 		out.Decrypt = &str
 	}
 
+	if ins.IsKey() {
+		ptr, err := app.keyAdapter.KeyToStruct(ins.Key())
+		if err != nil {
+			return nil, err
+		}
+
+		out.Key = ptr
+	}
+
 	return &out, nil
 }
 
@@ -90,6 +103,15 @@ func (app *Adapter) StructToCryptography(str Cryptography) (cryptography.Cryptog
 		}
 
 		builder.WithDecrypt(ins)
+	}
+
+	if str.Key != nil {
+		ins, err := app.keyAdapter.StructToKey(*str.Key)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithKey(ins)
 	}
 
 	return builder.Now()
