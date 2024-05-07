@@ -7,6 +7,14 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/commits/actions"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
 // Adapter represents the commit adapter
 type Adapter interface {
 	ToBytes(ins Commit) ([]byte, error)
@@ -26,7 +34,6 @@ type Builder interface {
 // Commit represents a commit
 type Commit interface {
 	Hash() hash.Hash
-	Height() uint
 	Content() Content
 	HasParent() bool
 	Parent() Commit
@@ -34,7 +41,6 @@ type Commit interface {
 
 // Content represents a commit content
 type Content interface {
-	Hash() hash.Hash
 	Description() string
 	Actions() actions.Actions
 	CreatedOn() time.Time

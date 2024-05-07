@@ -1,46 +1,34 @@
 package actions
 
 import (
-	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
 )
 
 type content struct {
-	hash     hash.Hash
 	isDelete bool
 	insert   instances.Instance
 }
 
-func createContentWithDelete(
-	hash hash.Hash,
-) Content {
-	return createContentInternally(hash, true, nil)
+func createContentWithDelete() Content {
+	return createContentInternally(true, nil)
 }
 
 func createContentWithInsert(
-	hash hash.Hash,
 	insert instances.Instance,
 ) Content {
-	return createContentInternally(hash, false, insert)
+	return createContentInternally(false, insert)
 }
 
 func createContentInternally(
-	hash hash.Hash,
 	isDelete bool,
 	insert instances.Instance,
 ) Content {
 	out := content{
-		hash:     hash,
 		isDelete: isDelete,
 		insert:   insert,
 	}
 
 	return &out
-}
-
-// Hash returns the hash
-func (obj *content) Hash() hash.Hash {
-	return obj.hash
 }
 
 // IsDelete returns true if delete, false otherwise

@@ -70,26 +70,18 @@ func (app *actionBuilder) Now() (Action, error) {
 		return nil, errors.New("the Action is invalid")
 	}
 
-	pContentHash, err := app.hashAdapter.FromMultiBytes(data)
-	if err != nil {
-		return nil, err
-	}
-
 	path := filepath.Join(app.path...)
-	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
-		pContentHash.Bytes(),
-		[]byte(path),
-	})
-
+	data = append(data, []byte(path))
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
 	}
 
 	if app.insert != nil {
-		content := createContentWithInsert(*pContentHash, app.insert)
+		content := createContentWithInsert(app.insert)
 		return createAction(*pHash, app.path, content), nil
 	}
 
-	content := createContentWithDelete(*pContentHash)
+	content := createContentWithDelete()
 	return createAction(*pHash, app.path, content), nil
 }

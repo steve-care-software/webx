@@ -58,7 +58,6 @@ type Action interface {
 
 // Content represents an action content
 type Content interface {
-	Hash() hash.Hash
 	IsDelete() bool
 	IsInsert() bool
 	Insert() instances.Instance
