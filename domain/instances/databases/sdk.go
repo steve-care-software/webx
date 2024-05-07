@@ -5,6 +5,14 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
 // Adapter represents the database adapter
 type Adapter interface {
 	ToBytes(ins Database) ([]byte, error)
