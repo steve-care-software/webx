@@ -6,6 +6,14 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/values/transforms"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
 // Adapter represents the value adapter
 type Adapter interface {
 	ToBytes(ins Value) ([]byte, error)
