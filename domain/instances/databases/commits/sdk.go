@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/commits/actions"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
 )
 
 // NewBuilder creates a new builder
@@ -44,16 +44,4 @@ type Content interface {
 	Description() string
 	Actions() actions.Actions
 	CreatedOn() time.Time
-}
-
-// Repository represents a repository
-type Repository interface {
-	Head() (Commit, error)
-	Retrieve(hash hash.Hash) (Commit, error)
-}
-
-// Service represents a service
-type Service interface {
-	Insert(commit Commit) error
-	Delete(hash hash.Hash) error
 }

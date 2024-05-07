@@ -3,7 +3,7 @@ package commits
 import (
 	"time"
 
-	"github.com/steve-care-software/datastencil/domain/instances/commits/actions"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
 )
 
 type content struct {
