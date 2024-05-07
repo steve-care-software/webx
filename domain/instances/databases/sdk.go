@@ -5,6 +5,12 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
 )
 
+// Adapter represents the database adapter
+type Adapter interface {
+	ToBytes(ins Database) ([]byte, error)
+	ToInstance(data []byte) (Database, error)
+}
+
 // Builder represents a database builder
 type Builder interface {
 	Create() Builder
