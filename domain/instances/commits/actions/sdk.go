@@ -5,6 +5,22 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
+// NewActionBuilder creates a new action builder
+func NewActionBuilder() ActionBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createActionBuilder(
+		hashAdapter,
+	)
+}
+
 // Adapter represents the actions adapter
 type Adapter interface {
 	ToBytes(ins Actions) ([]byte, error)
@@ -15,7 +31,7 @@ type Adapter interface {
 type Builder interface {
 	Create() Builder
 	WithList(list []Action) Builder
-	Npw() (Actions, error)
+	Now() (Actions, error)
 }
 
 // Actions represents actions
