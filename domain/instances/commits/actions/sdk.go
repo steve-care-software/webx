@@ -5,6 +5,12 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances"
 )
 
+// Adapter represents the actions adapter
+type Adapter interface {
+	ToBytes(ins Actions) ([]byte, error)
+	ToInstance(data []byte) (Actions, error)
+}
+
 // Builder represents an actions builder
 type Builder interface {
 	Create() Builder

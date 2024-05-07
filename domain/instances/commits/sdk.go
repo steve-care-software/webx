@@ -7,6 +7,12 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/commits/actions"
 )
 
+// Adapter represents the commit adapter
+type Adapter interface {
+	ToBytes(ins Commit) ([]byte, error)
+	ToInstance(data []byte) (Commit, error)
+}
+
 // Builder represents a commit builder
 type Builder interface {
 	Create() Builder
