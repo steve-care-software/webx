@@ -11,6 +11,9 @@ import (
 
 type assignableBuilder struct {
 	pBool           *bool
+	pString         *string
+	pFloat          *float64
+	pInt            *int
 	bytes           []byte
 	hash            hash.Hash
 	hashList        []hash.Hash
@@ -29,6 +32,9 @@ type assignableBuilder struct {
 func createAssignableBuilder() AssignableBuilder {
 	out := assignableBuilder{
 		pBool:           nil,
+		pString:         nil,
+		pFloat:          nil,
+		pInt:            nil,
 		bytes:           nil,
 		hash:            nil,
 		hashList:        nil,
@@ -55,6 +61,24 @@ func (app *assignableBuilder) Create() AssignableBuilder {
 // WithBool adds a bool to the builder
 func (app *assignableBuilder) WithBool(boolValue bool) AssignableBuilder {
 	app.pBool = &boolValue
+	return app
+}
+
+// WithString adds a bool to the builder
+func (app *assignableBuilder) WithString(stringValue string) AssignableBuilder {
+	app.pString = &stringValue
+	return app
+}
+
+// WithFloat adds a float to the builder
+func (app *assignableBuilder) WithFloat(floatVal float64) AssignableBuilder {
+	app.pFloat = &floatVal
+	return app
+}
+
+// WithInt adds an int to the builder
+func (app *assignableBuilder) WithInt(intVal int) AssignableBuilder {
+	app.pInt = &intVal
 	return app
 }
 
@@ -148,6 +172,18 @@ func (app *assignableBuilder) Now() (Assignable, error) {
 
 	if app.bytes != nil {
 		return createAssignableWithBytes(app.bytes), nil
+	}
+
+	if app.pString != nil {
+
+	}
+
+	if app.pFloat != nil {
+
+	}
+
+	if app.pInt != nil {
+
 	}
 
 	if app.hash != nil {

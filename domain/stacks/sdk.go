@@ -132,6 +132,13 @@ type Assignment interface {
 	Assignable() Assignable
 }
 
+// AssignablesBuilder represents an assignables builder
+type AssignablesBuilder interface {
+	Create() AssignablesBuilder
+	WithList(list []Assignable) AssignablesBuilder
+	Now() (Assignables, error)
+}
+
 // Assignables represents assignables
 type Assignables interface {
 	List() []Assignable
@@ -141,6 +148,9 @@ type Assignables interface {
 type AssignableBuilder interface {
 	Create() AssignableBuilder
 	WithBool(boolValue bool) AssignableBuilder
+	WithString(stringValue string) AssignableBuilder
+	WithFloat(floatVal float64) AssignableBuilder
+	WithInt(intVal int) AssignableBuilder
 	WithBytes(bytes []byte) AssignableBuilder
 	WithHash(hash hash.Hash) AssignableBuilder
 	WithHashList(hashList []hash.Hash) AssignableBuilder

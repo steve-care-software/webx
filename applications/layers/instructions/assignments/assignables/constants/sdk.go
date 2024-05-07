@@ -9,6 +9,7 @@ import (
 func NewApplication() Application {
 	assignableBuilder := stacks.NewAssignableBuilder()
 	return createApplication(
+		nil,
 		assignableBuilder,
 	)
 }
