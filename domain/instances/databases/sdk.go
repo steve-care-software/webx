@@ -39,7 +39,7 @@ type Repository interface {
 // Service represents a database service
 type Service interface {
 	Insert(database Database) error
-	Update(origin Database, updated Database) error
+	Update(origin hash.Hash, updated Database) error
 	Delete(hash hash.Hash) error
 	Purge(hash hash.Hash) error
 }
