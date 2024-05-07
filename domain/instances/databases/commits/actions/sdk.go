@@ -2,7 +2,7 @@ package actions
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/values"
 )
 
 // NewBuilder creates a new builder
@@ -44,7 +44,7 @@ type Actions interface {
 type ActionBuilder interface {
 	Create() ActionBuilder
 	WithPath(path []string) ActionBuilder
-	WithInsert(instance instances.Instance) ActionBuilder
+	WithInsert(instance values.Value) ActionBuilder
 	IsDelete() ActionBuilder
 	Now() (Action, error)
 }
@@ -60,5 +60,5 @@ type Action interface {
 type Content interface {
 	IsDelete() bool
 	IsInsert() bool
-	Insert() instances.Instance
+	Insert() values.Value
 }

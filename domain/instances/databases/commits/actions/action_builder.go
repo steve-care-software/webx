@@ -5,13 +5,13 @@ import (
 	"path/filepath"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/values"
 )
 
 type actionBuilder struct {
 	hashAdapter hash.Adapter
 	path        []string
-	insert      instances.Instance
+	insert      values.Value
 	isDelete    bool
 }
 
@@ -42,7 +42,7 @@ func (app *actionBuilder) WithPath(path []string) ActionBuilder {
 }
 
 // WithInsert adds an insert to the builder
-func (app *actionBuilder) WithInsert(insert instances.Instance) ActionBuilder {
+func (app *actionBuilder) WithInsert(insert values.Value) ActionBuilder {
 	app.insert = insert
 	return app
 }
