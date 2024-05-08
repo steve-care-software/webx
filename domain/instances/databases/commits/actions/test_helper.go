@@ -1,6 +1,6 @@
 package actions
 
-import "github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/values"
+import "github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
 
 // NewActionsForTests creates a new actions for tests
 func NewActionsForTests(list []Action) Actions {
@@ -23,7 +23,7 @@ func NewActionWithDeleteForTests(path []string) Action {
 }
 
 // NewActionWithInsertForTests creates a new action with insert for tests
-func NewActionWithInsertForTests(path []string, insert values.Value) Action {
+func NewActionWithInsertForTests(path []string, insert modifications.Modifications) Action {
 	ins, err := NewActionBuilder().Create().WithInsert(insert).WithPath(path).Now()
 	if err != nil {
 		panic(err)

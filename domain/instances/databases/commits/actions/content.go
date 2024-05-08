@@ -1,10 +1,10 @@
 package actions
 
-import "github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/values"
+import "github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
 
 type content struct {
 	isDelete bool
-	insert   values.Value
+	insert   modifications.Modifications
 }
 
 func createContentWithDelete() Content {
@@ -12,14 +12,14 @@ func createContentWithDelete() Content {
 }
 
 func createContentWithInsert(
-	insert values.Value,
+	insert modifications.Modifications,
 ) Content {
 	return createContentInternally(false, insert)
 }
 
 func createContentInternally(
 	isDelete bool,
-	insert values.Value,
+	insert modifications.Modifications,
 ) Content {
 	out := content{
 		isDelete: isDelete,
@@ -40,6 +40,6 @@ func (obj *content) IsInsert() bool {
 }
 
 // Insert returns the insert, if any
-func (obj *content) Insert() values.Value {
+func (obj *content) Insert() modifications.Modifications {
 	return obj.insert
 }
