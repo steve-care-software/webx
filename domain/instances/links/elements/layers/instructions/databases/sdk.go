@@ -2,28 +2,29 @@ package databases
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/databases/updates"
 )
+
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
 
 // Builder represents a database builder
 type Builder interface {
 	Create() Builder
-	WithInsert(insert string) Builder
-	WithUpdate(update updates.Update) Builder
+	WithSave(save string) Builder
 	WithDelete(delete string) Builder
-	WithPurge(purge string) Builder
 	Now() (Database, error)
 }
 
 // Database represents a database instruction
 type Database interface {
 	Hash() hash.Hash
-	IsInsert() bool
-	Insert() string
-	IsUpdate() bool
-	Update() updates.Update
+	IsSave() bool
+	Save() string
 	IsDelete() bool
 	Delete() string
-	IsPurge() bool
-	Purge() string
 }

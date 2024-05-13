@@ -41,14 +41,12 @@ type Database interface {
 // Repository represents a database repository
 type Repository interface {
 	List() [][]string
-	Exists(path string) (bool, error)
+	Exists(path []string) (bool, error)
 	Retrieve(path []string) (Database, error)
 }
 
 // Service represents a database service
 type Service interface {
-	Insert(database Database) error
-	Update(origin hash.Hash, updated Database) error
+	Save(database Database) error
 	Delete(hash hash.Hash) error
-	Purge(hash hash.Hash) error
 }
