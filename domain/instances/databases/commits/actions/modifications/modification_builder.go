@@ -5,13 +5,11 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/deletes"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/updates"
 )
 
 type modificationBuilder struct {
 	hashAdapter hash.Adapter
 	insert      []byte
-	update      updates.Update
 	delete      deletes.Delete
 }
 
@@ -21,7 +19,6 @@ func createModificationBuilder(
 	out := modificationBuilder{
 		hashAdapter: hashAdapter,
 		insert:      nil,
-		update:      nil,
 		delete:      nil,
 	}
 
@@ -41,12 +38,6 @@ func (app *modificationBuilder) WithInsert(insert []byte) ModificationBuilder {
 	return app
 }
 
-// WithUpdate adds an update to the builder
-func (app *modificationBuilder) WithUpdate(update updates.Update) ModificationBuilder {
-	app.update = update
-	return app
-}
-
 // WithDelete adds a delete to the builder
 func (app *modificationBuilder) WithDelete(delete deletes.Delete) ModificationBuilder {
 	app.delete = delete
@@ -59,11 +50,6 @@ func (app *modificationBuilder) Now() (Modification, error) {
 	if app.insert != nil {
 		data = append(data, []byte("insert"))
 		data = append(data, []byte(app.insert))
-	}
-
-	if app.update != nil {
-		data = append(data, []byte("update"))
-		data = append(data, []byte(app.update.Hash().Bytes()))
 	}
 
 	if app.delete != nil {
@@ -82,10 +68,6 @@ func (app *modificationBuilder) Now() (Modification, error) {
 
 	if app.insert != nil {
 		return createModificationWithInsert(*pHash, app.insert), nil
-	}
-
-	if app.update != nil {
-		return createModificationWithUpdate(*pHash, app.update), nil
 	}
 
 	return createModificationWithDelete(*pHash, app.delete), nil

@@ -3,7 +3,6 @@ package modifications
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/deletes"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/updates"
 )
 
 // NewBuilder creates a new builder instance
@@ -39,7 +38,6 @@ type Modifications interface {
 type ModificationBuilder interface {
 	Create() ModificationBuilder
 	WithInsert(insert []byte) ModificationBuilder
-	WithUpdate(update updates.Update) ModificationBuilder
 	WithDelete(del deletes.Delete) ModificationBuilder
 	Now() (Modification, error)
 }
@@ -49,8 +47,6 @@ type Modification interface {
 	Hash() hash.Hash
 	IsInsert() bool
 	Insert() []byte
-	IsUpdate() bool
-	Update() updates.Update
 	IsDelete() bool
 	Delete() deletes.Delete
 }

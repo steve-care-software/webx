@@ -6,5 +6,5 @@ import "github.com/steve-care-software/datastencil/domain/hash"
 type Update interface {
 	Hash() hash.Hash
 	Origin() string
-	Updated() string
+	Update() string
 }
