@@ -1,6 +1,8 @@
 package lists
 
 import (
+	"errors"
+
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/lists/fetches"
 )
@@ -69,7 +71,7 @@ func (app *builder) Now() (List, error) {
 	}
 
 	if len(data) != 2 {
-
+		return nil, errors.New("the List is invalid")
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes(data)
