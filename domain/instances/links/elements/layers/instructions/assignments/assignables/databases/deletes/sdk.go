@@ -12,6 +12,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the delete adapter
+type Adapter interface {
+	ToBytes(ins Delete) ([]byte, error)
+	ToInstance(bytes []byte) (Delete, error)
+}
+
 // Builder represents a delete builder
 type Builder interface {
 	Create() Builder
