@@ -21,6 +21,12 @@ func NewModificationBuilder() ModificationBuilder {
 	)
 }
 
+// Adapter represents the modifications adapter
+type Adapter interface {
+	ToBytes(ins Modifications) ([]byte, error)
+	ToInstance(bytes []byte) (Modifications, error)
+}
+
 // Builder represents a modifications builder
 type Builder interface {
 	Create() Builder

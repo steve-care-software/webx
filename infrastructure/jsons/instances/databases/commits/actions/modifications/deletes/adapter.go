@@ -23,12 +23,8 @@ func createAdapter(
 
 // ToBytes converts instance to bytes
 func (app *Adapter) ToBytes(ins deletes.Delete) ([]byte, error) {
-	ptr, err := app.DeleteToStruct(ins)
-	if err != nil {
-		return nil, err
-	}
-
-	js, err := json.Marshal(ptr)
+	str := app.DeleteToStruct(ins)
+	js, err := json.Marshal(str)
 	if err != nil {
 		return nil, err
 	}
@@ -48,12 +44,11 @@ func (app *Adapter) ToInstance(bytes []byte) (deletes.Delete, error) {
 }
 
 // DeleteToStruct converts a delete to struct
-func (app *Adapter) DeleteToStruct(ins deletes.Delete) (*Delete, error) {
-	out := Delete{
+func (app *Adapter) DeleteToStruct(ins deletes.Delete) Delete {
+	return Delete{
 		Index:  ins.Index(),
 		Length: ins.Length(),
 	}
-	return &out, nil
 }
 
 // StructToDelete converts a struct to delete
