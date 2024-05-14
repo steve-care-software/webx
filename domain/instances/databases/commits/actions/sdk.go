@@ -24,7 +24,7 @@ func NewActionBuilder() ActionBuilder {
 // Adapter represents the actions adapter
 type Adapter interface {
 	ToBytes(ins Actions) ([]byte, error)
-	ToInstance(data []byte) (Actions, error)
+	ToInstance(bytes []byte) (Actions, error)
 }
 
 // Builder represents an actions builder
