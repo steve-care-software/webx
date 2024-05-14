@@ -10,6 +10,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the fetch adapter
+type Adapter interface {
+	ToBytes(ins Fetch) ([]byte, error)
+	ToInstance(bytes []byte) (Fetch, error)
+}
+
 // Builder represents a fetch builder
 type Builder interface {
 	Create() Builder
