@@ -10,12 +10,17 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the action adapter
+type Adapter interface {
+	ToBytes(ins Action) ([]byte, error)
+	ToInstance(bytes []byte) (Action, error)
+}
+
 // Builder represents the action builder
 type Builder interface {
 	Create() Builder
 	WithPath(path string) Builder
-	WithInsert(insert string) Builder
-	IsDelete() Builder
+	WithModifications(modifications string) Builder
 	Now() (Action, error)
 }
 
@@ -23,7 +28,5 @@ type Builder interface {
 type Action interface {
 	Hash() hash.Hash
 	Path() string
-	IsDelete() bool
-	IsInsert() bool
-	Insert() string
+	Modifications() string
 }

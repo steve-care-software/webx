@@ -2,25 +2,24 @@ package actions
 
 import (
 	"errors"
+	"path/filepath"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
 type builder struct {
-	hashAdapter hash.Adapter
-	path        string
-	insert      string
-	isDelete    bool
+	hashAdapter   hash.Adapter
+	path          string
+	modifications string
 }
 
 func createBuilder(
 	hashAdapter hash.Adapter,
 ) Builder {
 	out := builder{
-		hashAdapter: hashAdapter,
-		path:        "",
-		insert:      "",
-		isDelete:    false,
+		hashAdapter:   hashAdapter,
+		path:          "",
+		modifications: "",
 	}
 
 	return &out
@@ -39,15 +38,9 @@ func (app *builder) WithPath(path string) Builder {
 	return app
 }
 
-// WithInsert adds an insert to the builder
-func (app *builder) WithInsert(insert string) Builder {
-	app.insert = insert
-	return app
-}
-
-// IsDelete flags the builder as delete
-func (app *builder) IsDelete() Builder {
-	app.isDelete = true
+// WithModifications adds a modifications to the builder
+func (app *builder) WithModifications(modifications string) Builder {
+	app.modifications = modifications
 	return app
 }
 
@@ -57,29 +50,19 @@ func (app *builder) Now() (Action, error) {
 		return nil, errors.New("the path is mandatory in order to build an Action instance")
 	}
 
-	data := [][]byte{}
-	if app.insert != "" {
-		data = append(data, []byte("insert"))
-		data = append(data, []byte(app.insert))
+	if app.modifications == "" {
+		return nil, errors.New("the modifications is mandatory in order to build an Action instance")
 	}
 
-	if app.isDelete {
-		data = append(data, []byte("isDelete"))
-	}
+	path := filepath.Join(app.path)
+	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+		[]byte(path),
+		[]byte(app.modifications),
+	})
 
-	amount := len(data)
-	if amount != 1 && amount != 2 {
-		return nil, errors.New("the Action is invalid")
-	}
-
-	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
 	}
 
-	if app.insert != "" {
-		return createActionWithInsert(*pHash, app.path, app.insert), nil
-	}
-
-	return createActionWithDelete(*pHash, app.path), nil
+	return createAction(*pHash, app.path, app.modifications), nil
 }
