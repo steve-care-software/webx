@@ -13,6 +13,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the list adapter
+type Adapter interface {
+	ToBytes(ins List) ([]byte, error)
+	ToInstance(bytes []byte) (List, error)
+}
+
 // Builder represents a list builder
 type Builder interface {
 	Create() Builder
