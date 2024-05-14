@@ -16,7 +16,7 @@ func NewBuilder() Builder {
 // Adapter represents the database adapter
 type Adapter interface {
 	ToBytes(ins Database) ([]byte, error)
-	ToInstance(data []byte) (Database, error)
+	ToInstance(bytes []byte) (Database, error)
 }
 
 // Builder represents a database builder
