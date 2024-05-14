@@ -3,6 +3,8 @@ package instructions
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/databases"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/lists"
 )
 
 type instruction struct {
@@ -11,6 +13,9 @@ type instruction struct {
 	raiseError uint
 	condition  Condition
 	assignment assignments.Assignment
+	database   databases.Database
+	list       lists.List
+	loop       Loop
 }
 
 func createInstructionWithIsStop(
@@ -20,6 +25,9 @@ func createInstructionWithIsStop(
 		hash,
 		true,
 		0,
+		nil,
+		nil,
+		nil,
 		nil,
 		nil,
 	)
@@ -35,6 +43,9 @@ func createInstructionWithRaiseError(
 		raiseError,
 		nil,
 		nil,
+		nil,
+		nil,
+		nil,
 	)
 }
 
@@ -47,6 +58,9 @@ func createInstructionWithCondition(
 		false,
 		0,
 		condition,
+		nil,
+		nil,
+		nil,
 		nil,
 	)
 }
@@ -61,6 +75,57 @@ func createInstructionWithAssignment(
 		0,
 		nil,
 		assignment,
+		nil,
+		nil,
+		nil,
+	)
+}
+
+func createInstructionWithDatabase(
+	hash hash.Hash,
+	database databases.Database,
+) Instruction {
+	return createInstructionInternally(
+		hash,
+		false,
+		0,
+		nil,
+		nil,
+		database,
+		nil,
+		nil,
+	)
+}
+
+func createInstructionWithList(
+	hash hash.Hash,
+	list lists.List,
+) Instruction {
+	return createInstructionInternally(
+		hash,
+		false,
+		0,
+		nil,
+		nil,
+		nil,
+		list,
+		nil,
+	)
+}
+
+func createInstructionWithLoop(
+	hash hash.Hash,
+	loop Loop,
+) Instruction {
+	return createInstructionInternally(
+		hash,
+		false,
+		0,
+		nil,
+		nil,
+		nil,
+		nil,
+		loop,
 	)
 }
 
@@ -70,6 +135,9 @@ func createInstructionInternally(
 	raiseError uint,
 	condition Condition,
 	assignment assignments.Assignment,
+	database databases.Database,
+	list lists.List,
+	loop Loop,
 ) Instruction {
 	out := instruction{
 		hash:       hash,
@@ -77,6 +145,9 @@ func createInstructionInternally(
 		raiseError: raiseError,
 		condition:  condition,
 		assignment: assignment,
+		database:   database,
+		list:       list,
+		loop:       loop,
 	}
 
 	return &out
@@ -120,4 +191,34 @@ func (obj *instruction) IsAssignment() bool {
 // Assignment returns the assignment, if any
 func (obj *instruction) Assignment() assignments.Assignment {
 	return obj.assignment
+}
+
+// IsDatabase returns true if database, false otherwise
+func (obj *instruction) IsDatabase() bool {
+	return obj.database != nil
+}
+
+// Database returns the database, if any
+func (obj *instruction) Database() databases.Database {
+	return obj.database
+}
+
+// IsList returns true if list, false otherwise
+func (obj *instruction) IsList() bool {
+	return obj.list != nil
+}
+
+// List returns the list, if any
+func (obj *instruction) List() lists.List {
+	return obj.list
+}
+
+// IsLoop returns true if loop, false otherwise
+func (obj *instruction) IsLoop() bool {
+	return obj.loop != nil
+}
+
+// Loop returns the loop, if any
+func (obj *instruction) Loop() Loop {
+	return obj.loop
 }
