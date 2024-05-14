@@ -10,13 +10,19 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the database adapter
+type Adapter interface {
+	ToBytes(ins Database) ([]byte, error)
+	ToInstance(bytes []byte) (Database, error)
+}
+
 // Builder represents the database builder
 type Builder interface {
 	Create() Builder
 	WithPath(path string) Builder
 	WithDescription(description string) Builder
 	WithHead(head string) Builder
-	IsActive() Builder
+	WithActive(isActive string) Builder
 	Now() (Database, error)
 }
 
@@ -26,5 +32,5 @@ type Database interface {
 	Path() string
 	Description() string
 	Head() string
-	IsActive() bool
+	IsActive() string
 }

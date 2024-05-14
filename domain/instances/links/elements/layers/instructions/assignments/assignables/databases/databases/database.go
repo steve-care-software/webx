@@ -7,7 +7,7 @@ type database struct {
 	path        string
 	description string
 	head        string
-	isActive    bool
+	isActive    string
 }
 
 func createDatabase(
@@ -15,7 +15,7 @@ func createDatabase(
 	path string,
 	description string,
 	head string,
-	isActive bool,
+	isActive string,
 ) Database {
 	out := database{
 		hash:        hash,
@@ -48,7 +48,7 @@ func (obj *database) Head() string {
 	return obj.head
 }
 
-// IsActive returns true if active, false otherwise
-func (obj *database) IsActive() bool {
+// IsActive returns the isActive
+func (obj *database) IsActive() string {
 	return obj.isActive
 }

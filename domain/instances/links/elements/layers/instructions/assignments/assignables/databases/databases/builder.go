@@ -11,7 +11,7 @@ type builder struct {
 	path        string
 	description string
 	head        string
-	isActive    bool
+	isActive    string
 }
 
 func createBuilder(
@@ -22,7 +22,7 @@ func createBuilder(
 		path:        "",
 		description: "",
 		head:        "",
-		isActive:    false,
+		isActive:    "",
 	}
 
 	return &out
@@ -53,9 +53,9 @@ func (app *builder) WithHead(head string) Builder {
 	return app
 }
 
-// IsActive flags the builder as active
-func (app *builder) IsActive() Builder {
-	app.isActive = true
+// WithActive returns the isActive
+func (app *builder) WithActive(isActive string) Builder {
+	app.isActive = isActive
 	return app
 }
 
@@ -73,16 +73,15 @@ func (app *builder) Now() (Database, error) {
 		return nil, errors.New("the head is mandatory in order to build a Database instance")
 	}
 
-	isActive := "false"
-	if app.isActive {
-		isActive = "true"
+	if app.isActive == "" {
+		return nil, errors.New("the isActive is mandatory in order to build a Database instance")
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
 		[]byte(app.path),
 		[]byte(app.description),
 		[]byte(app.head),
-		[]byte(isActive),
+		[]byte(app.isActive),
 	})
 
 	if err != nil {
