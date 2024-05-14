@@ -12,19 +12,9 @@ func NewActionsForTests(list []Action) Actions {
 	return ins
 }
 
-// NewActionWithDeleteForTests creates a new action with delete for tests
-func NewActionWithDeleteForTests(path []string) Action {
-	ins, err := NewActionBuilder().Create().IsDelete().WithPath(path).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewActionWithInsertForTests creates a new action with insert for tests
-func NewActionWithInsertForTests(path []string, insert modifications.Modifications) Action {
-	ins, err := NewActionBuilder().Create().WithInsert(insert).WithPath(path).Now()
+// NewActionWithModificationsForTests creates a new action with insert for tests
+func NewActionWithModificationsForTests(path []string, modifications modifications.Modifications) Action {
+	ins, err := NewActionBuilder().Create().WithModifications(modifications).WithPath(path).Now()
 	if err != nil {
 		panic(err)
 	}

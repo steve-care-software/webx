@@ -1,22 +1,25 @@
 package actions
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
+)
 
 type action struct {
-	hash    hash.Hash
-	path    []string
-	content Content
+	hash          hash.Hash
+	path          []string
+	modifications modifications.Modifications
 }
 
 func createAction(
 	hash hash.Hash,
 	path []string,
-	content Content,
+	modifications modifications.Modifications,
 ) Action {
 	out := action{
-		hash:    hash,
-		path:    path,
-		content: content,
+		hash:          hash,
+		path:          path,
+		modifications: modifications,
 	}
 
 	return &out
@@ -32,7 +35,7 @@ func (obj *action) Path() []string {
 	return obj.path
 }
 
-// Content returns the content
-func (obj *action) Content() Content {
-	return obj.content
+// Modifications returns the modifications
+func (obj *action) Modifications() modifications.Modifications {
+	return obj.modifications
 }

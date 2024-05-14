@@ -44,8 +44,7 @@ type Actions interface {
 type ActionBuilder interface {
 	Create() ActionBuilder
 	WithPath(path []string) ActionBuilder
-	WithInsert(instance modifications.Modifications) ActionBuilder
-	IsDelete() ActionBuilder
+	WithModifications(modifications modifications.Modifications) ActionBuilder
 	Now() (Action, error)
 }
 
@@ -53,12 +52,5 @@ type ActionBuilder interface {
 type Action interface {
 	Hash() hash.Hash
 	Path() []string
-	Content() Content
-}
-
-// Content represents an action content
-type Content interface {
-	IsDelete() bool
-	IsInsert() bool
-	Insert() modifications.Modifications
+	Modifications() modifications.Modifications
 }

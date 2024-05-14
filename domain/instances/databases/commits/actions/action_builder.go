@@ -9,20 +9,18 @@ import (
 )
 
 type actionBuilder struct {
-	hashAdapter hash.Adapter
-	path        []string
-	insert      modifications.Modifications
-	isDelete    bool
+	hashAdapter   hash.Adapter
+	path          []string
+	modifications modifications.Modifications
 }
 
 func createActionBuilder(
 	hashAdapter hash.Adapter,
 ) ActionBuilder {
 	out := actionBuilder{
-		hashAdapter: hashAdapter,
-		path:        nil,
-		insert:      nil,
-		isDelete:    false,
+		hashAdapter:   hashAdapter,
+		path:          nil,
+		modifications: nil,
 	}
 
 	return &out
@@ -41,47 +39,35 @@ func (app *actionBuilder) WithPath(path []string) ActionBuilder {
 	return app
 }
 
-// WithInsert adds an insert to the builder
-func (app *actionBuilder) WithInsert(insert modifications.Modifications) ActionBuilder {
-	app.insert = insert
-	return app
-}
-
-// IsDelete flags the builder as a delete
-func (app *actionBuilder) IsDelete() ActionBuilder {
-	app.isDelete = true
+// WithModifications adds modifications to the builder
+func (app *actionBuilder) WithModifications(modifications modifications.Modifications) ActionBuilder {
+	app.modifications = modifications
 	return app
 }
 
 // Now builds a new Action instance
 func (app *actionBuilder) Now() (Action, error) {
-	data := [][]byte{}
-	if app.insert != nil {
-		data = append(data, []byte("insert"))
-		data = append(data, app.insert.Hash().Bytes())
+	if app.path != nil && len(app.path) <= 0 {
+		app.path = nil
 	}
 
-	if app.isDelete {
-		data = append(data, []byte("delete"))
+	if app.path == nil {
+		return nil, errors.New("the path is mandatory in order to build an Action instance")
 	}
 
-	amount := len(data)
-	if amount != 1 && amount != 2 {
-		return nil, errors.New("the Action is invalid")
+	if app.modifications == nil {
+		return nil, errors.New("the modifications is mandatory in order to build an Action instance")
 	}
 
 	path := filepath.Join(app.path...)
-	data = append(data, []byte(path))
-	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+		[]byte(path),
+		app.modifications.Hash().Bytes(),
+	})
+
 	if err != nil {
 		return nil, err
 	}
 
-	if app.insert != nil {
-		content := createContentWithInsert(app.insert)
-		return createAction(*pHash, app.path, content), nil
-	}
-
-	content := createContentWithDelete()
-	return createAction(*pHash, app.path, content), nil
+	return createAction(*pHash, app.path, app.modifications), nil
 }
