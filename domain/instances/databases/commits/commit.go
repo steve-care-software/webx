@@ -5,7 +5,7 @@ import "github.com/steve-care-software/datastencil/domain/hash"
 type commit struct {
 	hash    hash.Hash
 	content Content
-	parent  Commit
+	parent  hash.Hash
 }
 
 func createCommit(
@@ -18,7 +18,7 @@ func createCommit(
 func createCommitWithParent(
 	hash hash.Hash,
 	content Content,
-	parent Commit,
+	parent hash.Hash,
 ) Commit {
 	return createCommitInternally(hash, content, parent)
 }
@@ -26,7 +26,7 @@ func createCommitWithParent(
 func createCommitInternally(
 	hash hash.Hash,
 	content Content,
-	parent Commit,
+	parent hash.Hash,
 ) Commit {
 	out := commit{
 		hash:    hash,
@@ -53,6 +53,6 @@ func (obj *commit) HasParent() bool {
 }
 
 // Parent returns the parent, if any
-func (obj *commit) Parent() Commit {
+func (obj *commit) Parent() hash.Hash {
 	return obj.parent
 }

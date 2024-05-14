@@ -14,7 +14,7 @@ type builder struct {
 	description string
 	actions     actions.Actions
 	pCreatedOn  *time.Time
-	parent      Commit
+	parent      hash.Hash
 }
 
 func createBuilder(
@@ -51,7 +51,7 @@ func (app *builder) WithActions(actions actions.Actions) Builder {
 }
 
 // WithParent adds a parent to the builder
-func (app *builder) WithParent(parent Commit) Builder {
+func (app *builder) WithParent(parent hash.Hash) Builder {
 	app.parent = parent
 	return app
 }
@@ -83,7 +83,7 @@ func (app *builder) Now() (Commit, error) {
 	}
 
 	if app.parent != nil {
-		data = append(data, app.parent.Hash().Bytes())
+		data = append(data, app.parent.Bytes())
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes(data)

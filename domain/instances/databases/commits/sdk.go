@@ -26,7 +26,7 @@ type Builder interface {
 	Create() Builder
 	WithDescription(description string) Builder
 	WithActions(actions actions.Actions) Builder
-	WithParent(parent Commit) Builder
+	WithParent(parent hash.Hash) Builder
 	CreatedOn(createdOn time.Time) Builder
 	Now() (Commit, error)
 }
@@ -36,7 +36,7 @@ type Commit interface {
 	Hash() hash.Hash
 	Content() Content
 	HasParent() bool
-	Parent() Commit
+	Parent() hash.Hash
 }
 
 // Content represents a commit content
