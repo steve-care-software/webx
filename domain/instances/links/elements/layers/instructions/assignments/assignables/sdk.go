@@ -6,6 +6,8 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/compilers"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/cryptography"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/databases"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/lists"
 )
 
 // NewBuilder creates a new assignable builder
@@ -29,6 +31,8 @@ type Builder interface {
 	WithConsant(constant constants.Constant) Builder
 	WithCryptography(cryptography cryptography.Cryptography) Builder
 	WithCompiler(compiler compilers.Compiler) Builder
+	WithDatabase(database databases.Database) Builder
+	WithList(list lists.List) Builder
 	Now() (Assignable, error)
 }
 
@@ -43,4 +47,8 @@ type Assignable interface {
 	Cryptography() cryptography.Cryptography
 	IsCompiler() bool
 	Compiler() compilers.Compiler
+	IsDatabase() bool
+	Database() databases.Database
+	IsList() bool
+	List() lists.List
 }

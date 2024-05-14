@@ -6,6 +6,8 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/compilers"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/cryptography"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/databases"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/lists"
 )
 
 type assignable struct {
@@ -14,42 +16,50 @@ type assignable struct {
 	constant constants.Constant
 	crypto   cryptography.Cryptography
 	compiler compilers.Compiler
-	query    string
+	database databases.Database
+	list     lists.List
 }
 
 func createAssignableWithBytes(
 	hash hash.Hash,
 	bytes bytes.Bytes,
 ) Assignable {
-	return createAssignableInternally(hash, bytes, nil, nil, nil, "")
+	return createAssignableInternally(hash, bytes, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithConstant(
 	hash hash.Hash,
 	constant constants.Constant,
 ) Assignable {
-	return createAssignableInternally(hash, nil, constant, nil, nil, "")
+	return createAssignableInternally(hash, nil, constant, nil, nil, nil, nil)
 }
 
 func createAssignableWithCryptography(
 	hash hash.Hash,
 	crypto cryptography.Cryptography,
 ) Assignable {
-	return createAssignableInternally(hash, nil, nil, crypto, nil, "")
+	return createAssignableInternally(hash, nil, nil, crypto, nil, nil, nil)
 }
 
 func createAssignableWithCompiler(
 	hash hash.Hash,
 	compiler compilers.Compiler,
 ) Assignable {
-	return createAssignableInternally(hash, nil, nil, nil, compiler, "")
+	return createAssignableInternally(hash, nil, nil, nil, compiler, nil, nil)
 }
 
-func createAssignableWithQuery(
+func createAssignableWithDatabase(
 	hash hash.Hash,
-	query string,
+	database databases.Database,
 ) Assignable {
-	return createAssignableInternally(hash, nil, nil, nil, nil, query)
+	return createAssignableInternally(hash, nil, nil, nil, nil, database, nil)
+}
+
+func createAssignableWithList(
+	hash hash.Hash,
+	list lists.List,
+) Assignable {
+	return createAssignableInternally(hash, nil, nil, nil, nil, nil, list)
 }
 
 func createAssignableInternally(
@@ -58,7 +68,8 @@ func createAssignableInternally(
 	constant constants.Constant,
 	crypto cryptography.Cryptography,
 	compiler compilers.Compiler,
-	query string,
+	database databases.Database,
+	list lists.List,
 ) Assignable {
 	out := assignable{
 		hash:     hash,
@@ -66,7 +77,8 @@ func createAssignableInternally(
 		constant: constant,
 		crypto:   crypto,
 		compiler: compiler,
-		query:    query,
+		database: database,
+		list:     list,
 	}
 
 	return &out
@@ -117,12 +129,22 @@ func (obj *assignable) Compiler() compilers.Compiler {
 	return obj.compiler
 }
 
-// IsQuery returns true if there is a query, false otherwise
-func (obj *assignable) IsQuery() bool {
-	return obj.query != ""
+// IsDatabase returns true if there is a database, false otherwise
+func (obj *assignable) IsDatabase() bool {
+	return obj.database != nil
 }
 
-// Query returns the query, if any
-func (obj *assignable) Query() string {
-	return obj.query
+// Database returns the database, if any
+func (obj *assignable) Database() databases.Database {
+	return obj.database
+}
+
+// IsList returns true if there is a list, false otherwise
+func (obj *assignable) IsList() bool {
+	return obj.list != nil
+}
+
+// List returns the list, if any
+func (obj *assignable) List() lists.List {
+	return obj.list
 }
