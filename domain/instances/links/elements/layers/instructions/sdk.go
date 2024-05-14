@@ -29,6 +29,14 @@ func NewConditionBuilder() ConditionBuilder {
 	)
 }
 
+// NewLoopBuuilder creates a new loop builder
+func NewLoopBuuilder() LoopBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createLoopBuilder(
+		hashAdapter,
+	)
+}
+
 // Adapter represents the instructions adapter
 type Adapter interface {
 	ToBytes(ins Instructions) ([]byte, error)
@@ -85,9 +93,17 @@ type Condition interface {
 	Instructions() Instructions
 }
 
+// LoopBuilder represents the loop builder
+type LoopBuilder interface {
+	Create() LoopBuilder
+	WithAmount(amount string) LoopBuilder
+	WithInstructions(instructions Instructions) LoopBuilder
+	Now() (Loop, error)
+}
+
 // Loop represents a loop
 type Loop interface {
 	Hash() hash.Hash
-	Amount() uint
+	Amount() string
 	Instructions() Instructions
 }
