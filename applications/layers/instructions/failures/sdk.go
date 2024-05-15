@@ -189,4 +189,7 @@ const (
 
 	// CouldNotRetrieveExistsFromRepository represents a could not retrieve exists from repository
 	CouldNotRetrieveExistsFromRepository
+
+	// CouldNotFetchElementFromList represents a could not fetch element from list
+	CouldNotFetchElementFromList
 )
