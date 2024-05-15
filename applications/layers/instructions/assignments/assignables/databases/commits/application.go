@@ -55,7 +55,8 @@ func (app *application) Execute(frame stacks.Frame, assignable commits.Commit) (
 	descriptionVar := assignable.Description()
 	description, err := frame.FetchString(descriptionVar)
 	if err != nil {
-		return nil, nil, err
+		code := failures.CouldNotFetchStringFromFrame
+		return nil, &code, nil
 	}
 
 	builder := app.commitBuilder.Create().WithActions(actions).WithDescription(description)

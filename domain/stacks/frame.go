@@ -6,6 +6,7 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
@@ -182,6 +183,11 @@ func (obj *frame) FetchList(name string) (Assignables, error) {
 
 // FetchModifications fetches a modifications by name
 func (obj *frame) FetchModifications(name string) (modifications.Modifications, error) {
+	return nil, nil
+}
+
+// FetchCommit fetches a commit by name
+func (obj *frame) FetchCommit(name string) (commits.Commit, error) {
 	return nil, nil
 }
 

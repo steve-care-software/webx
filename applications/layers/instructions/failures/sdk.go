@@ -97,6 +97,15 @@ const (
 	// CouldNotFetchListFromFrame represents a could not fetch list from frame
 	CouldNotFetchListFromFrame
 
+	// CouldNotFetchStringFromFrame represents a could not fetch string from frame
+	CouldNotFetchStringFromFrame
+
+	// CouldNotFetchBoolFromFrame represents a could not fetch bool from frame
+	CouldNotFetchBoolFromFrame
+
+	// CouldNotFetchCommitFromFrame represents a could not fetch commit from frame
+	CouldNotFetchCommitFromFrame
+
 	// CouldNotListInstancesFromDatabase represents a could not list instances from database
 	CouldNotListInstancesFromDatabase
 
