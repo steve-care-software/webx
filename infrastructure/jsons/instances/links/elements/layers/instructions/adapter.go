@@ -5,11 +5,16 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions"
 	json_assignments "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/assignments"
+	json_databases "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/databases"
+	json_lists "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/lists"
 )
 
 // Adapter represents an instructions adapter
 type Adapter struct {
 	assignmnetAdapter  *json_assignments.Adapter
+	databaseAdapter    *json_databases.Adapter
+	listAdapter        *json_lists.Adapter
+	loopBuilder        instructions.LoopBuilder
 	conditionBuilder   instructions.ConditionBuilder
 	instructionBuilder instructions.InstructionBuilder
 	builder            instructions.Builder
@@ -17,12 +22,18 @@ type Adapter struct {
 
 func createAdapter(
 	assignmnetAdapter *json_assignments.Adapter,
+	databaseAdapter *json_databases.Adapter,
+	listAdapter *json_lists.Adapter,
+	loopBuilder instructions.LoopBuilder,
 	conditionBuilder instructions.ConditionBuilder,
 	instructionBuilder instructions.InstructionBuilder,
 	builder instructions.Builder,
 ) instructions.Adapter {
 	out := Adapter{
 		assignmnetAdapter:  assignmnetAdapter,
+		databaseAdapter:    databaseAdapter,
+		listAdapter:        listAdapter,
+		loopBuilder:        loopBuilder,
 		conditionBuilder:   conditionBuilder,
 		instructionBuilder: instructionBuilder,
 		builder:            builder,
@@ -120,6 +131,33 @@ func (app *Adapter) InstructionToStruct(ins instructions.Instruction) (*Instruct
 		out.Assignment = ptr
 	}
 
+	if ins.IsDatabase() {
+		ptr, err := app.databaseAdapter.DatabaseToStruct(ins.Database())
+		if err != nil {
+			return nil, err
+		}
+
+		out.Database = ptr
+	}
+
+	if ins.IsList() {
+		ptr, err := app.listAdapter.ListToStruct(ins.List())
+		if err != nil {
+			return nil, err
+		}
+
+		out.List = ptr
+	}
+
+	if ins.IsLoop() {
+		ptr, err := app.LoopToStruct(ins.Loop())
+		if err != nil {
+			return nil, err
+		}
+
+		out.Loop = ptr
+	}
+
 	return &out, nil
 }
 
@@ -152,6 +190,33 @@ func (app *Adapter) StructToInstruction(str Instruction) (instructions.Instructi
 		builder.WithAssignment(ins)
 	}
 
+	if str.Database != nil {
+		ins, err := app.databaseAdapter.StructToDatabase(*str.Database)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithDatabase(ins)
+	}
+
+	if str.List != nil {
+		ins, err := app.listAdapter.StructToList(*str.List)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithList(ins)
+	}
+
+	if str.Loop != nil {
+		ins, err := app.StructToLoop(*str.Loop)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithLoop(ins)
+	}
+
 	return builder.Now()
 }
 
@@ -177,6 +242,32 @@ func (app *Adapter) StructToCondition(str Condition) (instructions.Condition, er
 
 	return app.conditionBuilder.Create().
 		WithVariable(str.Variable).
+		WithInstructions(ins).
+		Now()
+}
+
+// LoopToStruct converts a loop to struct
+func (app *Adapter) LoopToStruct(ins instructions.Loop) (*Loop, error) {
+	list, err := app.InstructionsToStruct(ins.Instructions())
+	if err != nil {
+		return nil, err
+	}
+
+	return &Loop{
+		Amount:       ins.Amount(),
+		Instructions: list,
+	}, nil
+}
+
+// StructToLoop converts a struct to loop
+func (app *Adapter) StructToLoop(str Loop) (instructions.Loop, error) {
+	ins, err := app.StructToInstructions(str.Instructions)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.loopBuilder.Create().
+		WithAmount(str.Amount).
 		WithInstructions(ins).
 		Now()
 }

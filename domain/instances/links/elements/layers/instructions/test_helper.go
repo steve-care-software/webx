@@ -2,6 +2,8 @@ package instructions
 
 import (
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/databases"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/lists"
 )
 
 // NewInstructionsForTests creates new instructions for tests
@@ -54,9 +56,49 @@ func NewInstructionWithStopForTests() Instruction {
 	return ins
 }
 
+// NewInstructionWithDatabaseForTests creates a new instruction with database for tests
+func NewInstructionWithDatabaseForTests(database databases.Database) Instruction {
+	ins, err := NewInstructionBuilder().Create().WithDatabase(database).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewInstructionWithListForTests creates a new instruction with list for tests
+func NewInstructionWithListForTests(list lists.List) Instruction {
+	ins, err := NewInstructionBuilder().Create().WithList(list).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewInstructionWithLoopForTests creates a new instruction with loop for tests
+func NewInstructionWithLoopForTests(loop Loop) Instruction {
+	ins, err := NewInstructionBuilder().Create().WithLoop(loop).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
 // NewConditionForTest creates a new condition for tests
 func NewConditionForTest(variable string, instructions Instructions) Condition {
 	ins, err := NewConditionBuilder().Create().WithVariable(variable).WithInstructions(instructions).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewLoopForTest creates a new loop for tests
+func NewLoopForTest(amount string, instructions Instructions) Loop {
+	ins, err := NewLoopBuuilder().Create().WithAmount(amount).WithInstructions(instructions).Now()
 	if err != nil {
 		panic(err)
 	}

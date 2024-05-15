@@ -8,6 +8,9 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables"
 	bytes_domain "github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/databases"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/lists"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/lists/inserts"
 )
 
 func TestAdapter_Success(t *testing.T) {
@@ -43,6 +46,34 @@ func TestAdapter_Success(t *testing.T) {
 		),
 		instructions.NewInstructionWithRaiseErrorForTests(33),
 		instructions.NewInstructionWithStopForTests(),
+		instructions.NewInstructionWithDatabaseForTests(
+			databases.NewDatabaseWithSaveForTests(
+				"mySave",
+			),
+		),
+		instructions.NewInstructionWithListForTests(
+			lists.NewListWithInsertForTests(
+				inserts.NewInsertForTests(
+					"myList",
+					"myElement",
+				),
+			),
+		),
+		instructions.NewInstructionWithLoopForTests(
+			instructions.NewLoopForTest(
+				"myAmount",
+				instructions.NewInstructionsForTests([]instructions.Instruction{
+					instructions.NewInstructionWithListForTests(
+						lists.NewListWithInsertForTests(
+							inserts.NewInsertForTests(
+								"myList",
+								"myElement",
+							),
+						),
+					),
+				}),
+			),
+		),
 	})
 
 	adapter := NewAdapter()
