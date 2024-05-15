@@ -103,6 +103,12 @@ const (
 	// CouldNotFetchUnsignedIntegerFromFrame represents a could not fetch an unsigned integer from frame
 	CouldNotFetchUnsignedIntegerFromFrame
 
+	// CouldNotFetchDeleteFromFrame represents a could not fetch delete from frame
+	CouldNotFetchDeleteFromFrame
+
+	// CouldNotFetchBytesFromFrame represents a could not fetch bytes from frame
+	CouldNotFetchBytesFromFrame
+
 	// CouldNotFetchBoolFromFrame represents a could not fetch bool from frame
 	CouldNotFetchBoolFromFrame
 

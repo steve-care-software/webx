@@ -109,6 +109,7 @@ type Frame interface {
 	FetchModifications(name string) (modifications.Modifications, error)
 	FetchCommit(name string) (commits.Commit, error)
 	FetchString(name string) (string, error)
+	FetchDelete(name string) (deletes.Delete, error)
 	HasAssignments() bool
 	Assignments() Assignments
 }
@@ -176,6 +177,7 @@ type AssignableBuilder interface {
 	WithCommit(commit commits.Commit) AssignableBuilder
 	WithDatabase(database databases.Database) AssignableBuilder
 	WithDelete(delete deletes.Delete) AssignableBuilder
+	WithModification(modification modifications.Modification) AssignableBuilder
 	Now() (Assignable, error)
 }
 

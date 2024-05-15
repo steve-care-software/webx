@@ -8,6 +8,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/databases"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/deletes"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
@@ -35,6 +36,7 @@ type assignableBuilder struct {
 	commit          commits.Commit
 	database        databases.Database
 	delete          deletes.Delete
+	modification    modifications.Modification
 }
 
 func createAssignableBuilder() AssignableBuilder {
@@ -189,6 +191,12 @@ func (app *assignableBuilder) WithDatabase(database databases.Database) Assignab
 // WithDelete adds a delete to the builder
 func (app *assignableBuilder) WithDelete(delete deletes.Delete) AssignableBuilder {
 	app.delete = delete
+	return app
+}
+
+// WithModification adds a modification to the builder
+func (app *assignableBuilder) WithModification(modification modifications.Modification) AssignableBuilder {
+	app.modification = modification
 	return app
 }
 

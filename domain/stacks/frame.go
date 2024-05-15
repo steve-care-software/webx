@@ -8,6 +8,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/deletes"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
 )
@@ -194,6 +195,11 @@ func (obj *frame) FetchCommit(name string) (commits.Commit, error) {
 // FetchString fetches a string by name
 func (obj *frame) FetchString(name string) (string, error) {
 	return "", nil
+}
+
+// FetchDelete fetches a delete by name
+func (obj *frame) FetchDelete(name string) (deletes.Delete, error) {
+	return nil, nil
 }
 
 // HasAssignments returns true if there is assignments, false otherwise
