@@ -3,16 +3,19 @@ package stacks
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
 )
 
 type assignable struct {
 	pBool        *bool
+	pString      *string
 	bytes        []byte
 	hash         hash.Hash
 	hashList     []hash.Hash
 	stringList   []string
 	pUnsignedInt *uint
 	instance     instances.Instance
+	modification modifications.Modification
 }
 
 func createAssignableWithBool(
@@ -145,6 +148,16 @@ func (obj *assignable) Bool() *bool {
 	return obj.pBool
 }
 
+// IsString returns true if string, false otherwise
+func (obj *assignable) IsString() bool {
+	return obj.pString != nil
+}
+
+// String returns the string, if any
+func (obj *assignable) String() *string {
+	return obj.pString
+}
+
 // IsBytes returns true if bytes, false otherwise
 func (obj *assignable) IsBytes() bool {
 	return obj.bytes != nil
@@ -203,4 +216,14 @@ func (obj *assignable) IsInstance() bool {
 // Instance returns instance, if any
 func (obj *assignable) Instance() instances.Instance {
 	return obj.instance
+}
+
+// IsModification returns true if modification, false otherwise
+func (obj *assignable) IsModification() bool {
+	return obj.modification != nil
+}
+
+// Modification returns modification, if any
+func (obj *assignable) Modification() modifications.Modification {
+	return obj.modification
 }

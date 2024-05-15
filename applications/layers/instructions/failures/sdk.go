@@ -153,4 +153,10 @@ const (
 
 	// CouldNotFetchHashFromList represents a could not fetch a hash from list
 	CouldNotFetchHashFromList
+
+	// CouldNotFetchStringFromList represents a could not fetch a string from list
+	CouldNotFetchStringFromList
+
+	// CouldNotFetchModificationFromList represents a could not fetch a modification from list
+	CouldNotFetchModificationFromList
 )
