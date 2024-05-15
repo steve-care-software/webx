@@ -202,6 +202,11 @@ func (obj *frame) FetchDelete(name string) (deletes.Delete, error) {
 	return nil, nil
 }
 
+// FetchPath fetches a path by name
+func (obj *frame) FetchPath(name string) ([]string, error) {
+	return nil, nil
+}
+
 // HasAssignments returns true if there is assignments, false otherwise
 func (obj *frame) HasAssignments() bool {
 	return obj.assignments != nil

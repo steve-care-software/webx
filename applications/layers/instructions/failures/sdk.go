@@ -183,4 +183,10 @@ const (
 
 	// CouldNotFetchActionFromList represents a could not fetch an action from list
 	CouldNotFetchActionFromList
+
+	// CouldNotRetrieveListFromRepository represents a could not retrieve list from repository
+	CouldNotRetrieveListFromRepository
+
+	// CouldNotRetrieveExistsFromRepository represents a could not retrieve exists from repository
+	CouldNotRetrieveExistsFromRepository
 )

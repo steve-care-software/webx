@@ -40,8 +40,8 @@ type Database interface {
 
 // Repository represents a database repository
 type Repository interface {
-	List() [][]string
-	Exists(path []string) (bool, error)
+	List() ([][]string, error)
+	Exists(path []string) (*bool, error)
 	Retrieve(path []string) (Database, error)
 }
 
