@@ -100,6 +100,9 @@ const (
 	// CouldNotFetchStringFromFrame represents a could not fetch string from frame
 	CouldNotFetchStringFromFrame
 
+	// CouldNotFetchUnsignedIntegerFromFrame represents a could not fetch an unsigned integer from frame
+	CouldNotFetchUnsignedIntegerFromFrame
+
 	// CouldNotFetchBoolFromFrame represents a could not fetch bool from frame
 	CouldNotFetchBoolFromFrame
 

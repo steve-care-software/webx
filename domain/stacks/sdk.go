@@ -7,6 +7,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/deletes"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
 )
@@ -174,6 +175,7 @@ type AssignableBuilder interface {
 	WithAction(action actions.Action) AssignableBuilder
 	WithCommit(commit commits.Commit) AssignableBuilder
 	WithDatabase(database databases.Database) AssignableBuilder
+	WithDelete(delete deletes.Delete) AssignableBuilder
 	Now() (Assignable, error)
 }
 
