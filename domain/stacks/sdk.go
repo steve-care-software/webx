@@ -3,6 +3,7 @@ package stacks
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
@@ -104,6 +105,7 @@ type Frame interface {
 	FetchVote(name string) (signers.Vote, error)
 	FetchList(name string) (Assignables, error)
 	FetchModifications(name string) (modifications.Modifications, error)
+	FetchString(name string) (string, error)
 	HasAssignments() bool
 	Assignments() Assignments
 }
@@ -168,6 +170,7 @@ type AssignableBuilder interface {
 	WithVote(vote signers.Vote) AssignableBuilder
 	WithList(list Assignables) AssignableBuilder
 	WithAction(action actions.Action) AssignableBuilder
+	WithCommit(commit commits.Commit) AssignableBuilder
 	Now() (Assignable, error)
 }
 
@@ -191,4 +194,6 @@ type Assignable interface {
 	Instance() instances.Instance
 	IsModification() bool
 	Modification() modifications.Modification
+	IsAction() bool
+	Action() actions.Action
 }

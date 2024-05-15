@@ -1,8 +1,6 @@
 package commits
 
 import (
-	"time"
-
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
 )
@@ -27,7 +25,6 @@ type Builder interface {
 	WithDescription(description string) Builder
 	WithActions(actions actions.Actions) Builder
 	WithParent(parent hash.Hash) Builder
-	CreatedOn(createdOn time.Time) Builder
 	Now() (Commit, error)
 }
 
@@ -43,5 +40,4 @@ type Commit interface {
 type Content interface {
 	Description() string
 	Actions() actions.Actions
-	CreatedOn() time.Time
 }

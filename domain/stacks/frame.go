@@ -6,6 +6,7 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
 )
@@ -177,6 +178,16 @@ func (obj *frame) FetchRing(name string) ([]signers.PublicKey, error) {
 // FetchList fetches a list by name
 func (obj *frame) FetchList(name string) (Assignables, error) {
 	return nil, nil
+}
+
+// FetchModifications fetches a modifications by name
+func (obj *frame) FetchModifications(name string) (modifications.Modifications, error) {
+	return nil, nil
+}
+
+// FetchString fetches a string by name
+func (obj *frame) FetchString(name string) (string, error) {
+	return "", nil
 }
 
 // HasAssignments returns true if there is assignments, false otherwise

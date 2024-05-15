@@ -94,6 +94,9 @@ const (
 	// CouldNotFetchRetrieveQueryFromFrame represents a could not fetch retrieve query from frame
 	CouldNotFetchRetrieveQueryFromFrame
 
+	// CouldNotFetchListFromFrame represents a could not fetch list from frame
+	CouldNotFetchListFromFrame
+
 	// CouldNotListInstancesFromDatabase represents a could not list instances from database
 	CouldNotListInstancesFromDatabase
 
@@ -159,4 +162,7 @@ const (
 
 	// CouldNotFetchModificationFromList represents a could not fetch a modification from list
 	CouldNotFetchModificationFromList
+
+	// CouldNotFetchActionFromList represents a could not fetch an action from list
+	CouldNotFetchActionFromList
 )

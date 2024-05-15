@@ -3,6 +3,7 @@ package stacks
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
 )
 
@@ -16,6 +17,7 @@ type assignable struct {
 	pUnsignedInt *uint
 	instance     instances.Instance
 	modification modifications.Modification
+	action       actions.Action
 }
 
 func createAssignableWithBool(
@@ -226,4 +228,14 @@ func (obj *assignable) IsModification() bool {
 // Modification returns modification, if any
 func (obj *assignable) Modification() modifications.Modification {
 	return obj.modification
+}
+
+// IsAction returns true if action, false otherwise
+func (obj *assignable) IsAction() bool {
+	return obj.action != nil
+}
+
+// Action returns action, if any
+func (obj *assignable) Action() actions.Action {
+	return obj.action
 }

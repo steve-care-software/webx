@@ -5,6 +5,7 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
@@ -29,6 +30,7 @@ type assignableBuilder struct {
 	vote            signers.Vote
 	list            Assignables
 	action          actions.Action
+	commit          commits.Commit
 }
 
 func createAssignableBuilder() AssignableBuilder {
@@ -165,6 +167,12 @@ func (app *assignableBuilder) WithList(list Assignables) AssignableBuilder {
 // WithAction adds an action to the builder
 func (app *assignableBuilder) WithAction(action actions.Action) AssignableBuilder {
 	app.action = action
+	return app
+}
+
+// WithCommit adds a commit to the builder
+func (app *assignableBuilder) WithCommit(commit commits.Commit) AssignableBuilder {
+	app.commit = commit
 	return app
 }
 

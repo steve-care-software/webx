@@ -4,7 +4,6 @@ import (
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	database_actions "github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
-
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/databases/actions"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
@@ -56,7 +55,8 @@ func (app *application) Execute(frame stacks.Frame, assignable actions.Action) (
 	pathVar := assignable.Path()
 	pathAssignables, err := frame.FetchList(pathVar)
 	if err != nil {
-		return nil, nil, err
+		code := failures.CouldNotFetchListFromFrame
+		return nil, &code, nil
 	}
 
 	pathValues := []string{}

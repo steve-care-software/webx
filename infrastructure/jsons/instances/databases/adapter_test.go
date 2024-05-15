@@ -3,7 +3,6 @@ package databases
 import (
 	"bytes"
 	"testing"
-	"time"
 
 	"github.com/steve-care-software/datastencil/domain/instances/databases"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
@@ -33,7 +32,6 @@ func TestAdapter_Success(t *testing.T) {
 					}),
 				),
 			}),
-			time.Now().UTC(),
 		),
 		true,
 	)

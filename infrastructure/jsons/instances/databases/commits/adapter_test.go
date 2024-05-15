@@ -3,7 +3,6 @@ package commits
 import (
 	"bytes"
 	"testing"
-	"time"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
@@ -30,7 +29,6 @@ func TestAdapter_Success(t *testing.T) {
 				}),
 			),
 		}),
-		time.Now().UTC(),
 	)
 
 	adapter := NewAdapter()
@@ -77,7 +75,6 @@ func TestAdapter_withParent_Success(t *testing.T) {
 				}),
 			),
 		}),
-		time.Now().UTC(),
 		*pHash,
 	)
 

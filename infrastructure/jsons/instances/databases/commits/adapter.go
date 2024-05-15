@@ -66,7 +66,6 @@ func (app *Adapter) CommitToStruct(ins commits.Commit) (*Commit, error) {
 	out := Commit{
 		Description: content.Description(),
 		Actions:     ptr,
-		CreatedOn:   content.CreatedOn(),
 	}
 
 	if ins.HasParent() {
@@ -85,8 +84,7 @@ func (app *Adapter) StructToCommit(str Commit) (commits.Commit, error) {
 
 	builder := app.builder.Create().
 		WithDescription(str.Description).
-		WithActions(ins).
-		CreatedOn(str.CreatedOn)
+		WithActions(ins)
 
 	if str.Parent != "" {
 		pHash, err := app.hashAdapter.FromString(str.Parent)
