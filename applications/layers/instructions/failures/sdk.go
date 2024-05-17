@@ -192,4 +192,7 @@ const (
 
 	// CouldNotFetchElementFromList represents a could not fetch element from list
 	CouldNotFetchElementFromList
+
+	// CouldNotFetchFromFrame represents a could not fetch from frame
+	CouldNotFetchFromFrame
 )
