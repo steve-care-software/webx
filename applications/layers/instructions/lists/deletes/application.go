@@ -26,7 +26,7 @@ func (app *application) Execute(frame stacks.Frame, assignable deletes.Delete) (
 	listVar := assignable.List()
 	listAssignables, err := frame.FetchList(listVar)
 	if err != nil {
-		code := failures.CouldNotFetchUnsignedIntegerFromFrame
+		code := failures.CouldNotFetchListFromFrame
 		return nil, &code, nil
 	}
 
