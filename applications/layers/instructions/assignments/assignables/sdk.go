@@ -21,6 +21,8 @@ func NewApplication(
 		execBytesApp,
 		execConstantApp,
 		execCryptoApp,
+		nil,
+		nil,
 	)
 }
 

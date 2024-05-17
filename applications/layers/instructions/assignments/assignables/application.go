@@ -5,6 +5,8 @@ import (
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/compilers"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/cryptography"
+	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/databases"
+	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/lists"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
@@ -14,6 +16,8 @@ type application struct {
 	execBytesApp    bytes.Application
 	execConstantApp constants.Application
 	execCryptoApp   cryptography.Application
+	execDatabaseApp databases.Application
+	execListApp     lists.Application
 }
 
 func createApplication(
@@ -21,12 +25,16 @@ func createApplication(
 	execBytesApp bytes.Application,
 	execConstantApp constants.Application,
 	execCryptoApp cryptography.Application,
+	execDatabaseApp databases.Application,
+	execListApp lists.Application,
 ) Application {
 	out := application{
 		execCompilerApp: execCompilerApp,
 		execBytesApp:    execBytesApp,
 		execConstantApp: execConstantApp,
 		execCryptoApp:   execCryptoApp,
+		execDatabaseApp: execDatabaseApp,
+		execListApp:     execListApp,
 	}
 
 	return &out
@@ -47,6 +55,16 @@ func (app *application) Execute(frame stacks.Frame, assignable assignables.Assig
 	if assignable.IsCryptography() {
 		crypto := assignable.Cryptography()
 		return app.execCryptoApp.Execute(frame, crypto)
+	}
+
+	if assignable.IsDatabase() {
+		database := assignable.Database()
+		return app.execDatabaseApp.Execute(frame, database)
+	}
+
+	if assignable.IsList() {
+		list := assignable.List()
+		return app.execListApp.Execute(frame, list)
 	}
 
 	compiler := assignable.Compiler()
