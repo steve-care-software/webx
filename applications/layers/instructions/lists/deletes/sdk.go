@@ -7,5 +7,5 @@ import (
 
 // Application represents an application
 type Application interface {
-	Execute(frame stacks.Frame, assignment deletes.Delete) ([]stacks.Assignable, *uint, error)
+	Execute(frame stacks.Frame, assignment deletes.Delete) (stacks.Assignment, *uint, error)
 }

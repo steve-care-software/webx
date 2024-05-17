@@ -8,52 +8,29 @@ import (
 )
 
 type application struct {
-	insertApp          inserts.Application
-	deleteApp          deletes.Application
-	assignablesBuilder stacks.AssignablesBuilder
+	insertApp inserts.Application
+	deleteApp deletes.Application
 }
 
 func createApplication(
 	insertApp inserts.Application,
 	deleteApp deletes.Application,
-	assignablesBuilder stacks.AssignablesBuilder,
 ) Application {
 	out := application{
-		insertApp:          insertApp,
-		deleteApp:          deleteApp,
-		assignablesBuilder: assignablesBuilder,
+		insertApp: insertApp,
+		deleteApp: deleteApp,
 	}
 
 	return &out
 }
 
 // Execute executes the application
-func (app *application) Execute(frame stacks.Frame, list lists.List) (stacks.Assignables, *uint, error) {
-	builder := app.assignablesBuilder.Create()
+func (app *application) Execute(frame stacks.Frame, list lists.List) (stacks.Assignment, *uint, error) {
 	if list.IsInsert() {
 		insert := list.Insert()
-		retList, code, err := app.insertApp.Execute(frame, insert)
-		if err != nil {
-			return nil, code, err
-		}
-
-		builder.WithList(retList)
+		return app.insertApp.Execute(frame, insert)
 	}
 
-	if list.IsDelete() {
-		delete := list.Delete()
-		retList, code, err := app.deleteApp.Execute(frame, delete)
-		if err != nil {
-			return nil, code, err
-		}
-
-		builder.WithList(retList)
-	}
-
-	retIns, err := builder.Now()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return retIns, nil, nil
+	delete := list.Delete()
+	return app.deleteApp.Execute(frame, delete)
 }

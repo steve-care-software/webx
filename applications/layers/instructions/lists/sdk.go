@@ -7,5 +7,5 @@ import (
 
 // Application represents an application
 type Application interface {
-	Execute(frame stacks.Frame, list lists.List) (stacks.Assignables, *uint, error)
+	Execute(frame stacks.Frame, list lists.List) (stacks.Assignment, *uint, error)
 }

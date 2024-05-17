@@ -2,7 +2,9 @@ package instructions
 
 import (
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments"
+	"github.com/steve-care-software/datastencil/applications/layers/instructions/databases"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
+	"github.com/steve-care-software/datastencil/applications/layers/instructions/lists"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions"
 	results_failures "github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions/failures"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions"
@@ -11,6 +13,8 @@ import (
 
 type application struct {
 	execAssignmentApp   assignments.Application
+	execDatabaseApp     databases.Application
+	execListApp         lists.Application
 	stackBuilder        stacks.Builder
 	framesBuilder       stacks.FramesBuilder
 	frameBuilder        stacks.FrameBuilder
@@ -21,6 +25,8 @@ type application struct {
 
 func createApplication(
 	execAssignmentApp assignments.Application,
+	execDatabaseApp databases.Application,
+	execListApp lists.Application,
 	stackBuilder stacks.Builder,
 	framesBuilder stacks.FramesBuilder,
 	frameBuilder stacks.FrameBuilder,
@@ -30,6 +36,8 @@ func createApplication(
 ) Application {
 	out := application{
 		execAssignmentApp:   execAssignmentApp,
+		execDatabaseApp:     execDatabaseApp,
+		execListApp:         execListApp,
 		stackBuilder:        stackBuilder,
 		framesBuilder:       framesBuilder,
 		frameBuilder:        frameBuilder,
@@ -175,16 +183,45 @@ func (app *application) instruction(
 		return stack, nil, nil
 	}
 
-	assignment := instruction.Assignment()
-	retAssignment, pCode, err := app.execAssignmentApp.Execute(frame, assignment)
-	if pCode != nil {
-		message := ""
-		if err != nil {
-			message = err.Error()
+	if instruction.IsDatabase() {
+		database := instruction.Database()
+		pCode, err := app.execDatabaseApp.Execute(frame, database)
+		if pCode != nil {
+			message := ""
+			if err != nil {
+				message = err.Error()
+			}
+
+			ins, err := app.errorCodeToInterruption(idx, *pCode, message)
+			return stack, ins, err
 		}
 
-		ins, err := app.errorCodeToInterruption(idx, *pCode, message)
-		return stack, ins, err
+		return stack, nil, nil
+	}
+
+	if instruction.IsLoop() {
+		loop := instruction.Loop()
+		amountVar := loop.Amount()
+		pAmount, err := frame.FetchUnsignedInt(amountVar)
+		if err != nil {
+			code := failures.CouldNotFetchUnsignedIntegerFromFrame
+			ins, err := app.errorCodeToInterruption(idx, code, err.Error())
+			return stack, ins, err
+		}
+
+		currentStack := stack
+		amount := int(*pAmount)
+		loopInstructions := loop.Instructions()
+		for i := 0; i < amount; i++ {
+			retStack, retInterrupt, err := app.Execute(currentStack, loopInstructions)
+			if retInterrupt != nil || err != nil {
+				return nil, retInterrupt, err
+			}
+
+			currentStack = retStack
+		}
+
+		return stack, nil, nil
 	}
 
 	assignmentsList := []stacks.Assignment{}
@@ -192,7 +229,38 @@ func (app *application) instruction(
 		assignmentsList = frame.Assignments().List()
 	}
 
-	assignmentsList = append(assignmentsList, retAssignment)
+	if instruction.IsList() {
+		list := instruction.List()
+		retAssignment, pCode, err := app.execListApp.Execute(frame, list)
+		if pCode != nil {
+			message := ""
+			if err != nil {
+				message = err.Error()
+			}
+
+			ins, err := app.errorCodeToInterruption(idx, *pCode, message)
+			return stack, ins, err
+		}
+
+		assignmentsList = append(assignmentsList, retAssignment)
+	}
+
+	if instruction.IsAssignment() {
+		assignment := instruction.Assignment()
+		retAssignment, pCode, err := app.execAssignmentApp.Execute(frame, assignment)
+		if pCode != nil {
+			message := ""
+			if err != nil {
+				message = err.Error()
+			}
+
+			ins, err := app.errorCodeToInterruption(idx, *pCode, message)
+			return stack, ins, err
+		}
+
+		assignmentsList = append(assignmentsList, retAssignment)
+	}
+
 	assignments, err := app.assignmentsBuilder.Create().WithList(assignmentsList).Now()
 	if err != nil {
 		return nil, nil, err

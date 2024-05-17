@@ -20,6 +20,8 @@ func NewApplication(
 	failureBuilder := results_failures.NewBuilder()
 	return createApplication(
 		execAssignmentApp,
+		nil,
+		nil,
 		stackBuilder,
 		framesBuilder,
 		frameBuilder,
