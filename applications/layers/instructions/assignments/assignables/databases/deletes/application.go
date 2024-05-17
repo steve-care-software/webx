@@ -1,10 +1,10 @@
 package deletes
 
 import (
-	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	databases_deletes "github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/deletes"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/databases/deletes"
 	"github.com/steve-care-software/datastencil/domain/stacks"
+	"github.com/steve-care-software/datastencil/domain/stacks/failures"
 )
 
 type application struct {

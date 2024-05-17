@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
-	"github.com/steve-care-software/datastencil/applications/mocks"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/cryptography/decrypts"
 	"github.com/steve-care-software/datastencil/domain/stacks"
+	"github.com/steve-care-software/datastencil/domain/stacks/failures"
+	"github.com/steve-care-software/datastencil/domain/stacks/mocks"
 )
 
 func TestExecute_withDecrypt_cipherExistsInFrame_passwordExistsInFrame_decryptSucceeds_Success(t *testing.T) {

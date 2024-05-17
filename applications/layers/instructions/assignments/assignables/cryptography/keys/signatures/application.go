@@ -3,10 +3,10 @@ package signatures
 import (
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/cryptography/keys/signatures/signs"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes"
-	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/cryptography/keys/signatures"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
 	"github.com/steve-care-software/datastencil/domain/stacks"
+	"github.com/steve-care-software/datastencil/domain/stacks/failures"
 )
 
 type application struct {

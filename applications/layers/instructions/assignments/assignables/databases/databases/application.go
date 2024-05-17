@@ -1,10 +1,10 @@
 package databases
 
 import (
-	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	databases_databases "github.com/steve-care-software/datastencil/domain/instances/databases"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/databases/databases"
 	"github.com/steve-care-software/datastencil/domain/stacks"
+	"github.com/steve-care-software/datastencil/domain/stacks/failures"
 )
 
 type application struct {

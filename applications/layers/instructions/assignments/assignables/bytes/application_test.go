@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/applications/layers/instructions/failures"
 	"github.com/steve-care-software/datastencil/domain/hash"
 	assignable_bytes "github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/stacks"
+	"github.com/steve-care-software/datastencil/domain/stacks/failures"
 )
 
 func TestExecute_withJoin_canFetchAllVariablesFromFrame_Success(t *testing.T) {
