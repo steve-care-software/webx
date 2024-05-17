@@ -110,6 +110,7 @@ type Frame interface {
 	FetchCommit(name string) (commits.Commit, error)
 	FetchString(name string) (string, error)
 	FetchDelete(name string) (deletes.Delete, error)
+	FetchDatabase(name string) (databases.Database, error)
 	HasAssignments() bool
 	Assignments() Assignments
 }

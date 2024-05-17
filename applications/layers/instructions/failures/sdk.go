@@ -195,4 +195,13 @@ const (
 
 	// CouldNotFetchFromFrame represents a could not fetch from frame
 	CouldNotFetchFromFrame
+
+	// CouldNotDeleteDatabaseFromService represents a could not delete database from service
+	CouldNotDeleteDatabaseFromService
+
+	// CouldNotSaveDatabaseFromService represents a could not dave database from service
+	CouldNotSaveDatabaseFromService
+
+	// CouldNotFetchDatabaseFromFrame represents a could not fetch database from frame
+	CouldNotFetchDatabaseFromFrame
 )

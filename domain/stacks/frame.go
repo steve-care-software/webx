@@ -6,6 +6,7 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/databases"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/deletes"
@@ -202,8 +203,8 @@ func (obj *frame) FetchDelete(name string) (deletes.Delete, error) {
 	return nil, nil
 }
 
-// FetchPath fetches a path by name
-func (obj *frame) FetchPath(name string) ([]string, error) {
+// FetchDatabase fetches a database by name
+func (obj *frame) FetchDatabase(name string) (databases.Database, error) {
 	return nil, nil
 }
 
