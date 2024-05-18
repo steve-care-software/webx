@@ -45,6 +45,11 @@ func NewAssignmentBuilder() AssignmentBuilder {
 	return createAssignmentBuilder()
 }
 
+// NewAssignablesBuilder creates a new assignables builder
+func NewAssignablesBuilder() AssignablesBuilder {
+	return createAssignablesBuilder()
+}
+
 // NewAssignableBuilder creates a new assignable builder
 func NewAssignableBuilder() AssignableBuilder {
 	return createAssignableBuilder()
@@ -96,7 +101,6 @@ type Frame interface {
 	FetchHash(name string) (hash.Hash, error)
 	FetchBytes(name string) ([]byte, error)
 	FetchUnsignedInt(name string) (*uint, error)
-	FetchStringList(name string) ([]string, error)
 	FetchRing(name string) ([]signers.PublicKey, error)
 	FetchInstance(name string) (instances.Instance, error)
 	FetchEncryptor(name string) (encryptors.Encryptor, error)
@@ -106,7 +110,6 @@ type Frame interface {
 	FetchSignature(name string) (signers.Signature, error)
 	FetchVote(name string) (signers.Vote, error)
 	FetchList(name string) (Assignables, error)
-	FetchModifications(name string) (modifications.Modifications, error)
 	FetchCommit(name string) (commits.Commit, error)
 	FetchString(name string) (string, error)
 	FetchDelete(name string) (deletes.Delete, error)
@@ -163,8 +166,6 @@ type AssignableBuilder interface {
 	WithInt(intVal int) AssignableBuilder
 	WithBytes(bytes []byte) AssignableBuilder
 	WithHash(hash hash.Hash) AssignableBuilder
-	WithHashList(hashList []hash.Hash) AssignableBuilder
-	WithStringList(strList []string) AssignableBuilder
 	WithUnsignedInt(unsignedInt uint) AssignableBuilder
 	WithInstance(ins instances.Instance) AssignableBuilder
 	WithEncryptor(encryptor encryptors.Encryptor) AssignableBuilder
@@ -188,20 +189,40 @@ type Assignable interface {
 	Bool() *bool
 	IsString() bool
 	String() *string
+	IsFloat() bool
+	Float() *float64
+	IsInt() bool
+	Int() *int
 	IsBytes() bool
 	Bytes() []byte
 	IsHash() bool
 	Hash() hash.Hash
-	IsHashList() bool
-	HashList() []hash.Hash
-	IsStringList() bool
-	StringList() []string
 	IsUnsignedInt() bool
 	UnsignedInt() *uint
 	IsInstance() bool
 	Instance() instances.Instance
-	IsModification() bool
-	Modification() modifications.Modification
+	IsEncryptor() bool
+	Encryptor() encryptors.Encryptor
+	IsEncryptorPublicKey() bool
+	EncryptorPublicKey() encryptors.PublicKey
+	IsSigner() bool
+	Signer() signers.Signer
+	IsSignerPublicKey() bool
+	SignerPublicKey() signers.PublicKey
+	IsSignature() bool
+	Signature() signers.Signature
+	IsVote() bool
+	Vote() signers.Vote
+	IsList() bool
+	List() Assignables
 	IsAction() bool
 	Action() actions.Action
+	IsCommit() bool
+	Commit() commits.Commit
+	IsDatabase() bool
+	Database() databases.Database
+	IsDelete() bool
+	Delete() deletes.Delete
+	IsModification() bool
+	Modification() modifications.Modification
 }

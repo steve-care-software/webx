@@ -95,26 +95,6 @@ func NewAssignableWithHashForTests(value hash.Hash) Assignable {
 	return ins
 }
 
-// NewAssignableWithHashListForTests creates a new assignable with hash list for tests
-func NewAssignableWithHashListForTests(value []hash.Hash) Assignable {
-	ins, err := NewAssignableBuilder().Create().WithHashList(value).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewAssignableWithStringListForTests creates a new assignable with string list for tests
-func NewAssignableWithStringListForTests(value []string) Assignable {
-	ins, err := NewAssignableBuilder().Create().WithStringList(value).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
 // NewAssignableWithUnsignedIntForTests creates a new assignable with unsigned int for tests
 func NewAssignableWithUnsignedIntForTests(value uint) Assignable {
 	ins, err := NewAssignableBuilder().Create().WithUnsignedInt(value).Now()

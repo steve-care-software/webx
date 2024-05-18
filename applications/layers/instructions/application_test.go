@@ -708,14 +708,6 @@ func TestExecute_WithCondition_ConditionIsTrue_WithAssignment_ExecutesConditionI
 	conditionVar := "myCondition"
 	conditionValue := true
 
-	pathVar := "myPath"
-	path := []string{
-		"this",
-		"is",
-		"a",
-		"path",
-	}
-
 	stack := stacks.NewStackForTests(
 		stacks.NewFramesForTests([]stacks.Frame{
 			stacks.NewFrameWithAssignmentsForTests(
@@ -737,10 +729,6 @@ func TestExecute_WithCondition_ConditionIsTrue_WithAssignment_ExecutesConditionI
 						stacks.NewAssignableWithBoolForTests(
 							conditionValue,
 						),
-					),
-					stacks.NewAssignmentForTests(
-						pathVar,
-						stacks.NewAssignableWithStringListForTests(path),
 					),
 				}),
 			),

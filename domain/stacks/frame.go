@@ -8,7 +8,6 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/instances/databases"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/deletes"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
@@ -113,21 +112,6 @@ func (obj *frame) FetchUnsignedInt(name string) (*uint, error) {
 	return assignable.UnsignedInt(), nil
 }
 
-// FetchStringList fetches a string list by name
-func (obj *frame) FetchStringList(name string) ([]string, error) {
-	assignable, err := obj.Fetch(name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !assignable.IsStringList() {
-		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a []string", name)
-		return nil, errors.New(str)
-	}
-
-	return assignable.StringList(), nil
-}
-
 // FetchInstance fetches an instance by name
 func (obj *frame) FetchInstance(name string) (instances.Instance, error) {
 	assignable, err := obj.Fetch(name)
@@ -145,67 +129,189 @@ func (obj *frame) FetchInstance(name string) (instances.Instance, error) {
 
 // FetchEncryptor fetches an encryptor by name
 func (obj *frame) FetchEncryptor(name string) (encryptors.Encryptor, error) {
-	return nil, nil
+	assignable, err := obj.Fetch(name)
+	if err != nil {
+		return nil, err
+	}
+
+	if !assignable.IsEncryptor() {
+		str := fmt.Sprintf("the assignable (name: %s) was expected to contain an Encryptor", name)
+		return nil, errors.New(str)
+	}
+
+	return assignable.Encryptor(), nil
 }
 
 // FetchEncryptorPubKey fetches an encryptor pubKey by name
 func (obj *frame) FetchEncryptorPubKey(name string) (encryptors.PublicKey, error) {
-	return nil, nil
+	assignable, err := obj.Fetch(name)
+	if err != nil {
+		return nil, err
+	}
+
+	if !assignable.IsEncryptorPublicKey() {
+		str := fmt.Sprintf("the assignable (name: %s) was expected to contain an Encryptor's PublicKey", name)
+		return nil, errors.New(str)
+	}
+
+	return assignable.EncryptorPublicKey(), nil
 }
 
 // FetchSigner fetches a signer pk by name
 func (obj *frame) FetchSigner(name string) (signers.Signer, error) {
-	return nil, nil
+	assignable, err := obj.Fetch(name)
+	if err != nil {
+		return nil, err
+	}
+
+	if !assignable.IsSigner() {
+		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a Signer", name)
+		return nil, errors.New(str)
+	}
+
+	return assignable.Signer(), nil
 }
 
 // FetchSignerPubKey fetches a signer pubKey by name
 func (obj *frame) FetchSignerPubKey(name string) (signers.PublicKey, error) {
-	return nil, nil
+	assignable, err := obj.Fetch(name)
+	if err != nil {
+		return nil, err
+	}
+
+	if !assignable.IsSignerPublicKey() {
+		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a Signer's PublicKey", name)
+		return nil, errors.New(str)
+	}
+
+	return assignable.SignerPublicKey(), nil
 }
 
 // FetchSignature fetches a signature by name
 func (obj *frame) FetchSignature(name string) (signers.Signature, error) {
-	return nil, nil
+	assignable, err := obj.Fetch(name)
+	if err != nil {
+		return nil, err
+	}
+
+	if !assignable.IsSignature() {
+		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a Signature", name)
+		return nil, errors.New(str)
+	}
+
+	return assignable.Signature(), nil
 }
 
 // FetchVote fetches a vote by name
 func (obj *frame) FetchVote(name string) (signers.Vote, error) {
-	return nil, nil
+	assignable, err := obj.Fetch(name)
+	if err != nil {
+		return nil, err
+	}
+
+	if !assignable.IsVote() {
+		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a Vote", name)
+		return nil, errors.New(str)
+	}
+
+	return assignable.Vote(), nil
 }
 
 // FetchRing fetches a ring by name
 func (obj *frame) FetchRing(name string) ([]signers.PublicKey, error) {
-	return nil, nil
+	assignables, err := obj.FetchList(name)
+	if err != nil {
+		return nil, err
+	}
+
+	list := assignables.List()
+	output := []signers.PublicKey{}
+	for _, oneAssignable := range list {
+		if !oneAssignable.IsSignerPublicKey() {
+			str := fmt.Sprintf("the assignable (name: %s) was expected to contain a Signer's Public Key as its elements", name)
+			return nil, errors.New(str)
+		}
+
+		output = append(output, oneAssignable.SignerPublicKey())
+	}
+
+	return output, nil
 }
 
 // FetchList fetches a list by name
 func (obj *frame) FetchList(name string) (Assignables, error) {
-	return nil, nil
-}
+	assignable, err := obj.Fetch(name)
+	if err != nil {
+		return nil, err
+	}
 
-// FetchModifications fetches a modifications by name
-func (obj *frame) FetchModifications(name string) (modifications.Modifications, error) {
-	return nil, nil
+	if !assignable.IsList() {
+		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a List", name)
+		return nil, errors.New(str)
+	}
+
+	return assignable.List(), nil
 }
 
 // FetchCommit fetches a commit by name
 func (obj *frame) FetchCommit(name string) (commits.Commit, error) {
-	return nil, nil
+	assignable, err := obj.Fetch(name)
+	if err != nil {
+		return nil, err
+	}
+
+	if !assignable.IsCommit() {
+		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a Commit", name)
+		return nil, errors.New(str)
+	}
+
+	return assignable.Commit(), nil
 }
 
 // FetchString fetches a string by name
 func (obj *frame) FetchString(name string) (string, error) {
-	return "", nil
+	assignable, err := obj.Fetch(name)
+	if err != nil {
+		return "", err
+	}
+
+	if !assignable.IsString() {
+		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a String", name)
+		return "", errors.New(str)
+	}
+
+	pString := assignable.String()
+	return *pString, nil
 }
 
 // FetchDelete fetches a delete by name
 func (obj *frame) FetchDelete(name string) (deletes.Delete, error) {
-	return nil, nil
+	assignable, err := obj.Fetch(name)
+	if err != nil {
+		return nil, err
+	}
+
+	if !assignable.IsDelete() {
+		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a Delete", name)
+		return nil, errors.New(str)
+	}
+
+	return assignable.Delete(), nil
 }
 
 // FetchDatabase fetches a database by name
 func (obj *frame) FetchDatabase(name string) (databases.Database, error) {
-	return nil, nil
+	assignable, err := obj.Fetch(name)
+	if err != nil {
+		return nil, err
+	}
+
+	if !assignable.IsDatabase() {
+		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a Database", name)
+		return nil, errors.New(str)
+	}
+
+	return assignable.Database(), nil
 }
 
 // HasAssignments returns true if there is assignments, false otherwise

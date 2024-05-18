@@ -21,14 +21,12 @@ type assignableBuilder struct {
 	pInt            *int
 	bytes           []byte
 	hash            hash.Hash
-	hashList        []hash.Hash
-	stringList      []string
 	pUnsignedInt    *uint
 	instance        instances.Instance
 	encryptor       encryptors.Encryptor
-	encryptorPubKey encryptors.PublicKey
+	encPublicKey    encryptors.PublicKey
 	signer          signers.Signer
-	signerPubKey    signers.PublicKey
+	signerPublicKey signers.PublicKey
 	signature       signers.Signature
 	vote            signers.Vote
 	list            Assignables
@@ -47,17 +45,20 @@ func createAssignableBuilder() AssignableBuilder {
 		pInt:            nil,
 		bytes:           nil,
 		hash:            nil,
-		hashList:        nil,
-		stringList:      nil,
 		pUnsignedInt:    nil,
 		instance:        nil,
 		encryptor:       nil,
-		encryptorPubKey: nil,
+		encPublicKey:    nil,
 		signer:          nil,
-		signerPubKey:    nil,
+		signerPublicKey: nil,
 		signature:       nil,
 		vote:            nil,
 		list:            nil,
+		action:          nil,
+		commit:          nil,
+		database:        nil,
+		delete:          nil,
+		modification:    nil,
 	}
 
 	return &out
@@ -74,7 +75,7 @@ func (app *assignableBuilder) WithBool(boolValue bool) AssignableBuilder {
 	return app
 }
 
-// WithString adds a bool to the builder
+// WithString adds a string to the builder
 func (app *assignableBuilder) WithString(stringValue string) AssignableBuilder {
 	app.pString = &stringValue
 	return app
@@ -104,97 +105,85 @@ func (app *assignableBuilder) WithHash(hash hash.Hash) AssignableBuilder {
 	return app
 }
 
-// WithHashList adds an hash list to the builder
-func (app *assignableBuilder) WithHashList(hashList []hash.Hash) AssignableBuilder {
-	app.hashList = hashList
-	return app
-}
-
-// WithStringList adds a string list to the builder
-func (app *assignableBuilder) WithStringList(strList []string) AssignableBuilder {
-	app.stringList = strList
-	return app
-}
-
-// WithUnsignedInt adds an uint to the builder
+// WithUnsignedInt add unsigned int to the builder
 func (app *assignableBuilder) WithUnsignedInt(unsignedInt uint) AssignableBuilder {
 	app.pUnsignedInt = &unsignedInt
 	return app
 }
 
-// WithInstance adds an instance to the builder
-func (app *assignableBuilder) WithInstance(instance instances.Instance) AssignableBuilder {
-	app.instance = instance
+// WithInstance adds instanxce to the builder
+func (app *assignableBuilder) WithInstance(ins instances.Instance) AssignableBuilder {
+	app.instance = ins
 	return app
 }
 
-// WithEncryptor adds an encryptor to the builder
+// WithEncryptor adds encryptor to the builder
 func (app *assignableBuilder) WithEncryptor(encryptor encryptors.Encryptor) AssignableBuilder {
 	app.encryptor = encryptor
 	return app
 }
 
-// WithEncryptorPubKey adds an encryptor pubKey to the builder
+// WithEncryptorPubKey adds encryptor public key to the builder
 func (app *assignableBuilder) WithEncryptorPubKey(encryptorPubKey encryptors.PublicKey) AssignableBuilder {
-	app.encryptorPubKey = encryptorPubKey
+	app.encPublicKey = encryptorPubKey
 	return app
 }
 
-// WithSigner adds a signer pk to the builder
+// WithSigner adds signer to the builder
 func (app *assignableBuilder) WithSigner(signer signers.Signer) AssignableBuilder {
 	app.signer = signer
 	return app
 }
 
-// WithSignerPubKey adds a signer pubKey to the builder
+// WithSignerPubKey adds signer public key to the builder
 func (app *assignableBuilder) WithSignerPubKey(signerPubKey signers.PublicKey) AssignableBuilder {
-	app.signerPubKey = signerPubKey
+	app.signerPublicKey = signerPubKey
 	return app
 }
 
-// WithSignature adds a signature to the builder
+// WithSignature adds signature to the builder
 func (app *assignableBuilder) WithSignature(signature signers.Signature) AssignableBuilder {
 	app.signature = signature
 	return app
 }
 
-// WithVote adds a vote to the builder
+// WithVote adds vote to the builder
 func (app *assignableBuilder) WithVote(vote signers.Vote) AssignableBuilder {
 	app.vote = vote
 	return app
 }
 
-// WithList adds a list to the builder
+// WithList adds list to the builder
 func (app *assignableBuilder) WithList(list Assignables) AssignableBuilder {
 	app.list = list
 	return app
 }
 
-// WithAction adds an action to the builder
+// WithAction adds action to the builder
 func (app *assignableBuilder) WithAction(action actions.Action) AssignableBuilder {
 	app.action = action
 	return app
 }
 
-// WithCommit adds a commit to the builder
+// WithCommit adds commit to the builder
 func (app *assignableBuilder) WithCommit(commit commits.Commit) AssignableBuilder {
 	app.commit = commit
 	return app
 }
 
-// WithDatabase adds a database to the builder
+// WithDatabase adds database to the builder
 func (app *assignableBuilder) WithDatabase(database databases.Database) AssignableBuilder {
 	app.database = database
 	return app
 }
 
-// WithDelete adds a delete to the builder
+// WithDelete adds delete to the builder
 func (app *assignableBuilder) WithDelete(delete deletes.Delete) AssignableBuilder {
 	app.delete = delete
 	return app
 }
 
-// WithModification adds a modification to the builder
+// WithModification adds modification to the builder
 func (app *assignableBuilder) WithModification(modification modifications.Modification) AssignableBuilder {
 	app.modification = modification
 	return app
@@ -206,40 +195,24 @@ func (app *assignableBuilder) Now() (Assignable, error) {
 		return createAssignableWithBool(app.pBool), nil
 	}
 
-	if app.bytes != nil && len(app.bytes) <= 0 {
-		app.bytes = nil
+	if app.pString != nil {
+		return createAssignableWithString(app.pString), nil
+	}
+
+	if app.pFloat != nil {
+		return createAssignableWithFloat(app.pFloat), nil
+	}
+
+	if app.pInt != nil {
+		return createAssignableWithInt(app.pInt), nil
 	}
 
 	if app.bytes != nil {
 		return createAssignableWithBytes(app.bytes), nil
 	}
 
-	if app.pString != nil {
-
-	}
-
-	if app.pFloat != nil {
-
-	}
-
-	if app.pInt != nil {
-
-	}
-
 	if app.hash != nil {
 		return createAssignableWithHash(app.hash), nil
-	}
-
-	if app.hashList != nil && len(app.hashList) <= 0 {
-		app.hashList = nil
-	}
-
-	if app.hashList != nil {
-		return createAssignableWithHashList(app.hashList), nil
-	}
-
-	if app.stringList != nil {
-		return createAssignableWithStringList(app.stringList), nil
 	}
 
 	if app.pUnsignedInt != nil {
@@ -251,31 +224,51 @@ func (app *assignableBuilder) Now() (Assignable, error) {
 	}
 
 	if app.encryptor != nil {
-
+		return createAssignableWithEncryptor(app.encryptor), nil
 	}
 
-	if app.encryptorPubKey != nil {
-
+	if app.encPublicKey != nil {
+		return createAssignableWithEncryptorPublicKey(app.encPublicKey), nil
 	}
 
 	if app.signer != nil {
-
+		return createAssignableWithSigner(app.signer), nil
 	}
 
-	if app.signerPubKey != nil {
-
+	if app.signerPublicKey != nil {
+		return createAssignableWithSignerPublicKey(app.signerPublicKey), nil
 	}
 
 	if app.signature != nil {
-
+		return createAssignableWithSignature(app.signature), nil
 	}
 
 	if app.vote != nil {
-
+		return createAssignableWithVote(app.vote), nil
 	}
 
 	if app.list != nil {
+		return createAssignableWithList(app.list), nil
+	}
 
+	if app.action != nil {
+		return createAssignableWithAction(app.action), nil
+	}
+
+	if app.commit != nil {
+		return createAssignableWithCommit(app.commit), nil
+	}
+
+	if app.database != nil {
+		return createAssignableWithDatabase(app.database), nil
+	}
+
+	if app.delete != nil {
+		return createAssignableWithDelete(app.delete), nil
+	}
+
+	if app.modification != nil {
+		return createAssignableWithModification(app.modification), nil
 	}
 
 	return nil, errors.New("the Assignable is invalid")
