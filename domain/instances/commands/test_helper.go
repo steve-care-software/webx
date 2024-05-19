@@ -2,6 +2,7 @@ package commands
 
 import (
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
 	"github.com/steve-care-software/datastencil/domain/instances/links"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers"
 )
@@ -17,8 +18,8 @@ func NewCommandsForTests(list []Command) Commands {
 }
 
 // NewCommandForTests creates a new command for tests
-func NewCommandForTests(input []byte, layer layers.Layer, result results.Result, parent Link) Command {
-	ins, err := NewCommandBuilder().Create().WithInput(input).WithLayer(layer).WithResult(result).WithParent(parent).Now()
+func NewCommandForTests(input []byte, layer layers.Layer, result results.Result, parent Link, head commits.Commit) Command {
+	ins, err := NewCommandBuilder().Create().WithInput(input).WithLayer(layer).WithResult(result).WithParent(parent).WithHead(head).Now()
 	if err != nil {
 		panic(err)
 	}

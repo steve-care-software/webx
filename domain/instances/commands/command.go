@@ -3,6 +3,7 @@ package commands
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers"
 )
 
@@ -12,6 +13,7 @@ type command struct {
 	layer  layers.Layer
 	result results.Result
 	parent Link
+	head   commits.Commit
 }
 
 func createCommand(
@@ -20,6 +22,7 @@ func createCommand(
 	layer layers.Layer,
 	result results.Result,
 	parent Link,
+	head commits.Commit,
 ) Command {
 	return createCommandInternally(
 		hash,
@@ -27,6 +30,7 @@ func createCommand(
 		layer,
 		result,
 		parent,
+		head,
 	)
 }
 
@@ -36,6 +40,7 @@ func createCommandInternally(
 	layer layers.Layer,
 	result results.Result,
 	parent Link,
+	head commits.Commit,
 ) Command {
 	out := command{
 		hash:   hash,
@@ -43,6 +48,7 @@ func createCommandInternally(
 		layer:  layer,
 		result: result,
 		parent: parent,
+		head:   head,
 	}
 
 	return &out
@@ -71,4 +77,9 @@ func (obj *command) Result() results.Result {
 // Parent returns the parent, if any
 func (obj *command) Parent() Link {
 	return obj.parent
+}
+
+// Head returns the head, if any
+func (obj *command) Head() commits.Commit {
+	return obj.head
 }

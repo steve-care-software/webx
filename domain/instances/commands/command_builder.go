@@ -5,6 +5,7 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers"
 )
 
@@ -14,6 +15,7 @@ type commandBuilder struct {
 	layer       layers.Layer
 	result      results.Result
 	parent      Link
+	head        commits.Commit
 }
 
 func createCommandBuilder(
@@ -25,6 +27,7 @@ func createCommandBuilder(
 		layer:       nil,
 		result:      nil,
 		parent:      nil,
+		head:        nil,
 	}
 
 	return &out
@@ -61,6 +64,12 @@ func (app *commandBuilder) WithParent(parent Link) CommandBuilder {
 	return app
 }
 
+// WithHead adds a head to the builder
+func (app *commandBuilder) WithHead(head commits.Commit) CommandBuilder {
+	app.head = head
+	return app
+}
+
 // Now builds a new Command instance
 func (app *commandBuilder) Now() (Command, error) {
 	if app.input != nil && len(app.input) <= 0 {
@@ -83,11 +92,16 @@ func (app *commandBuilder) Now() (Command, error) {
 		return nil, errors.New("the parent is mandatory in order to build a Command instance")
 	}
 
+	if app.head == nil {
+		return nil, errors.New("the head commit is mandatory in order to build a Command instance")
+	}
+
 	data := [][]byte{
 		app.input,
 		app.layer.Hash().Bytes(),
 		app.result.Hash().Bytes(),
 		app.parent.Hash().Bytes(),
+		app.head.Hash().Bytes(),
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes(data)
@@ -95,5 +109,5 @@ func (app *commandBuilder) Now() (Command, error) {
 		return nil, err
 	}
 
-	return createCommand(*pHash, app.input, app.layer, app.result, app.parent), nil
+	return createCommand(*pHash, app.input, app.layer, app.result, app.parent, app.head), nil
 }

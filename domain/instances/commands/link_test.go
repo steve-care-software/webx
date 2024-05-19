@@ -6,6 +6,10 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/deletes"
 	"github.com/steve-care-software/datastencil/domain/instances/links"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers"
@@ -89,6 +93,23 @@ func TestLink_withCommand_Success(t *testing.T) {
 					),
 				}),
 			),
+		),
+		commits.NewCommitForTests(
+			"This is a description",
+			actions.NewActionsForTests([]actions.Action{
+				actions.NewActionWithModificationsForTests(
+					[]string{"this", "is", "a", "path"},
+					modifications.NewModificationsForTests([]modifications.Modification{
+						modifications.NewModificationWithInsertForTests([]byte("some data to insert")),
+						modifications.NewModificationWithDeleteForTests(
+							deletes.NewDeleteForTests(
+								0,
+								50,
+							),
+						),
+					}),
+				),
+			}),
 		),
 	)
 
@@ -184,6 +205,23 @@ func TestLink_withoutInput_returnsError(t *testing.T) {
 				}),
 			),
 		),
+		commits.NewCommitForTests(
+			"This is a description",
+			actions.NewActionsForTests([]actions.Action{
+				actions.NewActionWithModificationsForTests(
+					[]string{"this", "is", "a", "path"},
+					modifications.NewModificationsForTests([]modifications.Modification{
+						modifications.NewModificationWithInsertForTests([]byte("some data to insert")),
+						modifications.NewModificationWithDeleteForTests(
+							deletes.NewDeleteForTests(
+								0,
+								50,
+							),
+						),
+					}),
+				),
+			}),
+		),
 	)
 
 	_, err := NewLinkBuilder().Create().WithLink(link).WithCommand(command).Now()
@@ -241,6 +279,23 @@ func TestLink_withoutLink_returnsError(t *testing.T) {
 					),
 				}),
 			),
+		),
+		commits.NewCommitForTests(
+			"This is a description",
+			actions.NewActionsForTests([]actions.Action{
+				actions.NewActionWithModificationsForTests(
+					[]string{"this", "is", "a", "path"},
+					modifications.NewModificationsForTests([]modifications.Modification{
+						modifications.NewModificationWithInsertForTests([]byte("some data to insert")),
+						modifications.NewModificationWithDeleteForTests(
+							deletes.NewDeleteForTests(
+								0,
+								50,
+							),
+						),
+					}),
+				),
+			}),
 		),
 	)
 

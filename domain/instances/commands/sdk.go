@@ -3,6 +3,7 @@ package commands
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
 	"github.com/steve-care-software/datastencil/domain/instances/links"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers"
 )
@@ -53,6 +54,7 @@ type CommandBuilder interface {
 	WithLayer(layer layers.Layer) CommandBuilder
 	WithResult(result results.Result) CommandBuilder
 	WithParent(parent Link) CommandBuilder
+	WithHead(head commits.Commit) CommandBuilder
 	Now() (Command, error)
 }
 
@@ -63,6 +65,7 @@ type Command interface {
 	Layer() layers.Layer
 	Result() results.Result
 	Parent() Link
+	Head() commits.Commit
 }
 
 // LinkBuilder represents a link builder
