@@ -1,23 +1,23 @@
-package results
+package success
 
 import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/commands/results/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/commands/results/success/outputs"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/outputs/kinds"
 )
 
-type successBuilder struct {
+type builder struct {
 	hashAdapter hash.Adapter
 	output      outputs.Output
 	kind        kinds.Kind
 }
 
-func createSuccessBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) SuccessBuilder {
-	out := successBuilder{
+) Builder {
+	out := builder{
 		hashAdapter: hashAdapter,
 		output:      nil,
 		kind:        nil,
@@ -27,26 +27,26 @@ func createSuccessBuilder(
 }
 
 // Create initializes the builder
-func (app *successBuilder) Create() SuccessBuilder {
-	return createSuccessBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithOutput adds an output to the builder
-func (app *successBuilder) WithOutput(output outputs.Output) SuccessBuilder {
+func (app *builder) WithOutput(output outputs.Output) Builder {
 	app.output = output
 	return app
 }
 
 // WithKind add kind to the builder
-func (app *successBuilder) WithKind(kind kinds.Kind) SuccessBuilder {
+func (app *builder) WithKind(kind kinds.Kind) Builder {
 	app.kind = kind
 	return app
 }
 
 // Now builds a new Success instance
-func (app *successBuilder) Now() (Success, error) {
+func (app *builder) Now() (Success, error) {
 	if app.output == nil {
 		return nil, errors.New("the output is mandatory in order to build a Success instance")
 	}

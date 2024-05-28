@@ -5,11 +5,12 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions"
+	"github.com/steve-care-software/datastencil/domain/instances/commands/results/success"
 )
 
 type builder struct {
 	hashAdapter  hash.Adapter
-	success      Success
+	success      success.Success
 	interruption interruptions.Interruption
 }
 
@@ -33,7 +34,7 @@ func (app *builder) Create() Builder {
 }
 
 // WithSuccess adds a success to the builder
-func (app *builder) WithSuccess(success Success) Builder {
+func (app *builder) WithSuccess(success success.Success) Builder {
 	app.success = success
 	return app
 }

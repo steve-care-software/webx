@@ -2,8 +2,7 @@ package results
 
 import (
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions"
-	"github.com/steve-care-software/datastencil/domain/instances/commands/results/outputs"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/outputs/kinds"
+	"github.com/steve-care-software/datastencil/domain/instances/commands/results/success"
 )
 
 // NewResultWithInterruptionForTests creates a new result with interruption for tests
@@ -17,18 +16,8 @@ func NewResultWithInterruptionForTests(interruption interruptions.Interruption) 
 }
 
 // NewResultWithSuccessForTests creates a new result with success for tests
-func NewResultWithSuccessForTests(success Success) Result {
+func NewResultWithSuccessForTests(success success.Success) Result {
 	ins, err := NewBuilder().Create().WithSuccess(success).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewSuccessForTests creates a new success for tests
-func NewSuccessForTests(output outputs.Output, kind kinds.Kind) Success {
-	ins, err := NewSuccessBuilder().Create().WithOutput(output).WithKind(kind).Now()
 	if err != nil {
 		panic(err)
 	}

@@ -3,8 +3,7 @@ package results
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions"
-	"github.com/steve-care-software/datastencil/domain/instances/commands/results/outputs"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/outputs/kinds"
+	"github.com/steve-care-software/datastencil/domain/instances/commands/results/success"
 )
 
 const (
@@ -29,14 +28,6 @@ func NewBuilder() Builder {
 	)
 }
 
-// NewSuccessBuilder creates a new success builder
-func NewSuccessBuilder() SuccessBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createSuccessBuilder(
-		hashAdapter,
-	)
-}
-
 // Adapter represents the result adapter
 type Adapter interface {
 	ToBytes(ins Result) ([]byte, error)
@@ -46,7 +37,7 @@ type Adapter interface {
 // Builder represents the result builder
 type Builder interface {
 	Create() Builder
-	WithSuccess(success Success) Builder
+	WithSuccess(success success.Success) Builder
 	WithInterruption(interruption interruptions.Interruption) Builder
 	Now() (Result, error)
 }
@@ -55,22 +46,7 @@ type Builder interface {
 type Result interface {
 	Hash() hash.Hash
 	IsSuccess() bool
-	Success() Success
+	Success() success.Success
 	IsInterruption() bool
 	Interruption() interruptions.Interruption
-}
-
-// SuccessBuilder represents the success builder
-type SuccessBuilder interface {
-	Create() SuccessBuilder
-	WithOutput(output outputs.Output) SuccessBuilder
-	WithKind(kind kinds.Kind) SuccessBuilder
-	Now() (Success, error)
-}
-
-// Success represents success result
-type Success interface {
-	Hash() hash.Hash
-	Output() outputs.Output
-	Kind() kinds.Kind
 }

@@ -3,17 +3,18 @@ package results
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions"
+	"github.com/steve-care-software/datastencil/domain/instances/commands/results/success"
 )
 
 type result struct {
 	hash         hash.Hash
-	success      Success
+	success      success.Success
 	interruption interruptions.Interruption
 }
 
 func createResultWithSuccess(
 	hash hash.Hash,
-	success Success,
+	success success.Success,
 ) Result {
 	return createResultInternally(hash, success, nil)
 }
@@ -27,7 +28,7 @@ func createResultWithInterruption(
 
 func createResultInternally(
 	hash hash.Hash,
-	success Success,
+	success success.Success,
 	interruption interruptions.Interruption,
 ) Result {
 	out := result{
@@ -50,7 +51,7 @@ func (obj *result) IsSuccess() bool {
 }
 
 // Success returns the success, if any
-func (obj *result) Success() Success {
+func (obj *result) Success() success.Success {
 	return obj.success
 }
 

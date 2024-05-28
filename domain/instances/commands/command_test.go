@@ -6,7 +6,8 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
-	commands_outputs "github.com/steve-care-software/datastencil/domain/instances/commands/results/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/commands/results/success"
+	commands_outputs "github.com/steve-care-software/datastencil/domain/instances/commands/results/success/outputs"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
@@ -36,7 +37,7 @@ func TestCommand_Success(t *testing.T) {
 	)
 
 	result := results.NewResultWithSuccessForTests(
-		results.NewSuccessForTests(
+		success.NewSuccessForTests(
 			commands_outputs.NewOutputForTests([]byte("this is some bytes")),
 			kinds.NewKindWithPromptForTests(),
 		),
@@ -83,7 +84,7 @@ func TestCommand_Success(t *testing.T) {
 				"someInput",
 			),
 			results.NewResultWithSuccessForTests(
-				results.NewSuccessForTests(
+				success.NewSuccessForTests(
 					commands_outputs.NewOutputForTests([]byte("this is some bytes")),
 					kinds.NewKindWithPromptForTests(),
 				),
@@ -197,7 +198,7 @@ func TestCommand_withoutParent_returnsError(t *testing.T) {
 	)
 
 	result := results.NewResultWithSuccessForTests(
-		results.NewSuccessForTests(
+		success.NewSuccessForTests(
 			commands_outputs.NewOutputForTests([]byte("this is some bytes")),
 			kinds.NewKindWithPromptForTests(),
 		),
@@ -223,7 +224,7 @@ func TestCommand_withoutInput_returnsError(t *testing.T) {
 	)
 
 	result := results.NewResultWithSuccessForTests(
-		results.NewSuccessForTests(
+		success.NewSuccessForTests(
 			commands_outputs.NewOutputForTests([]byte("this is some bytes")),
 			kinds.NewKindWithPromptForTests(),
 		),
@@ -249,7 +250,7 @@ func TestCommand_withEmptyInput_returnsError(t *testing.T) {
 	)
 
 	result := results.NewResultWithSuccessForTests(
-		results.NewSuccessForTests(
+		success.NewSuccessForTests(
 			commands_outputs.NewOutputForTests([]byte("this is some bytes")),
 			kinds.NewKindWithPromptForTests(),
 		),
@@ -265,7 +266,7 @@ func TestCommand_withEmptyInput_returnsError(t *testing.T) {
 func TestCommand_withoutLayer_returnsError(t *testing.T) {
 	input := []byte("this is the command input")
 	result := results.NewResultWithSuccessForTests(
-		results.NewSuccessForTests(
+		success.NewSuccessForTests(
 			commands_outputs.NewOutputForTests([]byte("this is some bytes")),
 			kinds.NewKindWithPromptForTests(),
 		),

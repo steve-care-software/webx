@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 
-	"github.com/steve-care-software/datastencil/domain/instances/commands/results/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/commands/results/success/outputs"
 )
 
 // Adapter represents an adapter

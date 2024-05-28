@@ -1,10 +1,10 @@
-package results
+package success
 
 import (
 	"reflect"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/instances/commands/results/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/commands/results/success/outputs"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/outputs/kinds"
 )
 
@@ -27,7 +27,7 @@ func TestSuccess_Success(t *testing.T) {
 
 func TestSuccess_withoutOutput_returnsError(t *testing.T) {
 	kind := kinds.NewKindWithPromptForTests()
-	_, err := NewSuccessBuilder().Create().WithKind(kind).Now()
+	_, err := NewBuilder().Create().WithKind(kind).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
@@ -36,7 +36,7 @@ func TestSuccess_withoutOutput_returnsError(t *testing.T) {
 
 func TestSuccess_withoutKind_returnsError(t *testing.T) {
 	value := outputs.NewOutputForTests([]byte("this is some bytes"))
-	_, err := NewSuccessBuilder().Create().WithOutput(value).Now()
+	_, err := NewBuilder().Create().WithOutput(value).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

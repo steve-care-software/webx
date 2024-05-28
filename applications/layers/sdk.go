@@ -4,7 +4,8 @@ import (
 	applications_instructions "github.com/steve-care-software/datastencil/applications/layers/instructions"
 	"github.com/steve-care-software/datastencil/domain/instances/commands"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
-	"github.com/steve-care-software/datastencil/domain/instances/commands/results/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/commands/results/success"
+	"github.com/steve-care-software/datastencil/domain/instances/commands/results/success/outputs"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
@@ -22,7 +23,7 @@ func NewApplication(
 	assignmentBuilder := stacks.NewAssignmentBuilder()
 	assignableBuilder := stacks.NewAssignableBuilder()
 	resultBuilder := results.NewBuilder()
-	successBuilder := results.NewSuccessBuilder()
+	successBuilder := success.NewBuilder()
 	outputBuilder := outputs.NewBuilder()
 	return createApplication(
 		execInsApp,

@@ -6,7 +6,8 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
-	commands_outputs "github.com/steve-care-software/datastencil/domain/instances/commands/results/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/commands/results/success"
+	commands_outputs "github.com/steve-care-software/datastencil/domain/instances/commands/results/success/outputs"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
@@ -64,7 +65,7 @@ func TestLink_withCommand_Success(t *testing.T) {
 			"someInput",
 		),
 		results.NewResultWithSuccessForTests(
-			results.NewSuccessForTests(
+			success.NewSuccessForTests(
 				commands_outputs.NewOutputForTests([]byte("this is some bytes")),
 				kinds.NewKindWithPromptForTests(),
 			),
@@ -175,7 +176,7 @@ func TestLink_withoutInput_returnsError(t *testing.T) {
 			"someInput",
 		),
 		results.NewResultWithSuccessForTests(
-			results.NewSuccessForTests(
+			success.NewSuccessForTests(
 				commands_outputs.NewOutputForTests([]byte("this is some bytes")),
 				kinds.NewKindWithPromptForTests(),
 			),
@@ -250,7 +251,7 @@ func TestLink_withoutLink_returnsError(t *testing.T) {
 			"someInput",
 		),
 		results.NewResultWithSuccessForTests(
-			results.NewSuccessForTests(
+			success.NewSuccessForTests(
 				commands_outputs.NewOutputForTests([]byte("this is some bytes")),
 				kinds.NewKindWithPromptForTests(),
 			),
