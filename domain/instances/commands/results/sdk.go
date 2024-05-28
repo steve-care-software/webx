@@ -6,20 +6,6 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results/success"
 )
 
-const (
-	// InputNotFoundError represents an input not found error
-	InputNotFoundError (uint) = 1
-
-	// InputNotBytesError represents an input not bytes error
-	InputNotBytesError
-
-	// OutputNotFoundError represents an output not found error
-	OutputNotFoundError
-
-	// OutputNotBytesError represents an output not bytes error
-	OutputNotBytesError
-)
-
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
 	hashAdapter := hash.NewAdapter()
