@@ -42,7 +42,7 @@ func (obj *output) Hash() hash.Hash {
 	return obj.hash
 }
 
-// Value retruns the hash
+// Value retruns the value
 func (obj *output) Value() []byte {
 	if obj.execute != nil {
 		return obj.execute
