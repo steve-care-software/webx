@@ -14,6 +14,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the success adapter
+type Adapter interface {
+	ToBytes(ins Success) ([]byte, error)
+	ToInstance(bytes []byte) (Success, error)
+}
+
 // Builder represents the success builder
 type Builder interface {
 	Create() Builder
