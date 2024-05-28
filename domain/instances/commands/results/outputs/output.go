@@ -1,4 +1,4 @@
-package results
+package outputs
 
 import "github.com/steve-care-software/datastencil/domain/hash"
 

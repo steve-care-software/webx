@@ -5,12 +5,13 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions"
+	"github.com/steve-care-software/datastencil/domain/instances/commands/results/outputs"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/outputs/kinds"
 )
 
 func TestResult_withSuccess_Success(t *testing.T) {
 	success := NewSuccessForTests(
-		NewOutputForTests([]byte("this is some bytes")),
+		outputs.NewOutputForTests([]byte("this is some bytes")),
 		kinds.NewKindWithPromptForTests(),
 	)
 

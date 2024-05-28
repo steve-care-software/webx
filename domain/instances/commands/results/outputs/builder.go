@@ -1,4 +1,4 @@
-package results
+package outputs
 
 import (
 	"errors"
@@ -6,16 +6,16 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
-type outputBuilder struct {
+type builder struct {
 	hashAdapter hash.Adapter
 	input       []byte
 	execute     []byte
 }
 
-func createOutputBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) OutputBuilder {
-	out := outputBuilder{
+) Builder {
+	out := builder{
 		hashAdapter: hashAdapter,
 		input:       nil,
 		execute:     nil,
@@ -25,26 +25,26 @@ func createOutputBuilder(
 }
 
 // Create initializes the builder
-func (app *outputBuilder) Create() OutputBuilder {
-	return createOutputBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithInput adds an input to the builder
-func (app *outputBuilder) WithInput(input []byte) OutputBuilder {
+func (app *builder) WithInput(input []byte) Builder {
 	app.input = input
 	return app
 }
 
 // WithExecute adds an execute to the builder
-func (app *outputBuilder) WithExecute(execute []byte) OutputBuilder {
+func (app *builder) WithExecute(execute []byte) Builder {
 	app.execute = execute
 	return app
 }
 
 // Now builds a new Output instance
-func (app *outputBuilder) Now() (Output, error) {
+func (app *builder) Now() (Output, error) {
 	if app.input != nil && len(app.input) <= 0 {
 		app.input = nil
 	}

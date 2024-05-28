@@ -8,6 +8,7 @@ import (
 	"github.com/steve-care-software/datastencil/applications/layers/instructions"
 	"github.com/steve-care-software/datastencil/domain/instances/commands"
 	"github.com/steve-care-software/datastencil/domain/instances/commands/results"
+	"github.com/steve-care-software/datastencil/domain/instances/commands/results/outputs"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
@@ -23,7 +24,7 @@ type application struct {
 	assignableBuilder  stacks.AssignableBuilder
 	resultBuilder      results.Builder
 	successBuilder     results.SuccessBuilder
-	outputBuilder      results.OutputBuilder
+	outputBuilder      outputs.Builder
 	tempBaseDir        string
 }
 
@@ -38,7 +39,7 @@ func createApplication(
 	assignableBuilder stacks.AssignableBuilder,
 	resultBuilder results.Builder,
 	successBuilder results.SuccessBuilder,
-	outputBuilder results.OutputBuilder,
+	outputBuilder outputs.Builder,
 	tempBaseDir string,
 ) Application {
 	out := application{
