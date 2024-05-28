@@ -13,6 +13,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the interruption adapter
+type Adapter interface {
+	ToBytes(ins Interruption) ([]byte, error)
+	ToInstance(bytes []byte) (Interruption, error)
+}
+
 // Builder represents an interruption builder
 type Builder interface {
 	Create() Builder
