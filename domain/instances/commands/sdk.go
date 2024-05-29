@@ -32,6 +32,12 @@ func NewLinkBuilder() LinkBuilder {
 	)
 }
 
+// Adapter represents the commands adapter
+type Adapter interface {
+	ToBytes(ins Commands) ([]byte, error)
+	ToInstance(bytes []byte) (Commands, error)
+}
+
 // Builder represents a commands builder
 type Builder interface {
 	Create() Builder
