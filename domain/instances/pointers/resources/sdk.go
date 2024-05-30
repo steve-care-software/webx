@@ -6,6 +6,22 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
+// NewResourceBuilder creates a new resource builder
+func NewResourceBuilder() ResourceBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createResourceBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder represents a resources builder
 type Builder interface {
 	Create() Builder
