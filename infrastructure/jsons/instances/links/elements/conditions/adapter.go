@@ -3,7 +3,7 @@ package conditions
 import (
 	"encoding/json"
 
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/conditions"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/elements/conditions"
 	json_resources "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/conditions/resources"
 )
 

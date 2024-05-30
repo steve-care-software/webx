@@ -3,7 +3,7 @@ package compilers
 import (
 	"encoding/json"
 
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/compilers"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/assignments/assignables/compilers"
 )
 
 // Adapter represents an adapter

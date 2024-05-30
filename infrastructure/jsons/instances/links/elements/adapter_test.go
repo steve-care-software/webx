@@ -4,16 +4,16 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/conditions"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/conditions/resources"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables"
-	bytes_domain "github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/bytes"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/outputs"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/outputs/kinds"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/assignments"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/assignments/assignables"
+	bytes_domain "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/outputs/kinds"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/elements"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/elements/conditions"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/elements/conditions/resources"
 )
 
 func TestAdapter_Success(t *testing.T) {

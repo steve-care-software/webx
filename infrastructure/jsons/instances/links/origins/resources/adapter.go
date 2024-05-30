@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/links/origins/resources"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/origins/resources"
 )
 
 // Adapter represents an adapter

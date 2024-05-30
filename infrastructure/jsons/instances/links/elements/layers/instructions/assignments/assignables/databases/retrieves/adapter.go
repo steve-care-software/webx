@@ -3,7 +3,7 @@ package retrieves
 import (
 	"encoding/json"
 
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/databases/retrieves"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/assignments/assignables/databases/retrieves"
 )
 
 // Adapter represents a retrieve adapter

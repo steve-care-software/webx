@@ -3,7 +3,7 @@ package databases
 import (
 	"encoding/json"
 
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/databases"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/databases"
 )
 
 type Adapter struct {

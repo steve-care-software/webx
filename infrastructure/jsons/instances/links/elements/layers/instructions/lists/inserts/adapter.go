@@ -3,7 +3,7 @@ package inserts
 import (
 	"encoding/json"
 
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/lists/inserts"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/lists/inserts"
 )
 
 // Adapter represents an insert adapter

@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables"
-	bytes_domain "github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/bytes"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/databases"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/lists"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/lists/inserts"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/assignments"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/assignments/assignables"
+	bytes_domain "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/databases"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/lists"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/lists/inserts"
 )
 
 func TestAdapter_Success(t *testing.T) {

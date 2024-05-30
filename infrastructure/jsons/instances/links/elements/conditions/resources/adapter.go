@@ -3,7 +3,7 @@ package resources
 import (
 	"encoding/json"
 
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/conditions/resources"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/elements/conditions/resources"
 )
 
 // Adapter represents the adapter

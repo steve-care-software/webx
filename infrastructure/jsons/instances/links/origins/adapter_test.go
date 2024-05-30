@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/links/origins"
-	"github.com/steve-care-software/datastencil/domain/instances/links/origins/operators"
-	"github.com/steve-care-software/datastencil/domain/instances/links/origins/resources"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/origins"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/origins/operators"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/origins/resources"
 )
 
 func TestAdapter_withResource_Success(t *testing.T) {

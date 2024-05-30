@@ -3,7 +3,7 @@ package outputs
 import (
 	"encoding/json"
 
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/outputs"
 	json_kinds "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/outputs/kinds"
 )
 

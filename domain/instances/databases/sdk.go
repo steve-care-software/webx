@@ -3,6 +3,7 @@ package databases
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/heads"
 )
 
 // NewBuilder creates a new builder
@@ -22,20 +23,16 @@ type Adapter interface {
 // Builder represents a database builder
 type Builder interface {
 	Create() Builder
-	WithPath(path []string) Builder
-	WithDescription(description string) Builder
-	WithHead(head commits.Commit) Builder
-	IsActive() Builder
+	WithCommit(commit commits.Commit) Builder
+	WithHead(head heads.Head) Builder
 	Now() (Database, error)
 }
 
 // Database represents a database
 type Database interface {
 	Hash() hash.Hash
-	Path() []string
-	Description() string
-	Head() commits.Commit
-	IsActive() bool
+	Commit() commits.Commit
+	Head() heads.Head
 }
 
 // Repository represents a database repository

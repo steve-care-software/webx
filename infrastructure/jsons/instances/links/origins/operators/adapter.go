@@ -3,7 +3,7 @@ package operators
 import (
 	"encoding/json"
 
-	"github.com/steve-care-software/datastencil/domain/instances/links/origins/operators"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/origins/operators"
 )
 
 // Adapter represents the adapter

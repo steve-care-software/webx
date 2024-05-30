@@ -4,8 +4,8 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/links"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links"
 )
 
 type builder struct {

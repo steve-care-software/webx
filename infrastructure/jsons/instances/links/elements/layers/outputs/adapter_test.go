@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/outputs"
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/outputs/kinds"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/outputs/kinds"
 )
 
 func TestAdapter_Success(t *testing.T) {

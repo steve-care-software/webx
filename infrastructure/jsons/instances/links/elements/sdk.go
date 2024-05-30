@@ -1,7 +1,7 @@
 package elements
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/elements"
 	json_conditions "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/conditions"
 	json_layers "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers"
 )

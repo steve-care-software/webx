@@ -1,7 +1,7 @@
 package origins
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/links/origins"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/origins"
 	json_operators "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/origins/operators"
 	json_resources "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/origins/resources"
 )

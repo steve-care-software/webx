@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/instances/links/origins/operators"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/origins/operators"
 )
 
 func TestAdapter_isAnd_Success(t *testing.T) {

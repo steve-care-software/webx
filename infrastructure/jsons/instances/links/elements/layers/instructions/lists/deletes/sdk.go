@@ -1,7 +1,7 @@
 package deletes
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/lists/deletes"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/lists/deletes"
 )
 
 // NewAdapter creates a new adapter

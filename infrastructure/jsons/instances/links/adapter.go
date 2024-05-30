@@ -3,7 +3,7 @@ package links
 import (
 	"encoding/json"
 
-	"github.com/steve-care-software/datastencil/domain/instances/links"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links"
 	json_elements "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements"
 	json_origins "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/origins"
 	json_references "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/references"

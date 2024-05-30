@@ -1,7 +1,7 @@
 package fetches
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/links/elements/layers/instructions/assignments/assignables/lists/fetches"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/assignments/assignables/lists/fetches"
 )
 
 // NewAdapter creates a new adapter

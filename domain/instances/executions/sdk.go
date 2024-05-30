@@ -6,19 +6,34 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/executions/links"
 )
 
-// NewBuilder creates a new builder
-func NewBuilder() Builder {
+// NewExecutionBuilder creates a new execution builder
+func NewExecutionBuilder() ExecutionBuilder {
 	hashAdapter := hash.NewAdapter()
-	return createBuilder(
+	return createExecutionBuilder(
 		hashAdapter,
 	)
 }
 
-// Builder represents an execution builder
+// Builder represents an executions builder
 type Builder interface {
 	Create() Builder
-	WithLogic(logic links.Link) Builder
-	WithDatabase(database databases.Database) Builder
+	WithList(list []Execution) Builder
+	Now() (Executions, error)
+}
+
+// Executions represents executions
+type Executions interface {
+	Hash() hash.Hash
+	List() []Execution
+	Databases() ([][]string, error)
+	Links(basePath []string) ([][]string, error)
+}
+
+// ExecutionBuilder represents an execution builder
+type ExecutionBuilder interface {
+	Create() ExecutionBuilder
+	WithLogic(logic links.Link) ExecutionBuilder
+	WithDatabase(database databases.Database) ExecutionBuilder
 	Now() (Execution, error)
 }
 
