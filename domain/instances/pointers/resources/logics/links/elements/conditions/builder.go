@@ -10,7 +10,7 @@ import (
 type builder struct {
 	hashAdapter hash.Adapter
 	resource    resources.Resource
-	next        ConditionValue
+	next        Condition
 }
 
 func createBuilder(
@@ -39,7 +39,7 @@ func (app *builder) WithResource(resource resources.Resource) Builder {
 }
 
 // WithNext adds a next value to the builder builder
-func (app *builder) WithNext(next ConditionValue) Builder {
+func (app *builder) WithNext(next Condition) Builder {
 	app.next = next
 	return app
 }

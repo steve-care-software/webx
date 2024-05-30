@@ -13,14 +13,6 @@ func NewBuilder() Builder {
 	)
 }
 
-// NewConditionValueBuilder creates a new condition value builder
-func NewConditionValueBuilder() ConditionValueBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createConditionValueBuilder(
-		hashAdapter,
-	)
-}
-
 // Adapter represents the condition adapter
 type Adapter interface {
 	ToBytes(ins Condition) ([]byte, error)
@@ -31,7 +23,7 @@ type Adapter interface {
 type Builder interface {
 	Create() Builder
 	WithResource(resource resources.Resource) Builder
-	WithNext(next ConditionValue) Builder
+	WithNext(next Condition) Builder
 	Now() (Condition, error)
 }
 
@@ -40,22 +32,5 @@ type Condition interface {
 	Hash() hash.Hash
 	Resource() resources.Resource
 	HasNext() bool
-	Next() ConditionValue
-}
-
-// ConditionValueBuilder represents a condition value builder
-type ConditionValueBuilder interface {
-	Create() ConditionValueBuilder
-	WithResource(resource resources.Resource) ConditionValueBuilder
-	WithCondition(condition Condition) ConditionValueBuilder
-	Now() (ConditionValue, error)
-}
-
-// ConditionValue represents a condition value
-type ConditionValue interface {
-	Hash() hash.Hash
-	IsResource() bool
-	Resource() resources.Resource
-	IsCondition() bool
-	Condition() Condition
+	Next() Condition
 }

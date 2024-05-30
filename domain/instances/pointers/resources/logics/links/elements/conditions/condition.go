@@ -8,7 +8,7 @@ import (
 type condition struct {
 	hash     hash.Hash
 	resource resources.Resource
-	next     ConditionValue
+	next     Condition
 }
 
 func createCondition(
@@ -21,7 +21,7 @@ func createCondition(
 func createConditionWithNext(
 	hash hash.Hash,
 	resource resources.Resource,
-	next ConditionValue,
+	next Condition,
 ) Condition {
 	return createConditionInternally(hash, resource, next)
 }
@@ -29,7 +29,7 @@ func createConditionWithNext(
 func createConditionInternally(
 	hash hash.Hash,
 	resource resources.Resource,
-	next ConditionValue,
+	next Condition,
 ) Condition {
 	out := condition{
 		hash:     hash,
@@ -56,6 +56,6 @@ func (obj *condition) HasNext() bool {
 }
 
 // Next returns the next value
-func (obj *condition) Next() ConditionValue {
+func (obj *condition) Next() Condition {
 	return obj.next
 }

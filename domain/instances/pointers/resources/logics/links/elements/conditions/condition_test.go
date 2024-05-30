@@ -27,8 +27,9 @@ func TestCondition_Success(t *testing.T) {
 
 func TestCondition_withNext_Success(t *testing.T) {
 	resource := resources.NewResourceForTests(23)
-	next := NewConditionValueWithResourceForTests(
-		resources.NewResourceForTests(44),
+	secondResource := resources.NewResourceForTests(44)
+	next := NewConditionForTests(
+		secondResource,
 	)
 
 	condition := NewConditionWithNextForTests(

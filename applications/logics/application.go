@@ -120,12 +120,7 @@ func (app *application) execute(input []byte, logic logics.Logic, context execut
 		code := failure.Code()
 		isRaisedInLayer := failure.IsRaisedInLayer()
 		condition := oneElement.Condition()
-		bContinue, err := app.respectCondition(condition, code, isRaisedInLayer)
-		if err != nil {
-			return nil, err
-		}
-
-		if !bContinue {
+		if !app.respectCondition(condition, code, isRaisedInLayer) {
 			break
 		}
 	}
@@ -284,6 +279,18 @@ func (app *application) respectCondition(
 	exepectedCondition conditions.Condition,
 	code uint,
 	isRaisedInLayer bool,
-) (bool, error) {
-	return true, nil
+) bool {
+	resource := exepectedCondition.Resource()
+	expectedCode := resource.Code()
+	expectedIsRaisedInLayer := resource.IsRaisedInLayer()
+	if expectedCode == code && expectedIsRaisedInLayer == isRaisedInLayer {
+		return true
+	}
+
+	if !exepectedCondition.HasNext() {
+		return false
+	}
+
+	next := exepectedCondition.Next()
+	return app.respectCondition(next, code, isRaisedInLayer)
 }
