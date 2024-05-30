@@ -211,7 +211,73 @@ func (app *application) initStack(
 	layer bridged_layers.Layer,
 	references references.References,
 ) (stacks.Stack, error) {
-	return nil, nil
+	inputAssignment, err := app.initInputAssignment(input, layer)
+	if err != nil {
+		return nil, err
+	}
+
+	assignmentsList := []stacks.Assignment{
+		inputAssignment,
+	}
+
+	referencesList := references.List()
+	for _, oneReference := range referencesList {
+		instance := oneReference.Instance()
+		assignable, err := app.assignableBuilder.Create().WithInstance(instance).Now()
+		if err != nil {
+			return nil, err
+		}
+
+		name := oneReference.Variable()
+		assignment, err := app.assignmentBuilder.Create().
+			WithAssignable(assignable).
+			WithName(name).
+			Now()
+
+		if err != nil {
+			return nil, err
+		}
+
+		assignmentsList = append(assignmentsList, assignment)
+	}
+
+	assignments, err := app.assignmentsBuilder.Create().WithList(assignmentsList).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	frame, err := app.frameBuilder.Create().WithAssignments(assignments).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	frames, err := app.framesBuilder.Create().WithList([]stacks.Frame{
+		frame,
+	}).Now()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return app.stackBuilder.Create().
+		WithFrames(frames).
+		Now()
+}
+
+func (app *application) initInputAssignment(
+	input []byte,
+	layer bridged_layers.Layer,
+) (stacks.Assignment, error) {
+	assignable, err := app.assignableBuilder.Create().WithBytes(input).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	variable := layer.Input()
+	return app.assignmentBuilder.Create().
+		WithAssignable(assignable).
+		WithName(variable).
+		Now()
 }
 
 func (app *application) respectCondition(
