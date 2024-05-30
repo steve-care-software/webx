@@ -4,11 +4,14 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/elements"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/references"
 )
 
 type builder struct {
 	hashAdapter hash.Adapter
-	list        []Link
+	elements    elements.Elements
+	references  references.References
 }
 
 func createBuilder(
@@ -16,38 +19,44 @@ func createBuilder(
 ) Builder {
 	out := builder{
 		hashAdapter: hashAdapter,
-		list:        nil,
+		elements:    nil,
+		references:  nil,
 	}
 
 	return &out
 }
 
-// Create initializes the builder
+// Builder initializes the builder
 func (app *builder) Create() Builder {
 	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
-// WithList adds a list to the builder
-func (app *builder) WithList(list []Link) Builder {
-	app.list = list
+// WithElements add elements to the builder
+func (app *builder) WithElements(elements elements.Elements) Builder {
+	app.elements = elements
 	return app
 }
 
-// Now builds a new Links instance
-func (app *builder) Now() (Links, error) {
-	if app.list != nil && len(app.list) <= 0 {
-		app.list = nil
+// WithReferences add references to the builder
+func (app *builder) WithReferences(references references.References) Builder {
+	app.references = references
+	return app
+}
+
+// Now builds a new Link instance
+func (app *builder) Now() (Link, error) {
+	if app.elements == nil {
+		return nil, errors.New("the elements is mandatory in order to build a Link instance")
 	}
 
-	if app.list == nil {
-		return nil, errors.New("there must be at least 1 Link in order to build a Links instance")
+	data := [][]byte{
+		app.elements.Hash().Bytes(),
 	}
 
-	data := [][]byte{}
-	for _, oneLink := range app.list {
-		data = append(data, oneLink.Hash().Bytes())
+	if app.references != nil {
+		data = append(data, app.references.Hash().Bytes())
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes(data)
@@ -55,11 +64,9 @@ func (app *builder) Now() (Links, error) {
 		return nil, err
 	}
 
-	mp := map[string]Link{}
-	for _, oneLink := range app.list {
-		keyname := oneLink.Hash().String()
-		mp[keyname] = oneLink
+	if app.references != nil {
+		return createLinkWithReferences(*pHash, app.elements, app.references), nil
 	}
 
-	return createLinks(*pHash, mp, app.list), nil
+	return createLink(*pHash, app.elements), nil
 }

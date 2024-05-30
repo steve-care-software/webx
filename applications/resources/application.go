@@ -18,7 +18,7 @@ type application struct {
 	contentRepository contents.Repository
 	pointerAdapter    pointers.Adapter
 	databaseAdapter   databases.Adapter
-	linkAdapter       links.LinkAdapter
+	linkAdapter       links.Adapter
 	layerAdapter      layers.LayerAdapter
 	bridgesBuilder    bridges.Builder
 	bridgeBuilder     bridges.BridgeBuilder
@@ -35,7 +35,7 @@ func createApplication(
 	contentRepository contents.Repository,
 	pointerAdapter pointers.Adapter,
 	databaseAdapter databases.Adapter,
-	linkAdapter links.LinkAdapter,
+	linkAdapter links.Adapter,
 	layerAdapter layers.LayerAdapter,
 	bridgesBuilder bridges.Builder,
 	bridgeBuilder bridges.BridgeBuilder,

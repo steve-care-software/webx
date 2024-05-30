@@ -24,7 +24,7 @@ func TestLink_Success(t *testing.T) {
 }
 
 func TestLink_withoutElements_returnsError(t *testing.T) {
-	_, err := NewLinkBuilder().Create().Now()
+	_, err := NewBuilder().Create().Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
