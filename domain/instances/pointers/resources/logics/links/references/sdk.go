@@ -44,7 +44,7 @@ type References interface {
 type ReferenceBuilder interface {
 	Create() ReferenceBuilder
 	WithVariable(variable string) ReferenceBuilder
-	WithIdentifier(identifier hash.Hash) ReferenceBuilder
+	WithPath(path []string) ReferenceBuilder
 	Now() (Reference, error)
 }
 
@@ -52,5 +52,5 @@ type ReferenceBuilder interface {
 type Reference interface {
 	Hash() hash.Hash
 	Variable() string
-	Identifier() hash.Hash
+	Path() []string
 }

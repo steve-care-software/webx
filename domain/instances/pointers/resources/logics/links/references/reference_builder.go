@@ -2,6 +2,7 @@ package references
 
 import (
 	"errors"
+	"path/filepath"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
@@ -9,7 +10,7 @@ import (
 type referenceBuilder struct {
 	hashAdapter hash.Adapter
 	variable    string
-	identifier  hash.Hash
+	path        []string
 }
 
 func createReferenceBuilder(
@@ -18,7 +19,7 @@ func createReferenceBuilder(
 	out := referenceBuilder{
 		hashAdapter: hashAdapter,
 		variable:    "",
-		identifier:  nil,
+		path:        nil,
 	}
 
 	return &out
@@ -37,30 +38,35 @@ func (app *referenceBuilder) WithVariable(variable string) ReferenceBuilder {
 	return app
 }
 
-// WithIdentifier adds an identifier to the builder
-func (app *referenceBuilder) WithIdentifier(identifier hash.Hash) ReferenceBuilder {
-	app.identifier = identifier
+// WithPath adds a path to the builder
+func (app *referenceBuilder) WithPath(path []string) ReferenceBuilder {
+	app.path = path
 	return app
 }
 
 // Now builds a new Reference instance
 func (app *referenceBuilder) Now() (Reference, error) {
+	if app.path != nil && len(app.path) <= 0 {
+		app.path = nil
+	}
+
+	if app.path == nil {
+		return nil, errors.New("the path is mandatory in order to build a Reference instance")
+	}
+
 	if app.variable == "" {
 		return nil, errors.New("the variable is mandatory in order to build a Reference instance")
 	}
 
-	if app.identifier == nil {
-		return nil, errors.New("the identifier is mandatory in order to build a Reference instance")
-	}
-
+	path := filepath.Join(app.path...)
 	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
 		[]byte(app.variable),
-		app.identifier.Bytes(),
+		[]byte(path),
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return createReference(*pHash, app.variable, app.identifier), nil
+	return createReference(*pHash, app.variable, app.path), nil
 }

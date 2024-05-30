@@ -3,20 +3,20 @@ package references
 import "github.com/steve-care-software/datastencil/domain/hash"
 
 type reference struct {
-	hash       hash.Hash
-	variable   string
-	identifier hash.Hash
+	hash     hash.Hash
+	variable string
+	path     []string
 }
 
 func createReference(
 	hash hash.Hash,
 	variable string,
-	identifier hash.Hash,
+	path []string,
 ) Reference {
 	out := reference{
-		hash:       hash,
-		variable:   variable,
-		identifier: identifier,
+		hash:     hash,
+		variable: variable,
+		path:     path,
 	}
 
 	return &out
@@ -32,7 +32,7 @@ func (obj *reference) Variable() string {
 	return obj.variable
 }
 
-// Identifier returns the identifier
-func (obj *reference) Identifier() hash.Hash {
-	return obj.identifier
+// Path returns the path
+func (obj *reference) Path() []string {
+	return obj.path
 }
