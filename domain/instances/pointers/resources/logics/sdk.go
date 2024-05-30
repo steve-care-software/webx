@@ -4,6 +4,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/references"
 )
 
 // NewBuilder creates a new builder
@@ -40,6 +41,7 @@ type LogicBuilder interface {
 	Create() LogicBuilder
 	WithLink(link links.Link) LogicBuilder
 	WithBridges(bridges bridges.Bridges) LogicBuilder
+	WithReferences(references references.References) LogicBuilder
 	Now() (Logic, error)
 }
 
@@ -48,4 +50,6 @@ type Logic interface {
 	Hash() hash.Hash
 	Link() links.Link
 	Bridges() bridges.Bridges
+	HasReferences() bool
+	References() references.References
 }

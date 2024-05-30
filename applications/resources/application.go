@@ -2,6 +2,7 @@ package resources
 
 import (
 	"github.com/steve-care-software/datastencil/domain/contents"
+	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/instances/databases"
 	"github.com/steve-care-software/datastencil/domain/instances/executions"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers"
@@ -10,6 +11,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/references"
 )
 
 type application struct {
@@ -22,6 +24,9 @@ type application struct {
 	bridgeBuilder     bridges.BridgeBuilder
 	logicBuilder      logics.LogicBuilder
 	logicsBuilder     logics.Builder
+	instanceAdapter   instances.Adapter
+	referenceBuilder  references.ReferenceBuilder
+	referencesBuilder references.Builder
 	resourcesBuilder  resources.Builder
 	resourceBuilder   resources.ResourceBuilder
 }
@@ -36,6 +41,9 @@ func createApplication(
 	bridgeBuilder bridges.BridgeBuilder,
 	logicBuilder logics.LogicBuilder,
 	logicsBuilder logics.Builder,
+	instanceAdapter instances.Adapter,
+	referenceBuilder references.ReferenceBuilder,
+	referencesBuilder references.Builder,
 	resourcesBuilder resources.Builder,
 	resourceBuilder resources.ResourceBuilder,
 ) Application {
@@ -49,6 +57,9 @@ func createApplication(
 		bridgeBuilder:     bridgeBuilder,
 		logicBuilder:      logicBuilder,
 		logicsBuilder:     logicsBuilder,
+		instanceAdapter:   instanceAdapter,
+		referenceBuilder:  referenceBuilder,
+		referencesBuilder: referencesBuilder,
 		resourcesBuilder:  resourcesBuilder,
 		resourceBuilder:   resourceBuilder,
 	}
@@ -132,6 +143,29 @@ func (app *application) execute(path []string, context executions.Executions) (r
 				return nil, err
 			}
 
+			referencesList := []references.Reference{}
+			linkReferencesList := link.References().List()
+			for _, oneReference := range linkReferencesList {
+				instancePath := append(linkPath, oneReference.Path()...)
+				instance, err := app.loadInstanceFromPath(instancePath)
+				if err != nil {
+					return nil, err
+				}
+
+				variable := oneReference.Variable()
+				reference, err := app.referenceBuilder.Create().WithInstance(instance).WithVariable(variable).Now()
+				if err != nil {
+					return nil, err
+				}
+
+				referencesList = append(referencesList, reference)
+			}
+
+			references, err := app.referencesBuilder.Create().WithList(referencesList).Now()
+			if err != nil {
+				return nil, err
+			}
+
 			bridgesList := []bridges.Bridge{}
 			elementsList := link.Elements().List()
 			for _, oneElement := range elementsList {
@@ -155,7 +189,7 @@ func (app *application) execute(path []string, context executions.Executions) (r
 
 			}
 
-			logic, err := app.logicBuilder.Create().WithLink(link).WithBridges(bridges).Now()
+			logic, err := app.logicBuilder.Create().WithLink(link).WithBridges(bridges).WithReferences(references).Now()
 			if err != nil {
 				return nil, err
 
@@ -180,6 +214,15 @@ func (app *application) execute(path []string, context executions.Executions) (r
 	}
 
 	return app.resourcesBuilder.Create().WithList(resourcesList).Now()
+}
+
+func (app *application) loadInstanceFromPath(path []string) (instances.Instance, error) {
+	bytes, err := app.contentRepository.Retrieve(path)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.instanceAdapter.ToInstance(bytes)
 }
 
 func (app *application) loadLayerFromPath(path []string) (layers.Layer, error) {

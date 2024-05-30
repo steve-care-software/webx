@@ -3,6 +3,7 @@ package links
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/elements"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/references"
 )
 
 // NewBuilder creates a new builder instance
@@ -56,6 +57,7 @@ type LinkAdapter interface {
 type LinkBuilder interface {
 	Create() LinkBuilder
 	WithElements(elements elements.Elements) LinkBuilder
+	WithReferences(references references.References) LinkBuilder
 	Now() (Link, error)
 }
 
@@ -63,6 +65,8 @@ type LinkBuilder interface {
 type Link interface {
 	Hash() hash.Hash
 	Elements() elements.Elements
+	HasReferences() bool
+	References() references.References
 }
 
 // LinkRepository represents the link repository
