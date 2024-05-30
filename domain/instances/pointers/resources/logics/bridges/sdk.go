@@ -5,6 +5,22 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers"
 )
 
+// NewBuiler creates a new builder
+func NewBuiler() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
+// NewBridgeBuilder creates a new bridge builder
+func NewBridgeBuilder() BridgeBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createBridgeBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder represents bridges builder
 type Builder interface {
 	Create() Builder
