@@ -38,9 +38,10 @@ func createLogicInternally(
 	references references.References,
 ) Logic {
 	out := logic{
-		hash:    hash,
-		link:    link,
-		bridges: bridges,
+		hash:       hash,
+		link:       link,
+		bridges:    bridges,
+		references: references,
 	}
 
 	return &out
