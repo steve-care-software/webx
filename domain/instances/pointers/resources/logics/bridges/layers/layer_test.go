@@ -52,7 +52,7 @@ func TestLayer_withoutInstructions_returnsError(t *testing.T) {
 	)
 
 	input := "myInput"
-	_, err := NewLayerBuilder().Create().WithOutput(output).WithInput(input).Now()
+	_, err := NewBuilder().Create().WithOutput(output).WithInput(input).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
@@ -65,7 +65,7 @@ func TestLayer_withoutOutput_returnsError(t *testing.T) {
 	})
 
 	input := "myInput"
-	_, err := NewLayerBuilder().Create().WithInstructions(instructions).WithInput(input).Now()
+	_, err := NewBuilder().Create().WithInstructions(instructions).WithInput(input).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
@@ -81,7 +81,7 @@ func TestLayer_withoutInput_returnsError(t *testing.T) {
 		"myVariable",
 		kinds.NewKindWithContinueForTests(),
 	)
-	_, err := NewLayerBuilder().Create().WithInstructions(instructions).WithOutput(output).Now()
+	_, err := NewBuilder().Create().WithInstructions(instructions).WithOutput(output).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
