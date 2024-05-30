@@ -3,7 +3,7 @@ package kinds
 import (
 	"encoding/json"
 
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/outputs/kinds"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/outputs/kinds"
 )
 
 // Adapter represents the adapter

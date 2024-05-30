@@ -3,7 +3,7 @@ package lists
 import (
 	"encoding/json"
 
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/lists"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/lists"
 	json_deletes "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/lists/deletes"
 	json_inserts "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/lists/inserts"
 )

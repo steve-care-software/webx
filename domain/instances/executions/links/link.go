@@ -2,7 +2,7 @@ package links
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links"
 )
 
@@ -11,7 +11,6 @@ type link struct {
 	input  []byte
 	source links.Link
 	layers layers.Layers
-	next   Link
 }
 
 func createLink(
@@ -19,7 +18,7 @@ func createLink(
 	input []byte,
 	source links.Link,
 ) Link {
-	return createLinkIntrnally(hash, input, source, nil, nil)
+	return createLinkIntrnally(hash, input, source, nil)
 }
 
 func createLinkWithLayers(
@@ -28,26 +27,7 @@ func createLinkWithLayers(
 	source links.Link,
 	layers layers.Layers,
 ) Link {
-	return createLinkIntrnally(hash, input, source, layers, nil)
-}
-
-func createLinkWithNext(
-	hash hash.Hash,
-	input []byte,
-	source links.Link,
-	next Link,
-) Link {
-	return createLinkIntrnally(hash, input, source, nil, next)
-}
-
-func createLinkWithLayersAndNext(
-	hash hash.Hash,
-	input []byte,
-	source links.Link,
-	layers layers.Layers,
-	next Link,
-) Link {
-	return createLinkIntrnally(hash, input, source, layers, next)
+	return createLinkIntrnally(hash, input, source, layers)
 }
 
 func createLinkIntrnally(
@@ -55,14 +35,12 @@ func createLinkIntrnally(
 	input []byte,
 	source links.Link,
 	layers layers.Layers,
-	next Link,
 ) Link {
 	out := link{
 		hash:   hash,
 		input:  input,
 		source: source,
 		layers: layers,
-		next:   next,
 	}
 
 	return &out
@@ -91,14 +69,4 @@ func (obj *link) HasLayers() bool {
 // Layers returns layers, if any
 func (obj *link) Layers() layers.Layers {
 	return obj.layers
-}
-
-// HasNext returns true if there is a next link, false otherwise
-func (obj *link) HasNext() bool {
-	return obj.next != nil
-}
-
-// Next returns the next link, if any
-func (obj *link) Next() Link {
-	return obj.next
 }

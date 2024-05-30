@@ -1,7 +1,7 @@
 package databases
 
 import (
-	database_instruction "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/databases"
+	database_instruction "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/databases"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

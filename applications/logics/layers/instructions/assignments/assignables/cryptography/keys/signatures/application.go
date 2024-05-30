@@ -1,9 +1,9 @@
 package signatures
 
 import (
-	"github.com/steve-care-software/datastencil/applications/logics/layers//instructions/assignments/assignables/cryptography/keys/signatures/signs"
-	"github.com/steve-care-software/datastencil/applications/logics/layers//instructions/assignments/assignables/cryptography/keys/signatures/votes"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/assignments/assignables/cryptography/keys/signatures"
+	"github.com/steve-care-software/datastencil/applications/logics/layers/instructions/assignments/assignables/cryptography/keys/signatures/signs"
+	"github.com/steve-care-software/datastencil/applications/logics/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/cryptography/keys/signatures"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	"github.com/steve-care-software/datastencil/domain/stacks/failures"

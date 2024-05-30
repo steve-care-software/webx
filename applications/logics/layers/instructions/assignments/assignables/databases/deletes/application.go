@@ -2,7 +2,7 @@ package deletes
 
 import (
 	databases_deletes "github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/deletes"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/assignments/assignables/databases/deletes"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/databases/deletes"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	"github.com/steve-care-software/datastencil/domain/stacks/failures"
 )

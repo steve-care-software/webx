@@ -4,14 +4,14 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links"
 )
 
 type logicBuilder struct {
 	hashAdapter hash.Adapter
 	link        links.Link
-	layers      layers.Layers
+	bridges     bridges.Bridges
 }
 
 func createLogicBuilder(
@@ -20,7 +20,7 @@ func createLogicBuilder(
 	out := logicBuilder{
 		hashAdapter: hashAdapter,
 		link:        nil,
-		layers:      nil,
+		bridges:     nil,
 	}
 
 	return &out
@@ -39,9 +39,9 @@ func (app *logicBuilder) WithLink(link links.Link) LogicBuilder {
 	return app
 }
 
-// WithLayers add layers to the builder
-func (app *logicBuilder) WithLayers(layers layers.Layers) LogicBuilder {
-	app.layers = layers
+// WithBridges add bridges to the builder
+func (app *logicBuilder) WithBridges(bridges bridges.Bridges) LogicBuilder {
+	app.bridges = bridges
 	return app
 }
 
@@ -51,18 +51,18 @@ func (app *logicBuilder) Now() (Logic, error) {
 		return nil, errors.New("the link is mandatory in order to build a Logic instance")
 	}
 
-	if app.layers == nil {
-		return nil, errors.New("the layers is mandatory in order to build a Logic instance")
+	if app.bridges == nil {
+		return nil, errors.New("the bridges is mandatory in order to build a Logic instance")
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
 		app.link.Hash().Bytes(),
-		app.layers.Hash().Bytes(),
+		app.bridges.Hash().Bytes(),
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return createLogic(*pHash, app.link, app.layers), nil
+	return createLogic(*pHash, app.link, app.bridges), nil
 }

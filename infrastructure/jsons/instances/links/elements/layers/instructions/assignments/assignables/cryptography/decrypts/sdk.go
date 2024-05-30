@@ -1,7 +1,7 @@
 package decrypts
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/assignments/assignables/cryptography/decrypts"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/cryptography/decrypts"
 )
 
 // NewAdapter creates a new adapter

@@ -3,7 +3,7 @@ package commits
 import (
 	"encoding/json"
 
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/assignments/assignables/databases/commits"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/databases/commits"
 )
 
 // Adapter represents an adapter

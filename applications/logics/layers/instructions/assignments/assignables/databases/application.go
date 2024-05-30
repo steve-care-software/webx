@@ -1,13 +1,13 @@
 package databases
 
 import (
-	"github.com/steve-care-software/datastencil/applications/logics/layers//instructions/assignments/assignables/databases/actions"
-	"github.com/steve-care-software/datastencil/applications/logics/layers//instructions/assignments/assignables/databases/commits"
-	"github.com/steve-care-software/datastencil/applications/logics/layers//instructions/assignments/assignables/databases/databases"
-	"github.com/steve-care-software/datastencil/applications/logics/layers//instructions/assignments/assignables/databases/deletes"
-	"github.com/steve-care-software/datastencil/applications/logics/layers//instructions/assignments/assignables/databases/modifications"
-	"github.com/steve-care-software/datastencil/applications/logics/layers//instructions/assignments/assignables/databases/retrieves"
-	assignables_databases "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/assignments/assignables/databases"
+	"github.com/steve-care-software/datastencil/applications/logics/layers/instructions/assignments/assignables/databases/actions"
+	"github.com/steve-care-software/datastencil/applications/logics/layers/instructions/assignments/assignables/databases/commits"
+	"github.com/steve-care-software/datastencil/applications/logics/layers/instructions/assignments/assignables/databases/databases"
+	"github.com/steve-care-software/datastencil/applications/logics/layers/instructions/assignments/assignables/databases/deletes"
+	"github.com/steve-care-software/datastencil/applications/logics/layers/instructions/assignments/assignables/databases/modifications"
+	"github.com/steve-care-software/datastencil/applications/logics/layers/instructions/assignments/assignables/databases/retrieves"
+	assignables_databases "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/databases"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

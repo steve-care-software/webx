@@ -1,13 +1,13 @@
 package assignables
 
 import (
-	"github.com/steve-care-software/datastencil/applications/logics/layers//instructions/assignments/assignables/bytes"
-	"github.com/steve-care-software/datastencil/applications/logics/layers//instructions/assignments/assignables/compilers"
-	"github.com/steve-care-software/datastencil/applications/logics/layers//instructions/assignments/assignables/constants"
-	"github.com/steve-care-software/datastencil/applications/logics/layers//instructions/assignments/assignables/cryptography"
-	"github.com/steve-care-software/datastencil/applications/logics/layers//instructions/assignments/assignables/databases"
-	"github.com/steve-care-software/datastencil/applications/logics/layers//instructions/assignments/assignables/lists"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/assignments/assignables"
+	"github.com/steve-care-software/datastencil/applications/logics/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/applications/logics/layers/instructions/assignments/assignables/compilers"
+	"github.com/steve-care-software/datastencil/applications/logics/layers/instructions/assignments/assignables/constants"
+	"github.com/steve-care-software/datastencil/applications/logics/layers/instructions/assignments/assignables/cryptography"
+	"github.com/steve-care-software/datastencil/applications/logics/layers/instructions/assignments/assignables/databases"
+	"github.com/steve-care-software/datastencil/applications/logics/layers/instructions/assignments/assignables/lists"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

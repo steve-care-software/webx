@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links"
 )
 
@@ -13,7 +13,6 @@ type builder struct {
 	input       []byte
 	source      links.Link
 	layers      layers.Layers
-	next        Link
 }
 
 func createBuilder(
@@ -24,7 +23,6 @@ func createBuilder(
 		input:       nil,
 		source:      nil,
 		layers:      nil,
-		next:        nil,
 	}
 
 	return &out
@@ -55,12 +53,6 @@ func (app *builder) WithLayers(layers layers.Layers) Builder {
 	return app
 }
 
-// WithNext adds a next link to the builder
-func (app *builder) WithNext(next Link) Builder {
-	app.next = next
-	return app
-}
-
 // Now builds a new Link instance
 func (app *builder) Now() (Link, error) {
 	if app.input != nil && len(app.input) <= 0 {
@@ -84,25 +76,13 @@ func (app *builder) Now() (Link, error) {
 		data = append(data, app.layers.Hash().Bytes())
 	}
 
-	if app.next != nil {
-		data = append(data, app.next.Hash().Bytes())
-	}
-
 	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
 	}
 
-	if app.layers != nil && app.next != nil {
-		return createLinkWithLayersAndNext(*pHash, app.input, app.source, app.layers, app.next), nil
-	}
-
 	if app.layers != nil {
 		return createLinkWithLayers(*pHash, app.input, app.source, app.layers), nil
-	}
-
-	if app.next != nil {
-		return createLinkWithNext(*pHash, app.input, app.source, app.next), nil
 	}
 
 	return createLink(*pHash, app.input, app.source), nil

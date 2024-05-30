@@ -1,7 +1,7 @@
 package validates
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/validates"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/validates"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )

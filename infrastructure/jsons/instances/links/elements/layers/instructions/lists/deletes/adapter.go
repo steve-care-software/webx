@@ -3,7 +3,7 @@ package deletes
 import (
 	"encoding/json"
 
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/lists/deletes"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/lists/deletes"
 )
 
 // Adapter represents a delete adapter

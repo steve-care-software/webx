@@ -1,7 +1,7 @@
 package instructions
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions"
 	json_assignments "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/assignments"
 	json_databases "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/databases"
 	json_lists "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions/lists"

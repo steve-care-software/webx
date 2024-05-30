@@ -1,7 +1,7 @@
 package failures
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions/failures"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results/interruptions/failures"
 )
 
 // NewAdapter creates a new adapter

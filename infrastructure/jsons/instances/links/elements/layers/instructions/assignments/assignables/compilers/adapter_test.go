@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/assignments/assignables/compilers"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/compilers"
 )
 
 func TestAdapter_withCompile_Success(t *testing.T) {

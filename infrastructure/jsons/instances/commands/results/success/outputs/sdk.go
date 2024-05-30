@@ -1,7 +1,7 @@
 package outputs
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/commands/results/success/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results/success/outputs"
 )
 
 // NewAdapter creates a new adapter

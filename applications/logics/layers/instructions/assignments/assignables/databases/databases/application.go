@@ -2,7 +2,8 @@ package databases
 
 import (
 	databases_databases "github.com/steve-care-software/datastencil/domain/instances/databases"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/assignments/assignables/databases/databases"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/heads"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/databases/databases"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	"github.com/steve-care-software/datastencil/domain/stacks/failures"
 )
@@ -10,15 +11,18 @@ import (
 type application struct {
 	assignableBuilder stacks.AssignableBuilder
 	databaseBuilder   databases_databases.Builder
+	headBuilder       heads.Builder
 }
 
 func createApplication(
 	assignableBuilder stacks.AssignableBuilder,
 	databaseBuilder databases_databases.Builder,
+	headBuilder heads.Builder,
 ) Application {
 	out := application{
 		assignableBuilder: assignableBuilder,
 		databaseBuilder:   databaseBuilder,
+		headBuilder:       headBuilder,
 	}
 
 	return &out
@@ -65,12 +69,17 @@ func (app *application) Execute(frame stacks.Frame, assignable databases.Databas
 		return nil, &code, nil
 	}
 
-	builder := app.databaseBuilder.Create().WithPath(pathValues).WithDescription(description).WithHead(commit)
+	headBuilder := app.headBuilder.Create().WithPath(pathValues).WithDescription(description)
 	if isActive {
-		builder.IsActive()
+		headBuilder.IsActive()
 	}
 
-	database, err := builder.Now()
+	head, err := headBuilder.Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	database, err := app.databaseBuilder.Create().WithHead(head).WithCommit(commit).Now()
 	if err != nil {
 		return nil, nil, err
 	}

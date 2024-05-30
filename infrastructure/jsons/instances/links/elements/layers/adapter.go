@@ -3,7 +3,7 @@ package layers
 import (
 	"encoding/json"
 
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers"
 	json_instructions "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/instructions"
 	json_output "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers/outputs"
 )

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	assignable_bytes "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/assignments/assignables/bytes"
+	assignable_bytes "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	"github.com/steve-care-software/datastencil/domain/stacks/failures"
 )

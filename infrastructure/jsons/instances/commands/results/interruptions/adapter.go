@@ -3,7 +3,7 @@ package interruptions
 import (
 	"encoding/json"
 
-	"github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results/interruptions"
 	json_failures "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/commands/results/interruptions/failures"
 )
 

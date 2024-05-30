@@ -2,7 +2,7 @@ package logics
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links"
 )
 
@@ -39,7 +39,7 @@ type Logics interface {
 type LogicBuilder interface {
 	Create() LogicBuilder
 	WithLink(link links.Link) LogicBuilder
-	WithLayers(layers layers.Layers) LogicBuilder
+	WithBridges(bridges bridges.Bridges) LogicBuilder
 	Now() (Logic, error)
 }
 
@@ -47,5 +47,5 @@ type LogicBuilder interface {
 type Logic interface {
 	Hash() hash.Hash
 	Link() links.Link
-	Layers() layers.Layers
+	Bridges() bridges.Bridges
 }

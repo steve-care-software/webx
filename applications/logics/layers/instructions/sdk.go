@@ -1,10 +1,10 @@
 package instructions
 
 import (
-	application_assignments "github.com/steve-care-software/datastencil/applications/logics/layers//instructions/assignments"
-	"github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions"
-	results_failures "github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions/failures"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions"
+	application_assignments "github.com/steve-care-software/datastencil/applications/logics/layers/instructions/assignments"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results/interruptions"
+	results_failures "github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results/interruptions/failures"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

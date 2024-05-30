@@ -3,7 +3,7 @@ package failures
 import (
 	"encoding/json"
 
-	"github.com/steve-care-software/datastencil/domain/instances/commands/results/interruptions/failures"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results/interruptions/failures"
 )
 
 // Adapter represents an adapter

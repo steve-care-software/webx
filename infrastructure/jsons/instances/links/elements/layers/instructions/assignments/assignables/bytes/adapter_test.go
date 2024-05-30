@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	bytes_domain "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers/instructions/assignments/assignables/bytes"
+	bytes_domain "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/bytes"
 )
 
 func TestAdapter_withHash_Success(t *testing.T) {

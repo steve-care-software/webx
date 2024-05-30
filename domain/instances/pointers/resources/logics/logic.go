@@ -2,25 +2,25 @@ package logics
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links"
 )
 
 type logic struct {
-	hash   hash.Hash
-	link   links.Link
-	layers layers.Layers
+	hash    hash.Hash
+	link    links.Link
+	bridges bridges.Bridges
 }
 
 func createLogic(
 	hash hash.Hash,
 	link links.Link,
-	layers layers.Layers,
+	bridges bridges.Bridges,
 ) Logic {
 	out := logic{
-		hash:   hash,
-		link:   link,
-		layers: layers,
+		hash:    hash,
+		link:    link,
+		bridges: bridges,
 	}
 
 	return &out
@@ -36,7 +36,7 @@ func (obj *logic) Link() links.Link {
 	return obj.link
 }
 
-// Layers returns the layers
-func (obj *logic) Layers() layers.Layers {
-	return obj.layers
+// Bridges returns the layers
+func (obj *logic) Bridges() bridges.Bridges {
+	return obj.bridges
 }

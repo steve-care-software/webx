@@ -7,7 +7,8 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/pointers"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links"
 )
 
@@ -17,7 +18,8 @@ type application struct {
 	databaseAdapter   databases.Adapter
 	linkAdapter       links.LinkAdapter
 	layerAdapter      layers.LayerAdapter
-	layersBuilder     layers.Builder
+	bridgesBuilder    bridges.Builder
+	bridgeBuilder     bridges.BridgeBuilder
 	logicBuilder      logics.LogicBuilder
 	logicsBuilder     logics.Builder
 	resourcesBuilder  resources.Builder
@@ -30,7 +32,8 @@ func createApplication(
 	databaseAdapter databases.Adapter,
 	linkAdapter links.LinkAdapter,
 	layerAdapter layers.LayerAdapter,
-	layersBuilder layers.Builder,
+	bridgesBuilder bridges.Builder,
+	bridgeBuilder bridges.BridgeBuilder,
 	logicBuilder logics.LogicBuilder,
 	logicsBuilder logics.Builder,
 	resourcesBuilder resources.Builder,
@@ -42,7 +45,8 @@ func createApplication(
 		databaseAdapter:   databaseAdapter,
 		linkAdapter:       linkAdapter,
 		layerAdapter:      layerAdapter,
-		layersBuilder:     layersBuilder,
+		bridgesBuilder:    bridgesBuilder,
+		bridgeBuilder:     bridgeBuilder,
 		logicBuilder:      logicBuilder,
 		logicsBuilder:     logicsBuilder,
 		resourcesBuilder:  resourcesBuilder,
@@ -128,7 +132,7 @@ func (app *application) execute(path []string, context executions.Executions) (r
 				return nil, err
 			}
 
-			layersList := []layers.Layer{}
+			bridgesList := []bridges.Bridge{}
 			elementsList := link.Elements().List()
 			for _, oneElement := range elementsList {
 				layerPath := append(linkPath, oneElement.Layer()...)
@@ -137,16 +141,21 @@ func (app *application) execute(path []string, context executions.Executions) (r
 					return nil, err
 				}
 
-				layersList = append(layersList, layer)
+				bridge, err := app.bridgeBuilder.Create().WithLayer(layer).WithPath(layerPath).Now()
+				if err != nil {
+					return nil, err
+				}
+
+				bridgesList = append(bridgesList, bridge)
 			}
 
-			layers, err := app.layersBuilder.Create().WithList(layersList).Now()
+			bridges, err := app.bridgesBuilder.Create().WithList(bridgesList).Now()
 			if err != nil {
 				return nil, err
 
 			}
 
-			logic, err := app.logicBuilder.Create().WithLink(link).WithLayers(layers).Now()
+			logic, err := app.logicBuilder.Create().WithLink(link).WithBridges(bridges).Now()
 			if err != nil {
 				return nil, err
 

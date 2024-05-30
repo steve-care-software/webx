@@ -2,7 +2,7 @@ package links
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links"
 )
 
@@ -20,7 +20,6 @@ type Builder interface {
 	WithInput(input []byte) Builder
 	WithSource(source links.Link) Builder
 	WithLayers(layers layers.Layers) Builder
-	WithNext(next Link) Builder
 	Now() (Link, error)
 }
 
@@ -31,6 +30,4 @@ type Link interface {
 	Source() links.Link
 	HasLayers() bool
 	Layers() layers.Layers
-	HasNext() bool
-	Next() Link
 }
