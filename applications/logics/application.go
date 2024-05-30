@@ -1,34 +1,72 @@
 package logics
 
 import (
-	"github.com/steve-care-software/datastencil/applications/logics/layers"
+	"github.com/steve-care-software/datastencil/applications/logics/binaries"
+	"github.com/steve-care-software/datastencil/applications/logics/instructions"
 	"github.com/steve-care-software/datastencil/domain/instances/executions"
 	execution_links "github.com/steve-care-software/datastencil/domain/instances/executions/links"
 	execution_layers "github.com/steve-care-software/datastencil/domain/instances/executions/links/layers"
 	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results/success"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results/success/outputs"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics"
 	bridged_layers "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/elements/conditions"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/references"
+	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 
 type application struct {
-	layerApplication       layers.Application
-	executionLayersBuilder execution_layers.Builder
-	executionLayerBuilder  execution_layers.LayerBuilder
-	executionLinkBuilder   execution_links.Builder
+	instructionsApplication    instructions.Application
+	binaryApplication          binaries.Application
+	executionLayersBuilder     execution_layers.Builder
+	executionLayerBuilder      execution_layers.LayerBuilder
+	executionLinkBuilder       execution_links.Builder
+	resultBuilder              results.Builder
+	resultSuccessBuilder       success.Builder
+	resultSuccessOutputBuilder outputs.Builder
+	stackBuilder               stacks.Builder
+	framesBuilder              stacks.FramesBuilder
+	frameBuilder               stacks.FrameBuilder
+	assignmentsBuilder         stacks.AssignmentsBuilder
+	assignmentBuilder          stacks.AssignmentBuilder
+	assignablesBuilder         stacks.AssignablesBuilder
+	assignableBuilder          stacks.AssignableBuilder
 }
 
 func createApplication(
-	layerApplication layers.Application,
+	instructionsApplication instructions.Application,
+	binaryApplication binaries.Application,
 	executionLayersBuilder execution_layers.Builder,
 	executionLayerBuilder execution_layers.LayerBuilder,
 	executionLinkBuilder execution_links.Builder,
+	resultBuilder results.Builder,
+	resultSuccessBuilder success.Builder,
+	resultSuccessOutputBuilder outputs.Builder,
+	stackBuilder stacks.Builder,
+	framesBuilder stacks.FramesBuilder,
+	frameBuilder stacks.FrameBuilder,
+	assignmentsBuilder stacks.AssignmentsBuilder,
+	assignmentBuilder stacks.AssignmentBuilder,
+	assignablesBuilder stacks.AssignablesBuilder,
+	assignableBuilder stacks.AssignableBuilder,
 ) Application {
 	out := application{
-		layerApplication:       layerApplication,
-		executionLayersBuilder: executionLayersBuilder,
-		executionLayerBuilder:  executionLayerBuilder,
-		executionLinkBuilder:   executionLinkBuilder,
+		instructionsApplication:    instructionsApplication,
+		binaryApplication:          binaryApplication,
+		executionLayersBuilder:     executionLayersBuilder,
+		executionLayerBuilder:      executionLayerBuilder,
+		executionLinkBuilder:       executionLinkBuilder,
+		resultBuilder:              resultBuilder,
+		resultSuccessBuilder:       resultSuccessBuilder,
+		resultSuccessOutputBuilder: resultSuccessOutputBuilder,
+		stackBuilder:               stackBuilder,
+		framesBuilder:              framesBuilder,
+		frameBuilder:               frameBuilder,
+		assignmentsBuilder:         assignmentsBuilder,
+		assignmentBuilder:          assignmentBuilder,
+		assignablesBuilder:         assignablesBuilder,
+		assignableBuilder:          assignableBuilder,
 	}
 
 	return &out
@@ -45,6 +83,7 @@ func (app *application) ExecuteWithContext(input []byte, logic logics.Logic, con
 }
 
 func (app *application) execute(input []byte, logic logics.Logic, context executions.Executions) (execution_links.Link, error) {
+	references := logic.References()
 	bridges := logic.Bridges()
 	executedLayersList := []execution_layers.Layer{}
 	link := logic.Link()
@@ -57,7 +96,7 @@ func (app *application) execute(input []byte, logic logics.Logic, context execut
 		}
 
 		layer := bridge.Layer()
-		retResult, err := app.executeLayer(input, layer, context)
+		retResult, err := app.executeLayer(input, layer, references)
 		if err != nil {
 			return nil, err
 		}
@@ -106,14 +145,79 @@ func (app *application) execute(input []byte, logic logics.Logic, context execut
 		Now()
 }
 
-func (app *application) respectCondition(exepectedCondition conditions.Condition, code uint, isRaisedInLayer bool) (bool, error) {
-	return true, nil
-}
-
-func (app *application) executeLayer(input []byte, layer bridged_layers.Layer, context executions.Executions) (results.Result, error) {
-	if context != nil {
-		return app.layerApplication.ExecuteWithContext(input, layer, context)
+func (app *application) executeLayer(
+	input []byte,
+	layer bridged_layers.Layer,
+	references references.References,
+) (results.Result, error) {
+	stack, err := app.initStack(input, layer, references)
+	if err != nil {
+		return nil, err
 	}
 
-	return app.layerApplication.Execute(input, layer)
+	instructions := layer.Instructions()
+	retStack, retInterruption, err := app.instructionsApplication.Execute(stack, instructions)
+	if err != nil {
+		return nil, err
+	}
+
+	builder := app.resultBuilder.Create()
+	if retInterruption != nil {
+		builder.WithInterruption(retInterruption)
+	}
+
+	if retStack != nil {
+		layerOutput := layer.Output()
+		kind := layerOutput.Kind()
+		variable := layerOutput.Variable()
+		value, err := retStack.Head().FetchBytes(variable)
+		if err != nil {
+			return nil, err
+		}
+
+		outputBuilder := app.resultSuccessOutputBuilder.Create().WithInput(value)
+		if layerOutput.HasExecute() {
+			executeCmd := layerOutput.Execute()
+			retOutput, err := app.binaryApplication.Execute(value, executeCmd)
+			if err != nil {
+				return nil, err
+			}
+
+			outputBuilder.WithExecute(retOutput)
+		}
+
+		output, err := outputBuilder.Now()
+		if err != nil {
+			return nil, err
+		}
+
+		success, err := app.resultSuccessBuilder.Create().
+			WithKind(kind).
+			WithOutput(output).
+			Now()
+
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithSuccess(success)
+	}
+
+	return builder.Now()
+}
+
+func (app *application) initStack(
+	input []byte,
+	layer bridged_layers.Layer,
+	references references.References,
+) (stacks.Stack, error) {
+	return nil, nil
+}
+
+func (app *application) respectCondition(
+	exepectedCondition conditions.Condition,
+	code uint,
+	isRaisedInLayer bool,
+) (bool, error) {
+	return true, nil
 }

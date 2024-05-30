@@ -27,7 +27,6 @@ type Builder interface {
 // Output represents an output
 type Output interface {
 	Hash() hash.Hash
-	Value() []byte
 	Input() []byte
 	HasExecute() bool
 	Execute() []byte
