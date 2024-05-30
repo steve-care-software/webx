@@ -6,6 +6,14 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/executions/links"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
 // NewExecutionBuilder creates a new execution builder
 func NewExecutionBuilder() ExecutionBuilder {
 	hashAdapter := hash.NewAdapter()
