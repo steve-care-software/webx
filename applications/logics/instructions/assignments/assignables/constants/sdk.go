@@ -8,8 +8,9 @@ import (
 // NewApplication creates a new application
 func NewApplication() Application {
 	assignableBuilder := stacks.NewAssignableBuilder()
+	assigmablesBuilder := stacks.NewAssignablesBuilder()
 	return createApplication(
-		nil,
+		assigmablesBuilder,
 		assignableBuilder,
 	)
 }

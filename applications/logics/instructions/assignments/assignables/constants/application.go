@@ -66,7 +66,10 @@ func (app *application) Execute(assignable constants.Constant) (stacks.Assignabl
 			output = append(output, retAssignable)
 		}
 
-		stackAssignables, err := app.assignablesBuilder.Create().WithList(output).Now()
+		stackAssignables, err := app.assignablesBuilder.Create().
+			WithList(output).
+			Now()
+
 		if err != nil {
 			return nil, nil, err
 		}
