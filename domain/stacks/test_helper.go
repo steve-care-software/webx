@@ -3,6 +3,7 @@ package stacks
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 )
 
 // NewStackForTests creates a new stack for tests
@@ -108,6 +109,16 @@ func NewAssignableWithUnsignedIntForTests(value uint) Assignable {
 // NewAssignableWithInstanceForTests creates a new assignable with instance for tests
 func NewAssignableWithInstanceForTests(value instances.Instance) Assignable {
 	ins, err := NewAssignableBuilder().Create().WithInstance(value).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewAssignableWithEncryptorForTests creates a new assignable with encryptor for tests
+func NewAssignableWithEncryptorForTests(value encryptors.Encryptor) Assignable {
+	ins, err := NewAssignableBuilder().Create().WithEncryptor(value).Now()
 	if err != nil {
 		panic(err)
 	}
