@@ -24,7 +24,7 @@ func (app *application) Execute(frame stacks.Frame, assignable validates.Validat
 	sigName := assignable.Signature()
 	sig, err := frame.FetchSignature(sigName)
 	if err != nil {
-		code := failures.CouldNotFetchSignerPrivateKeyFromFrame
+		code := failures.CouldNotFetchSignatureFromFrame
 		return nil, &code, err
 	}
 

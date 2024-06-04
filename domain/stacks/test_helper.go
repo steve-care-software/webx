@@ -146,3 +146,23 @@ func NewAssignableWithSignerForTests(value signers.Signer) Assignable {
 
 	return ins
 }
+
+// NewAssignableWithSignerPublicKeyForTests creates a new assignable with signer public key for tests
+func NewAssignableWithSignerPublicKeyForTests(value signers.PublicKey) Assignable {
+	ins, err := NewAssignableBuilder().Create().WithSignerPubKey(value).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewAssignableWithSignatureForTests creates a new assignable with signature for tests
+func NewAssignableWithSignatureForTests(value signers.Signature) Assignable {
+	ins, err := NewAssignableBuilder().Create().WithSignature(value).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}

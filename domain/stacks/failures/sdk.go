@@ -76,6 +76,9 @@ const (
 	// CouldNotFetchSignerPublicKeyFromFrame could not fetch a signer public key from frame
 	CouldNotFetchSignerPublicKeyFromFrame
 
+	// CouldNotFetchSignatureFromFrame could not fetch a signature from frame
+	CouldNotFetchSignatureFromFrame
+
 	// CouldNotVoteOnMessageInFrame could not vote on message in frame
 	CouldNotVoteOnMessageInFrame
 
