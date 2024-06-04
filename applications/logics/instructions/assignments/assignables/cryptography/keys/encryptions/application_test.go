@@ -133,7 +133,7 @@ func TestExecute_withDecrypt_Success(t *testing.T) {
 	}
 }
 
-func TestExecute_fetchPublicKey_Success(t *testing.T) {
+func TestExecute_withFetchPublicKey_Success(t *testing.T) {
 	encryptor := encryptors.NewEncryptorForTests(1048)
 
 	pkVar := "myPK"
