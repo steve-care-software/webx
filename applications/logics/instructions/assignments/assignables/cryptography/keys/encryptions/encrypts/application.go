@@ -38,8 +38,7 @@ func (app *application) Execute(frame stacks.Frame, assignable encrypts.Encrypt)
 
 	cipher, err := pubKey.Encrypt(msg)
 	if err != nil {
-		code := failures.CouldNotDecryptCipher
-		return nil, &code, err
+		return nil, nil, err
 	}
 
 	ins, err := app.assignableBuilder.Create().

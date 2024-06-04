@@ -125,3 +125,13 @@ func NewAssignableWithEncryptorForTests(value encryptors.Encryptor) Assignable {
 
 	return ins
 }
+
+// NewAssignableWithPublicKeyForTests creates a new assignable with encryptor public key for tests
+func NewAssignableWithEncryptorPublicKeyForTests(value encryptors.PublicKey) Assignable {
+	ins, err := NewAssignableBuilder().Create().WithEncryptorPubKey(value).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
