@@ -49,7 +49,10 @@ func (app *application) Execute(frame stacks.Frame, assignable creates.Create) (
 		return nil, &code, err
 	}
 
-	ins, err := app.assignableBuilder.Create().WithVote(vote).Now()
+	ins, err := app.assignableBuilder.Create().
+		WithVote(vote).
+		Now()
+
 	if err != nil {
 		return nil, nil, err
 	}

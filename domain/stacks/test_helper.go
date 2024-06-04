@@ -67,6 +67,16 @@ func NewAssignmentForTests(name string, assignable Assignable) Assignment {
 	return ins
 }
 
+// NewAssignablesForTests creates a new assignables for tests
+func NewAssignablesForTests(value []Assignable) Assignables {
+	ins, err := NewAssignablesBuilder().Create().WithList(value).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
 // NewAssignableWithBoolForTests creates a new assignable with bool for tests
 func NewAssignableWithBoolForTests(value bool) Assignable {
 	ins, err := NewAssignableBuilder().Create().WithBool(value).Now()
@@ -160,6 +170,16 @@ func NewAssignableWithSignerPublicKeyForTests(value signers.PublicKey) Assignabl
 // NewAssignableWithSignatureForTests creates a new assignable with signature for tests
 func NewAssignableWithSignatureForTests(value signers.Signature) Assignable {
 	ins, err := NewAssignableBuilder().Create().WithSignature(value).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewAssignableWithListForTests creates a new assignable with list for tests
+func NewAssignableWithListForTests(value Assignables) Assignable {
+	ins, err := NewAssignableBuilder().Create().WithList(value).Now()
 	if err != nil {
 		panic(err)
 	}
