@@ -6,9 +6,23 @@ import (
 
 	application_decrypts "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/decrypts"
 	application_encrypts "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/encrypts"
+	application_keys "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys"
+	application_encryptions "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/encryptions"
+	application_keys_decrypts "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/encryptions/decrypts"
+	application_keys_encrypts "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/encryptions/encrypts"
+	application_signatures "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures"
+	application_signs "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/signs"
+	application_signs_creates "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/signs/creates"
+	application_signs_validates "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/signs/validates"
+	application_votes "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/votes"
+	application_votes_creates "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/votes/creates"
+	application_votes_validates "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/votes/validates"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/cryptography"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/cryptography/decrypts"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/cryptography/encrypts"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/cryptography/keys"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/cryptography/keys/signatures"
+	"github.com/steve-care-software/datastencil/domain/keys/signers"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	"github.com/steve-care-software/datastencil/domain/stacks/mocks"
 )
@@ -57,7 +71,23 @@ func TestExecute_withDecrypt_Success(t *testing.T) {
 		application_encrypts.NewApplication(
 			encryptor,
 		),
-		nil,
+		application_keys.NewApplication(
+			application_encryptions.NewApplication(
+				application_keys_decrypts.NewApplication(),
+				application_keys_encrypts.NewApplication(),
+				1048,
+			),
+			application_signatures.NewApplication(
+				application_votes.NewApplication(
+					application_votes_creates.NewApplication(),
+					application_votes_validates.NewApplication(),
+				),
+				application_signs.NewApplication(
+					application_signs_creates.NewApplication(),
+					application_signs_validates.NewApplication(),
+				),
+			),
+		),
 	)
 
 	retAssignable, pCode, err := application.Execute(frame, instruction)
@@ -127,7 +157,23 @@ func TestExecute_withEncrypt_Success(t *testing.T) {
 		application_encrypts.NewApplication(
 			encryptor,
 		),
-		nil,
+		application_keys.NewApplication(
+			application_encryptions.NewApplication(
+				application_keys_decrypts.NewApplication(),
+				application_keys_encrypts.NewApplication(),
+				1048,
+			),
+			application_signatures.NewApplication(
+				application_votes.NewApplication(
+					application_votes_creates.NewApplication(),
+					application_votes_validates.NewApplication(),
+				),
+				application_signs.NewApplication(
+					application_signs_creates.NewApplication(),
+					application_signs_validates.NewApplication(),
+				),
+			),
+		),
 	)
 
 	retAssignable, pCode, err := application.Execute(frame, instruction)
@@ -149,6 +195,103 @@ func TestExecute_withEncrypt_Success(t *testing.T) {
 	retCipher := retAssignable.Bytes()
 	if !bytes.Equal(cipher, retCipher) {
 		t.Errorf("the returned cipher is invalid")
+		return
+	}
+}
+
+func TestExecute_withKey_Success(t *testing.T) {
+	message := []byte("this is a message")
+	signer := signers.NewFactory().Create()
+	firstPubKey := signers.NewFactory().Create().PublicKey()
+	secondPubKey := signers.NewFactory().Create().PublicKey()
+	thirdPubKey := signers.NewFactory().Create().PublicKey()
+
+	ring := stacks.NewAssignablesForTests([]stacks.Assignable{
+		stacks.NewAssignableWithSignerPublicKeyForTests(
+			firstPubKey,
+		),
+		stacks.NewAssignableWithSignerPublicKeyForTests(
+			secondPubKey,
+		),
+		stacks.NewAssignableWithSignerPublicKeyForTests(
+			thirdPubKey,
+		),
+		stacks.NewAssignableWithSignerPublicKeyForTests(
+			signer.PublicKey(),
+		),
+	})
+
+	messageVar := "myMessage"
+	ringVar := "myVar"
+	pkVar := "myPK"
+
+	frame := stacks.NewFrameWithAssignmentsForTests(
+		stacks.NewAssignmentsForTests([]stacks.Assignment{
+			stacks.NewAssignmentForTests(
+				messageVar,
+				stacks.NewAssignableWithBytesForTests(message),
+			),
+			stacks.NewAssignmentForTests(
+				ringVar,
+				stacks.NewAssignableWithListForTests(ring),
+			),
+			stacks.NewAssignmentForTests(
+				pkVar,
+				stacks.NewAssignableWithSignerForTests(signer),
+			),
+		}),
+	)
+
+	instruction := cryptography.NewCryptographyWithKeyForTests(
+		keys.NewKeyWithSignatureForTests(
+			signatures.NewSignatureWithGeneratePrivateKeyForTests(),
+		),
+	)
+
+	encryptor := mocks.NewEncryptor(
+		map[string]map[string][]byte{},
+		map[string]map[string][]byte{},
+	)
+
+	application := NewApplication(
+		application_decrypts.NewApplication(
+			encryptor,
+		),
+		application_encrypts.NewApplication(
+			encryptor,
+		),
+		application_keys.NewApplication(
+			application_encryptions.NewApplication(
+				application_keys_decrypts.NewApplication(),
+				application_keys_encrypts.NewApplication(),
+				1048,
+			),
+			application_signatures.NewApplication(
+				application_votes.NewApplication(
+					application_votes_creates.NewApplication(),
+					application_votes_validates.NewApplication(),
+				),
+				application_signs.NewApplication(
+					application_signs_creates.NewApplication(),
+					application_signs_validates.NewApplication(),
+				),
+			),
+		),
+	)
+
+	retAssignable, pCode, err := application.Execute(frame, instruction)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if pCode != nil {
+		t.Errorf("the code was expected to be nil, code returned: %d", *pCode)
+		return
+	}
+
+	if !retAssignable.IsSigner() {
+		t.Errorf("the assignable was expected to contain a signer")
 		return
 	}
 }
