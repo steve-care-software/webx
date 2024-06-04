@@ -25,8 +25,8 @@ func NewEncryptionWithFetchPublicKeyForTests(fetchPublicKey string) Encryption {
 	return ins
 }
 
-// NewEncryptionWithEncrypt creates an encryption with encrypt for tests
-func NewEncryptionWithEncrypt(encrypt encrypts.Encrypt) Encryption {
+// NewEncryptionWithEncryptForTests creates an encryption with encrypt for tests
+func NewEncryptionWithEncryptForTests(encrypt encrypts.Encrypt) Encryption {
 	ins, err := NewBuilder().Create().WithEncrypt(encrypt).Now()
 	if err != nil {
 		panic(err)

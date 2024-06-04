@@ -59,10 +59,9 @@ func (app *application) Execute(frame stacks.Frame, assignable encryptions.Encry
 		}
 
 		pubKey := pk.Public()
-		ins, err := app.assignableBuilder.Create().WithEncryptorPubKey(pubKey).Now()
-		if err != nil {
-			return nil, nil, err
-		}
+		ins, err := app.assignableBuilder.Create().
+			WithEncryptorPubKey(pubKey).
+			Now()
 
 		if err != nil {
 			return nil, nil, err
@@ -76,12 +75,19 @@ func (app *application) Execute(frame stacks.Frame, assignable encryptions.Encry
 		return nil, nil, err
 	}
 
-	encryptor, err := app.pkBuilder.Create().WithPK(*pPrivateKey).WithBitRate(app.bitRate).Now()
+	encryptor, err := app.pkBuilder.Create().
+		WithPK(*pPrivateKey).
+		WithBitRate(app.bitRate).
+		Now()
+
 	if err != nil {
 		return nil, nil, err
 	}
 
-	ins, err := app.assignableBuilder.Create().WithEncryptor(encryptor).Now()
+	ins, err := app.assignableBuilder.Create().
+		WithEncryptor(encryptor).
+		Now()
+
 	if err != nil {
 		return nil, nil, err
 	}
