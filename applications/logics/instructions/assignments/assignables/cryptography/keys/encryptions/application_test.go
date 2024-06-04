@@ -23,10 +23,6 @@ func TestExecute_withEncrypt_Success(t *testing.T) {
 	messageVar := "myMessage"
 	pubKeyVar := "myCipher"
 
-	instruction := encryptions.NewEncryptionWithEncryptForTests(
-		encrypts.NewEncryptForTests(messageVar, pubKeyVar),
-	)
-
 	frame := stacks.NewFrameWithAssignmentsForTests(
 		stacks.NewAssignmentsForTests([]stacks.Assignment{
 			stacks.NewAssignmentForTests(
@@ -38,6 +34,10 @@ func TestExecute_withEncrypt_Success(t *testing.T) {
 				stacks.NewAssignableWithEncryptorPublicKeyForTests(pubKey),
 			),
 		}),
+	)
+
+	instruction := encryptions.NewEncryptionWithEncryptForTests(
+		encrypts.NewEncryptForTests(messageVar, pubKeyVar),
 	)
 
 	application := NewApplication(
