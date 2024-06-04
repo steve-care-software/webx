@@ -4,6 +4,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
+	"github.com/steve-care-software/datastencil/domain/keys/signers"
 )
 
 // NewStackForTests creates a new stack for tests
@@ -129,6 +130,16 @@ func NewAssignableWithEncryptorForTests(value encryptors.Encryptor) Assignable {
 // NewAssignableWithPublicKeyForTests creates a new assignable with encryptor public key for tests
 func NewAssignableWithEncryptorPublicKeyForTests(value encryptors.PublicKey) Assignable {
 	ins, err := NewAssignableBuilder().Create().WithEncryptorPubKey(value).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewAssignableWithSignerForTests creates a new assignable with signer for tests
+func NewAssignableWithSignerForTests(value signers.Signer) Assignable {
+	ins, err := NewAssignableBuilder().Create().WithSigner(value).Now()
 	if err != nil {
 		panic(err)
 	}

@@ -37,11 +37,13 @@ func (app *application) Execute(frame stacks.Frame, assignable creates.Create) (
 
 	signature, err := pk.Sign(string(msg))
 	if err != nil {
-		code := failures.CouldNotSignMessageInFrame
-		return nil, &code, err
+		return nil, nil, err
 	}
 
-	ins, err := app.assignableBuilder.Create().WithSignature(signature).Now()
+	ins, err := app.assignableBuilder.Create().
+		WithSignature(signature).
+		Now()
+
 	if err != nil {
 		return nil, nil, err
 	}
