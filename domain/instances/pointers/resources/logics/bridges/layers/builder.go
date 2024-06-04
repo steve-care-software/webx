@@ -4,25 +4,19 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/outputs"
 )
 
 type builder struct {
-	hashAdapter  hash.Adapter
-	input        string
-	instructions instructions.Instructions
-	output       outputs.Output
+	hashAdapter hash.Adapter
+	list        []Layer
 }
 
 func createBuilder(
 	hashAdapter hash.Adapter,
 ) Builder {
 	out := builder{
-		hashAdapter:  hashAdapter,
-		input:        "",
-		instructions: nil,
-		output:       nil,
+		hashAdapter: hashAdapter,
+		list:        nil,
 	}
 
 	return &out
@@ -35,48 +29,37 @@ func (app *builder) Create() Builder {
 	)
 }
 
-// WithInstructions add instructions to the builder
-func (app *builder) WithInstructions(instructions instructions.Instructions) Builder {
-	app.instructions = instructions
+// WithList adds a list to the builder
+func (app *builder) WithList(list []Layer) Builder {
+	app.list = list
 	return app
 }
 
-// WithOutput add output to the builder
-func (app *builder) WithOutput(output outputs.Output) Builder {
-	app.output = output
-	return app
-}
-
-// WithInput adds an input to the builder
-func (app *builder) WithInput(input string) Builder {
-	app.input = input
-	return app
-}
-
-// Now builds a new Layer instance
-func (app *builder) Now() (Layer, error) {
-	if app.instructions == nil {
-		return nil, errors.New("the instructions is mandatory in order to build a Layer instance")
+// Now builds a new Layers instance
+func (app *builder) Now() (Layers, error) {
+	if app.list != nil && len(app.list) <= 0 {
+		app.list = nil
 	}
 
-	if app.output == nil {
-		return nil, errors.New("the output is mandatory in order to build a Layer instance")
+	if app.list == nil {
+		return nil, errors.New("there must be at least 1 Layer in order to build a Layers instance")
 	}
 
-	if app.input == "" {
-		return nil, errors.New("the input is mandatory in order to build a Layer instance")
+	data := [][]byte{}
+	for _, oneLayer := range app.list {
+		data = append(data, oneLayer.Hash().Bytes())
 	}
 
-	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
-		app.instructions.Hash().Bytes(),
-		app.output.Hash().Bytes(),
-		[]byte(app.input),
-	})
-
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
 	}
 
-	return createLayer(*pHash, app.instructions, app.output, app.input), nil
+	mp := map[string]Layer{}
+	for _, oneLayer := range app.list {
+		keyname := oneLayer.Hash().String()
+		mp[keyname] = oneLayer
+	}
 
+	return createLayers(*pHash, mp, app.list), nil
 }

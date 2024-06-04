@@ -1,6 +1,8 @@
 package validates
 
 import (
+	"errors"
+
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/validates"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
@@ -53,17 +55,13 @@ func (app *application) Execute(frame stacks.Frame, assignable validates.Validat
 	for _, oneAssignable := range list {
 		if !oneAssignable.IsHash() {
 			code := failures.CouldNotFetchHashFromList
-			return nil, &code, nil
+			return nil, &code, errors.New("the ring (hashed public key list) was expected to only contain hash elements")
 		}
 
 		hashes = append(hashes, oneAssignable.Hash())
 	}
 
-	validated, err := app.voteAdapter.ToVerification(vote, string(msg), hashes)
-	if err != nil {
-		return nil, nil, err
-	}
-
+	validated, _ := app.voteAdapter.ToVerification(vote, string(msg), hashes)
 	ins, err := app.assignableBuilder.Create().WithBool(validated).Now()
 	if err != nil {
 		return nil, nil, err

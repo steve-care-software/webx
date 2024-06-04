@@ -186,3 +186,13 @@ func NewAssignableWithListForTests(value Assignables) Assignable {
 
 	return ins
 }
+
+// NewAssignableWithVoteForTests creates a new assignable with vote for tests
+func NewAssignableWithVoteForTests(value signers.Vote) Assignable {
+	ins, err := NewAssignableBuilder().Create().WithVote(value).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
