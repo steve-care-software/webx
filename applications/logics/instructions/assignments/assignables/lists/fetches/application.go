@@ -1,6 +1,9 @@
 package fetches
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/lists/fetches"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	"github.com/steve-care-software/datastencil/domain/stacks/failures"
@@ -20,21 +23,23 @@ func (app *application) Execute(frame stacks.Frame, assignable fetches.Fetch) (s
 	assignables, err := frame.FetchList(listVar)
 	if err != nil {
 		code := failures.CouldNotFetchListFromFrame
-		return nil, &code, nil
+		return nil, &code, err
 	}
 
 	indexVar := assignable.Index()
 	pIndex, err := frame.FetchUnsignedInt(indexVar)
 	if err != nil {
 		code := failures.CouldNotFetchUnsignedIntegerFromFrame
-		return nil, &code, nil
+		return nil, &code, err
 	}
 
 	index := *pIndex
 	list := assignables.List()
-	if index >= uint(len(list)) {
+	limit := uint(len(list) - 1)
+	if index > limit {
 		code := failures.CouldNotFetchElementFromList
-		return nil, &code, nil
+		str := fmt.Sprintf("the provided index (%d) exceeds the limit index (%d) of the list (name: %s)", index, limit, listVar)
+		return nil, &code, errors.New(str)
 	}
 
 	return list[index], nil, nil
