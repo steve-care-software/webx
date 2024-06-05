@@ -3,6 +3,7 @@ package stacks
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
 )
@@ -90,6 +91,16 @@ func NewAssignableWithBoolForTests(value bool) Assignable {
 // NewAssignableWithBytesForTests creates a new assignable with bytes for tests
 func NewAssignableWithBytesForTests(value []byte) Assignable {
 	ins, err := NewAssignableBuilder().Create().WithBytes(value).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewAssignableWithStringForTests creates a new assignable with string for tests
+func NewAssignableWithStringForTests(value string) Assignable {
+	ins, err := NewAssignableBuilder().Create().WithString(value).Now()
 	if err != nil {
 		panic(err)
 	}
@@ -190,6 +201,16 @@ func NewAssignableWithListForTests(value Assignables) Assignable {
 // NewAssignableWithVoteForTests creates a new assignable with vote for tests
 func NewAssignableWithVoteForTests(value signers.Vote) Assignable {
 	ins, err := NewAssignableBuilder().Create().WithVote(value).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewAssignableWithModificationForTests creates a new assignable with modification for tests
+func NewAssignableWithModificationForTests(value modifications.Modification) Assignable {
+	ins, err := NewAssignableBuilder().Create().WithModification(value).Now()
 	if err != nil {
 		panic(err)
 	}

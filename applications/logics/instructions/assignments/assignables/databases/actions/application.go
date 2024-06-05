@@ -1,6 +1,9 @@
 package actions
 
 import (
+	"errors"
+	"fmt"
+
 	database_actions "github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/databases/actions"
@@ -33,7 +36,8 @@ func (app *application) Execute(frame stacks.Frame, assignable actions.Action) (
 	modifVar := assignable.Modifications()
 	modifAssignables, err := frame.FetchList(modifVar)
 	if err != nil {
-		return nil, nil, err
+		code := failures.CouldNotFetchListFromFrame
+		return nil, &code, err
 	}
 
 	modificationsList := []modifications.Modification{}
@@ -41,13 +45,17 @@ func (app *application) Execute(frame stacks.Frame, assignable actions.Action) (
 	for _, oneAssignable := range modifList {
 		if !oneAssignable.IsModification() {
 			code := failures.CouldNotFetchModificationFromList
-			return nil, &code, nil
+			str := fmt.Sprintf("the list (name: %s) was expected to contain Modification instances", modifVar)
+			return nil, &code, errors.New(str)
 		}
 
 		modificationsList = append(modificationsList, oneAssignable.Modification())
 	}
 
-	modifications, err := app.modificationsBuilder.Create().WithList(modificationsList).Now()
+	modifications, err := app.modificationsBuilder.Create().
+		WithList(modificationsList).
+		Now()
+
 	if err != nil {
 		return nil, nil, err
 	}
@@ -56,7 +64,7 @@ func (app *application) Execute(frame stacks.Frame, assignable actions.Action) (
 	pathAssignables, err := frame.FetchList(pathVar)
 	if err != nil {
 		code := failures.CouldNotFetchListFromFrame
-		return nil, &code, nil
+		return nil, &code, err
 	}
 
 	pathValues := []string{}
@@ -64,18 +72,26 @@ func (app *application) Execute(frame stacks.Frame, assignable actions.Action) (
 	for _, oneAssignable := range pathList {
 		if !oneAssignable.IsString() {
 			code := failures.CouldNotFetchStringFromList
-			return nil, &code, nil
+			str := fmt.Sprintf("the list (name: %s) was expected to contain string values", modifVar)
+			return nil, &code, errors.New(str)
 		}
 
 		pathValues = append(pathValues, *oneAssignable.String())
 	}
 
-	action, err := app.actionBuilder.Create().WithModifications(modifications).WithPath(pathValues).Now()
+	action, err := app.actionBuilder.Create().
+		WithModifications(modifications).
+		WithPath(pathValues).
+		Now()
+
 	if err != nil {
 		return nil, nil, err
 	}
 
-	ins, err := app.assignableBuilder.Create().WithAction(action).Now()
+	ins, err := app.assignableBuilder.Create().
+		WithAction(action).
+		Now()
+
 	if err != nil {
 		return nil, nil, err
 	}
