@@ -415,7 +415,7 @@ func TestExecute_withDatabase_retrieve_pathContainsInvalidElement_returnsError(t
 	}
 }
 
-func TestExecute_withDatabase_retrieve_ppathNotInFrame_returnsError(t *testing.T) {
+func TestExecute_withDatabase_retrieve_pathNotInFrame_returnsError(t *testing.T) {
 
 	database := databases.NewDatabaseForTests(
 		commits.NewCommitForTests(
