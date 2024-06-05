@@ -11,13 +11,39 @@ import (
 	application_cryptography "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography"
 	application_decrypts "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/decrypts"
 	application_encrypts "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/encrypts"
+	application_cryptography_keys "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys"
+	application_encryptions "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/encryptions"
+	application_keys_decrypts "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/encryptions/decrypts"
+	application_keys_encrypts "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/encryptions/encrypts"
+	application_signatures "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures"
+	application_signs "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/signs"
+	application_signs_creates "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/signs/creates"
+	application_signs_validates "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/signs/validates"
+	application_votes "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/votes"
+	application_votes_creates "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/votes/creates"
+	application_votes_validates "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/votes/validates"
+	application_databases "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/databases"
+	application_actions "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/databases/actions"
+	application_commits "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/databases/commits"
+	application_databases_databases "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/databases/databases"
+	application_deletes "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/databases/deletes"
+	application_modifications "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/databases/modifications"
+	application_retrieves "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/databases/retrieves"
+	application_lists "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/lists"
+	application_fetches "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/lists/fetches"
 	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/deletes"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables"
 	assignable_bytes "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/compilers"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/cryptography"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/cryptography/decrypts"
+	assignables_databases "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/databases"
+	instructions_actions "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/databases/actions"
+	instructions_list "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/lists"
+	instructions_fetches "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/lists/fetches"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	"github.com/steve-care-software/datastencil/domain/stacks/mocks"
 )
@@ -73,7 +99,40 @@ func TestExecute_withBytes_Success(t *testing.T) {
 			application_encrypts.NewApplication(
 				encryptor,
 			),
-			nil,
+			application_cryptography_keys.NewApplication(
+				application_encryptions.NewApplication(
+					application_keys_decrypts.NewApplication(),
+					application_keys_encrypts.NewApplication(),
+					1048,
+				),
+				application_signatures.NewApplication(
+					application_votes.NewApplication(
+						application_votes_creates.NewApplication(),
+						application_votes_validates.NewApplication(),
+					),
+					application_signs.NewApplication(
+						application_signs_creates.NewApplication(),
+						application_signs_validates.NewApplication(),
+					),
+				),
+			),
+		),
+		application_databases.NewApplication(
+			application_actions.NewApplication(),
+			application_commits.NewApplication(),
+			application_databases_databases.NewApplication(),
+			application_deletes.NewApplication(),
+			application_modifications.NewApplication(),
+			application_retrieves.NewApplication(
+				mocks.NewDatabaseRepository(
+					nil,
+					nil,
+					nil,
+				),
+			),
+		),
+		application_lists.NewApplication(
+			application_fetches.NewApplication(),
 		),
 	)
 
@@ -132,7 +191,40 @@ func TestExecute_withConstant_Success(t *testing.T) {
 			application_encrypts.NewApplication(
 				encryptor,
 			),
-			nil,
+			application_cryptography_keys.NewApplication(
+				application_encryptions.NewApplication(
+					application_keys_decrypts.NewApplication(),
+					application_keys_encrypts.NewApplication(),
+					1048,
+				),
+				application_signatures.NewApplication(
+					application_votes.NewApplication(
+						application_votes_creates.NewApplication(),
+						application_votes_validates.NewApplication(),
+					),
+					application_signs.NewApplication(
+						application_signs_creates.NewApplication(),
+						application_signs_validates.NewApplication(),
+					),
+				),
+			),
+		),
+		application_databases.NewApplication(
+			application_actions.NewApplication(),
+			application_commits.NewApplication(),
+			application_databases_databases.NewApplication(),
+			application_deletes.NewApplication(),
+			application_modifications.NewApplication(),
+			application_retrieves.NewApplication(
+				mocks.NewDatabaseRepository(
+					nil,
+					nil,
+					nil,
+				),
+			),
+		),
+		application_lists.NewApplication(
+			application_fetches.NewApplication(),
 		),
 	)
 
@@ -219,7 +311,40 @@ func TestExecute_withCryptography_Success(t *testing.T) {
 			application_encrypts.NewApplication(
 				encryptor,
 			),
-			nil,
+			application_cryptography_keys.NewApplication(
+				application_encryptions.NewApplication(
+					application_keys_decrypts.NewApplication(),
+					application_keys_encrypts.NewApplication(),
+					1048,
+				),
+				application_signatures.NewApplication(
+					application_votes.NewApplication(
+						application_votes_creates.NewApplication(),
+						application_votes_validates.NewApplication(),
+					),
+					application_signs.NewApplication(
+						application_signs_creates.NewApplication(),
+						application_signs_validates.NewApplication(),
+					),
+				),
+			),
+		),
+		application_databases.NewApplication(
+			application_actions.NewApplication(),
+			application_commits.NewApplication(),
+			application_databases_databases.NewApplication(),
+			application_deletes.NewApplication(),
+			application_modifications.NewApplication(),
+			application_retrieves.NewApplication(
+				mocks.NewDatabaseRepository(
+					nil,
+					nil,
+					nil,
+				),
+			),
+		),
+		application_lists.NewApplication(
+			application_fetches.NewApplication(),
 		),
 	)
 
@@ -289,7 +414,40 @@ func TestExecute_WithCompiler_Success(t *testing.T) {
 			application_encrypts.NewApplication(
 				encryptor,
 			),
-			nil,
+			application_cryptography_keys.NewApplication(
+				application_encryptions.NewApplication(
+					application_keys_decrypts.NewApplication(),
+					application_keys_encrypts.NewApplication(),
+					1048,
+				),
+				application_signatures.NewApplication(
+					application_votes.NewApplication(
+						application_votes_creates.NewApplication(),
+						application_votes_validates.NewApplication(),
+					),
+					application_signs.NewApplication(
+						application_signs_creates.NewApplication(),
+						application_signs_validates.NewApplication(),
+					),
+				),
+			),
+		),
+		application_databases.NewApplication(
+			application_actions.NewApplication(),
+			application_commits.NewApplication(),
+			application_databases_databases.NewApplication(),
+			application_deletes.NewApplication(),
+			application_modifications.NewApplication(),
+			application_retrieves.NewApplication(
+				mocks.NewDatabaseRepository(
+					nil,
+					nil,
+					nil,
+				),
+			),
+		),
+		application_lists.NewApplication(
+			application_fetches.NewApplication(),
 		),
 	)
 
@@ -312,6 +470,257 @@ func TestExecute_WithCompiler_Success(t *testing.T) {
 	retInstance := retAssignable.Instance()
 	if !reflect.DeepEqual(compiledInstance.(instances.Instance), retInstance) {
 		t.Errorf("the returned instance is invalid")
+		return
+	}
+}
+
+func TestExecute_withDatabase_Success(t *testing.T) {
+	modificationsList := stacks.NewAssignablesForTests([]stacks.Assignable{
+		stacks.NewAssignableWithModificationForTests(
+			modifications.NewModificationWithInsertForTests([]byte("insert some bytes")),
+		),
+		stacks.NewAssignableWithModificationForTests(
+			modifications.NewModificationWithDeleteForTests(
+				deletes.NewDeleteForTests(uint(23), uint(56)),
+			),
+		),
+	})
+
+	pathList := stacks.NewAssignablesForTests([]stacks.Assignable{
+		stacks.NewAssignableWithStringForTests(
+			"this",
+		),
+		stacks.NewAssignableWithStringForTests(
+			"is",
+		),
+		stacks.NewAssignableWithStringForTests(
+			"a",
+		),
+		stacks.NewAssignableWithStringForTests(
+			"path",
+		),
+	})
+
+	modifVar := "myModifications"
+	pathVar := "myPath"
+
+	frame := stacks.NewFrameWithAssignmentsForTests(
+		stacks.NewAssignmentsForTests([]stacks.Assignment{
+			stacks.NewAssignmentForTests(
+				modifVar,
+				stacks.NewAssignableWithListForTests(
+					modificationsList,
+				),
+			),
+			stacks.NewAssignmentForTests(
+				pathVar,
+				stacks.NewAssignableWithListForTests(
+					pathList,
+				),
+			),
+		}),
+	)
+
+	instruction := assignables.NewAssignableWithDatabaseForTests(
+		assignables_databases.NewDatabaseWithActionForTests(
+			instructions_actions.NewActionForTests(pathVar, modifVar),
+		),
+	)
+
+	encryptor := mocks.NewEncryptor(
+		map[string]map[string][]byte{},
+		map[string]map[string][]byte{},
+	)
+
+	application := NewApplication(
+		application_compilers.NewApplication(
+			mocks.NewInstanceAdapter(
+				map[string][]byte{},
+				map[string]instances.Instance{},
+			),
+		),
+		application_bytes.NewApplication(),
+		application_constants.NewApplication(),
+		application_cryptography.NewApplication(
+			application_decrypts.NewApplication(
+				encryptor,
+			),
+			application_encrypts.NewApplication(
+				encryptor,
+			),
+			application_cryptography_keys.NewApplication(
+				application_encryptions.NewApplication(
+					application_keys_decrypts.NewApplication(),
+					application_keys_encrypts.NewApplication(),
+					1048,
+				),
+				application_signatures.NewApplication(
+					application_votes.NewApplication(
+						application_votes_creates.NewApplication(),
+						application_votes_validates.NewApplication(),
+					),
+					application_signs.NewApplication(
+						application_signs_creates.NewApplication(),
+						application_signs_validates.NewApplication(),
+					),
+				),
+			),
+		),
+		application_databases.NewApplication(
+			application_actions.NewApplication(),
+			application_commits.NewApplication(),
+			application_databases_databases.NewApplication(),
+			application_deletes.NewApplication(),
+			application_modifications.NewApplication(),
+			application_retrieves.NewApplication(
+				mocks.NewDatabaseRepository(
+					nil,
+					nil,
+					nil,
+				),
+			),
+		),
+		application_lists.NewApplication(
+			application_fetches.NewApplication(),
+		),
+	)
+
+	retAssignable, pCode, err := application.Execute(frame, instruction)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if pCode != nil {
+		t.Errorf("the code was expected to be nil, code returned: %d", *pCode)
+		return
+	}
+
+	if !retAssignable.IsAction() {
+		t.Errorf("the assignable was expected to contain an action")
+		return
+	}
+
+	modifications := retAssignable.Action().Modifications().List()
+	if len(modifications) != 2 {
+		t.Errorf("the modifications list was expected to contain 2 elements")
+		return
+	}
+}
+
+func TestExecute_withList_Success(t *testing.T) {
+	index := uint(2)
+	value := []byte("third")
+
+	list := stacks.NewAssignablesForTests([]stacks.Assignable{
+		stacks.NewAssignableWithBytesForTests([]byte("first")),
+		stacks.NewAssignableWithBytesForTests([]byte("second")),
+		stacks.NewAssignableWithBytesForTests(value),
+	})
+
+	listVar := "myList"
+	indexVar := "myIndex"
+
+	frame := stacks.NewFrameWithAssignmentsForTests(
+		stacks.NewAssignmentsForTests([]stacks.Assignment{
+			stacks.NewAssignmentForTests(
+				listVar,
+				stacks.NewAssignableWithListForTests(
+					list,
+				),
+			),
+			stacks.NewAssignmentForTests(
+				indexVar,
+				stacks.NewAssignableWithUnsignedIntForTests(
+					index,
+				),
+			),
+		}),
+	)
+
+	instruction := assignables.NewAssignableWithListForTests(
+		instructions_list.NewListWithFetchForTests(
+			instructions_fetches.NewFetchForTests(listVar, indexVar),
+		),
+	)
+
+	encryptor := mocks.NewEncryptor(
+		map[string]map[string][]byte{},
+		map[string]map[string][]byte{},
+	)
+
+	application := NewApplication(
+		application_compilers.NewApplication(
+			mocks.NewInstanceAdapter(
+				map[string][]byte{},
+				map[string]instances.Instance{},
+			),
+		),
+		application_bytes.NewApplication(),
+		application_constants.NewApplication(),
+		application_cryptography.NewApplication(
+			application_decrypts.NewApplication(
+				encryptor,
+			),
+			application_encrypts.NewApplication(
+				encryptor,
+			),
+			application_cryptography_keys.NewApplication(
+				application_encryptions.NewApplication(
+					application_keys_decrypts.NewApplication(),
+					application_keys_encrypts.NewApplication(),
+					1048,
+				),
+				application_signatures.NewApplication(
+					application_votes.NewApplication(
+						application_votes_creates.NewApplication(),
+						application_votes_validates.NewApplication(),
+					),
+					application_signs.NewApplication(
+						application_signs_creates.NewApplication(),
+						application_signs_validates.NewApplication(),
+					),
+				),
+			),
+		),
+		application_databases.NewApplication(
+			application_actions.NewApplication(),
+			application_commits.NewApplication(),
+			application_databases_databases.NewApplication(),
+			application_deletes.NewApplication(),
+			application_modifications.NewApplication(),
+			application_retrieves.NewApplication(
+				mocks.NewDatabaseRepository(
+					nil,
+					nil,
+					nil,
+				),
+			),
+		),
+		application_lists.NewApplication(
+			application_fetches.NewApplication(),
+		),
+	)
+
+	retAssignable, pCode, err := application.Execute(frame, instruction)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if pCode != nil {
+		t.Errorf("the code was expected to be nil, code returned: %d", *pCode)
+		return
+	}
+
+	if !retAssignable.IsBytes() {
+		t.Errorf("the assignable was expected to contain bytes")
+		return
+	}
+
+	retBytes := retAssignable.Bytes()
+	if !bytes.Equal(value, retBytes) {
+		t.Errorf("the returned bytes is invalid")
 		return
 	}
 }
