@@ -3,6 +3,7 @@ package stacks
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/databases"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
@@ -244,6 +245,16 @@ func NewAssignableWithCommitForTests(value commits.Commit) Assignable {
 // NewAssignableWithDeleteForTests creates a new assignable with delete for tests
 func NewAssignableWithDeleteForTests(value deletes.Delete) Assignable {
 	ins, err := NewAssignableBuilder().Create().WithDelete(value).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewAssignableWithDatabaseForTests creates a new database for tests
+func NewAssignableWithDatabaseForTests(value databases.Database) Assignable {
+	ins, err := NewAssignableBuilder().Create().WithDatabase(value).Now()
 	if err != nil {
 		panic(err)
 	}

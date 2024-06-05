@@ -40,3 +40,12 @@ func NewDatabaseRepository(
 		errorIns,
 	)
 }
+
+// NewDatabaseService create sa new database service
+func NewDatabaseService(
+	expected databases.Database,
+) databases.Service {
+	return createDatabaseService(
+		expected,
+	)
+}

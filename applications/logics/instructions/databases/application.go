@@ -24,17 +24,17 @@ func createApplication(
 // Execute executes the application
 func (app *application) Execute(frame stacks.Frame, assignment database_instruction.Database) (*uint, error) {
 	if assignment.IsSave() {
-		dbVar := assignment.Delete()
+		dbVar := assignment.Save()
 		db, err := frame.FetchDatabase(dbVar)
 		if err != nil {
 			code := failures.CouldNotFetchDatabaseFromFrame
-			return &code, nil
+			return &code, err
 		}
 
 		err = app.databaseService.Save(db)
 		if err != nil {
 			code := failures.CouldNotSaveDatabaseFromService
-			return &code, nil
+			return &code, err
 		}
 
 		return nil, err
@@ -44,13 +44,13 @@ func (app *application) Execute(frame stacks.Frame, assignment database_instruct
 	hash, err := frame.FetchHash(delHashVar)
 	if err != nil {
 		code := failures.CouldNotFetchHashVariableFromFrame
-		return &code, nil
+		return &code, err
 	}
 
 	err = app.databaseService.Delete(hash)
 	if err != nil {
 		code := failures.CouldNotDeleteDatabaseFromService
-		return &code, nil
+		return &code, err
 	}
 
 	return nil, err

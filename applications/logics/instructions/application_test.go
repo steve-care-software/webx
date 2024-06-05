@@ -10,7 +10,20 @@ import (
 	application_assignments_assignables_constants "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/constants"
 	application_assignments_assignables_cryptography "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography"
 	application_assignments_assignables_cryptography_decrypts "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/decrypts"
+	application_decrypts "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/decrypts"
 	application_assignments_assignables_cryptography_encrypts "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/encrypts"
+	application_encrypts "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/encrypts"
+	application_cryptography_keys "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys"
+	application_encryptions "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/encryptions"
+	application_keys_decrypts "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/encryptions/decrypts"
+	application_keys_encrypts "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/encryptions/encrypts"
+	application_signatures "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures"
+	application_signs "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/signs"
+	application_signs_creates "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/signs/creates"
+	application_signs_validates "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/signs/validates"
+	application_votes "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/votes"
+	application_votes_creates "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/votes/creates"
+	application_votes_validates "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/votes/validates"
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments"
@@ -44,12 +57,29 @@ func TestExecute_WithIsStop_Success(t *testing.T) {
 				application_assignments_assignables_bytes.NewApplication(),
 				application_assignments_assignables_constants.NewApplication(),
 				application_assignments_assignables_cryptography.NewApplication(
-					application_assignments_assignables_cryptography_decrypts.NewApplication(
+					application_decrypts.NewApplication(
 						encryptor,
 					),
-					application_assignments_assignables_cryptography_encrypts.NewApplication(
+					application_encrypts.NewApplication(
 						encryptor,
-					), nil,
+					),
+					application_cryptography_keys.NewApplication(
+						application_encryptions.NewApplication(
+							application_keys_decrypts.NewApplication(),
+							application_keys_encrypts.NewApplication(),
+							1048,
+						),
+						application_signatures.NewApplication(
+							application_votes.NewApplication(
+								application_votes_creates.NewApplication(),
+								application_votes_validates.NewApplication(),
+							),
+							application_signs.NewApplication(
+								application_signs_creates.NewApplication(),
+								application_signs_validates.NewApplication(),
+							),
+						),
+					),
 				),
 			),
 		),
