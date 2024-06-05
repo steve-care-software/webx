@@ -32,7 +32,7 @@ func (app *application) Execute(frame stacks.Frame, assignable modifications.Mod
 		insert, err := frame.FetchBytes(insertVar)
 		if err != nil {
 			code := failures.CouldNotFetchBytesFromFrame
-			return nil, &code, nil
+			return nil, &code, err
 		}
 
 		builder.WithInsert(insert)
@@ -43,7 +43,7 @@ func (app *application) Execute(frame stacks.Frame, assignable modifications.Mod
 		delete, err := frame.FetchDelete(deleteVar)
 		if err != nil {
 			code := failures.CouldNotFetchDeleteFromFrame
-			return nil, &code, nil
+			return nil, &code, err
 		}
 
 		builder.WithDelete(delete)
@@ -54,7 +54,10 @@ func (app *application) Execute(frame stacks.Frame, assignable modifications.Mod
 		return nil, nil, err
 	}
 
-	ins, err := app.assignableBuilder.Create().WithModification(modification).Now()
+	ins, err := app.assignableBuilder.Create().
+		WithModification(modification).
+		Now()
+
 	if err != nil {
 		return nil, nil, err
 	}

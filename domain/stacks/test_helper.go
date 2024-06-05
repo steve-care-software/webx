@@ -6,6 +6,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/deletes"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
 )
@@ -233,6 +234,16 @@ func NewAssignableWithActionForTests(value actions.Action) Assignable {
 // NewAssignableWithCommitForTests creates a new assignable with commit for tests
 func NewAssignableWithCommitForTests(value commits.Commit) Assignable {
 	ins, err := NewAssignableBuilder().Create().WithCommit(value).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewAssignableWithDeleteForTests creates a new assignable with delete for tests
+func NewAssignableWithDeleteForTests(value deletes.Delete) Assignable {
+	ins, err := NewAssignableBuilder().Create().WithDelete(value).Now()
 	if err != nil {
 		panic(err)
 	}
