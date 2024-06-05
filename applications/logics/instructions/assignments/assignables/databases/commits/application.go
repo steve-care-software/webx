@@ -1,6 +1,9 @@
 package commits
 
 import (
+	"errors"
+	"fmt"
+
 	databases_commits "github.com/steve-care-software/datastencil/domain/instances/databases/commits"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/databases/commits"
@@ -33,21 +36,26 @@ func (app *application) Execute(frame stacks.Frame, assignable commits.Commit) (
 	actionsVar := assignable.Actions()
 	actionsAssignables, err := frame.FetchList(actionsVar)
 	if err != nil {
-		return nil, nil, err
+		code := failures.CouldNotFetchListFromFrame
+		return nil, &code, err
 	}
 
 	actionList := []actions.Action{}
 	actionAssList := actionsAssignables.List()
 	for _, oneAssignable := range actionAssList {
-		if !oneAssignable.IsModification() {
+		if !oneAssignable.IsAction() {
 			code := failures.CouldNotFetchActionFromList
-			return nil, &code, nil
+			str := fmt.Sprintf("the list (name: %s) was expected to contain Action instances", actionsVar)
+			return nil, &code, errors.New(str)
 		}
 
 		actionList = append(actionList, oneAssignable.Action())
 	}
 
-	actions, err := app.actionsBuilder.Create().WithList(actionList).Now()
+	actions, err := app.actionsBuilder.Create().
+		WithList(actionList).
+		Now()
+
 	if err != nil {
 		return nil, nil, err
 	}
@@ -56,10 +64,13 @@ func (app *application) Execute(frame stacks.Frame, assignable commits.Commit) (
 	description, err := frame.FetchString(descriptionVar)
 	if err != nil {
 		code := failures.CouldNotFetchStringFromFrame
-		return nil, &code, nil
+		return nil, &code, err
 	}
 
-	builder := app.commitBuilder.Create().WithActions(actions).WithDescription(description)
+	builder := app.commitBuilder.Create().
+		WithActions(actions).
+		WithDescription(description)
+
 	if assignable.HashParent() {
 		parentVar := assignable.Parent()
 		parentHash, err := frame.FetchHash(parentVar)
@@ -76,7 +87,10 @@ func (app *application) Execute(frame stacks.Frame, assignable commits.Commit) (
 		return nil, nil, err
 	}
 
-	ins, err := app.assignableBuilder.Create().WithCommit(commit).Now()
+	ins, err := app.assignableBuilder.Create().
+		WithCommit(commit).
+		Now()
+
 	if err != nil {
 		return nil, nil, err
 	}

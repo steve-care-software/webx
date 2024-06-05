@@ -3,6 +3,7 @@ package stacks
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
@@ -211,6 +212,16 @@ func NewAssignableWithVoteForTests(value signers.Vote) Assignable {
 // NewAssignableWithModificationForTests creates a new assignable with modification for tests
 func NewAssignableWithModificationForTests(value modifications.Modification) Assignable {
 	ins, err := NewAssignableBuilder().Create().WithModification(value).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewAssignableWithActionForTests creates a new assignable with action for tests
+func NewAssignableWithActionForTests(value actions.Action) Assignable {
+	ins, err := NewAssignableBuilder().Create().WithAction(value).Now()
 	if err != nil {
 		panic(err)
 	}
