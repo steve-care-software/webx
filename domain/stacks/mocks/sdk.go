@@ -3,6 +3,7 @@ package mocks
 import (
 	"github.com/steve-care-software/datastencil/domain/encryptors"
 	"github.com/steve-care-software/datastencil/domain/instances"
+	"github.com/steve-care-software/datastencil/domain/instances/databases"
 )
 
 // NewEncryptor creates a new encryptor
@@ -24,5 +25,18 @@ func NewInstanceAdapter(
 	return createInstanceAdapter(
 		toData,
 		toInstance,
+	)
+}
+
+// NewDatabaseRepository creates a new database repository
+func NewDatabaseRepository(
+	list [][]string,
+	database databases.Database,
+	errorIns error,
+) databases.Repository {
+	return createDatabaseRepository(
+		list,
+		database,
+		errorIns,
 	)
 }

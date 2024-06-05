@@ -1,6 +1,9 @@
 package retrieves
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/steve-care-software/datastencil/domain/instances/databases"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/databases/retrieves"
 	"github.com/steve-care-software/datastencil/domain/stacks"
@@ -34,14 +37,22 @@ func (app *application) Execute(frame stacks.Frame, assignable retrieves.Retriev
 		pathList, err := app.repository.List()
 		if err != nil {
 			code := failures.CouldNotRetrieveListFromRepository
-			return nil, &code, nil
+			return nil, &code, err
+		}
+
+		if len(pathList) <= 0 {
+			code := failures.CouldNotRetrieveEmptyListFromRepository
+			return nil, &code, errors.New("the path list returned from the database repository's List method is empty")
 		}
 
 		pathAssignableList := []stacks.Assignable{}
 		for _, onePath := range pathList {
 			assList := []stacks.Assignable{}
 			for _, oneStr := range onePath {
-				assignable, err := app.assignableBuilder.Create().WithString(oneStr).Now()
+				assignable, err := app.assignableBuilder.Create().
+					WithString(oneStr).
+					Now()
+
 				if err != nil {
 					return nil, nil, err
 				}
@@ -49,12 +60,18 @@ func (app *application) Execute(frame stacks.Frame, assignable retrieves.Retriev
 				assList = append(assList, assignable)
 			}
 
-			assignables, err := app.assignablesBuilder.Create().WithList(assList).Now()
+			assignables, err := app.assignablesBuilder.Create().
+				WithList(assList).
+				Now()
+
 			if err != nil {
 				return nil, nil, err
 			}
 
-			pathAssignable, err := app.assignableBuilder.Create().WithList(assignables).Now()
+			pathAssignable, err := app.assignableBuilder.Create().
+				WithList(assignables).
+				Now()
+
 			if err != nil {
 				return nil, nil, err
 			}
@@ -62,7 +79,10 @@ func (app *application) Execute(frame stacks.Frame, assignable retrieves.Retriev
 			pathAssignableList = append(pathAssignableList, pathAssignable)
 		}
 
-		assignables, err := app.assignablesBuilder.Create().WithList(pathAssignableList).Now()
+		assignables, err := app.assignablesBuilder.Create().
+			WithList(pathAssignableList).
+			Now()
+
 		if err != nil {
 			return nil, nil, err
 		}
@@ -75,7 +95,7 @@ func (app *application) Execute(frame stacks.Frame, assignable retrieves.Retriev
 		pathAssignables, err := frame.FetchList(pathVar)
 		if err != nil {
 			code := failures.CouldNotFetchListFromFrame
-			return nil, &code, nil
+			return nil, &code, err
 		}
 
 		pathValues := []string{}
@@ -83,7 +103,8 @@ func (app *application) Execute(frame stacks.Frame, assignable retrieves.Retriev
 		for _, oneAssignable := range pathList {
 			if !oneAssignable.IsString() {
 				code := failures.CouldNotFetchStringFromList
-				return nil, &code, nil
+				str := fmt.Sprintf("the path (name: %s) contains invalid elements", pathVar)
+				return nil, &code, errors.New(str)
 			}
 
 			pathValues = append(pathValues, *oneAssignable.String())
@@ -91,19 +112,19 @@ func (app *application) Execute(frame stacks.Frame, assignable retrieves.Retriev
 
 		pExists, err := app.repository.Exists(pathValues)
 		if err != nil {
-			code := failures.CouldNotRetrieveExistsFromRepository
-			return nil, &code, nil
+			code := failures.CouldNotExecuteExistsFromRepository
+			return nil, &code, err
 		}
 
 		builder.WithBool(*pExists)
 	}
 
 	if assignable.IsRetrieve() {
-		pathVar := assignable.Exists()
+		pathVar := assignable.Retrieve()
 		pathAssignables, err := frame.FetchList(pathVar)
 		if err != nil {
 			code := failures.CouldNotFetchListFromFrame
-			return nil, &code, nil
+			return nil, &code, err
 		}
 
 		pathValues := []string{}
@@ -111,7 +132,8 @@ func (app *application) Execute(frame stacks.Frame, assignable retrieves.Retriev
 		for _, oneAssignable := range pathList {
 			if !oneAssignable.IsString() {
 				code := failures.CouldNotFetchStringFromList
-				return nil, &code, nil
+				str := fmt.Sprintf("the path (name: %s) contains invalid elements", pathVar)
+				return nil, &code, errors.New(str)
 			}
 
 			pathValues = append(pathValues, *oneAssignable.String())
@@ -119,8 +141,8 @@ func (app *application) Execute(frame stacks.Frame, assignable retrieves.Retriev
 
 		retDatabase, err := app.repository.Retrieve(pathValues)
 		if err != nil {
-			code := failures.CouldNotRetrieveExistsFromRepository
-			return nil, &code, nil
+			code := failures.CouldNotRetrieveFromRepository
+			return nil, &code, err
 		}
 
 		builder.WithDatabase(retDatabase)

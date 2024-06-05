@@ -100,8 +100,14 @@ const (
 	// CouldNotRetrieveListFromRepository represents a could not retrieve list from repository
 	CouldNotRetrieveListFromRepository
 
-	// CouldNotRetrieveExistsFromRepository represents a could not retrieve exists from repository
-	CouldNotRetrieveExistsFromRepository
+	// CouldNotRetrieveEmptyListFromRepository represents a could not retrieve an empty list from repository
+	CouldNotRetrieveEmptyListFromRepository
+
+	// CouldNotRetrieveFromRepository represents a could not retrieve from repository
+	CouldNotRetrieveFromRepository
+
+	// CouldNotExecuteExistsFromRepository represents a could not execute exists from repository
+	CouldNotExecuteExistsFromRepository
 
 	// CouldNotFetchElementFromList represents a could not fetch element from list
 	CouldNotFetchElementFromList
