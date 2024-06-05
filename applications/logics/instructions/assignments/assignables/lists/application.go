@@ -1,21 +1,25 @@
 package lists
 
 import (
+	application_fetches "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/lists/fetches"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/lists"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	"github.com/steve-care-software/datastencil/domain/stacks/failures"
 )
 
 type application struct {
+	fetchApplication   application_fetches.Application
 	assignableBuilder  stacks.AssignableBuilder
 	assignablesBuilder stacks.AssignablesBuilder
 }
 
 func createApplication(
+	fetchApplication application_fetches.Application,
 	assignableBuilder stacks.AssignableBuilder,
 	assignablesBuilder stacks.AssignablesBuilder,
 ) Application {
 	out := application{
+		fetchApplication:   fetchApplication,
 		assignableBuilder:  assignableBuilder,
 		assignablesBuilder: assignablesBuilder,
 	}
@@ -27,29 +31,7 @@ func createApplication(
 func (app *application) Execute(frame stacks.Frame, assignable lists.List) (stacks.Assignable, *uint, error) {
 	if assignable.IsFetch() {
 		fetch := assignable.Fetch()
-		indexName := fetch.Index()
-		pIndex, err := frame.FetchUnsignedInt(indexName)
-		if err != nil {
-			code := failures.CouldNotFetchUnsignedIntegerFromFrame
-			return nil, &code, nil
-		}
-
-		listName := fetch.List()
-		list, err := frame.FetchList(listName)
-		if err != nil {
-			code := failures.CouldNotFetchListFromFrame
-			return nil, &code, nil
-		}
-
-		index := *pIndex
-		elements := list.List()
-		if index >= uint(len(elements)) {
-			code := failures.CouldNotFetchElementFromList
-			return nil, &code, nil
-		}
-
-		return elements[index], nil, nil
-
+		return app.fetchApplication.Execute(frame, fetch)
 	}
 
 	if assignable.IsCreate() {
@@ -57,7 +39,7 @@ func (app *application) Execute(frame stacks.Frame, assignable lists.List) (stac
 		assignable, err := frame.Fetch(elementName)
 		if err != nil {
 			code := failures.CouldNotFetchFromFrame
-			return nil, &code, nil
+			return nil, &code, err
 		}
 
 		retAssignables, err := app.assignablesBuilder.Create().WithList([]stacks.Assignable{
@@ -79,7 +61,7 @@ func (app *application) Execute(frame stacks.Frame, assignable lists.List) (stac
 	list, err := frame.FetchList(listVar)
 	if err != nil {
 		code := failures.CouldNotFetchListFromFrame
-		return nil, &code, nil
+		return nil, &code, err
 	}
 
 	length := len(list.List())

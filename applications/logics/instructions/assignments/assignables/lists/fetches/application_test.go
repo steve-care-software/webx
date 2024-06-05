@@ -152,7 +152,7 @@ func TestExecute_indexNotInFrame_returnsError(t *testing.T) {
 	}
 
 	if *pCode != failures.CouldNotFetchUnsignedIntegerFromFrame {
-		t.Errorf("the returned code was expected to be %d, %d returned", *pCode, failures.CouldNotFetchUnsignedIntegerFromFrame)
+		t.Errorf("the returned code was expected to be %d, %d returned", *pCode, failures.CouldNotFetchElementFromList)
 		return
 	}
 }
