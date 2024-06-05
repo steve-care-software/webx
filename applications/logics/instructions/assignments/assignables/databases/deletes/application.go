@@ -30,22 +30,29 @@ func (app *application) Execute(frame stacks.Frame, assignable deletes.Delete) (
 	pIndex, err := frame.FetchUnsignedInt(indexVar)
 	if err != nil {
 		code := failures.CouldNotFetchUnsignedIntegerFromFrame
-		return nil, &code, nil
+		return nil, &code, err
 	}
 
 	lengthVar := assignable.Length()
 	pLength, err := frame.FetchUnsignedInt(lengthVar)
 	if err != nil {
 		code := failures.CouldNotFetchUnsignedIntegerFromFrame
-		return nil, &code, nil
+		return nil, &code, err
 	}
 
-	delete, err := app.deleteBuilder.Create().WithIndex(*pIndex).WithLength(*pLength).Now()
+	delete, err := app.deleteBuilder.Create().
+		WithIndex(*pIndex).
+		WithLength(*pLength).
+		Now()
+
 	if err != nil {
 		return nil, nil, err
 	}
 
-	ins, err := app.assignableBuilder.Create().WithDelete(delete).Now()
+	ins, err := app.assignableBuilder.Create().
+		WithDelete(delete).
+		Now()
+
 	if err != nil {
 		return nil, nil, err
 	}
