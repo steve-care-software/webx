@@ -1,10 +1,10 @@
-package deletes
+package inserts
 
 import (
 	"bytes"
 	"testing"
 
-	instruction_deletes "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/lists/deletes"
+	instruction_inserts "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/lists/inserts"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	"github.com/steve-care-software/datastencil/domain/stacks/failures"
 )
@@ -13,13 +13,11 @@ func TestExecute_Success(t *testing.T) {
 	secondBytes := []byte("second bytes")
 	list := stacks.NewAssignablesForTests([]stacks.Assignable{
 		stacks.NewAssignableWithBytesForTests([]byte("first bytes")),
-		stacks.NewAssignableWithBytesForTests(secondBytes),
 	})
 
-	index := uint(0)
-
 	listVar := "myList"
-	indexVar := "myIndex"
+	elementVar := "myElement"
+
 	frame := stacks.NewFrameWithAssignmentsForTests(
 		stacks.NewAssignmentsForTests([]stacks.Assignment{
 			stacks.NewAssignmentForTests(
@@ -29,15 +27,15 @@ func TestExecute_Success(t *testing.T) {
 				),
 			),
 			stacks.NewAssignmentForTests(
-				indexVar,
-				stacks.NewAssignableWithUnsignedIntForTests(
-					index,
+				elementVar,
+				stacks.NewAssignableWithBytesForTests(
+					secondBytes,
 				),
 			),
 		}),
 	)
 
-	instruction := instruction_deletes.NewDeleteForTests(listVar, indexVar)
+	instruction := instruction_inserts.NewInsertForTests(listVar, elementVar)
 	application := NewApplication()
 
 	retAssignment, pCode, err := application.Execute(frame, instruction)
@@ -64,29 +62,27 @@ func TestExecute_Success(t *testing.T) {
 	}
 
 	retList := retAssignable.List().List()
-	if len(retList) != len(list.List())-1 {
-		t.Errorf("the returned list is invalid, %d elements expected, %d returned", len(list.List())-1, len(retList))
+	if len(retList) != len(list.List())+1 {
+		t.Errorf("the returned list is invalid, %d elements expected, %d returned", len(list.List())+1, len(retList))
 		return
 	}
 
-	retBytes := retList[0].Bytes()
+	retBytes := retList[1].Bytes()
 	if !bytes.Equal(secondBytes, retBytes) {
 		t.Errorf("the returned bytes is invalid")
 		return
 	}
+
 }
 
-func TestExecute_indexExceedsTopDelimiter_returnsError(t *testing.T) {
-	secondBytes := []byte("second bytes")
+func TestExecute_elementNotInFrame_returnsError(t *testing.T) {
 	list := stacks.NewAssignablesForTests([]stacks.Assignable{
 		stacks.NewAssignableWithBytesForTests([]byte("first bytes")),
-		stacks.NewAssignableWithBytesForTests(secondBytes),
 	})
 
-	index := uint(2)
-
 	listVar := "myList"
-	indexVar := "myIndex"
+	elementVar := "myElement"
+
 	frame := stacks.NewFrameWithAssignmentsForTests(
 		stacks.NewAssignmentsForTests([]stacks.Assignment{
 			stacks.NewAssignmentForTests(
@@ -95,16 +91,10 @@ func TestExecute_indexExceedsTopDelimiter_returnsError(t *testing.T) {
 					list,
 				),
 			),
-			stacks.NewAssignmentForTests(
-				indexVar,
-				stacks.NewAssignableWithUnsignedIntForTests(
-					index,
-				),
-			),
 		}),
 	)
 
-	instruction := instruction_deletes.NewDeleteForTests(listVar, indexVar)
+	instruction := instruction_inserts.NewInsertForTests(listVar, elementVar)
 	application := NewApplication()
 
 	_, pCode, err := application.Execute(frame, instruction)
@@ -118,30 +108,30 @@ func TestExecute_indexExceedsTopDelimiter_returnsError(t *testing.T) {
 		return
 	}
 
-	if *pCode != failures.CouldNotFetchElementFromList {
-		t.Errorf("the error code was expected to be %d, %d returned", failures.CouldNotFetchElementFromList, *pCode)
+	if *pCode != failures.CouldNotFetchFromFrame {
+		t.Errorf("the error code was expected to be %d, %d returned", failures.CouldNotFetchFromFrame, *pCode)
 		return
 	}
 
 }
 
 func TestExecute_listNotInFrame_returnsError(t *testing.T) {
-	index := uint(1)
-
+	secondBytes := []byte("second bytes")
 	listVar := "myList"
-	indexVar := "myIndex"
+	elementVar := "myElement"
+
 	frame := stacks.NewFrameWithAssignmentsForTests(
 		stacks.NewAssignmentsForTests([]stacks.Assignment{
 			stacks.NewAssignmentForTests(
-				indexVar,
-				stacks.NewAssignableWithUnsignedIntForTests(
-					index,
+				elementVar,
+				stacks.NewAssignableWithBytesForTests(
+					secondBytes,
 				),
 			),
 		}),
 	)
 
-	instruction := instruction_deletes.NewDeleteForTests(listVar, indexVar)
+	instruction := instruction_inserts.NewInsertForTests(listVar, elementVar)
 	application := NewApplication()
 
 	_, pCode, err := application.Execute(frame, instruction)
@@ -157,47 +147,6 @@ func TestExecute_listNotInFrame_returnsError(t *testing.T) {
 
 	if *pCode != failures.CouldNotFetchListFromFrame {
 		t.Errorf("the error code was expected to be %d, %d returned", failures.CouldNotFetchListFromFrame, *pCode)
-		return
-	}
-
-}
-
-func TestExecute_indexNotInFrame_returnsError(t *testing.T) {
-	secondBytes := []byte("second bytes")
-	list := stacks.NewAssignablesForTests([]stacks.Assignable{
-		stacks.NewAssignableWithBytesForTests([]byte("first bytes")),
-		stacks.NewAssignableWithBytesForTests(secondBytes),
-	})
-
-	listVar := "myList"
-	indexVar := "myIndex"
-	frame := stacks.NewFrameWithAssignmentsForTests(
-		stacks.NewAssignmentsForTests([]stacks.Assignment{
-			stacks.NewAssignmentForTests(
-				listVar,
-				stacks.NewAssignableWithListForTests(
-					list,
-				),
-			),
-		}),
-	)
-
-	instruction := instruction_deletes.NewDeleteForTests(listVar, indexVar)
-	application := NewApplication()
-
-	_, pCode, err := application.Execute(frame, instruction)
-	if err == nil {
-		t.Errorf("the error was expected to NOT be nil")
-		return
-	}
-
-	if pCode == nil {
-		t.Errorf("the code was expected to NOT be nil")
-		return
-	}
-
-	if *pCode != failures.CouldNotFetchUnsignedIntegerFromFrame {
-		t.Errorf("the error code was expected to be %d, %d returned", failures.CouldNotFetchUnsignedIntegerFromFrame, *pCode)
 		return
 	}
 

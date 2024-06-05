@@ -12,8 +12,17 @@ type application struct {
 	assignmentBuilder  stacks.AssignmentBuilder
 }
 
-func createApplication() Application {
-	out := application{}
+func createApplication(
+	assignableBuiler stacks.AssignableBuilder,
+	assignablesBuilder stacks.AssignablesBuilder,
+	assignmentBuilder stacks.AssignmentBuilder,
+) Application {
+	out := application{
+		assignableBuiler:   assignableBuiler,
+		assignablesBuilder: assignablesBuilder,
+		assignmentBuilder:  assignmentBuilder,
+	}
+
 	return &out
 }
 
@@ -23,14 +32,14 @@ func (app *application) Execute(frame stacks.Frame, assignable inserts.Insert) (
 	listAssignables, err := frame.FetchList(listVar)
 	if err != nil {
 		code := failures.CouldNotFetchListFromFrame
-		return nil, &code, nil
+		return nil, &code, err
 	}
 
 	elementVar := assignable.Element()
 	fetched, err := frame.Fetch(elementVar)
 	if err != nil {
 		code := failures.CouldNotFetchFromFrame
-		return nil, &code, nil
+		return nil, &code, err
 	}
 
 	list := listAssignables.List()
