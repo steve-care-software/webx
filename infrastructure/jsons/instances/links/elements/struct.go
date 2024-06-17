@@ -2,7 +2,7 @@ package elements
 
 import (
 	json_conditions "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/conditions"
-	json_layers "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/layers"
+	json_layers "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/pointers/resources/logics/bridges/layers"
 )
 
 // Element represents an element

@@ -21,6 +21,12 @@ func NewBridgeBuilder() BridgeBuilder {
 	)
 }
 
+// Adapter represents the bridge adapter
+type Adapter interface {
+	ToBytes(ins Bridges) ([]byte, error)
+	ToInstance(bytes []byte) (Bridges, error)
+}
+
 // Builder represents bridges builder
 type Builder interface {
 	Create() Builder
