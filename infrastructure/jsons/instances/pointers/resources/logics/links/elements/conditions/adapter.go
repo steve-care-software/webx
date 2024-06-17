@@ -4,24 +4,21 @@ import (
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/elements/conditions"
-	json_resources "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/conditions/resources"
+	json_resources "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/pointers/resources/logics/links/elements/conditions/resources"
 )
 
 // Adapter represents an adapter
 type Adapter struct {
 	resourceAdapter *json_resources.Adapter
-	valueBuilder    conditions.ConditionValueBuilder
 	builder         conditions.Builder
 }
 
 func createAdapter(
 	resourceAdapter *json_resources.Adapter,
-	valueBuilder conditions.ConditionValueBuilder,
 	builder conditions.Builder,
 ) conditions.Adapter {
 	out := Adapter{
 		resourceAdapter: resourceAdapter,
-		valueBuilder:    valueBuilder,
 		builder:         builder,
 	}
 
@@ -66,7 +63,7 @@ func (app *Adapter) ConditionToStruct(ins conditions.Condition) (*Condition, err
 	}
 
 	if ins.HasNext() {
-		ptr, err := app.ValueToStruct(ins.Next())
+		ptr, err := app.ConditionToStruct(ins.Next())
 		if err != nil {
 			return nil, err
 		}
@@ -86,60 +83,12 @@ func (app *Adapter) StructToCondition(str Condition) (conditions.Condition, erro
 
 	builder := app.builder.Create().WithResource(resource)
 	if str.Next != nil {
-		value, err := app.StructToValue(*str.Next)
+		ins, err := app.StructToCondition(*str.Next)
 		if err != nil {
 			return nil, err
 		}
 
-		builder.WithNext(value)
-	}
-
-	return builder.Now()
-}
-
-// ValueToStruct converts a value to struct
-func (app *Adapter) ValueToStruct(ins conditions.ConditionValue) (*Value, error) {
-	out := Value{}
-	if ins.IsResource() {
-		ptr, err := app.resourceAdapter.ResourceToStruct(ins.Resource())
-		if err != nil {
-			return nil, err
-		}
-
-		out.Resource = ptr
-	}
-
-	if ins.IsCondition() {
-		ptr, err := app.ConditionToStruct(ins.Condition())
-		if err != nil {
-			return nil, err
-		}
-
-		out.Condition = ptr
-	}
-
-	return &out, nil
-}
-
-// StructToValue converts a struct to value
-func (app *Adapter) StructToValue(str Value) (conditions.ConditionValue, error) {
-	builder := app.valueBuilder.Create()
-	if str.Resource != nil {
-		ins, err := app.resourceAdapter.StructToResource(*str.Resource)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithResource(ins)
-	}
-
-	if str.Condition != nil {
-		ptr, err := app.StructToCondition(*str.Condition)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithCondition(ptr)
+		builder.WithNext(ins)
 	}
 
 	return builder.Now()

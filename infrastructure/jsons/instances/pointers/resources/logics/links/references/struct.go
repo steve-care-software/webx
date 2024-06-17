@@ -2,6 +2,6 @@ package references
 
 // Reference represents a reference
 type Reference struct {
-	Variable   string `json:"variable"`
-	Identifier string `json:"identifier"`
+	Variable string   `json:"variable"`
+	Path     []string `json:"path"`
 }

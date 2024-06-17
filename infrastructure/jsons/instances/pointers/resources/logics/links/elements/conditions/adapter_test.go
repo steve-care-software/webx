@@ -1,23 +1,19 @@
-package resources
+package conditions
 
 import (
 	"bytes"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/origins/resources"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/elements/conditions"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/elements/conditions/resources"
 )
 
 func TestAdapter_Success(t *testing.T) {
-	pHash, err := hash.NewAdapter().FromBytes([]byte("this is a layer hash"))
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
+	ins := conditions.NewConditionForTests(
+		resources.NewResourceForTests(uint(45)),
+	)
 
-	ins := resources.NewResourceForTests(*pHash)
 	adapter := NewAdapter()
-
 	retBytes, err := adapter.ToBytes(ins)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
@@ -36,16 +32,15 @@ func TestAdapter_Success(t *testing.T) {
 	}
 }
 
-func TestAdapter_isMandatory_Success(t *testing.T) {
-	pHash, err := hash.NewAdapter().FromBytes([]byte("this is a layer hash"))
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
+func TestAdapter_withNext_Success(t *testing.T) {
+	ins := conditions.NewConditionWithNextForTests(
+		resources.NewResourceForTests(uint(45)),
+		conditions.NewConditionForTests(
+			resources.NewResourceForTests(uint(22)),
+		),
+	)
 
-	ins := resources.NewResourceWithIsMandatoryForTests(*pHash)
 	adapter := NewAdapter()
-
 	retBytes, err := adapter.ToBytes(ins)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())

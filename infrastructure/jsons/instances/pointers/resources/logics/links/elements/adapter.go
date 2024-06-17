@@ -4,26 +4,22 @@ import (
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/elements"
-	json_conditions "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links/elements/conditions"
-	json_layers "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/pointers/resources/logics/bridges/layers"
+	json_conditions "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/pointers/resources/logics/links/elements/conditions"
 )
 
 // Adapter represents the adapter
 type Adapter struct {
-	layerAdapter     *json_layers.Adapter
 	conditionAdapter *json_conditions.Adapter
 	elementBuilder   elements.ElementBuilder
 	builder          elements.Builder
 }
 
 func createAdapter(
-	layerAdapter *json_layers.Adapter,
 	conditionAdapter *json_conditions.Adapter,
 	elementBuilder elements.ElementBuilder,
 	builder elements.Builder,
 ) elements.Adapter {
 	out := Adapter{
-		layerAdapter:     layerAdapter,
 		conditionAdapter: conditionAdapter,
 		elementBuilder:   elementBuilder,
 		builder:          builder,
@@ -93,13 +89,8 @@ func (app *Adapter) StructToElements(list []Element) (elements.Elements, error) 
 
 // ElementToStruct converts element to struct
 func (app *Adapter) ElementToStruct(ins elements.Element) (*Element, error) {
-	ptr, err := app.layerAdapter.LayerToStruct(ins.Layer())
-	if err != nil {
-		return nil, err
-	}
-
 	output := Element{
-		Layer: *ptr,
+		Layer: ins.Layer(),
 	}
 
 	if ins.HasCondition() {
@@ -116,12 +107,7 @@ func (app *Adapter) ElementToStruct(ins elements.Element) (*Element, error) {
 
 // StructToElement converts a struct to element
 func (app *Adapter) StructToElement(str Element) (elements.Element, error) {
-	layer, err := app.layerAdapter.StructToLayer(str.Layer)
-	if err != nil {
-		return nil, err
-	}
-
-	builder := app.elementBuilder.Create().WithLayer(layer)
+	builder := app.elementBuilder.Create().WithLayer(str.Layer)
 	if str.Condition != nil {
 		condition, err := app.conditionAdapter.StructToCondition(*str.Condition)
 		if err != nil {

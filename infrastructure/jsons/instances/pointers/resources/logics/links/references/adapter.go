@@ -3,24 +3,20 @@ package references
 import (
 	"encoding/json"
 
-	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/references"
 )
 
 // Adapter represents the adapter
 type Adapter struct {
-	hashAdapter      hash.Adapter
 	referenceBuilder references.ReferenceBuilder
 	builder          references.Builder
 }
 
 func createAdapter(
-	hashAdapter hash.Adapter,
 	referenceBuilder references.ReferenceBuilder,
 	builder references.Builder,
 ) references.Adapter {
 	out := Adapter{
-		hashAdapter:      hashAdapter,
 		referenceBuilder: referenceBuilder,
 		builder:          builder,
 	}
@@ -90,20 +86,15 @@ func (app *Adapter) StructToReferences(list []Reference) (references.References,
 // ReferenceToStruct converts a reference to struct
 func (app *Adapter) ReferenceToStruct(ins references.Reference) (*Reference, error) {
 	return &Reference{
-		Variable:   ins.Variable(),
-		Identifier: ins.Identifier().String(),
+		Variable: ins.Variable(),
+		Path:     ins.Path(),
 	}, nil
 }
 
 // StructToReference converts a struct to reference
 func (app *Adapter) StructToReference(str Reference) (references.Reference, error) {
-	pHash, err := app.hashAdapter.FromString(str.Identifier)
-	if err != nil {
-		return nil, err
-	}
-
 	return app.referenceBuilder.Create().
 		WithVariable(str.Variable).
-		WithIdentifier(*pHash).
+		WithPath(str.Path).
 		Now()
 }
