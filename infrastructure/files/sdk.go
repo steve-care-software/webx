@@ -1,8 +1,8 @@
 package files
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links"
+	"github.com/steve-care-software/datastencil/domain/instances/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/links"
 )
 
 // NewLayerRepositoryBuilder creates a new layer repository builder

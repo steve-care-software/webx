@@ -3,7 +3,7 @@ package links
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links"
+	"github.com/steve-care-software/datastencil/domain/instances/links"
 )
 
 type link struct {

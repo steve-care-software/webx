@@ -3,7 +3,7 @@ package lists
 import (
 	"github.com/steve-care-software/datastencil/applications/logics/instructions/lists/deletes"
 	"github.com/steve-care-software/datastencil/applications/logics/instructions/lists/inserts"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/lists"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/lists"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

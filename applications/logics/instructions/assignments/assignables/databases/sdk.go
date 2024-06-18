@@ -7,7 +7,7 @@ import (
 	"github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/databases/deletes"
 	"github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/databases/modifications"
 	"github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/databases/retrieves"
-	assignables_databases "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/databases"
+	assignables_databases "github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/databases"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

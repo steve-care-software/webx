@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links"
+	"github.com/steve-care-software/datastencil/domain/instances/links"
 )
 
 type linkRepository struct {

@@ -32,9 +32,9 @@ import (
 	application_lists "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/lists"
 	application_fetches "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/lists/fetches"
 	"github.com/steve-care-software/datastencil/domain/instances"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables"
-	assignable_bytes "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/bytes"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables"
+	assignable_bytes "github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	"github.com/steve-care-software/datastencil/domain/stacks/mocks"
 )

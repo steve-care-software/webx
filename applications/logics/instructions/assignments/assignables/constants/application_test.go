@@ -3,7 +3,7 @@ package constants
 import (
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/constants"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/constants"
 )
 
 func TestExecute_withBool_Success(t *testing.T) {

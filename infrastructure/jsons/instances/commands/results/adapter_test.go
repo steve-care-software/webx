@@ -8,7 +8,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results/interruptions"
 	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results/success"
 	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results/success/outputs"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/outputs/kinds"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/outputs/kinds"
 )
 
 func TestAdapter_withSuccess_Success(t *testing.T) {

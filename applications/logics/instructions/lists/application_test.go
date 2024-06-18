@@ -5,9 +5,9 @@ import (
 
 	application_delete "github.com/steve-care-software/datastencil/applications/logics/instructions/lists/deletes"
 	applications_inserts "github.com/steve-care-software/datastencil/applications/logics/instructions/lists/inserts"
-	instruction_list "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/lists"
-	instruction_deletes "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/lists/deletes"
-	instruction_inserts "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/lists/inserts"
+	instruction_list "github.com/steve-care-software/datastencil/domain/instances/layers/instructions/lists"
+	instruction_deletes "github.com/steve-care-software/datastencil/domain/instances/layers/instructions/lists/deletes"
+	instruction_inserts "github.com/steve-care-software/datastencil/domain/instances/layers/instructions/lists/inserts"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

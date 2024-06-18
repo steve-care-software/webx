@@ -3,7 +3,7 @@ package success
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results/success/outputs"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/outputs/kinds"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/outputs/kinds"
 )
 
 type success struct {

@@ -6,7 +6,7 @@ import (
 
 	databases_databases "github.com/steve-care-software/datastencil/domain/instances/databases"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/heads"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/databases/databases"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/databases/databases"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	"github.com/steve-care-software/datastencil/domain/stacks/failures"
 )

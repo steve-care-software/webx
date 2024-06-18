@@ -2,7 +2,7 @@ package resources
 
 import (
 	"github.com/steve-care-software/datastencil/domain/instances/executions"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources"
+	"github.com/steve-care-software/datastencil/domain/resources"
 )
 
 // Application represents a resources application

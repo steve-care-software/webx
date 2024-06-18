@@ -9,8 +9,8 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/databases"
 	"github.com/steve-care-software/datastencil/domain/instances/executions"
 	execution_links "github.com/steve-care-software/datastencil/domain/instances/executions/links"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics"
+	"github.com/steve-care-software/datastencil/domain/resources"
+	"github.com/steve-care-software/datastencil/domain/resources/logics"
 )
 
 type application struct {

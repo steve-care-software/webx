@@ -3,7 +3,7 @@ package files
 import (
 	"errors"
 
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/layers"
 )
 
 type layerRepositoryBuilder struct {

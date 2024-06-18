@@ -5,13 +5,13 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/instances/databases"
 	"github.com/steve-care-software/datastencil/domain/instances/executions"
+	"github.com/steve-care-software/datastencil/domain/instances/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/links"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/references"
+	"github.com/steve-care-software/datastencil/domain/resources"
+	"github.com/steve-care-software/datastencil/domain/resources/logics"
+	"github.com/steve-care-software/datastencil/domain/resources/logics/bridges"
+	"github.com/steve-care-software/datastencil/domain/resources/logics/references"
 )
 
 type application struct {

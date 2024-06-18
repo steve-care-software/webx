@@ -2,7 +2,7 @@ package assignments
 
 import (
 	"github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

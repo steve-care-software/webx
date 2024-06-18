@@ -51,7 +51,7 @@ type PointerBuilder interface {
 	Now() (Pointer, error)
 }
 
-// Resource represents a resource
+// Resource represents a pointer
 type Pointer interface {
 	Hash() hash.Hash
 	Path() []string

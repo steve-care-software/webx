@@ -3,7 +3,7 @@ package files
 import (
 	"testing"
 
-	"github.com/steve-care-software/datastencil/infrastructure/jsons/instances/pointers/resources/logics/links"
+	"github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links"
 )
 
 func TestLinkRepository_Success(t *testing.T) {

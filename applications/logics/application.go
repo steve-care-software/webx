@@ -9,10 +9,10 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results"
 	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results/success"
 	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results/success/outputs"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics"
-	bridged_layers "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/links/elements/conditions"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/references"
+	bridged_layers "github.com/steve-care-software/datastencil/domain/instances/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/links/elements/conditions"
+	"github.com/steve-care-software/datastencil/domain/resources/logics"
+	"github.com/steve-care-software/datastencil/domain/resources/logics/references"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

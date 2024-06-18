@@ -2,7 +2,7 @@ package decrypts
 
 import (
 	"github.com/steve-care-software/datastencil/domain/encryptors"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/cryptography/decrypts"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography/decrypts"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

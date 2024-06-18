@@ -2,7 +2,7 @@ package lists
 
 import (
 	application_fetches "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/lists/fetches"
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/assignments/assignables/lists"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/lists"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 

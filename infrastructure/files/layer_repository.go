@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/layers"
 )
 
 type fileRepository struct {

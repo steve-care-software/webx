@@ -5,7 +5,7 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results/success"
 	json_outputs "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/commands/results/success/outputs"
-	json_kinds "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/pointers/resources/logics/bridges/layers/outputs/kinds"
+	json_kinds "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/outputs/kinds"
 )
 
 // Adapter represents an adapter

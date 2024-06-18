@@ -3,7 +3,7 @@ package layers
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results"
-	source_layers "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers"
+	source_layers "github.com/steve-care-software/datastencil/domain/instances/layers"
 )
 
 // NewBuilder creates a new builder

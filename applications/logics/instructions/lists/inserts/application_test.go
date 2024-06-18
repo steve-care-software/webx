@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	instruction_inserts "github.com/steve-care-software/datastencil/domain/instances/pointers/resources/logics/bridges/layers/instructions/lists/inserts"
+	instruction_inserts "github.com/steve-care-software/datastencil/domain/instances/layers/instructions/lists/inserts"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 	"github.com/steve-care-software/datastencil/domain/stacks/failures"
 )

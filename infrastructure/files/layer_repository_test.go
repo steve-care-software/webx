@@ -3,7 +3,7 @@ package files
 import (
 	"testing"
 
-	"github.com/steve-care-software/datastencil/infrastructure/jsons/instances/pointers/resources/logics/bridges/layers"
+	"github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers"
 )
 
 func TestLayerRepository_Success(t *testing.T) {
