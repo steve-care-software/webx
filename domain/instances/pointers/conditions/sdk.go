@@ -37,6 +37,12 @@ func NewComparisonBuilder() ComparisonBuilder {
 	)
 }
 
+// Adapter represents the condition adapter
+type Adapter interface {
+	ToBytes(ins Condition) ([]byte, error)
+	ToInstance(bytes []byte) (Condition, error)
+}
+
 // Builder represents a condition builder
 type Builder interface {
 	Create() Builder

@@ -49,18 +49,22 @@ func (app *builder) Now() (Condition, error) {
 		return nil, errors.New("the resource is mandatory in order to build a Condition instance")
 	}
 
-	if app.comparisons == nil {
-		return nil, errors.New("the comparisons is mandatory in order to build a Condition instance")
+	data := [][]byte{
+		app.resource.Hash().Bytes(),
 	}
 
-	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
-		app.resource.Hash().Bytes(),
-		app.comparisons.Hash().Bytes(),
-	})
+	if app.comparisons != nil {
+		data = append(data, app.comparisons.Hash().Bytes())
+	}
 
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
 	}
 
-	return createCondition(*pHash, app.resource, app.comparisons), nil
+	if app.comparisons != nil {
+		return createConditionWithComparisons(*pHash, app.resource, app.comparisons), nil
+	}
+
+	return createCondition(*pHash, app.resource), nil
 }

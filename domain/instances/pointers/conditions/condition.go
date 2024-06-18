@@ -13,6 +13,29 @@ type condition struct {
 func createCondition(
 	hash hash.Hash,
 	resource Resource,
+) Condition {
+	return createConditionInternally(
+		hash,
+		resource,
+		nil,
+	)
+}
+
+func createConditionWithComparisons(
+	hash hash.Hash,
+	resource Resource,
+	comparisons Comparisons,
+) Condition {
+	return createConditionInternally(
+		hash,
+		resource,
+		comparisons,
+	)
+}
+
+func createConditionInternally(
+	hash hash.Hash,
+	resource Resource,
 	comparisons Comparisons,
 ) Condition {
 	out := condition{
