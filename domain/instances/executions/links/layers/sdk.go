@@ -22,6 +22,12 @@ func NewLayerBuilder() LayerBuilder {
 	)
 }
 
+// Adapter represents the layers adapter
+type Adapter interface {
+	ToBytes(ins Layers) ([]byte, error)
+	ToInstance(bytes []byte) (Layers, error)
+}
+
 // Builder represents the layers builder
 type Builder interface {
 	Create() Builder
