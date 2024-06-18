@@ -5,20 +5,24 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/instances/databases"
 	json_commits "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/databases/commits"
+	json_heads "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/databases/heads"
 )
 
 // Adapter represents an adapter
 type Adapter struct {
 	commitAdapter *json_commits.Adapter
+	headAdapter   *json_heads.Adapter
 	builder       databases.Builder
 }
 
 func createAdapter(
 	commitAdapter *json_commits.Adapter,
+	headAdapter *json_heads.Adapter,
 	builder databases.Builder,
 ) databases.Adapter {
 	out := Adapter{
 		commitAdapter: commitAdapter,
+		headAdapter:   headAdapter,
 		builder:       builder,
 	}
 
@@ -53,40 +57,36 @@ func (app *Adapter) ToInstance(bytes []byte) (databases.Database, error) {
 
 // DatabaseToStruct converts a database to struct
 func (app *Adapter) DatabaseToStruct(ins databases.Database) (*Database, error) {
-	ptr, err := app.commitAdapter.CommitToStruct(ins.Head())
+	commitPtr, err := app.commitAdapter.CommitToStruct(ins.Commit())
 	if err != nil {
 		return nil, err
 	}
 
-	out := Database{
-		Path:        ins.Path(),
-		Description: ins.Description(),
-		Head:        *ptr,
-		IsActive:    false,
+	headPtr, err := app.headAdapter.HeadToStruct(ins.Head())
+	if err != nil {
+		return nil, err
 	}
 
-	if ins.IsActive() {
-		out.IsActive = true
-	}
-
-	return &out, nil
+	return &Database{
+		Commit: *commitPtr,
+		Head:   *headPtr,
+	}, nil
 }
 
 // StructToCommit converts a struct to database
 func (app *Adapter) StructToDatabase(str Database) (databases.Database, error) {
-	ins, err := app.commitAdapter.StructToCommit(str.Head)
+	commitIns, err := app.commitAdapter.StructToCommit(str.Commit)
 	if err != nil {
 		return nil, err
 	}
 
-	builder := app.builder.Create().
-		WithPath(str.Path).
-		WithDescription(str.Description).
-		WithHead(ins)
-
-	if str.IsActive {
-		builder.IsActive()
+	headIns, err := app.headAdapter.StructToHead(str.Head)
+	if err != nil {
+		return nil, err
 	}
 
-	return builder.Now()
+	return app.builder.Create().
+		WithCommit(commitIns).
+		WithHead(headIns).
+		Now()
 }

@@ -9,13 +9,12 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/deletes"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/heads"
 )
 
 func TestAdapter_Success(t *testing.T) {
 
 	ins := databases.NewDatabaseForTests(
-		[]string{"this", "is", "a", "path"},
-		"This is the database description",
 		commits.NewCommitForTests(
 			"This is a description",
 			actions.NewActionsForTests([]actions.Action{
@@ -33,7 +32,11 @@ func TestAdapter_Success(t *testing.T) {
 				),
 			}),
 		),
-		true,
+		heads.NewHeadForTests(
+			[]string{"this", "is", "a", "path"},
+			"This is the database description",
+			true,
+		),
 	)
 
 	adapter := NewAdapter()
