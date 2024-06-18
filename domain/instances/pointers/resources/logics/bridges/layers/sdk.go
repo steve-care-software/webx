@@ -36,3 +36,15 @@ type Layer interface {
 	Output() outputs.Output
 	Input() string
 }
+
+// RepositoryBuilder represents a repository builder
+type RepositoryBuilder interface {
+	Create() RepositoryBuilder
+	WithBasePath(basePath []string) RepositoryBuilder
+	Now() (Repository, error)
+}
+
+// Repository represents a layer repository
+type Repository interface {
+	Retrieve(path []string) (Layer, error)
+}

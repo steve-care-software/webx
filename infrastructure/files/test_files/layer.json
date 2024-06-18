@@ -1,0 +1,14 @@
+{
+    "instructions": [
+        {
+            "stop": true
+        }
+    ],
+    "output": {
+        "variable": "myVariable",
+        "kind": {
+            "continue": true
+        }
+    },
+    "input": "myInput"
+}
