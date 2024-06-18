@@ -1,0 +1,13 @@
+{
+    "elements": [
+        {
+            "layer": ["this", "is", "a", "layer", "path"],
+            "condition": {
+                "resource": {
+                    "code": 34,
+                    "is_raised_in_layer": false
+                }
+            }
+        }
+    ]
+}
