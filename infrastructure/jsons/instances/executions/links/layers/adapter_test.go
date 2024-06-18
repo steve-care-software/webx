@@ -18,7 +18,6 @@ import (
 )
 
 func TestAdapter_Success(t *testing.T) {
-
 	ins := layers.NewLayersForTests([]layers.Layer{
 		layers.NewLayerForTests(
 			[]byte("this is some input"),

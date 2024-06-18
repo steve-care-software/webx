@@ -14,6 +14,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the link adapter
+type Adapter interface {
+	ToBytes(ins Link) ([]byte, error)
+	ToInstance(bytes []byte) (Link, error)
+}
+
 // Builder represents a link builder
 type Builder interface {
 	Create() Builder
