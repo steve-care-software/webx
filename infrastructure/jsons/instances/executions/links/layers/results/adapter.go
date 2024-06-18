@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results"
-	json_interruptions "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/commands/results/interruptions"
-	json_success "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/commands/results/success"
+	json_interruptions "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/executions/links/layers/results/interruptions"
+	json_success "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/executions/links/layers/results/success"
 )
 
 // Adapter represents an adapter
