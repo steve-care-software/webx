@@ -8,7 +8,6 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables"
 	bytes_domain "github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/bytes"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/databases"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/lists"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/lists/inserts"
 )
@@ -46,11 +45,6 @@ func TestAdapter_Success(t *testing.T) {
 		),
 		instructions.NewInstructionWithRaiseErrorForTests(33),
 		instructions.NewInstructionWithStopForTests(),
-		instructions.NewInstructionWithDatabaseForTests(
-			databases.NewDatabaseWithSaveForTests(
-				"mySave",
-			),
-		),
 		instructions.NewInstructionWithListForTests(
 			lists.NewListWithInsertForTests(
 				inserts.NewInsertForTests(

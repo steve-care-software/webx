@@ -3,11 +3,6 @@ package stacks
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
-	"github.com/steve-care-software/datastencil/domain/instances/databases"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/deletes"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
 )
@@ -28,131 +23,96 @@ type assignable struct {
 	signerPublicKey signers.PublicKey
 	vote            signers.Vote
 	list            Assignables
-	action          actions.Action
-	commit          commits.Commit
-	database        databases.Database
-	delete          deletes.Delete
-	modification    modifications.Modification
 }
 
 func createAssignableWithBool(
 	pBool *bool,
 ) Assignable {
-	return createAssignableInternally(pBool, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(pBool, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithString(
 	pString *string,
 ) Assignable {
-	return createAssignableInternally(nil, pString, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, pString, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithFloat(
 	pFloat *float64,
 ) Assignable {
-	return createAssignableInternally(nil, nil, pFloat, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, pFloat, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithInt(
 	pInt *int,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, pInt, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, nil, pInt, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithBytes(
 	bytes []byte,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, bytes, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, nil, nil, bytes, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithHash(
 	hash hash.Hash,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, hash, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, nil, nil, nil, hash, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithUnsignedInt(
 	pUnsignedInt *uint,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, pUnsignedInt, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, nil, nil, nil, nil, pUnsignedInt, nil, nil, nil, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithInstance(
 	instance instances.Instance,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, instance, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, instance, nil, nil, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithEncryptor(
 	encryptor encryptors.Encryptor,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, encryptor, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, encryptor, nil, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithEncryptorPublicKey(
 	encPublicKey encryptors.PublicKey,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, encPublicKey, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, encPublicKey, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithSigner(
 	signer signers.Signer,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, signer, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, signer, nil, nil, nil, nil)
 }
 
 func createAssignableWithSignerPublicKey(
 	signerPubKey signers.PublicKey,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, signerPubKey, nil, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, signerPubKey, nil, nil, nil)
 }
 
 func createAssignableWithSignature(
 	signature signers.Signature,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, signature, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, signature, nil, nil)
 }
 
 func createAssignableWithVote(
 	vote signers.Vote,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, vote, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, vote, nil)
 }
 
 func createAssignableWithList(
 	list Assignables,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, list, nil, nil, nil, nil, nil)
-}
-
-func createAssignableWithAction(
-	action actions.Action,
-) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, action, nil, nil, nil, nil)
-}
-
-func createAssignableWithCommit(
-	commit commits.Commit,
-) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, commit, nil, nil, nil)
-}
-
-func createAssignableWithDatabase(
-	database databases.Database,
-) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, database, nil, nil)
-}
-
-func createAssignableWithDelete(
-	delete deletes.Delete,
-) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, delete, nil)
-}
-
-func createAssignableWithModification(
-	modification modifications.Modification,
-) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, modification)
+	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, list)
 }
 
 func createAssignableInternally(
@@ -171,11 +131,6 @@ func createAssignableInternally(
 	signature signers.Signature,
 	vote signers.Vote,
 	list Assignables,
-	action actions.Action,
-	commit commits.Commit,
-	database databases.Database,
-	delete deletes.Delete,
-	modification modifications.Modification,
 ) Assignable {
 	out := assignable{
 		pBool:           pBool,
@@ -193,11 +148,6 @@ func createAssignableInternally(
 		signature:       signature,
 		vote:            vote,
 		list:            list,
-		action:          action,
-		commit:          commit,
-		database:        database,
-		delete:          delete,
-		modification:    modification,
 	}
 
 	return &out
@@ -351,54 +301,4 @@ func (obj *assignable) IsList() bool {
 // List returns the list, if any
 func (obj *assignable) List() Assignables {
 	return obj.list
-}
-
-// IsAction returns true if action, false otherwise
-func (obj *assignable) IsAction() bool {
-	return obj.action != nil
-}
-
-// Action returns the action, if any
-func (obj *assignable) Action() actions.Action {
-	return obj.action
-}
-
-// IsCommit returns true if commit, false otherwise
-func (obj *assignable) IsCommit() bool {
-	return obj.commit != nil
-}
-
-// Commit returns the commit, if any
-func (obj *assignable) Commit() commits.Commit {
-	return obj.commit
-}
-
-// IsDatabase returns true if database, false otherwise
-func (obj *assignable) IsDatabase() bool {
-	return obj.database != nil
-}
-
-// Database returns the database, if any
-func (obj *assignable) Database() databases.Database {
-	return obj.database
-}
-
-// IsDelete returns true if delete, false otherwise
-func (obj *assignable) IsDelete() bool {
-	return obj.delete != nil
-}
-
-// Delete returns the delete, if any
-func (obj *assignable) Delete() deletes.Delete {
-	return obj.delete
-}
-
-// IsModification returns true if modification, false otherwise
-func (obj *assignable) IsModification() bool {
-	return obj.modification != nil
-}
-
-// Modification returns the modification, if any
-func (obj *assignable) Modification() modifications.Modification {
-	return obj.modification
 }

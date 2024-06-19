@@ -8,7 +8,6 @@ import (
 	json_compiler "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/compilers"
 	json_constants "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/constants"
 	json_cryptography "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/cryptography"
-	json_databases "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/databases"
 	json_lists "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/lists"
 )
 
@@ -18,7 +17,6 @@ type Adapter struct {
 	compilerAdapter     *json_compiler.Adapter
 	constantAdapter     *json_constants.Adapter
 	cryptographyAdapter *json_cryptography.Adapter
-	databaseAdapter     *json_databases.Adapter
 	listAdapter         *json_lists.Adapter
 	builder             assignables.Builder
 }
@@ -28,7 +26,6 @@ func createAdapter(
 	compilerAdapter *json_compiler.Adapter,
 	constantAdapter *json_constants.Adapter,
 	cryptographyAdapter *json_cryptography.Adapter,
-	databaseAdapter *json_databases.Adapter,
 	listAdapter *json_lists.Adapter,
 	builder assignables.Builder,
 ) assignables.Adapter {
@@ -37,7 +34,6 @@ func createAdapter(
 		compilerAdapter:     compilerAdapter,
 		constantAdapter:     constantAdapter,
 		cryptographyAdapter: cryptographyAdapter,
-		databaseAdapter:     databaseAdapter,
 		listAdapter:         listAdapter,
 		builder:             builder,
 	}
@@ -110,15 +106,6 @@ func (app *Adapter) AssignableToStruct(ins assignables.Assignable) (*Assignable,
 		out.Compiler = ptr
 	}
 
-	if ins.IsDatabase() {
-		ptr, err := app.databaseAdapter.DatabaseToStruct(ins.Database())
-		if err != nil {
-			return nil, err
-		}
-
-		out.Database = ptr
-	}
-
 	if ins.IsList() {
 		ptr, err := app.listAdapter.ListToStruct(ins.List())
 		if err != nil {
@@ -168,15 +155,6 @@ func (app *Adapter) StructToAssignable(str Assignable) (assignables.Assignable, 
 		}
 
 		builder.WithCompiler(ins)
-	}
-
-	if str.Database != nil {
-		ins, err := app.databaseAdapter.StructToDatabase(*str.Database)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithDatabase(ins)
 	}
 
 	if str.List != nil {

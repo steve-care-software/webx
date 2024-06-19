@@ -2,7 +2,6 @@ package instructions
 
 import (
 	application_assignments "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments"
-	application_databases "github.com/steve-care-software/datastencil/applications/logics/instructions/databases"
 	application_lists "github.com/steve-care-software/datastencil/applications/logics/instructions/lists"
 	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results/interruptions"
 	results_failures "github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results/interruptions/failures"
@@ -13,7 +12,6 @@ import (
 // NewApplication creates a new application
 func NewApplication(
 	execAssignmentApp application_assignments.Application,
-	execDatabaseApp application_databases.Application,
 	execListApp application_lists.Application,
 ) Application {
 	stackBuilder := stacks.NewBuilder()
@@ -24,7 +22,6 @@ func NewApplication(
 	failureBuilder := results_failures.NewBuilder()
 	return createApplication(
 		execAssignmentApp,
-		execDatabaseApp,
 		execListApp,
 		stackBuilder,
 		framesBuilder,

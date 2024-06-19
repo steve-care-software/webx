@@ -8,7 +8,6 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/compilers"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/databases"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/lists"
 )
 
@@ -18,7 +17,6 @@ type builder struct {
 	constant    constants.Constant
 	crypto      cryptography.Cryptography
 	compiler    compilers.Compiler
-	database    databases.Database
 	list        lists.List
 }
 
@@ -31,7 +29,6 @@ func createBuilder(
 		constant:    nil,
 		crypto:      nil,
 		compiler:    nil,
-		database:    nil,
 		list:        nil,
 	}
 
@@ -69,12 +66,6 @@ func (app *builder) WithCompiler(compiler compilers.Compiler) Builder {
 	return app
 }
 
-// WithDatabase adds a database to the builder
-func (app *builder) WithDatabase(database databases.Database) Builder {
-	app.database = database
-	return app
-}
-
 // WithList adds a list to the builder
 func (app *builder) WithList(list lists.List) Builder {
 	app.list = list
@@ -104,11 +95,6 @@ func (app *builder) Now() (Assignable, error) {
 		data = append(data, app.compiler.Hash().Bytes())
 	}
 
-	if app.database != nil {
-		data = append(data, []byte("database"))
-		data = append(data, app.database.Hash().Bytes())
-	}
-
 	if app.list != nil {
 		data = append(data, []byte("list"))
 		data = append(data, app.list.Hash().Bytes())
@@ -133,10 +119,6 @@ func (app *builder) Now() (Assignable, error) {
 
 	if app.crypto != nil {
 		return createAssignableWithCryptography(*pHash, app.crypto), nil
-	}
-
-	if app.database != nil {
-		return createAssignableWithDatabase(*pHash, app.database), nil
 	}
 
 	if app.list != nil {

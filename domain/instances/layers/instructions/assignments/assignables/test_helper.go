@@ -5,7 +5,6 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/compilers"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/databases"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/lists"
 )
 
@@ -42,16 +41,6 @@ func NewAssignableWithCryptographyForTests(cryptography cryptography.Cryptograph
 // NewAssignableWithCompilerForTests creates a new assignable with compiler for tests
 func NewAssignableWithCompilerForTests(compiler compilers.Compiler) Assignable {
 	ins, err := NewBuilder().Create().WithCompiler(compiler).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewAssignableWithDatabaseForTests creates a new assignable with database for tests
-func NewAssignableWithDatabaseForTests(database databases.Database) Assignable {
-	ins, err := NewBuilder().Create().WithDatabase(database).Now()
 	if err != nil {
 		panic(err)
 	}

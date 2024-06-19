@@ -3,11 +3,6 @@ package stacks
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
-	"github.com/steve-care-software/datastencil/domain/instances/databases"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/deletes"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
 )
@@ -110,10 +105,7 @@ type Frame interface {
 	FetchSignature(name string) (signers.Signature, error)
 	FetchVote(name string) (signers.Vote, error)
 	FetchList(name string) (Assignables, error)
-	FetchCommit(name string) (commits.Commit, error)
 	FetchString(name string) (string, error)
-	FetchDelete(name string) (deletes.Delete, error)
-	FetchDatabase(name string) (databases.Database, error)
 	HasAssignments() bool
 	Assignments() Assignments
 }
@@ -175,11 +167,6 @@ type AssignableBuilder interface {
 	WithSignature(signature signers.Signature) AssignableBuilder
 	WithVote(vote signers.Vote) AssignableBuilder
 	WithList(list Assignables) AssignableBuilder
-	WithAction(action actions.Action) AssignableBuilder
-	WithCommit(commit commits.Commit) AssignableBuilder
-	WithDatabase(database databases.Database) AssignableBuilder
-	WithDelete(delete deletes.Delete) AssignableBuilder
-	WithModification(modification modifications.Modification) AssignableBuilder
 	Now() (Assignable, error)
 }
 
@@ -215,14 +202,4 @@ type Assignable interface {
 	Vote() signers.Vote
 	IsList() bool
 	List() Assignables
-	IsAction() bool
-	Action() actions.Action
-	IsCommit() bool
-	Commit() commits.Commit
-	IsDatabase() bool
-	Database() databases.Database
-	IsDelete() bool
-	Delete() deletes.Delete
-	IsModification() bool
-	Modification() modifications.Modification
 }

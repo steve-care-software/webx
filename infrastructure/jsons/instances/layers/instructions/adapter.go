@@ -5,14 +5,12 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions"
 	json_assignments "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments"
-	json_databases "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/databases"
 	json_lists "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/lists"
 )
 
 // Adapter represents an instructions adapter
 type Adapter struct {
 	assignmnetAdapter  *json_assignments.Adapter
-	databaseAdapter    *json_databases.Adapter
 	listAdapter        *json_lists.Adapter
 	loopBuilder        instructions.LoopBuilder
 	conditionBuilder   instructions.ConditionBuilder
@@ -22,7 +20,6 @@ type Adapter struct {
 
 func createAdapter(
 	assignmnetAdapter *json_assignments.Adapter,
-	databaseAdapter *json_databases.Adapter,
 	listAdapter *json_lists.Adapter,
 	loopBuilder instructions.LoopBuilder,
 	conditionBuilder instructions.ConditionBuilder,
@@ -31,7 +28,6 @@ func createAdapter(
 ) instructions.Adapter {
 	out := Adapter{
 		assignmnetAdapter:  assignmnetAdapter,
-		databaseAdapter:    databaseAdapter,
 		listAdapter:        listAdapter,
 		loopBuilder:        loopBuilder,
 		conditionBuilder:   conditionBuilder,
@@ -131,15 +127,6 @@ func (app *Adapter) InstructionToStruct(ins instructions.Instruction) (*Instruct
 		out.Assignment = ptr
 	}
 
-	if ins.IsDatabase() {
-		ptr, err := app.databaseAdapter.DatabaseToStruct(ins.Database())
-		if err != nil {
-			return nil, err
-		}
-
-		out.Database = ptr
-	}
-
 	if ins.IsList() {
 		ptr, err := app.listAdapter.ListToStruct(ins.List())
 		if err != nil {
@@ -188,15 +175,6 @@ func (app *Adapter) StructToInstruction(str Instruction) (instructions.Instructi
 		}
 
 		builder.WithAssignment(ins)
-	}
-
-	if str.Database != nil {
-		ins, err := app.databaseAdapter.StructToDatabase(*str.Database)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithDatabase(ins)
 	}
 
 	if str.List != nil {

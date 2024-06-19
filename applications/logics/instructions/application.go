@@ -2,7 +2,6 @@ package instructions
 
 import (
 	"github.com/steve-care-software/datastencil/applications/logics/instructions/assignments"
-	"github.com/steve-care-software/datastencil/applications/logics/instructions/databases"
 	"github.com/steve-care-software/datastencil/applications/logics/instructions/lists"
 	"github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results/interruptions"
 	results_failures "github.com/steve-care-software/datastencil/domain/instances/executions/links/layers/results/interruptions/failures"
@@ -13,7 +12,6 @@ import (
 
 type application struct {
 	execAssignmentApp   assignments.Application
-	execDatabaseApp     databases.Application
 	execListApp         lists.Application
 	stackBuilder        stacks.Builder
 	framesBuilder       stacks.FramesBuilder
@@ -25,7 +23,6 @@ type application struct {
 
 func createApplication(
 	execAssignmentApp assignments.Application,
-	execDatabaseApp databases.Application,
 	execListApp lists.Application,
 	stackBuilder stacks.Builder,
 	framesBuilder stacks.FramesBuilder,
@@ -36,7 +33,6 @@ func createApplication(
 ) Application {
 	out := application{
 		execAssignmentApp:   execAssignmentApp,
-		execDatabaseApp:     execDatabaseApp,
 		execListApp:         execListApp,
 		stackBuilder:        stackBuilder,
 		framesBuilder:       framesBuilder,
@@ -178,22 +174,6 @@ func (app *application) instruction(
 			}
 
 			return stack, nil, nil
-		}
-
-		return stack, nil, nil
-	}
-
-	if instruction.IsDatabase() {
-		database := instruction.Database()
-		pCode, err := app.execDatabaseApp.Execute(frame, database)
-		if pCode != nil {
-			message := ""
-			if err != nil {
-				message = err.Error()
-			}
-
-			ins, err := app.errorCodeToInterruption(idx, *pCode, message)
-			return stack, ins, err
 		}
 
 		return stack, nil, nil

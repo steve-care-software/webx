@@ -6,7 +6,6 @@ import (
 	json_compiler "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/compilers"
 	json_constants "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/constants"
 	json_cryptography "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/cryptography"
-	json_databases "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/databases"
 	json_lists "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/lists"
 )
 
@@ -16,7 +15,6 @@ func NewAdapter() assignables.Adapter {
 	compilerAdapter := json_compiler.NewAdapter()
 	constantAdapter := json_constants.NewAdapter()
 	cryptographyAdapter := json_cryptography.NewAdapter()
-	databaseAdapter := json_databases.NewAdapter()
 	listAdapter := json_lists.NewAdapter()
 	builder := assignables.NewBuilder()
 	return createAdapter(
@@ -24,7 +22,6 @@ func NewAdapter() assignables.Adapter {
 		compilerAdapter.(*json_compiler.Adapter),
 		constantAdapter.(*json_constants.Adapter),
 		cryptographyAdapter.(*json_cryptography.Adapter),
-		databaseAdapter.(*json_databases.Adapter),
 		listAdapter.(*json_lists.Adapter),
 		builder,
 	)

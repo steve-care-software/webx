@@ -6,9 +6,6 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
-	"github.com/steve-care-software/datastencil/domain/instances/databases"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/deletes"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
 )
@@ -253,21 +250,6 @@ func (obj *frame) FetchList(name string) (Assignables, error) {
 	return assignable.List(), nil
 }
 
-// FetchCommit fetches a commit by name
-func (obj *frame) FetchCommit(name string) (commits.Commit, error) {
-	assignable, err := obj.Fetch(name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !assignable.IsCommit() {
-		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a Commit", name)
-		return nil, errors.New(str)
-	}
-
-	return assignable.Commit(), nil
-}
-
 // FetchString fetches a string by name
 func (obj *frame) FetchString(name string) (string, error) {
 	assignable, err := obj.Fetch(name)
@@ -282,36 +264,6 @@ func (obj *frame) FetchString(name string) (string, error) {
 
 	pString := assignable.String()
 	return *pString, nil
-}
-
-// FetchDelete fetches a delete by name
-func (obj *frame) FetchDelete(name string) (deletes.Delete, error) {
-	assignable, err := obj.Fetch(name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !assignable.IsDelete() {
-		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a Delete", name)
-		return nil, errors.New(str)
-	}
-
-	return assignable.Delete(), nil
-}
-
-// FetchDatabase fetches a database by name
-func (obj *frame) FetchDatabase(name string) (databases.Database, error) {
-	assignable, err := obj.Fetch(name)
-	if err != nil {
-		return nil, err
-	}
-
-	if !assignable.IsDatabase() {
-		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a Database", name)
-		return nil, errors.New(str)
-	}
-
-	return assignable.Database(), nil
 }
 
 // HasAssignments returns true if there is assignments, false otherwise

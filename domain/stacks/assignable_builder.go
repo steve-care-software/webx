@@ -5,11 +5,6 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
-	"github.com/steve-care-software/datastencil/domain/instances/databases"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/deletes"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
 )
@@ -30,11 +25,6 @@ type assignableBuilder struct {
 	signature       signers.Signature
 	vote            signers.Vote
 	list            Assignables
-	action          actions.Action
-	commit          commits.Commit
-	database        databases.Database
-	delete          deletes.Delete
-	modification    modifications.Modification
 }
 
 func createAssignableBuilder() AssignableBuilder {
@@ -54,11 +44,6 @@ func createAssignableBuilder() AssignableBuilder {
 		signature:       nil,
 		vote:            nil,
 		list:            nil,
-		action:          nil,
-		commit:          nil,
-		database:        nil,
-		delete:          nil,
-		modification:    nil,
 	}
 
 	return &out
@@ -159,36 +144,6 @@ func (app *assignableBuilder) WithList(list Assignables) AssignableBuilder {
 	return app
 }
 
-// WithAction adds action to the builder
-func (app *assignableBuilder) WithAction(action actions.Action) AssignableBuilder {
-	app.action = action
-	return app
-}
-
-// WithCommit adds commit to the builder
-func (app *assignableBuilder) WithCommit(commit commits.Commit) AssignableBuilder {
-	app.commit = commit
-	return app
-}
-
-// WithDatabase adds database to the builder
-func (app *assignableBuilder) WithDatabase(database databases.Database) AssignableBuilder {
-	app.database = database
-	return app
-}
-
-// WithDelete adds delete to the builder
-func (app *assignableBuilder) WithDelete(delete deletes.Delete) AssignableBuilder {
-	app.delete = delete
-	return app
-}
-
-// WithModification adds modification to the builder
-func (app *assignableBuilder) WithModification(modification modifications.Modification) AssignableBuilder {
-	app.modification = modification
-	return app
-}
-
 // Now builds a new Assignable instance
 func (app *assignableBuilder) Now() (Assignable, error) {
 	if app.pBool != nil {
@@ -249,26 +204,6 @@ func (app *assignableBuilder) Now() (Assignable, error) {
 
 	if app.list != nil {
 		return createAssignableWithList(app.list), nil
-	}
-
-	if app.action != nil {
-		return createAssignableWithAction(app.action), nil
-	}
-
-	if app.commit != nil {
-		return createAssignableWithCommit(app.commit), nil
-	}
-
-	if app.database != nil {
-		return createAssignableWithDatabase(app.database), nil
-	}
-
-	if app.delete != nil {
-		return createAssignableWithDelete(app.delete), nil
-	}
-
-	if app.modification != nil {
-		return createAssignableWithModification(app.modification), nil
 	}
 
 	return nil, errors.New("the Assignable is invalid")

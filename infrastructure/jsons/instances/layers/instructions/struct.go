@@ -2,7 +2,6 @@ package instructions
 
 import (
 	json_assignments "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments"
-	json_databases "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/databases"
 	json_lists "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/lists"
 )
 
@@ -13,7 +12,6 @@ type Instruction struct {
 	Condition  *Condition                   `json:"condition"`
 	Loop       *Loop                        `json:"loop"`
 	Assignment *json_assignments.Assignment `json:"assignment"`
-	Database   *json_databases.Database     `json:"database"`
 	List       *json_lists.List             `json:"list"`
 }
 

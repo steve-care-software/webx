@@ -3,11 +3,6 @@ package stacks
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
-	"github.com/steve-care-software/datastencil/domain/instances/databases"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/deletes"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
 )
@@ -205,56 +200,6 @@ func NewAssignableWithListForTests(value Assignables) Assignable {
 // NewAssignableWithVoteForTests creates a new assignable with vote for tests
 func NewAssignableWithVoteForTests(value signers.Vote) Assignable {
 	ins, err := NewAssignableBuilder().Create().WithVote(value).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewAssignableWithModificationForTests creates a new assignable with modification for tests
-func NewAssignableWithModificationForTests(value modifications.Modification) Assignable {
-	ins, err := NewAssignableBuilder().Create().WithModification(value).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewAssignableWithActionForTests creates a new assignable with action for tests
-func NewAssignableWithActionForTests(value actions.Action) Assignable {
-	ins, err := NewAssignableBuilder().Create().WithAction(value).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewAssignableWithCommitForTests creates a new assignable with commit for tests
-func NewAssignableWithCommitForTests(value commits.Commit) Assignable {
-	ins, err := NewAssignableBuilder().Create().WithCommit(value).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewAssignableWithDeleteForTests creates a new assignable with delete for tests
-func NewAssignableWithDeleteForTests(value deletes.Delete) Assignable {
-	ins, err := NewAssignableBuilder().Create().WithDelete(value).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewAssignableWithDatabaseForTests creates a new database for tests
-func NewAssignableWithDatabaseForTests(value databases.Database) Assignable {
-	ins, err := NewAssignableBuilder().Create().WithDatabase(value).Now()
 	if err != nil {
 		panic(err)
 	}

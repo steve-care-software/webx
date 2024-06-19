@@ -6,7 +6,6 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/databases"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/lists"
 )
 
@@ -16,7 +15,6 @@ type instructionBuilder struct {
 	pRaiseError *uint
 	condition   Condition
 	assignment  assignments.Assignment
-	database    databases.Database
 	list        lists.List
 	loop        Loop
 }
@@ -30,7 +28,6 @@ func createInstructionBuilder(
 		pRaiseError: nil,
 		condition:   nil,
 		assignment:  nil,
-		database:    nil,
 		list:        nil,
 		loop:        nil,
 	}
@@ -60,12 +57,6 @@ func (app *instructionBuilder) WithCondition(condition Condition) InstructionBui
 // WithAssignment adds an assignment to the builder
 func (app *instructionBuilder) WithAssignment(assignment assignments.Assignment) InstructionBuilder {
 	app.assignment = assignment
-	return app
-}
-
-// WithDatabase adds a database to the builder
-func (app *instructionBuilder) WithDatabase(database databases.Database) InstructionBuilder {
-	app.database = database
 	return app
 }
 
@@ -109,11 +100,6 @@ func (app *instructionBuilder) Now() (Instruction, error) {
 		data = append(data, app.assignment.Hash().Bytes())
 	}
 
-	if app.database != nil {
-		data = append(data, []byte("database"))
-		data = append(data, app.database.Hash().Bytes())
-	}
-
 	if app.list != nil {
 		data = append(data, []byte("list"))
 		data = append(data, app.list.Hash().Bytes())
@@ -144,10 +130,6 @@ func (app *instructionBuilder) Now() (Instruction, error) {
 
 	if app.condition != nil {
 		return createInstructionWithCondition(*pHash, app.condition), nil
-	}
-
-	if app.database != nil {
-		return createInstructionWithDatabase(*pHash, app.database), nil
 	}
 
 	if app.list != nil {

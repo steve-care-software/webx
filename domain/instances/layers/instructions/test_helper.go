@@ -2,7 +2,6 @@ package instructions
 
 import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/databases"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/lists"
 )
 
@@ -49,16 +48,6 @@ func NewInstructionWithRaiseErrorForTests(raiseError uint) Instruction {
 // NewInstructionWithStopForTests creates a new instruction with stop for tests
 func NewInstructionWithStopForTests() Instruction {
 	ins, err := NewInstructionBuilder().Create().IsStop().Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewInstructionWithDatabaseForTests creates a new instruction with database for tests
-func NewInstructionWithDatabaseForTests(database databases.Database) Instruction {
-	ins, err := NewInstructionBuilder().Create().WithDatabase(database).Now()
 	if err != nil {
 		panic(err)
 	}

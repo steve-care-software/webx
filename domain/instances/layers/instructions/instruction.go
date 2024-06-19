@@ -3,7 +3,6 @@ package instructions
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/databases"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/lists"
 )
 
@@ -13,7 +12,6 @@ type instruction struct {
 	raiseError uint
 	condition  Condition
 	assignment assignments.Assignment
-	database   databases.Database
 	list       lists.List
 	loop       Loop
 }
@@ -25,7 +23,6 @@ func createInstructionWithIsStop(
 		hash,
 		true,
 		0,
-		nil,
 		nil,
 		nil,
 		nil,
@@ -45,7 +42,6 @@ func createInstructionWithRaiseError(
 		nil,
 		nil,
 		nil,
-		nil,
 	)
 }
 
@@ -58,7 +54,6 @@ func createInstructionWithCondition(
 		false,
 		0,
 		condition,
-		nil,
 		nil,
 		nil,
 		nil,
@@ -77,23 +72,6 @@ func createInstructionWithAssignment(
 		assignment,
 		nil,
 		nil,
-		nil,
-	)
-}
-
-func createInstructionWithDatabase(
-	hash hash.Hash,
-	database databases.Database,
-) Instruction {
-	return createInstructionInternally(
-		hash,
-		false,
-		0,
-		nil,
-		nil,
-		database,
-		nil,
-		nil,
 	)
 }
 
@@ -105,7 +83,6 @@ func createInstructionWithList(
 		hash,
 		false,
 		0,
-		nil,
 		nil,
 		nil,
 		list,
@@ -124,7 +101,6 @@ func createInstructionWithLoop(
 		nil,
 		nil,
 		nil,
-		nil,
 		loop,
 	)
 }
@@ -135,7 +111,6 @@ func createInstructionInternally(
 	raiseError uint,
 	condition Condition,
 	assignment assignments.Assignment,
-	database databases.Database,
 	list lists.List,
 	loop Loop,
 ) Instruction {
@@ -145,7 +120,6 @@ func createInstructionInternally(
 		raiseError: raiseError,
 		condition:  condition,
 		assignment: assignment,
-		database:   database,
 		list:       list,
 		loop:       loop,
 	}
@@ -191,16 +165,6 @@ func (obj *instruction) IsAssignment() bool {
 // Assignment returns the assignment, if any
 func (obj *instruction) Assignment() assignments.Assignment {
 	return obj.assignment
-}
-
-// IsDatabase returns true if database, false otherwise
-func (obj *instruction) IsDatabase() bool {
-	return obj.database != nil
-}
-
-// Database returns the database, if any
-func (obj *instruction) Database() databases.Database {
-	return obj.database
 }
 
 // IsList returns true if list, false otherwise

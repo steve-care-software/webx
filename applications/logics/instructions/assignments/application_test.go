@@ -22,13 +22,6 @@ import (
 	application_votes "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/votes"
 	application_votes_creates "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/votes/creates"
 	application_votes_validates "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/cryptography/keys/signatures/votes/validates"
-	application_databases "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/databases"
-	application_actions "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/databases/actions"
-	application_commits "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/databases/commits"
-	application_databases_databases "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/databases/databases"
-	application_deletes "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/databases/deletes"
-	application_modifications "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/databases/modifications"
-	application_retrieves "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/databases/retrieves"
 	application_lists "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/lists"
 	application_fetches "github.com/steve-care-software/datastencil/applications/logics/instructions/assignments/assignables/lists/fetches"
 	"github.com/steve-care-software/datastencil/domain/instances"
@@ -110,20 +103,6 @@ func TestExecute_Success(t *testing.T) {
 							application_signs_creates.NewApplication(),
 							application_signs_validates.NewApplication(),
 						),
-					),
-				),
-			),
-			application_databases.NewApplication(
-				application_actions.NewApplication(),
-				application_commits.NewApplication(),
-				application_databases_databases.NewApplication(),
-				application_deletes.NewApplication(),
-				application_modifications.NewApplication(),
-				application_retrieves.NewApplication(
-					mocks.NewDatabaseRepository(
-						nil,
-						nil,
-						nil,
 					),
 				),
 			),
@@ -222,20 +201,6 @@ func TestExecute_containsError_returnsError(t *testing.T) {
 							application_signs_creates.NewApplication(),
 							application_signs_validates.NewApplication(),
 						),
-					),
-				),
-			),
-			application_databases.NewApplication(
-				application_actions.NewApplication(),
-				application_commits.NewApplication(),
-				application_databases_databases.NewApplication(),
-				application_deletes.NewApplication(),
-				application_modifications.NewApplication(),
-				application_retrieves.NewApplication(
-					mocks.NewDatabaseRepository(
-						nil,
-						nil,
-						nil,
 					),
 				),
 			),

@@ -3,7 +3,6 @@ package instructions
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/databases"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/lists"
 )
 
@@ -64,7 +63,6 @@ type InstructionBuilder interface {
 	WithRaiseError(raiseError uint) InstructionBuilder
 	WithCondition(condition Condition) InstructionBuilder
 	WithAssignment(assignment assignments.Assignment) InstructionBuilder
-	WithDatabase(database databases.Database) InstructionBuilder
 	WithList(list lists.List) InstructionBuilder
 	WithLoop(loop Loop) InstructionBuilder
 	IsStop() InstructionBuilder
@@ -81,8 +79,6 @@ type Instruction interface {
 	Condition() Condition
 	IsAssignment() bool
 	Assignment() assignments.Assignment
-	IsDatabase() bool
-	Database() databases.Database
 	IsList() bool
 	List() lists.List
 	IsLoop() bool
