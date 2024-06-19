@@ -1,37 +1,30 @@
 package files
 
 import (
-	"io/ioutil"
-	"path/filepath"
-
 	"github.com/steve-care-software/datastencil/domain/instances/links"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers"
 )
 
 type linkRepository struct {
-	adapter  links.Adapter
-	basePath []string
+	pointerRepository pointers.Repository
+	adapter           links.Adapter
 }
 
 func createLinkRepository(
+	pointerRepository pointers.Repository,
 	adapter links.Adapter,
-	basePath []string,
 ) links.Repository {
 	out := linkRepository{
-		adapter:  adapter,
-		basePath: basePath,
+		pointerRepository: pointerRepository,
+		adapter:           adapter,
 	}
 
 	return &out
 }
 
 // Retrieve retrieves a link by path
-func (app *linkRepository) Retrieve(path []string) (links.Link, error) {
-	fullPath := filepath.Join(append(
-		app.basePath,
-		path...,
-	)...)
-
-	bytes, err := ioutil.ReadFile(fullPath)
+func (app *linkRepository) Retrieve(path []string, history [][]string) (links.Link, error) {
+	bytes, err := app.pointerRepository.Fetch(path, history)
 	if err != nil {
 		return nil, err
 	}

@@ -45,5 +45,5 @@ type RepositoryBuilder interface {
 
 // Repository represents a link repository
 type Repository interface {
-	Retrieve(path []string) (Link, error)
+	Retrieve(path []string, history [][]string) (Link, error)
 }

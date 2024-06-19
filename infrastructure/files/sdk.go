@@ -30,9 +30,11 @@ func NewLayerRepositoryBuilder(
 
 // NewLinkRepositoryBuilder creates a new link repository builder
 func NewLinkRepositoryBuilder(
+	pointerRepositoryBuilder pointers.RepositoryBuilder,
 	adapter links.Adapter,
 ) links.RepositoryBuilder {
 	return createLinkRepositoryBuilder(
+		pointerRepositoryBuilder,
 		adapter,
 	)
 }

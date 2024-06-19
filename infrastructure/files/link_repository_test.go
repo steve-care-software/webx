@@ -3,13 +3,18 @@ package files
 import (
 	"testing"
 
+	"github.com/steve-care-software/datastencil/domain/instances/pointers"
 	"github.com/steve-care-software/datastencil/infrastructure/jsons/instances/links"
+	json_pointers "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/pointers"
 )
 
 func TestLinkRepository_Success(t *testing.T) {
-	adapter := links.NewAdapter()
 	repositoryBuilder := NewLinkRepositoryBuilder(
-		adapter,
+		NewPointerRepositoryBuilder(
+			json_pointers.NewAdapter(),
+			pointers.NewBuilder(),
+		),
+		links.NewAdapter(),
 	)
 
 	basePath := []string{
@@ -22,9 +27,12 @@ func TestLinkRepository_Success(t *testing.T) {
 		return
 	}
 
-	link, err := repository.Retrieve([]string{
-		"link.json",
-	})
+	link, err := repository.Retrieve(
+		[]string{
+			"pointers_link.json",
+		},
+		[][]string{},
+	)
 
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())

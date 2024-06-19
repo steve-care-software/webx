@@ -4,19 +4,23 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/instances/links"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers"
 )
 
 type linkRepositoryBuilder struct {
-	adapter  links.Adapter
-	basePath []string
+	pointerRepositoryBuilder pointers.RepositoryBuilder
+	adapter                  links.Adapter
+	basePath                 []string
 }
 
 func createLinkRepositoryBuilder(
+	pointerRepositoryBuilder pointers.RepositoryBuilder,
 	adapter links.Adapter,
 ) links.RepositoryBuilder {
 	out := linkRepositoryBuilder{
-		adapter:  adapter,
-		basePath: nil,
+		pointerRepositoryBuilder: pointerRepositoryBuilder,
+		adapter:                  adapter,
+		basePath:                 nil,
 	}
 
 	return &out
@@ -25,6 +29,7 @@ func createLinkRepositoryBuilder(
 // Create initializes the builder
 func (app *linkRepositoryBuilder) Create() links.RepositoryBuilder {
 	return createLinkRepositoryBuilder(
+		app.pointerRepositoryBuilder,
 		app.adapter,
 	)
 }
@@ -45,8 +50,16 @@ func (app *linkRepositoryBuilder) Now() (links.Repository, error) {
 		return nil, errors.New("the basePath is mandatory in order to build a link Repository instance")
 	}
 
+	pointerRepository, err := app.pointerRepositoryBuilder.Create().
+		WithBasePath(app.basePath).
+		Now()
+
+	if err != nil {
+		return nil, err
+	}
+
 	return createLinkRepository(
+		pointerRepository,
 		app.adapter,
-		app.basePath,
 	), nil
 }
