@@ -96,11 +96,7 @@ func (app *application) execute(path []string, context executions.Executions) (r
 	}
 
 	// fetch the matched pointers to the current path:
-	matchedDatabasePointersList, err := pointers.Match(databasePaths)
-	if err != nil {
-		return nil, err
-	}
-
+	matchedDatabasePointersList := pointers.Match(databasePaths)
 	resourcesList := []resources.Resource{}
 	for _, oneDatabasePointer := range matchedDatabasePointersList {
 		// load the database from the pointer:
@@ -129,11 +125,7 @@ func (app *application) execute(path []string, context executions.Executions) (r
 		}
 
 		// fetch the matched links pointers:
-		matchedLinkPointersList, err := linksPointers.Match(linkPointerPaths)
-		if err != nil {
-			return nil, err
-		}
-
+		matchedLinkPointersList := linksPointers.Match(linkPointerPaths)
 		logicsList := []logics.Logic{}
 		for _, oneLinkPointer := range matchedLinkPointersList {
 			// fetch the link:
