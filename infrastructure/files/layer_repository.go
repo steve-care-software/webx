@@ -1,37 +1,30 @@
 package files
 
 import (
-	"io/ioutil"
-	"path/filepath"
-
 	"github.com/steve-care-software/datastencil/domain/instances/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers"
 )
 
-type fileRepository struct {
-	adapter  layers.Adapter
-	basePath []string
+type layerRepository struct {
+	pointerRepository pointers.Repository
+	adapter           layers.Adapter
 }
 
-func createFileRepository(
+func createLayerRepository(
+	pointerRepository pointers.Repository,
 	adapter layers.Adapter,
-	basePath []string,
 ) layers.Repository {
-	out := fileRepository{
-		adapter:  adapter,
-		basePath: basePath,
+	out := layerRepository{
+		pointerRepository: pointerRepository,
+		adapter:           adapter,
 	}
 
 	return &out
 }
 
 // Retrieve retrieves a layer by path
-func (app *fileRepository) Retrieve(path []string) (layers.Layer, error) {
-	fullPath := filepath.Join(append(
-		app.basePath,
-		path...,
-	)...)
-
-	bytes, err := ioutil.ReadFile(fullPath)
+func (app *layerRepository) Retrieve(path []string, history [][]string) (layers.Layer, error) {
+	bytes, err := app.pointerRepository.Fetch(path, history)
 	if err != nil {
 		return nil, err
 	}

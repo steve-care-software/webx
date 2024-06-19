@@ -46,5 +46,5 @@ type RepositoryBuilder interface {
 
 // Repository represents a layer repository
 type Repository interface {
-	Retrieve(path []string) (Layer, error)
+	Retrieve(path []string, history [][]string) (Layer, error)
 }

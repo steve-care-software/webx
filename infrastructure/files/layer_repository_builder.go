@@ -4,19 +4,23 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/pointers"
 )
 
 type layerRepositoryBuilder struct {
-	adapter  layers.Adapter
-	basePath []string
+	pointerRepositoryBuilder pointers.RepositoryBuilder
+	adapter                  layers.Adapter
+	basePath                 []string
 }
 
 func createLayerRepositoryBuilder(
+	pointerRepositoryBuilder pointers.RepositoryBuilder,
 	adapter layers.Adapter,
 ) layers.RepositoryBuilder {
 	out := layerRepositoryBuilder{
-		adapter:  adapter,
-		basePath: nil,
+		pointerRepositoryBuilder: pointerRepositoryBuilder,
+		adapter:                  adapter,
+		basePath:                 nil,
 	}
 
 	return &out
@@ -25,6 +29,7 @@ func createLayerRepositoryBuilder(
 // Create initializes the builder
 func (app *layerRepositoryBuilder) Create() layers.RepositoryBuilder {
 	return createLayerRepositoryBuilder(
+		app.pointerRepositoryBuilder,
 		app.adapter,
 	)
 }
@@ -45,8 +50,16 @@ func (app *layerRepositoryBuilder) Now() (layers.Repository, error) {
 		return nil, errors.New("the basePath is mandatory in order to build a layer Repository instance")
 	}
 
-	return createFileRepository(
+	pointerRepository, err := app.pointerRepositoryBuilder.Create().
+		WithBasePath(app.basePath).
+		Now()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return createLayerRepository(
+		pointerRepository,
 		app.adapter,
-		app.basePath,
 	), nil
 }

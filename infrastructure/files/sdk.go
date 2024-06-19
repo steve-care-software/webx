@@ -19,9 +19,11 @@ func NewPointerRepositoryBuilder(
 
 // NewLayerRepositoryBuilder creates a new layer repository builder
 func NewLayerRepositoryBuilder(
+	pointerRepositoryBuilder pointers.RepositoryBuilder,
 	adapter layers.Adapter,
 ) layers.RepositoryBuilder {
 	return createLayerRepositoryBuilder(
+		pointerRepositoryBuilder,
 		adapter,
 	)
 }
