@@ -17,10 +17,9 @@ type application struct {
 	resourcesApplication resources_application.Application
 	logicApplication     logics_application.Application
 	contentRepository    contents.Repository
-	databaseAdapter      databases.Adapter
+	databaseRepository   databases.Repository
 	executionBuiler      executions.ExecutionBuilder
 	executionsBuilder    executions.Builder
-	basePath             []string
 	dbPath               []string
 	resourcesPath        []string
 }
@@ -29,10 +28,9 @@ func createApplication(
 	resourcesApplication resources_application.Application,
 	logicApplication logics_application.Application,
 	contentRepository contents.Repository,
-	databaseAdapter databases.Adapter,
+	databaseRepository databases.Repository,
 	executionBuiler executions.ExecutionBuilder,
 	executionsBuilder executions.Builder,
-	basePath []string,
 	dbPath []string,
 	resourcesPath []string,
 ) Application {
@@ -40,10 +38,9 @@ func createApplication(
 		resourcesApplication: resourcesApplication,
 		logicApplication:     logicApplication,
 		contentRepository:    contentRepository,
-		databaseAdapter:      databaseAdapter,
+		databaseRepository:   databaseRepository,
 		executionBuiler:      executionBuiler,
 		executionsBuilder:    executionsBuilder,
-		basePath:             basePath,
 		dbPath:               dbPath,
 		resourcesPath:        resourcesPath,
 	}
@@ -62,13 +59,7 @@ func (app *application) ExecuteWithContext(input []byte, context executions.Exec
 }
 
 func (app *application) execute(input []byte, context executions.Executions) (executions.Executions, error) {
-	dbPath := append(app.basePath, app.dbPath...)
-	bytes, err := app.contentRepository.Retrieve(dbPath)
-	if err != nil {
-		return nil, err
-	}
-
-	database, err := app.databaseAdapter.ToInstance(bytes)
+	database, err := app.databaseRepository.Retrieve(app.dbPath)
 	if err != nil {
 		return nil, err
 	}
@@ -116,10 +107,9 @@ func (app *application) executeLogic(input []byte, logic logics.Logic, context e
 }
 
 func (app *application) retrieveResources(context executions.Executions) (resources.Resources, error) {
-	resPath := append(app.basePath, app.resourcesPath...)
 	if context == nil {
-		return app.resourcesApplication.Execute(resPath)
+		return app.resourcesApplication.Execute(app.resourcesPath)
 	}
 
-	return app.resourcesApplication.ExecuteWithContext(resPath, context)
+	return app.resourcesApplication.ExecuteWithContext(app.resourcesPath, context)
 }
