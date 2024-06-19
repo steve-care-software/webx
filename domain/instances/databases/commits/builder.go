@@ -4,13 +4,12 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/queries"
 )
 
 type builder struct {
 	hashAdapter hash.Adapter
-	description string
-	actions     actions.Actions
+	queries     queries.Queries
 	parent      hash.Hash
 }
 
@@ -19,8 +18,7 @@ func createBuilder(
 ) Builder {
 	out := builder{
 		hashAdapter: hashAdapter,
-		description: "",
-		actions:     nil,
+		queries:     nil,
 		parent:      nil,
 	}
 
@@ -34,19 +32,13 @@ func (app *builder) Create() Builder {
 	)
 }
 
-// WithDescription adds a description to the builder
-func (app *builder) WithDescription(description string) Builder {
-	app.description = description
+// WithQueries add queries to the builder
+func (app *builder) WithQueries(queries queries.Queries) Builder {
+	app.queries = queries
 	return app
 }
 
-// WithActions add an actions to the builder
-func (app *builder) WithActions(actions actions.Actions) Builder {
-	app.actions = actions
-	return app
-}
-
-// WithParent adds a parent to the builder
+// WithParent add parent to the builder
 func (app *builder) WithParent(parent hash.Hash) Builder {
 	app.parent = parent
 	return app
@@ -54,17 +46,12 @@ func (app *builder) WithParent(parent hash.Hash) Builder {
 
 // Now builds a new Commit instance
 func (app *builder) Now() (Commit, error) {
-	if app.description == "" {
-		return nil, errors.New("the description is mandatory in order to build a Commit instance")
-	}
-
-	if app.actions == nil {
-		return nil, errors.New("the actions is mandatory in order to build a Commit instance")
+	if app.queries == nil {
+		return nil, errors.New("the queries is mandatory in order to build a Commit instance")
 	}
 
 	data := [][]byte{
-		[]byte(app.description),
-		app.actions.Hash().Bytes(),
+		app.queries.Hash().Bytes(),
 	}
 
 	if app.parent != nil {
@@ -76,10 +63,9 @@ func (app *builder) Now() (Commit, error) {
 		return nil, err
 	}
 
-	content := createContent(app.description, app.actions)
 	if app.parent != nil {
-		return createCommitWithParent(*pHash, content, app.parent), nil
+		return createCommitWithParent(*pHash, app.queries, app.parent), nil
 	}
 
-	return createCommit(*pHash, content), nil
+	return createCommit(*pHash, app.queries), nil
 }

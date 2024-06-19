@@ -1,36 +1,39 @@
 package commits
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import (
+	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/queries"
+)
 
 type commit struct {
 	hash    hash.Hash
-	content Content
+	queries queries.Queries
 	parent  hash.Hash
 }
 
 func createCommit(
 	hash hash.Hash,
-	content Content,
+	queries queries.Queries,
 ) Commit {
-	return createCommitInternally(hash, content, nil)
+	return createCommitInternally(hash, queries, nil)
 }
 
 func createCommitWithParent(
 	hash hash.Hash,
-	content Content,
+	queries queries.Queries,
 	parent hash.Hash,
 ) Commit {
-	return createCommitInternally(hash, content, parent)
+	return createCommitInternally(hash, queries, parent)
 }
 
 func createCommitInternally(
 	hash hash.Hash,
-	content Content,
+	queries queries.Queries,
 	parent hash.Hash,
 ) Commit {
 	out := commit{
 		hash:    hash,
-		content: content,
+		queries: queries,
 		parent:  parent,
 	}
 
@@ -42,12 +45,12 @@ func (obj *commit) Hash() hash.Hash {
 	return obj.hash
 }
 
-// Content returns the content
-func (obj *commit) Content() Content {
-	return obj.content
+// Queries returns the queries
+func (obj *commit) Queries() queries.Queries {
+	return obj.queries
 }
 
-// HasParent returns true if there is a parent, false otherwise
+// HasParent returns true if there is parent, false otherwise
 func (obj *commit) HasParent() bool {
 	return obj.parent != nil
 }

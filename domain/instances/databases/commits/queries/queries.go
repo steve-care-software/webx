@@ -1,19 +1,19 @@
-package actions
+package queries
 
 import (
 	"github.com/steve-care-software/datastencil/domain/hash"
 )
 
-type actions struct {
+type queries struct {
 	hash hash.Hash
-	list []Action
+	list []Query
 }
 
-func createActions(
+func createQueries(
 	hash hash.Hash,
-	list []Action,
-) Actions {
-	out := actions{
+	list []Query,
+) Queries {
+	out := queries{
 		hash: hash,
 		list: list,
 	}
@@ -22,11 +22,11 @@ func createActions(
 }
 
 // Hash returns the hash
-func (obj *actions) Hash() hash.Hash {
+func (obj *queries) Hash() hash.Hash {
 	return obj.hash
 }
 
 // List returns the list
-func (obj *actions) List() []Action {
+func (obj *queries) List() []Query {
 	return obj.list
 }
