@@ -83,7 +83,7 @@ func TestPointerRepository_Match_matchesOnePointerOutOfTwo_Success(t *testing.T)
 	}
 
 	history := [][]string{
-		[]string{"this", "is", "an", "executed", "path"},
+		{"this", "is", "an", "executed", "path"},
 	}
 
 	pointers, err := repository.Match(
@@ -122,7 +122,7 @@ func TestPointerRepository_Match_matchesZeroPointerOutOfTwo_returnsError(t *test
 	}
 
 	history := [][]string{
-		[]string{"this", "is", "an", "executed", "path"},
+		{"this", "is", "an", "executed", "path"},
 	}
 
 	_, err = repository.Match(
@@ -155,7 +155,7 @@ func TestPointerRepository_Fetch_returnsLayerBytes_Success(t *testing.T) {
 	}
 
 	history := [][]string{
-		[]string{"this", "is", "an", "executed", "path"},
+		{"this", "is", "an", "executed", "path"},
 	}
 
 	bytes, err := repository.Fetch(
