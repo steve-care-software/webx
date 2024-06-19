@@ -39,7 +39,7 @@ func TestOperator_isOr_Success(t *testing.T) {
 }
 
 func TestOperator_isXor_Success(t *testing.T) {
-	operator := NewOperatorWithXOrForTests()
+	operator := NewOperatorWithXorForTests()
 	if operator.IsAnd() {
 		t.Errorf("the operator was expected to NOT be and")
 		return

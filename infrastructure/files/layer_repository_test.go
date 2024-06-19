@@ -23,7 +23,8 @@ func TestLayerRepository_Success(t *testing.T) {
 	}
 
 	layer, err := repository.Retrieve([]string{
-		"layer.json",
+		"layers",
+		"first.json",
 	})
 
 	if err != nil {

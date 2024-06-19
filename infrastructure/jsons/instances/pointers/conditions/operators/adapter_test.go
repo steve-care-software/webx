@@ -50,7 +50,7 @@ func TestAdapter_isOr_Success(t *testing.T) {
 }
 
 func TestAdapter_isXor_Success(t *testing.T) {
-	ins := operators.NewOperatorWithAndForTests()
+	ins := operators.NewOperatorWithXorForTests()
 	adapter := NewAdapter()
 	retBytes, err := adapter.ToBytes(ins)
 	if err != nil {

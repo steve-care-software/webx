@@ -66,3 +66,42 @@ func (obj *condition) HasComparisons() bool {
 func (obj *condition) Comparisons() Comparisons {
 	return obj.comparisons
 }
+
+// Match returns true if there is a match, false otherwise
+func (obj *condition) Match(history [][]string) bool {
+	resourceIsMatch := obj.resource.Match(history)
+	if !obj.HasComparisons() {
+		return resourceIsMatch
+	}
+
+	list := obj.comparisons.List()
+	for _, oneComparison := range list {
+		condIsMatch := oneComparison.Condition().Match(history)
+		operator := oneComparison.Operator()
+		if operator.IsAnd() {
+			if resourceIsMatch && condIsMatch {
+				continue
+			}
+
+			return false
+		}
+
+		if operator.IsOr() {
+			if resourceIsMatch || condIsMatch {
+				continue
+			}
+
+			return false
+		}
+
+		if operator.IsXor() {
+			if (resourceIsMatch || condIsMatch) && !(resourceIsMatch && condIsMatch) {
+				continue
+			}
+
+			return false
+		}
+	}
+
+	return true
+}

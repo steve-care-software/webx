@@ -1,6 +1,10 @@
 package conditions
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import (
+	"path/filepath"
+
+	"github.com/steve-care-software/datastencil/domain/hash"
+)
 
 type resource struct {
 	hash         hash.Hash
@@ -35,4 +39,23 @@ func (obj *resource) Path() []string {
 // MustBeLoaded returns true if must be loaded, false otherwise
 func (obj *resource) MustBeLoaded() bool {
 	return obj.mustBeLoaded
+}
+
+// Match returns true if there is a match, false otherwise
+func (obj *resource) Match(history [][]string) bool {
+	isLoaded := false
+	path := filepath.Join(obj.path...)
+	for _, oneHistory := range history {
+		historyPath := filepath.Join(oneHistory...)
+		if historyPath == path {
+			isLoaded = true
+			break
+		}
+	}
+
+	if !isLoaded && obj.mustBeLoaded {
+		return false
+	}
+
+	return true
 }

@@ -1,7 +1,7 @@
 package operators
 
-// NewOperatorWithXOrForTests creates a new operator with xor for tests
-func NewOperatorWithXOrForTests() Operator {
+// NewOperatorWithXorForTests creates a new operator with xor for tests
+func NewOperatorWithXorForTests() Operator {
 	ins, err := NewBuilder().Create().IsXor().Now()
 	if err != nil {
 		panic(err)

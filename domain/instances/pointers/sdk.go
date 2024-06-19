@@ -38,7 +38,8 @@ type Builder interface {
 type Pointers interface {
 	Hash() hash.Hash
 	List() []Pointer
-	Match(executed [][]string) ([]Pointer, error)
+	First() Pointer
+	Match(executed [][]string) []Pointer
 }
 
 // PointerBuilder represents the pointer builder
@@ -60,4 +61,18 @@ type Pointer interface {
 	Loader() conditions.Condition
 	HasCanceller() bool
 	Canceller() conditions.Condition
+}
+
+// RepositoryBuilder represents a repository builder
+type RepositoryBuilder interface {
+	Create() RepositoryBuilder
+	WithBasePath(basePath []string) RepositoryBuilder
+	Now() (Repository, error)
+}
+
+// Repository represents a pointer repository
+type Repository interface {
+	Retrieve(path []string) (Pointers, error)
+	Match(path []string, history [][]string) (Pointers, error)
+	Fetch(path []string, history [][]string) ([]byte, error)
 }

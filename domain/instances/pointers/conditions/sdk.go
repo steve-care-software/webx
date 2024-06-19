@@ -57,6 +57,7 @@ type Condition interface {
 	Resource() Resource
 	HasComparisons() bool
 	Comparisons() Comparisons
+	Match(history [][]string) bool
 }
 
 // ResourceBuilder represents a resource builder
@@ -72,6 +73,7 @@ type Resource interface {
 	Hash() hash.Hash
 	Path() []string
 	MustBeLoaded() bool
+	Match(history [][]string) bool
 }
 
 // ComparisonsBuilder represents a comparisons builder

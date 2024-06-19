@@ -1,0 +1,10 @@
+[
+    {
+        "path": ["layers", "first.json"],
+        "is_active": false
+    },
+    {
+        "path": ["layers", "second.json"],
+        "is_active": false
+    }
+]
