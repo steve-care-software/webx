@@ -6,51 +6,60 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/compilers"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/lists"
 )
 
 type assignable struct {
-	hash     hash.Hash
-	bytes    bytes.Bytes
-	constant constants.Constant
-	crypto   cryptography.Cryptography
-	compiler compilers.Compiler
-	list     lists.List
+	hash      hash.Hash
+	bytes     bytes.Bytes
+	constant  constants.Constant
+	crypto    cryptography.Cryptography
+	compiler  compilers.Compiler
+	execution executions.Execution
+	list      lists.List
 }
 
 func createAssignableWithBytes(
 	hash hash.Hash,
 	bytes bytes.Bytes,
 ) Assignable {
-	return createAssignableInternally(hash, bytes, nil, nil, nil, nil)
+	return createAssignableInternally(hash, bytes, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithConstant(
 	hash hash.Hash,
 	constant constants.Constant,
 ) Assignable {
-	return createAssignableInternally(hash, nil, constant, nil, nil, nil)
+	return createAssignableInternally(hash, nil, constant, nil, nil, nil, nil)
 }
 
 func createAssignableWithCryptography(
 	hash hash.Hash,
 	crypto cryptography.Cryptography,
 ) Assignable {
-	return createAssignableInternally(hash, nil, nil, crypto, nil, nil)
+	return createAssignableInternally(hash, nil, nil, crypto, nil, nil, nil)
 }
 
 func createAssignableWithCompiler(
 	hash hash.Hash,
 	compiler compilers.Compiler,
 ) Assignable {
-	return createAssignableInternally(hash, nil, nil, nil, compiler, nil)
+	return createAssignableInternally(hash, nil, nil, nil, compiler, nil, nil)
+}
+
+func createAssignableWithExecution(
+	hash hash.Hash,
+	eecution executions.Execution,
+) Assignable {
+	return createAssignableInternally(hash, nil, nil, nil, nil, eecution, nil)
 }
 
 func createAssignableWithList(
 	hash hash.Hash,
 	list lists.List,
 ) Assignable {
-	return createAssignableInternally(hash, nil, nil, nil, nil, list)
+	return createAssignableInternally(hash, nil, nil, nil, nil, nil, list)
 }
 
 func createAssignableInternally(
@@ -59,15 +68,17 @@ func createAssignableInternally(
 	constant constants.Constant,
 	crypto cryptography.Cryptography,
 	compiler compilers.Compiler,
+	execution executions.Execution,
 	list lists.List,
 ) Assignable {
 	out := assignable{
-		hash:     hash,
-		bytes:    bytes,
-		constant: constant,
-		crypto:   crypto,
-		compiler: compiler,
-		list:     list,
+		hash:      hash,
+		bytes:     bytes,
+		constant:  constant,
+		crypto:    crypto,
+		compiler:  compiler,
+		execution: execution,
+		list:      list,
 	}
 
 	return &out
@@ -116,6 +127,16 @@ func (obj *assignable) IsCompiler() bool {
 // Compiler returns the compiler, if any
 func (obj *assignable) Compiler() compilers.Compiler {
 	return obj.compiler
+}
+
+// IsExecution returns true if there is an execution, false otherwise
+func (obj *assignable) IsExecution() bool {
+	return obj.execution != nil
+}
+
+// Execution returns the execution, if any
+func (obj *assignable) Execution() executions.Execution {
+	return obj.execution
 }
 
 // IsList returns true if there is a list, false otherwise

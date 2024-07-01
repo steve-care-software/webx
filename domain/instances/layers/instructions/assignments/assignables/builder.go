@@ -8,6 +8,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/compilers"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/lists"
 )
 
@@ -17,6 +18,7 @@ type builder struct {
 	constant    constants.Constant
 	crypto      cryptography.Cryptography
 	compiler    compilers.Compiler
+	execution   executions.Execution
 	list        lists.List
 }
 
@@ -29,6 +31,7 @@ func createBuilder(
 		constant:    nil,
 		crypto:      nil,
 		compiler:    nil,
+		execution:   nil,
 		list:        nil,
 	}
 
@@ -66,6 +69,12 @@ func (app *builder) WithCompiler(compiler compilers.Compiler) Builder {
 	return app
 }
 
+// WithExecution adds an execution to the builder
+func (app *builder) WithExecution(execution executions.Execution) Builder {
+	app.execution = execution
+	return app
+}
+
 // WithList adds a list to the builder
 func (app *builder) WithList(list lists.List) Builder {
 	app.list = list
@@ -93,6 +102,11 @@ func (app *builder) Now() (Assignable, error) {
 	if app.compiler != nil {
 		data = append(data, []byte("compiler"))
 		data = append(data, app.compiler.Hash().Bytes())
+	}
+
+	if app.execution != nil {
+		data = append(data, []byte("execution"))
+		data = append(data, app.execution.Hash().Bytes())
 	}
 
 	if app.list != nil {
