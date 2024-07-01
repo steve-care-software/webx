@@ -1,7 +1,7 @@
 package logics
 
 import (
-	"github.com/steve-care-software/datastencil/applications/logics/binaries"
+	"github.com/steve-care-software/datastencil/applications/links/layers/binaries"
 	"github.com/steve-care-software/datastencil/applications/logics/instructions"
 	"github.com/steve-care-software/datastencil/domain/instances/executions"
 	execution_links "github.com/steve-care-software/datastencil/domain/instances/executions/links"
