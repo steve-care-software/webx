@@ -3,17 +3,15 @@ package files
 import (
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/instances/pointers"
 	"github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers"
-	json_pointers "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/pointers"
 )
 
 func TestLayerRepository_Success(t *testing.T) {
 	repositoryBuilder := NewLayerRepositoryBuilder(
-		NewPointerRepositoryBuilder(
+		/*NewPointerRepositoryBuilder(
 			json_pointers.NewAdapter(),
 			pointers.NewBuilder(),
-		),
+		),*/
 		layers.NewAdapter(),
 	)
 
