@@ -5,7 +5,19 @@ import (
 	"github.com/steve-care-software/historydb/domain/hash"
 )
 
-const invalidPatternErr = "the provided context (%d) does not exists"
+// RemoteBuilder represents a remote application builder
+type RemoteBuilder interface {
+	Create() RemoteBuilder
+	WithHost(host string) RemoteBuilder
+	Now() (Application, error)
+}
+
+// LocalBuilder represents a local application builder
+type LocalBuilder interface {
+	Create() LocalBuilder
+	WithBasePath(basePath []string) LocalBuilder
+	Now() (Application, error)
+}
 
 // Application represents an application
 type Application interface {
