@@ -3,7 +3,7 @@ package encryptors
 import (
 	"crypto/rsa"
 
-	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 // NewAdapter creates a new adapter

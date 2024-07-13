@@ -11,7 +11,6 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/databases/commits/actions/modifications/deletes"
 	"github.com/steve-care-software/datastencil/domain/instances/databases/heads"
 	"github.com/steve-care-software/datastencil/domain/instances/executions"
-	"github.com/steve-care-software/datastencil/domain/instances/executions/links"
 	source_links "github.com/steve-care-software/datastencil/domain/instances/links"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements"
 	"github.com/steve-care-software/datastencil/domain/instances/links/elements/conditions"

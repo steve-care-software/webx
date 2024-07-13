@@ -1,12 +1,12 @@
 package executions
 
 import (
-	json_databases "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/databases"
-	json_links "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/executions/links"
+	json_layers "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/executions/layers"
+	json_databases "github.com/steve-care-software/historydb/infrastructure/jsons"
 )
 
 // Execution represents an execution
 type Execution struct {
-	Link     json_links.Link         `json:"link"`
+	Layer    json_layers.Layer       `json:"layer"`
 	Database json_databases.Database `json:"database"`
 }

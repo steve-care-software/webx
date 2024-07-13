@@ -1,6 +1,6 @@
 package kinds
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import "github.com/steve-care-software/historydb/domain/hash"
 
 type kind struct {
 	hash       hash.Hash

@@ -6,23 +6,27 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers"
 	json_instructions "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions"
 	json_output "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/outputs"
+	json_references "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/references"
 )
 
 // Adapter represents the adapter
 type Adapter struct {
 	instructionsAdapter *json_instructions.Adapter
 	outputAdapter       *json_output.Adapter
+	referenceAdapter    *json_references.Adapter
 	builder             layers.Builder
 }
 
 func createAdapter(
 	instructionsAdapter *json_instructions.Adapter,
 	outputAdapter *json_output.Adapter,
+	referenceAdapter *json_references.Adapter,
 	builder layers.Builder,
 ) layers.Adapter {
 	out := Adapter{
 		instructionsAdapter: instructionsAdapter,
 		outputAdapter:       outputAdapter,
+		referenceAdapter:    referenceAdapter,
 		builder:             builder,
 	}
 
@@ -67,11 +71,22 @@ func (app *Adapter) LayerToStruct(ins layers.Layer) (*Layer, error) {
 		return nil, err
 	}
 
-	return &Layer{
+	output := Layer{
 		Instructions: *&ptrInstructions,
 		Output:       *ptrOutput,
 		Input:        ins.Input(),
-	}, nil
+	}
+
+	if ins.HasReferences() {
+		referencesList, err := app.referenceAdapter.ReferencesToStruct(ins.References())
+		if err != nil {
+			return nil, err
+		}
+
+		output.References = referencesList
+	}
+
+	return &output, nil
 }
 
 // StructToLayer converts a struct to layer
@@ -86,9 +101,19 @@ func (app *Adapter) StructToLayer(str Layer) (layers.Layer, error) {
 		return nil, err
 	}
 
-	return app.builder.Create().
+	builder := app.builder.Create().
 		WithInstructions(instructions).
 		WithOutput(output).
-		WithInput(str.Input).
-		Now()
+		WithInput(str.Input)
+
+	if str.References != nil && len(str.References) > 0 {
+		references, err := app.referenceAdapter.StructToReferences(str.References)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithReferences(references)
+	}
+
+	return builder.Now()
 }

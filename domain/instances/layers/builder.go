@@ -3,9 +3,10 @@ package layers
 import (
 	"errors"
 
-	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/references"
+	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 type builder struct {
@@ -13,6 +14,7 @@ type builder struct {
 	input        string
 	instructions instructions.Instructions
 	output       outputs.Output
+	references   references.References
 }
 
 func createBuilder(
@@ -23,6 +25,7 @@ func createBuilder(
 		input:        "",
 		instructions: nil,
 		output:       nil,
+		references:   nil,
 	}
 
 	return &out
@@ -53,6 +56,12 @@ func (app *builder) WithInput(input string) Builder {
 	return app
 }
 
+// WithReferences add references to the builder
+func (app *builder) WithReferences(references references.References) Builder {
+	app.references = references
+	return app
+}
+
 // Now builds a new Layer instance
 func (app *builder) Now() (Layer, error) {
 	if app.instructions == nil {
@@ -67,14 +76,23 @@ func (app *builder) Now() (Layer, error) {
 		return nil, errors.New("the input is mandatory in order to build a Layer instance")
 	}
 
-	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+	data := [][]byte{
 		app.instructions.Hash().Bytes(),
 		app.output.Hash().Bytes(),
 		[]byte(app.input),
-	})
+	}
 
+	if app.references != nil {
+		data = append(data, app.references.Hash().Bytes())
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
+	}
+
+	if app.references != nil {
+		return createLayerWithReferences(*pHash, app.instructions, app.output, app.input, app.references), nil
 	}
 
 	return createLayer(*pHash, app.instructions, app.output, app.input), nil

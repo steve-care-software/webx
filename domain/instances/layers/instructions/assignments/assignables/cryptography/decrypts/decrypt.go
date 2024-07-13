@@ -1,6 +1,6 @@
 package decrypts
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import "github.com/steve-care-software/historydb/domain/hash"
 
 type decrypt struct {
 	hash     hash.Hash

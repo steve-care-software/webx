@@ -3,9 +3,9 @@ package keys
 import (
 	"errors"
 
-	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography/keys/encryptions"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography/keys/signatures"
+	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 type builder struct {

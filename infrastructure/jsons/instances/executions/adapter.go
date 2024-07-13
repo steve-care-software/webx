@@ -4,14 +4,15 @@ import (
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/executions"
-	json_databases "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/databases"
-	json_links "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/executions/links"
+
+	json_layers "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/executions/layers"
+	json_databases "github.com/steve-care-software/historydb/domain/databases"
 )
 
 // Adapter represents an adapter
 type Adapter struct {
 	databaseAdapter  *json_databases.Adapter
-	linkAdapter      *json_links.Adapter
+	layerAdapter     *json_layers.Adapter
 	builder          executions.Builder
 	executionBuilder executions.ExecutionBuilder
 }

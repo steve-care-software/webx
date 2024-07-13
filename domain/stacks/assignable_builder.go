@@ -3,10 +3,10 @@ package stacks
 import (
 	"errors"
 
-	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
+	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 type assignableBuilder struct {

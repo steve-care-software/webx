@@ -1,25 +1,25 @@
 package executions
 
 import (
-	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/databases"
-	"github.com/steve-care-software/datastencil/domain/instances/executions/links"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/layers"
+	"github.com/steve-care-software/historydb/domain/databases"
+	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 type execution struct {
 	hash     hash.Hash
-	logic    links.Link
+	layer    layers.Layer
 	database databases.Database
 }
 
 func createExecution(
 	hash hash.Hash,
-	logic links.Link,
+	layer layers.Layer,
 	database databases.Database,
 ) Execution {
 	out := execution{
 		hash:     hash,
-		logic:    logic,
+		layer:    layer,
 		database: database,
 	}
 
@@ -31,9 +31,9 @@ func (obj *execution) Hash() hash.Hash {
 	return obj.hash
 }
 
-// Logic returns the logic
-func (obj *execution) Logic() links.Link {
-	return obj.logic
+// Layer returns the layer
+func (obj *execution) Layer() layers.Layer {
+	return obj.layer
 }
 
 // Database returns the database

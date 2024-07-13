@@ -1,6 +1,6 @@
 package instructions
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import "github.com/steve-care-software/historydb/domain/hash"
 
 type condition struct {
 	hash         hash.Hash

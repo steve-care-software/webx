@@ -1,6 +1,6 @@
 package compilers
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import "github.com/steve-care-software/historydb/domain/hash"
 
 type compiler struct {
 	hash      hash.Hash

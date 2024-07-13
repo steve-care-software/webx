@@ -1,6 +1,6 @@
 package inserts
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import "github.com/steve-care-software/historydb/domain/hash"
 
 // NewBuilder creates a new builder
 func NewBuilder() Builder {

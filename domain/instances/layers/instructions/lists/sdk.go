@@ -1,9 +1,9 @@
 package lists
 
 import (
-	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/lists/deletes"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/lists/inserts"
+	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 // NewBuilder creates a new builder

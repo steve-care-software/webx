@@ -1,9 +1,9 @@
 package executions
 
 import (
-	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/databases"
-	"github.com/steve-care-software/datastencil/domain/instances/executions/links"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/layers"
+	"github.com/steve-care-software/historydb/domain/databases"
+	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 // NewBuilder creates a new builder instance
@@ -46,7 +46,7 @@ type Executions interface {
 // ExecutionBuilder represents an execution builder
 type ExecutionBuilder interface {
 	Create() ExecutionBuilder
-	WithLogic(logic links.Link) ExecutionBuilder
+	WithLayer(layer layers.Layer) ExecutionBuilder
 	WithDatabase(database databases.Database) ExecutionBuilder
 	Now() (Execution, error)
 }
@@ -54,6 +54,6 @@ type ExecutionBuilder interface {
 // Execution represents a layer execution
 type Execution interface {
 	Hash() hash.Hash
-	Logic() links.Link
+	Layer() layers.Layer
 	Database() databases.Database
 }

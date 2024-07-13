@@ -3,14 +3,14 @@ package executions
 import (
 	"errors"
 
-	"github.com/steve-care-software/datastencil/domain/hash"
-	"github.com/steve-care-software/datastencil/domain/instances/databases"
-	"github.com/steve-care-software/datastencil/domain/instances/executions/links"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/layers"
+	"github.com/steve-care-software/historydb/domain/databases"
+	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 type executionBuilder struct {
 	hashAdapter hash.Adapter
-	logic       links.Link
+	layer       layers.Layer
 	database    databases.Database
 }
 
@@ -19,7 +19,7 @@ func createExecutionBuilder(
 ) ExecutionBuilder {
 	out := executionBuilder{
 		hashAdapter: hashAdapter,
-		logic:       nil,
+		layer:       nil,
 		database:    nil,
 	}
 
@@ -33,9 +33,9 @@ func (app *executionBuilder) Create() ExecutionBuilder {
 	)
 }
 
-// WithLogic adds logic to the executionBuilder
-func (app *executionBuilder) WithLogic(logic links.Link) ExecutionBuilder {
-	app.logic = logic
+// WithLayer adds a layer to the executionBuilder
+func (app *executionBuilder) WithLayer(layer layers.Layer) ExecutionBuilder {
+	app.layer = layer
 	return app
 }
 
@@ -47,8 +47,8 @@ func (app *executionBuilder) WithDatabase(database databases.Database) Execution
 
 // Now builds a new Execution instance
 func (app *executionBuilder) Now() (Execution, error) {
-	if app.logic == nil {
-		return nil, errors.New("the logic is mandatory in order to build an Execution instance")
+	if app.layer == nil {
+		return nil, errors.New("the layer is mandatory in order to build an Execution instance")
 	}
 
 	if app.database == nil {
@@ -56,7 +56,7 @@ func (app *executionBuilder) Now() (Execution, error) {
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
-		app.logic.Hash().Bytes(),
+		app.layer.Hash().Bytes(),
 		app.database.Hash().Bytes(),
 	})
 
@@ -64,5 +64,5 @@ func (app *executionBuilder) Now() (Execution, error) {
 		return nil, err
 	}
 
-	return createExecution(*pHash, app.logic, app.database), nil
+	return createExecution(*pHash, app.layer, app.database), nil
 }

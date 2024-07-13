@@ -1,10 +1,10 @@
 package cryptography
 
 import (
-	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography/decrypts"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography/encrypts"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography/keys"
+	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 type cryptography struct {

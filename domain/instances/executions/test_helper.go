@@ -1,8 +1,8 @@
 package executions
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/databases"
-	"github.com/steve-care-software/datastencil/domain/instances/executions/links"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/layers"
+	"github.com/steve-care-software/historydb/domain/databases"
 )
 
 // NewExecutionsForTests creates a new executions for tests
@@ -16,8 +16,8 @@ func NewExecutionsForTests(list []Execution) Executions {
 }
 
 // NewExecutionForTests creates a new execution for tests
-func NewExecutionForTests(link links.Link, database databases.Database) Execution {
-	ins, err := NewExecutionBuilder().Create().WithLogic(link).WithDatabase(database).Now()
+func NewExecutionForTests(layer layers.Layer, database databases.Database) Execution {
+	ins, err := NewExecutionBuilder().Create().WithLayer(layer).WithDatabase(database).Now()
 	if err != nil {
 		panic(err)
 	}

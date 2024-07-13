@@ -2,114 +2,185 @@ package applications
 
 import (
 	"errors"
+	"fmt"
 
-	logics_application "github.com/steve-care-software/datastencil/applications/logics"
-	resources_application "github.com/steve-care-software/datastencil/applications/resources"
-	"github.com/steve-care-software/datastencil/domain/contents"
-	"github.com/steve-care-software/datastencil/domain/instances/databases"
+	applications_layers "github.com/steve-care-software/datastencil/applications/layers"
+	"github.com/steve-care-software/datastencil/domain/contexts"
 	"github.com/steve-care-software/datastencil/domain/instances/executions"
-	execution_links "github.com/steve-care-software/datastencil/domain/instances/executions/links"
-	"github.com/steve-care-software/datastencil/domain/resources"
-	"github.com/steve-care-software/datastencil/domain/resources/logics"
+	executions_layer "github.com/steve-care-software/datastencil/domain/instances/executions/layers"
+	"github.com/steve-care-software/datastencil/domain/instances/layers"
+	"github.com/steve-care-software/historydb/applications"
+	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 type application struct {
-	resourcesApplication resources_application.Application
-	logicApplication     logics_application.Application
-	contentRepository    contents.Repository
-	databaseRepository   databases.Repository
-	executionBuiler      executions.ExecutionBuilder
-	executionsBuilder    executions.Builder
-	dbPath               []string
-	resourcesPath        []string
+	dbApp                 applications.Application
+	layerApp              applications_layers.Application
+	layerAdapter          layers.Adapter
+	layerExecutionService executions_layer.Service
+	layerExecutionAdapter executions_layer.Adapter
+	contextBuilder        contexts.Builder
+	contextRepository     contexts.Repository
+	contextService        contexts.Service
+	executions            map[uint]context
 }
 
 func createApplication(
-	resourcesApplication resources_application.Application,
-	logicApplication logics_application.Application,
-	contentRepository contents.Repository,
-	databaseRepository databases.Repository,
-	executionBuiler executions.ExecutionBuilder,
-	executionsBuilder executions.Builder,
-	dbPath []string,
-	resourcesPath []string,
+	dbApp applications.Application,
+	layerApp applications_layers.Application,
+	layerAdapter layers.Adapter,
+	layerExecutionService executions_layer.Service,
+	layerExecutionAdapter executions_layer.Adapter,
+	contextBuilder contexts.Builder,
+	contextRepository contexts.Repository,
+	contextService contexts.Service,
 ) Application {
 	out := application{
-		resourcesApplication: resourcesApplication,
-		logicApplication:     logicApplication,
-		contentRepository:    contentRepository,
-		databaseRepository:   databaseRepository,
-		executionBuiler:      executionBuiler,
-		executionsBuilder:    executionsBuilder,
-		dbPath:               dbPath,
-		resourcesPath:        resourcesPath,
+		dbApp:                 dbApp,
+		layerApp:              layerApp,
+		layerAdapter:          layerAdapter,
+		layerExecutionService: layerExecutionService,
+		layerExecutionAdapter: layerExecutionAdapter,
+		contextBuilder:        contextBuilder,
+		contextRepository:     contextRepository,
+		contextService:        contextService,
+		executions:            map[uint]context{},
 	}
 
 	return &out
 }
 
-// Execute executes the application
-func (app *application) Execute(input []byte) (executions.Executions, error) {
-	return app.execute(input, nil)
-}
-
-// ExecuteWithContext executes the application with context
-func (app *application) ExecuteWithContext(input []byte, context executions.Executions) (executions.Executions, error) {
-	return app.execute(input, context)
-}
-
-func (app *application) execute(input []byte, context executions.Executions) (executions.Executions, error) {
-	database, err := app.databaseRepository.Retrieve(app.dbPath)
+// Init initializes a new database and begins a context on it
+func (app *application) Init(dbPath []string, name string, description string) (*uint, error) {
+	pContext, err := app.dbApp.BeginWithInit(dbPath, name, description)
 	if err != nil {
 		return nil, err
 	}
 
-	resources, err := app.retrieveResources(context)
+	app.executions[*pContext] = context{
+		dbPath:     dbPath,
+		executions: []hash.Hash{},
+	}
+
+	return pContext, nil
+}
+
+// Begin begins a context
+func (app *application) Begin(dbPath []string) (*uint, error) {
+	pContext, err := app.dbApp.Begin(dbPath)
 	if err != nil {
 		return nil, err
 	}
 
-	resourcesList := resources.List()
-	for _, oneResource := range resourcesList {
-		logicsList := oneResource.Logics().List()
-		for _, oneLogic := range logicsList {
-			executedLink, err := app.executeLogic(input, oneLogic, context)
-			if err != nil {
-				continue
-			}
+	// read the context:
+	contextIns, err := app.contextRepository.Retrieve(dbPath)
+	if err != nil {
+		return nil, err
+	}
 
-			execution, err := app.executionBuiler.Create().
-				WithDatabase(database).
-				WithLogic(executedLink).
-				Now()
+	app.executions[*pContext] = context{
+		dbPath:     dbPath,
+		executions: contextIns.Executions(),
+	}
 
-			if err != nil {
-				return nil, err
-			}
+	return pContext, nil
+}
 
-			executionsList := context.List()
-			executionsList = append(executionsList, execution)
-			return app.executionsBuilder.Create().
-				WithList(executionsList).
-				Now()
+// Execute executes data on a context
+func (app *application) Execute(contextIdentifier uint, input []byte) ([]byte, error) {
+	layer, err := app.layerAdapter.ToInstance(input)
+	if err != nil {
+		return nil, err
+	}
+
+	if currentContext, ok := app.executions[contextIdentifier]; ok {
+		layerExecution, err := app.layerApp.Execute(layer)
+		if err != nil {
+			return nil, err
 		}
+
+		output, err := app.layerExecutionAdapter.ToBytes(layerExecution)
+		if err != nil {
+			return nil, err
+		}
+
+		// save the execution:
+		err = app.layerExecutionService.Save(layerExecution)
+		if err != nil {
+			return nil, err
+		}
+
+		app.executions[contextIdentifier] = context{
+			dbPath:     currentContext.dbPath,
+			executions: append(currentContext.executions, layerExecution.Hash()),
+		}
+
+		return output, nil
 	}
 
-	return nil, errors.New("the request could not be executed properly")
+	str := fmt.Sprintf(invalidPatternErr, contextIdentifier)
+	return nil, errors.New(str)
 }
 
-func (app *application) executeLogic(input []byte, logic logics.Logic, context executions.Executions) (execution_links.Link, error) {
-	if context == nil {
-		return app.logicApplication.Execute(input, logic)
-	}
-
-	return app.logicApplication.ExecuteWithContext(input, logic, context)
+// ExecuteWithPath reads the path and exectes the data on the context
+func (app *application) ExecuteWithPath(context uint, inputPath []string) ([]byte, error) {
+	return nil, nil
 }
 
-func (app *application) retrieveResources(context executions.Executions) (resources.Resources, error) {
-	if context == nil {
-		return app.resourcesApplication.Execute(app.resourcesPath)
+// ExecuteLayer executes data with a layer on a context
+func (app *application) ExecuteLayer(context uint, input []byte, layerPath []string) ([]byte, error) {
+	return nil, nil
+}
+
+// ExecuteLayerWithPath reads the path and exectes the data on the context using a layer path
+func (app *application) ExecuteLayerWithPath(context uint, inputPath []string, layerPath []string) ([]byte, error) {
+	return nil, nil
+}
+
+// Retrieve retrieves the executions of a context
+func (app *application) Retrieve(context uint) (executions.Executions, error) {
+	return nil, nil
+}
+
+// Commit commits executions to a context
+func (app *application) Commit(contextIdentifier uint) error {
+	if currentContext, ok := app.executions[contextIdentifier]; ok {
+		// read the database:
+		dbIns, err := app.dbApp.Retrieve(currentContext.dbPath)
+		if err != nil {
+			return err
+		}
+
+		// commit to the database:
+		err = app.dbApp.Commit(contextIdentifier)
+		if err != nil {
+			return err
+		}
+
+		head := dbIns.Head().Hash()
+		contextIns, err := app.contextBuilder.Create().
+			WithIdentifier(contextIdentifier).
+			WithHead(head).
+			WithExecutions(currentContext.executions).
+			Now()
+
+		if err != nil {
+			return err
+		}
+
+		return app.contextService.Save(contextIns)
 	}
 
-	return app.resourcesApplication.ExecuteWithContext(app.resourcesPath, context)
+	str := fmt.Sprintf(invalidPatternErr, contextIdentifier)
+	return errors.New(str)
+}
+
+// Rollback rollsback a context
+func (app *application) Rollback(context uint) error {
+	return nil
+}
+
+// Cancel cancels a context
+func (app *application) Cancel(context uint) error {
+	return nil
 }

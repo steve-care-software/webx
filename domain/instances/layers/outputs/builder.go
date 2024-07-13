@@ -3,8 +3,8 @@ package outputs
 import (
 	"errors"
 
-	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/outputs/kinds"
+	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 type builder struct {

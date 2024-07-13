@@ -1,9 +1,10 @@
 package layers
 
 import (
-	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/references"
+	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 // NewBuilder creates a new layer builder instance
@@ -26,6 +27,7 @@ type Builder interface {
 	WithInstructions(instructions instructions.Instructions) Builder
 	WithOutput(output outputs.Output) Builder
 	WithInput(input string) Builder
+	WithReferences(references references.References) Builder
 	Now() (Layer, error)
 }
 
@@ -35,6 +37,8 @@ type Layer interface {
 	Instructions() instructions.Instructions
 	Output() outputs.Output
 	Input() string
+	HasReferences() bool
+	References() references.References
 }
 
 // RepositoryBuilder represents a repository builder

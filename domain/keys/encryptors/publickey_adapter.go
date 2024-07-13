@@ -3,7 +3,7 @@ package encryptors
 import (
 	"crypto/x509"
 
-	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 type publicKeyAdapter struct {

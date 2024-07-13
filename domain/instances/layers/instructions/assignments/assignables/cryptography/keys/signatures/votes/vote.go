@@ -1,9 +1,9 @@
 package votes
 
 import (
-	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/creates"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/validates"
+	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 type vote struct {

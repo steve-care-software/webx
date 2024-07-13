@@ -1,6 +1,6 @@
 package fetches
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import "github.com/steve-care-software/historydb/domain/hash"
 
 type fetch struct {
 	hash  hash.Hash

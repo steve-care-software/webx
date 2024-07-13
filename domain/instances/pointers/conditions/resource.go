@@ -3,7 +3,7 @@ package conditions
 import (
 	"path/filepath"
 
-	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 type resource struct {

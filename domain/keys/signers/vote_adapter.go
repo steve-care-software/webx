@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/steve-care-software/datastencil/domain/hash"
+	"github.com/steve-care-software/historydb/domain/hash"
 	kyber "go.dedis.ch/kyber/v3"
 )
 

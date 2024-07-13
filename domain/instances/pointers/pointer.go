@@ -1,8 +1,8 @@
 package pointers
 
 import (
-	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/conditions"
+	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 type pointer struct {

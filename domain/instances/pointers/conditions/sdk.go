@@ -1,8 +1,8 @@
 package conditions
 
 import (
-	"github.com/steve-care-software/datastencil/domain/hash"
 	"github.com/steve-care-software/datastencil/domain/instances/pointers/conditions/operators"
+	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 // NewBuilder creates a new builder

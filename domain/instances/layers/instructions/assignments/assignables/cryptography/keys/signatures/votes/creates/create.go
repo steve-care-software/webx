@@ -1,6 +1,6 @@
 package creates
 
-import "github.com/steve-care-software/datastencil/domain/hash"
+import "github.com/steve-care-software/historydb/domain/hash"
 
 type create struct {
 	hash       hash.Hash
