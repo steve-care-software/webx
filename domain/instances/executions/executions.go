@@ -1,6 +1,8 @@
 package executions
 
-import "github.com/steve-care-software/historydb/domain/hash"
+import (
+	"github.com/steve-care-software/historydb/domain/hash"
+)
 
 type executions struct {
 	hash hash.Hash
@@ -24,17 +26,7 @@ func (obj *executions) Hash() hash.Hash {
 	return obj.hash
 }
 
-// List returns the list
+// List returns the list of executions
 func (obj *executions) List() []Execution {
 	return obj.list
-}
-
-// Databases returns the executed database paths
-func (obj *executions) Databases() ([][]string, error) {
-	return nil, nil
-}
-
-// basePath returns the executed links paths
-func (obj *executions) Links(basePath []string) ([][]string, error) {
-	return nil, nil
 }

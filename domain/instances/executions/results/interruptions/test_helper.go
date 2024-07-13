@@ -1,6 +1,6 @@
 package interruptions
 
-import "github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/interruptions/failures"
+import "github.com/steve-care-software/datastencil/domain/instances/executions/results/interruptions/failures"
 
 // NewInterruptionWithStopForTests creates a new interruption with stop for tests
 func NewInterruptionWithStopForTests(stop uint) Interruption {

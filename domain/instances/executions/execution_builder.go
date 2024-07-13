@@ -3,15 +3,16 @@ package executions
 import (
 	"errors"
 
-	"github.com/steve-care-software/datastencil/domain/instances/executions/layers"
-	"github.com/steve-care-software/historydb/domain/databases"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results"
+	source_layers "github.com/steve-care-software/datastencil/domain/instances/layers"
 	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 type executionBuilder struct {
 	hashAdapter hash.Adapter
-	layer       layers.Layer
-	database    databases.Database
+	input       []byte
+	source      source_layers.Layer
+	result      results.Result
 }
 
 func createExecutionBuilder(
@@ -19,50 +20,66 @@ func createExecutionBuilder(
 ) ExecutionBuilder {
 	out := executionBuilder{
 		hashAdapter: hashAdapter,
-		layer:       nil,
-		database:    nil,
+		input:       nil,
+		source:      nil,
+		result:      nil,
 	}
 
 	return &out
 }
 
-// Create initializes the executionBuilder
+// Create initializes the builder
 func (app *executionBuilder) Create() ExecutionBuilder {
 	return createExecutionBuilder(
 		app.hashAdapter,
 	)
 }
 
-// WithLayer adds a layer to the executionBuilder
-func (app *executionBuilder) WithLayer(layer layers.Layer) ExecutionBuilder {
-	app.layer = layer
+// WithInput adds an input to the builder
+func (app *executionBuilder) WithInput(input []byte) ExecutionBuilder {
+	app.input = input
 	return app
 }
 
-// WithDatabase adds database to the executionBuilder
-func (app *executionBuilder) WithDatabase(database databases.Database) ExecutionBuilder {
-	app.database = database
+// WithSource adds a source to the builder
+func (app *executionBuilder) WithSource(source source_layers.Layer) ExecutionBuilder {
+	app.source = source
 	return app
 }
 
-// Now builds a new Execution instance
+// WithResult adds a result to the builder
+func (app *executionBuilder) WithResult(result results.Result) ExecutionBuilder {
+	app.result = result
+	return app
+}
+
+// Now builds a new Layer instance
 func (app *executionBuilder) Now() (Execution, error) {
-	if app.layer == nil {
-		return nil, errors.New("the layer is mandatory in order to build an Execution instance")
+	if app.input != nil && len(app.input) <= 0 {
+		app.input = nil
 	}
 
-	if app.database == nil {
-		return nil, errors.New("the database is mandatory in order to build an Execution instance")
+	if app.input == nil {
+		return nil, errors.New("the input is mandatory in order to build a Layer instance")
+	}
+
+	if app.source == nil {
+		return nil, errors.New("the source is mandatory in order to build a Layer instance")
+	}
+
+	if app.result == nil {
+		return nil, errors.New("the result is mandatory in order to build a Layer instance")
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
-		app.layer.Hash().Bytes(),
-		app.database.Hash().Bytes(),
+		app.input,
+		app.source.Hash().Bytes(),
+		app.result.Hash().Bytes(),
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return createExecution(*pHash, app.layer, app.database), nil
+	return createExecution(*pHash, app.input, app.source, app.result), nil
 }

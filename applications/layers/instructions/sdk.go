@@ -1,7 +1,7 @@
 package instructions
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/interruptions"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results/interruptions"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )

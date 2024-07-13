@@ -3,7 +3,7 @@ package success
 import (
 	"errors"
 
-	"github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/success/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results/success/outputs"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/outputs/kinds"
 	"github.com/steve-care-software/historydb/domain/hash"
 )

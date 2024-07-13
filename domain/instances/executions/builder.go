@@ -45,12 +45,12 @@ func (app *builder) Now() (Executions, error) {
 		return nil, errors.New("there must be at least 1 Execution in order to build an Executions instance")
 	}
 
-	data := [][]byte{}
-	for _, oneExecution := range app.list {
-		data = append(data, oneExecution.Hash().Bytes())
+	bytes := [][]byte{}
+	for _, oneIns := range app.list {
+		bytes = append(bytes, oneIns.Hash().Bytes())
 	}
 
-	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	pHash, err := app.hashAdapter.FromMultiBytes(bytes)
 	if err != nil {
 		return nil, err
 	}

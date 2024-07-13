@@ -4,9 +4,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/interruptions"
-	"github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/success"
-	"github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/success/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results/interruptions"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results/success"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results/success/outputs"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/outputs/kinds"
 )
 

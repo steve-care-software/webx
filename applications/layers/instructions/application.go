@@ -3,8 +3,8 @@ package instructions
 import (
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/lists"
-	"github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/interruptions"
-	"github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/interruptions/failures"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results/interruptions"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results/interruptions/failures"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )

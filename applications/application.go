@@ -7,44 +7,49 @@ import (
 	applications_layers "github.com/steve-care-software/datastencil/applications/layers"
 	"github.com/steve-care-software/datastencil/domain/contexts"
 	"github.com/steve-care-software/datastencil/domain/instances/executions"
-	executions_layer "github.com/steve-care-software/datastencil/domain/instances/executions/layers"
 	"github.com/steve-care-software/datastencil/domain/instances/layers"
 	"github.com/steve-care-software/historydb/applications"
 	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 type application struct {
-	dbApp                 applications.Application
-	layerApp              applications_layers.Application
-	layerAdapter          layers.Adapter
-	layerExecutionService executions_layer.Service
-	layerExecutionAdapter executions_layer.Adapter
-	contextBuilder        contexts.Builder
-	contextRepository     contexts.Repository
-	contextService        contexts.Service
-	executions            map[uint]context
+	dbApp                applications.Application
+	layerApp             applications_layers.Application
+	layerAdapter         layers.Adapter
+	executionsRepository executions.Repository
+	executionsService    executions.Service
+	executionsAdapter    executions.Adapter
+	executionsBuilder    executions.Builder
+	contextBuilder       contexts.Builder
+	contextRepository    contexts.Repository
+	contextService       contexts.Service
+	executions           map[uint]context
 }
 
 func createApplication(
 	dbApp applications.Application,
 	layerApp applications_layers.Application,
 	layerAdapter layers.Adapter,
-	layerExecutionService executions_layer.Service,
-	layerExecutionAdapter executions_layer.Adapter,
+	executionsRepository executions.Repository,
+	executionsService executions.Service,
+	executionsAdapter executions.Adapter,
+	executionsBuilder executions.Builder,
 	contextBuilder contexts.Builder,
 	contextRepository contexts.Repository,
 	contextService contexts.Service,
 ) Application {
 	out := application{
-		dbApp:                 dbApp,
-		layerApp:              layerApp,
-		layerAdapter:          layerAdapter,
-		layerExecutionService: layerExecutionService,
-		layerExecutionAdapter: layerExecutionAdapter,
-		contextBuilder:        contextBuilder,
-		contextRepository:     contextRepository,
-		contextService:        contextService,
-		executions:            map[uint]context{},
+		dbApp:                dbApp,
+		layerApp:             layerApp,
+		layerAdapter:         layerAdapter,
+		executionsRepository: executionsRepository,
+		executionsService:    executionsService,
+		executionsAdapter:    executionsAdapter,
+		executionsBuilder:    executionsBuilder,
+		contextBuilder:       contextBuilder,
+		contextRepository:    contextRepository,
+		contextService:       contextService,
+		executions:           map[uint]context{},
 	}
 
 	return &out
@@ -99,13 +104,13 @@ func (app *application) Execute(contextIdentifier uint, input []byte) ([]byte, e
 			return nil, err
 		}
 
-		output, err := app.layerExecutionAdapter.ToBytes(layerExecution)
+		output, err := app.executionsAdapter.ToBytes(layerExecution)
 		if err != nil {
 			return nil, err
 		}
 
 		// save the execution:
-		err = app.layerExecutionService.Save(layerExecution)
+		err = app.executionsService.Save(currentContext.dbPath, layerExecution)
 		if err != nil {
 			return nil, err
 		}
@@ -138,8 +143,16 @@ func (app *application) ExecuteLayerWithPath(context uint, inputPath []string, l
 }
 
 // Retrieve retrieves the executions of a context
-func (app *application) Retrieve(context uint) (executions.Executions, error) {
-	return nil, nil
+func (app *application) Retrieve(contextIdentifier uint) (executions.Executions, error) {
+	if currentContext, ok := app.executions[contextIdentifier]; ok {
+		return app.executionsRepository.RetrieveAll(
+			currentContext.dbPath,
+			currentContext.executions,
+		)
+	}
+
+	str := fmt.Sprintf(invalidPatternErr, contextIdentifier)
+	return nil, errors.New(str)
 }
 
 // Commit commits executions to a context

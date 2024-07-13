@@ -3,8 +3,8 @@ package results
 import (
 	"errors"
 
-	"github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/interruptions"
-	"github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/success"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results/interruptions"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results/success"
 	"github.com/steve-care-software/historydb/domain/hash"
 )
 

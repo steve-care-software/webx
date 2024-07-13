@@ -3,30 +3,30 @@ package layers
 import (
 	"github.com/steve-care-software/datastencil/applications/layers/binaries"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions"
-	execution_layers "github.com/steve-care-software/datastencil/domain/instances/executions/layers"
-	execution_results "github.com/steve-care-software/datastencil/domain/instances/executions/layers/results"
-	"github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/success"
-	execution_success "github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/success"
-	execution_outputs "github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/success/outputs"
+	execution_layers "github.com/steve-care-software/datastencil/domain/instances/executions"
+	execution_results "github.com/steve-care-software/datastencil/domain/instances/executions/results"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results/success"
+	execution_success "github.com/steve-care-software/datastencil/domain/instances/executions/results/success"
+	execution_outputs "github.com/steve-care-software/datastencil/domain/instances/executions/results/success/outputs"
 	"github.com/steve-care-software/datastencil/domain/instances/layers"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/outputs"
 	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 
 type application struct {
-	instructionsApp    instructions.Application
-	binaryApp          binaries.Application
-	stackFactory       stacks.Factory
-	stackBuilder       stacks.Builder
-	framesBuilder      stacks.FramesBuilder
-	frameBuilder       stacks.FrameBuilder
-	assignmentsBuilder stacks.AssignmentsBuilder
-	assignmentBuilder  stacks.AssignmentBuilder
-	assignableBuilder  stacks.AssignableBuilder
-	layerBuilder       execution_layers.Builder
-	resultBuilder      execution_results.Builder
-	successBuilder     execution_success.Builder
-	outputBuilder      execution_outputs.Builder
+	instructionsApp       instructions.Application
+	binaryApp             binaries.Application
+	stackFactory          stacks.Factory
+	stackBuilder          stacks.Builder
+	framesBuilder         stacks.FramesBuilder
+	frameBuilder          stacks.FrameBuilder
+	assignmentsBuilder    stacks.AssignmentsBuilder
+	assignmentBuilder     stacks.AssignmentBuilder
+	assignableBuilder     stacks.AssignableBuilder
+	layerExecutionBuilder execution_layers.ExecutionBuilder
+	resultBuilder         execution_results.Builder
+	successBuilder        execution_success.Builder
+	outputBuilder         execution_outputs.Builder
 }
 
 func createApplication(
@@ -39,36 +39,36 @@ func createApplication(
 	assignmentsBuilder stacks.AssignmentsBuilder,
 	assignmentBuilder stacks.AssignmentBuilder,
 	assignableBuilder stacks.AssignableBuilder,
-	layerBuilder execution_layers.Builder,
+	layerExecutionBuilder execution_layers.ExecutionBuilder,
 	resultBuilder execution_results.Builder,
 ) Application {
 	out := application{
-		instructionsApp:    instructionsApp,
-		binaryApp:          binaryApp,
-		stackFactory:       stackFactory,
-		stackBuilder:       stackBuilder,
-		framesBuilder:      framesBuilder,
-		frameBuilder:       frameBuilder,
-		assignmentsBuilder: assignmentsBuilder,
-		assignmentBuilder:  assignmentBuilder,
-		assignableBuilder:  assignableBuilder,
-		layerBuilder:       layerBuilder,
+		instructionsApp:       instructionsApp,
+		binaryApp:             binaryApp,
+		stackFactory:          stackFactory,
+		stackBuilder:          stackBuilder,
+		framesBuilder:         framesBuilder,
+		frameBuilder:          frameBuilder,
+		assignmentsBuilder:    assignmentsBuilder,
+		assignmentBuilder:     assignmentBuilder,
+		assignableBuilder:     assignableBuilder,
+		layerExecutionBuilder: layerExecutionBuilder,
 	}
 
 	return &out
 }
 
 // Execute executes a layer
-func (app *application) Execute(layer layers.Layer) (execution_layers.Layer, error) {
+func (app *application) Execute(layer layers.Layer) (execution_layers.Execution, error) {
 	return app.execute(layer, nil)
 }
 
 // ExecuteWithInput executes the layer using the provided input and returns the executions
-func (app *application) ExecuteWithInput(layer layers.Layer, input []byte) (execution_layers.Layer, error) {
+func (app *application) ExecuteWithInput(layer layers.Layer, input []byte) (execution_layers.Execution, error) {
 	return app.execute(layer, input)
 }
 
-func (app *application) execute(layer layers.Layer, input []byte) (execution_layers.Layer, error) {
+func (app *application) execute(layer layers.Layer, input []byte) (execution_layers.Execution, error) {
 	frame, err := app.frame(layer, input)
 	if err != nil {
 		return nil, err
@@ -100,7 +100,7 @@ func (app *application) execute(layer layers.Layer, input []byte) (execution_lay
 		return nil, err
 	}
 
-	return app.layerBuilder.Create().
+	return app.layerExecutionBuilder.Create().
 		WithInput(input).
 		WithSource(layer).
 		WithResult(result).

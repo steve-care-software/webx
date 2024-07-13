@@ -1,7 +1,7 @@
 package interruptions
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/interruptions/failures"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results/interruptions/failures"
 	"github.com/steve-care-software/historydb/domain/hash"
 )
 
