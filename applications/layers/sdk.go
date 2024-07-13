@@ -5,6 +5,13 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers"
 )
 
+// Builder represents an application builder
+type Builder interface {
+	Create() Builder
+	WithBasePath(basePath []string) Builder
+	Now() (Application, error)
+}
+
 // Application represents a layer application
 type Application interface {
 	Execute(layer layers.Layer) (execution_layers.Execution, error)

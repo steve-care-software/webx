@@ -55,6 +55,11 @@ func createApplication(
 	return &out
 }
 
+// List lists the database paths
+func (app *application) List() ([][]string, error) {
+	return nil, nil
+}
+
 // Init initializes a new database and begins a context on it
 func (app *application) Init(dbPath []string, name string, description string) (*uint, error) {
 	pContext, err := app.dbApp.BeginWithInit(dbPath, name, description)
@@ -142,8 +147,8 @@ func (app *application) ExecuteLayerWithPath(context uint, inputPath []string, l
 	return nil, nil
 }
 
-// Retrieve retrieves the executions of a context
-func (app *application) Retrieve(contextIdentifier uint) (executions.Executions, error) {
+// RetrieveAll retrieves all the executions of a context, between the index and length, if any
+func (app *application) RetrieveAll(contextIdentifier uint, index uint, length uint) (executions.Executions, error) {
 	if currentContext, ok := app.executions[contextIdentifier]; ok {
 		return app.executionsRepository.RetrieveAll(
 			currentContext.dbPath,
@@ -153,6 +158,21 @@ func (app *application) Retrieve(contextIdentifier uint) (executions.Executions,
 
 	str := fmt.Sprintf(invalidPatternErr, contextIdentifier)
 	return nil, errors.New(str)
+}
+
+// RetrieveAt retrieves an execution of the current context at index, if any
+func (app *application) RetrieveAt(context uint, index uint) (executions.Execution, error) {
+	return nil, nil
+}
+
+// Amount returns the amount of executions in the current context
+func (app *application) Amount(context uint) (*uint, error) {
+	return nil, nil
+}
+
+// Head returns the database head hash of the current context
+func (app *application) Head(context uint) (hash.Hash, error) {
+	return nil, nil
 }
 
 // Commit commits executions to a context
@@ -195,5 +215,10 @@ func (app *application) Rollback(context uint) error {
 
 // Cancel cancels a context
 func (app *application) Cancel(context uint) error {
+	return nil
+}
+
+// Merge merges the context on the base context
+func (app *application) Merge(baseContext uint, content uint) error {
 	return nil
 }
