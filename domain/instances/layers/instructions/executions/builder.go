@@ -4,13 +4,12 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/executions/merges"
-	"github.com/steve-care-software/historydb/domain/databases/commits"
 	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 type builder struct {
 	hashAdapter hash.Adapter
-	commit      commits.Commit
+	commit      string
 	rollback    string
 	cancel      string
 	merge       merges.Merge
@@ -21,7 +20,7 @@ func createBuilder(
 ) Builder {
 	out := builder{
 		hashAdapter: hashAdapter,
-		commit:      nil,
+		commit:      "",
 		rollback:    "",
 		cancel:      "",
 		merge:       nil,
@@ -38,7 +37,7 @@ func (app *builder) Create() Builder {
 }
 
 // WithCommit adds a commit to the builder
-func (app *builder) WithCommit(commit commits.Commit) Builder {
+func (app *builder) WithCommit(commit string) Builder {
 	app.commit = commit
 	return app
 }
@@ -64,9 +63,9 @@ func (app *builder) WithMerge(merge merges.Merge) Builder {
 // Now builds a new Execution instance
 func (app *builder) Now() (Execution, error) {
 	bytes := [][]byte{}
-	if app.commit != nil {
+	if app.commit != "" {
 		bytes = append(bytes, []byte("commit"))
-		bytes = append(bytes, app.commit.Hash().Bytes())
+		bytes = append(bytes, []byte(app.commit))
 	}
 
 	if app.rollback != "" {
@@ -93,7 +92,7 @@ func (app *builder) Now() (Execution, error) {
 		return nil, err
 	}
 
-	if app.commit != nil {
+	if app.commit != "" {
 		return createExecutionWithCommit(*pHash, app.commit), nil
 	}
 

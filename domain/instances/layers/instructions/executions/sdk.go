@@ -2,7 +2,6 @@ package executions
 
 import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/executions/merges"
-	"github.com/steve-care-software/historydb/domain/databases/commits"
 	"github.com/steve-care-software/historydb/domain/hash"
 )
 
@@ -14,10 +13,16 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the execution adapter
+type Adapter interface {
+	ToBytes(ins Execution) ([]byte, error)
+	ToInstance(bytes []byte) (Execution, error)
+}
+
 // Builder represents an execution builder
 type Builder interface {
 	Create() Builder
-	WithCommit(commit commits.Commit) Builder
+	WithCommit(commit string) Builder
 	WithRollback(rollback string) Builder
 	WithCancel(cancel string) Builder
 	WithMerge(merge merges.Merge) Builder
@@ -28,7 +33,7 @@ type Builder interface {
 type Execution interface {
 	Hash() hash.Hash
 	IsCommit() bool
-	Commit() commits.Commit
+	Commit() string
 	IsRollback() bool
 	Rollback() string
 	IsCancel() bool

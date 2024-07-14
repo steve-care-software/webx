@@ -2,11 +2,10 @@ package executions
 
 import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/executions/merges"
-	"github.com/steve-care-software/historydb/domain/databases/commits"
 )
 
 // NewExecutionWithCommitForTests creates a new execution with commit for tests
-func NewExecutionWithCommitForTests(commit commits.Commit) Execution {
+func NewExecutionWithCommitForTests(commit string) Execution {
 	ins, err := NewBuilder().WithCommit(commit).Now()
 	if err != nil {
 		panic(err)

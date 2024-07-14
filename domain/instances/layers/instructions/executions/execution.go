@@ -2,13 +2,12 @@ package executions
 
 import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/executions/merges"
-	"github.com/steve-care-software/historydb/domain/databases/commits"
 	"github.com/steve-care-software/historydb/domain/hash"
 )
 
 type execution struct {
 	hash     hash.Hash
-	commit   commits.Commit
+	commit   string
 	rollback string
 	cancel   string
 	merge    merges.Merge
@@ -16,7 +15,7 @@ type execution struct {
 
 func createExecutionWithCommit(
 	hash hash.Hash,
-	commit commits.Commit,
+	commit string,
 ) Execution {
 	return createExecutionInternally(hash, commit, "", "", nil)
 }
@@ -25,26 +24,26 @@ func createExecutionWithRollback(
 	hash hash.Hash,
 	rollback string,
 ) Execution {
-	return createExecutionInternally(hash, nil, rollback, "", nil)
+	return createExecutionInternally(hash, "", rollback, "", nil)
 }
 
 func createExecutionWithCancel(
 	hash hash.Hash,
 	cancel string,
 ) Execution {
-	return createExecutionInternally(hash, nil, "", cancel, nil)
+	return createExecutionInternally(hash, "", "", cancel, nil)
 }
 
 func createExecutionWithMerge(
 	hash hash.Hash,
 	merge merges.Merge,
 ) Execution {
-	return createExecutionInternally(hash, nil, "", "", merge)
+	return createExecutionInternally(hash, "", "", "", merge)
 }
 
 func createExecutionInternally(
 	hash hash.Hash,
-	commit commits.Commit,
+	commit string,
 	rollback string,
 	cancel string,
 	merge merges.Merge,
@@ -67,11 +66,11 @@ func (obj *execution) Hash() hash.Hash {
 
 // IsCommit returns true if there is a commit, false otherwise
 func (obj *execution) IsCommit() bool {
-	return obj.commit != nil
+	return obj.commit != ""
 }
 
 // Commit returns the commit, if any
-func (obj *execution) Commit() commits.Commit {
+func (obj *execution) Commit() string {
 	return obj.commit
 }
 
