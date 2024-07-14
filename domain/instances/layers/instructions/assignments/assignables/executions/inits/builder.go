@@ -18,6 +18,7 @@ func createBuilder(
 	hashAdapter hash.Adapter,
 ) Builder {
 	out := builder{
+		hashAdapter: hashAdapter,
 		path:        "",
 		name:        "",
 		description: "",
