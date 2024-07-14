@@ -10,6 +10,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the merge adapter
+type Adapter interface {
+	ToBytes(ins Merge) ([]byte, error)
+	ToInstance(bytes []byte) (Merge, error)
+}
+
 // Builder represents a merge builder
 type Builder interface {
 	Create() Builder
