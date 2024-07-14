@@ -1,8 +1,15 @@
 package amounts
 
+import (
+	"github.com/steve-care-software/historydb/domain/hash"
+)
+
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
-	return createBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
 }
 
 // Builder represents the amount instruction
@@ -15,6 +22,7 @@ type Builder interface {
 
 // Amount represents an amount
 type Amount interface {
+	Hash() hash.Hash
 	Context() string
 	Return() string
 }

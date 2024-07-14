@@ -1,16 +1,24 @@
 package amounts
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/historydb/domain/hash"
+)
 
 type builder struct {
-	context string
-	ret     string
+	hashAdapter hash.Adapter
+	context     string
+	ret         string
 }
 
-func createBuilder() Builder {
+func createBuilder(
+	hashAdapter hash.Adapter,
+) Builder {
 	out := builder{
-		context: "",
-		ret:     "",
+		hashAdapter: hashAdapter,
+		context:     "",
+		ret:         "",
 	}
 
 	return &out
@@ -18,7 +26,9 @@ func createBuilder() Builder {
 
 // Create initializes the builder
 func (app *builder) Create() Builder {
-	return createBuilder()
+	return createBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithContext adds a context to the builder
@@ -43,5 +53,14 @@ func (app *builder) Now() (Amount, error) {
 		return nil, errors.New("the return is mandatory in order to build an Amount instance")
 	}
 
-	return createAmount(app.context, app.ret), nil
+	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+		[]byte(app.context),
+		[]byte(app.ret),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return createAmount(*pHash, app.context, app.ret), nil
 }
