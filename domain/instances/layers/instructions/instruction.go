@@ -2,6 +2,7 @@ package instructions
 
 import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/executions"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/lists"
 	"github.com/steve-care-software/historydb/domain/hash"
 )
@@ -14,6 +15,7 @@ type instruction struct {
 	assignment assignments.Assignment
 	list       lists.List
 	loop       Loop
+	execution  executions.Execution
 }
 
 func createInstructionWithIsStop(
@@ -23,6 +25,7 @@ func createInstructionWithIsStop(
 		hash,
 		true,
 		0,
+		nil,
 		nil,
 		nil,
 		nil,
@@ -42,6 +45,7 @@ func createInstructionWithRaiseError(
 		nil,
 		nil,
 		nil,
+		nil,
 	)
 }
 
@@ -54,6 +58,7 @@ func createInstructionWithCondition(
 		false,
 		0,
 		condition,
+		nil,
 		nil,
 		nil,
 		nil,
@@ -72,6 +77,7 @@ func createInstructionWithAssignment(
 		assignment,
 		nil,
 		nil,
+		nil,
 	)
 }
 
@@ -86,6 +92,7 @@ func createInstructionWithList(
 		nil,
 		nil,
 		list,
+		nil,
 		nil,
 	)
 }
@@ -102,6 +109,23 @@ func createInstructionWithLoop(
 		nil,
 		nil,
 		loop,
+		nil,
+	)
+}
+
+func createInstructionWithExecution(
+	hash hash.Hash,
+	execution executions.Execution,
+) Instruction {
+	return createInstructionInternally(
+		hash,
+		false,
+		0,
+		nil,
+		nil,
+		nil,
+		nil,
+		execution,
 	)
 }
 
@@ -113,6 +137,7 @@ func createInstructionInternally(
 	assignment assignments.Assignment,
 	list lists.List,
 	loop Loop,
+	execution executions.Execution,
 ) Instruction {
 	out := instruction{
 		hash:       hash,
@@ -122,6 +147,7 @@ func createInstructionInternally(
 		assignment: assignment,
 		list:       list,
 		loop:       loop,
+		execution:  execution,
 	}
 
 	return &out
@@ -185,4 +211,14 @@ func (obj *instruction) IsLoop() bool {
 // Loop returns the loop, if any
 func (obj *instruction) Loop() Loop {
 	return obj.loop
+}
+
+// IsExecution returns true if execution, false otherwise
+func (obj *instruction) IsExecution() bool {
+	return obj.execution != nil
+}
+
+// Execution returns the execution, if any
+func (obj *instruction) Execution() executions.Execution {
+	return obj.execution
 }

@@ -5,11 +5,13 @@ import (
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions"
 	json_assignments "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments"
+	json_executions "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/executions"
 	json_lists "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/lists"
 )
 
 // Adapter represents an instructions adapter
 type Adapter struct {
+	executionAdapter   *json_executions.Adapter
 	assignmnetAdapter  *json_assignments.Adapter
 	listAdapter        *json_lists.Adapter
 	loopBuilder        instructions.LoopBuilder
@@ -19,6 +21,7 @@ type Adapter struct {
 }
 
 func createAdapter(
+	executionAdapter *json_executions.Adapter,
 	assignmnetAdapter *json_assignments.Adapter,
 	listAdapter *json_lists.Adapter,
 	loopBuilder instructions.LoopBuilder,
@@ -27,6 +30,7 @@ func createAdapter(
 	builder instructions.Builder,
 ) instructions.Adapter {
 	out := Adapter{
+		executionAdapter:   executionAdapter,
 		assignmnetAdapter:  assignmnetAdapter,
 		listAdapter:        listAdapter,
 		loopBuilder:        loopBuilder,
@@ -145,6 +149,11 @@ func (app *Adapter) InstructionToStruct(ins instructions.Instruction) (*Instruct
 		out.Loop = ptr
 	}
 
+	if ins.IsExecution() {
+		execution := app.executionAdapter.ExecutionToStruct(ins.Execution())
+		out.Execution = &execution
+	}
+
 	return &out, nil
 }
 
@@ -193,6 +202,15 @@ func (app *Adapter) StructToInstruction(str Instruction) (instructions.Instructi
 		}
 
 		builder.WithLoop(ins)
+	}
+
+	if str.Execution != nil {
+		ins, err := app.executionAdapter.StructToExecution(*str.Execution)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithExecution(ins)
 	}
 
 	return builder.Now()

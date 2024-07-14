@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/executions"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/lists"
 	"github.com/steve-care-software/historydb/domain/hash"
 )
@@ -17,6 +18,7 @@ type instructionBuilder struct {
 	assignment  assignments.Assignment
 	list        lists.List
 	loop        Loop
+	execution   executions.Execution
 }
 
 func createInstructionBuilder(
@@ -30,6 +32,7 @@ func createInstructionBuilder(
 		assignment:  nil,
 		list:        nil,
 		loop:        nil,
+		execution:   nil,
 	}
 
 	return &out
@@ -72,6 +75,12 @@ func (app *instructionBuilder) WithLoop(loop Loop) InstructionBuilder {
 	return app
 }
 
+// WithExecution adds an execution to the builder
+func (app *instructionBuilder) WithExecution(execution executions.Execution) InstructionBuilder {
+	app.execution = execution
+	return app
+}
+
 // IsStop flags the builder as a stop
 func (app *instructionBuilder) IsStop() InstructionBuilder {
 	app.isStop = true
@@ -110,6 +119,11 @@ func (app *instructionBuilder) Now() (Instruction, error) {
 		data = append(data, app.loop.Hash().Bytes())
 	}
 
+	if app.execution != nil {
+		data = append(data, []byte("execution"))
+		data = append(data, app.execution.Hash().Bytes())
+	}
+
 	dataLength := len(data)
 	if dataLength != 1 && dataLength != 2 {
 		return nil, errors.New("the Instruction is invalid")
@@ -138,6 +152,10 @@ func (app *instructionBuilder) Now() (Instruction, error) {
 
 	if app.loop != nil {
 		return createInstructionWithLoop(*pHash, app.loop), nil
+	}
+
+	if app.execution != nil {
+		return createInstructionWithExecution(*pHash, app.execution), nil
 	}
 
 	return createInstructionWithAssignment(*pHash, app.assignment), nil

@@ -2,6 +2,7 @@ package instructions
 
 import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/executions"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/lists"
 	"github.com/steve-care-software/historydb/domain/hash"
 )
@@ -65,6 +66,7 @@ type InstructionBuilder interface {
 	WithAssignment(assignment assignments.Assignment) InstructionBuilder
 	WithList(list lists.List) InstructionBuilder
 	WithLoop(loop Loop) InstructionBuilder
+	WithExecution(execution executions.Execution) InstructionBuilder
 	IsStop() InstructionBuilder
 	Now() (Instruction, error)
 }
@@ -83,6 +85,8 @@ type Instruction interface {
 	List() lists.List
 	IsLoop() bool
 	Loop() Loop
+	IsExecution() bool
+	Execution() executions.Execution
 }
 
 // ConditionBuilder represents a condition builder

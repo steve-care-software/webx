@@ -2,6 +2,7 @@ package instructions
 
 import (
 	json_assignments "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments"
+	json_executions "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/executions"
 	json_lists "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/lists"
 )
 
@@ -13,6 +14,7 @@ type Instruction struct {
 	Loop       *Loop                        `json:"loop"`
 	Assignment *json_assignments.Assignment `json:"assignment"`
 	List       *json_lists.List             `json:"list"`
+	Execution  *json_executions.Execution   `json:"execution"`
 }
 
 // Condition represents a condition

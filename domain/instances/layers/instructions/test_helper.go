@@ -2,12 +2,23 @@ package instructions
 
 import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/executions"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/lists"
 )
 
 // NewInstructionsForTests creates new instructions for tests
 func NewInstructionsForTests(list []Instruction) Instructions {
 	ins, err := NewBuilder().Create().WithList(list).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewInstructionWithExecutionForTests creates a new instruction with execution for tests
+func NewInstructionWithExecutionForTests(execution executions.Execution) Instruction {
+	ins, err := NewInstructionBuilder().Create().WithExecution(execution).Now()
 	if err != nil {
 		panic(err)
 	}
