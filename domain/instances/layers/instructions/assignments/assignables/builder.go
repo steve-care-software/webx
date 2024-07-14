@@ -139,5 +139,9 @@ func (app *builder) Now() (Assignable, error) {
 		return createAssignableWithList(*pHash, app.list), nil
 	}
 
+	if app.execution != nil {
+		return createAssignableWithExecution(*pHash, app.execution), nil
+	}
+
 	return createAssignableWithCompiler(*pHash, app.compiler), nil
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/compilers"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/lists"
 )
 
@@ -51,6 +52,16 @@ func NewAssignableWithCompilerForTests(compiler compilers.Compiler) Assignable {
 // NewAssignableWithListForTests creates a new assignable with list for tests
 func NewAssignableWithListForTests(list lists.List) Assignable {
 	ins, err := NewBuilder().Create().WithList(list).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewAssignableWithExecutionForTests creates a new assignable with execution for tests
+func NewAssignableWithExecutionForTests(execution executions.Execution) Assignable {
+	ins, err := NewBuilder().Create().WithExecution(execution).Now()
 	if err != nil {
 		panic(err)
 	}

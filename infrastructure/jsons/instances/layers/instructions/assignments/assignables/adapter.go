@@ -8,11 +8,13 @@ import (
 	json_compiler "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/compilers"
 	json_constants "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/constants"
 	json_cryptography "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/cryptography"
+	json_executions "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/executions"
 	json_lists "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/lists"
 )
 
 // Adapter represents an adapter
 type Adapter struct {
+	executionAdapter    *json_executions.Adapter
 	bytesAdapter        *json_bytes.Adapter
 	compilerAdapter     *json_compiler.Adapter
 	constantAdapter     *json_constants.Adapter
@@ -22,6 +24,7 @@ type Adapter struct {
 }
 
 func createAdapter(
+	executionAdapter *json_executions.Adapter,
 	bytesAdapter *json_bytes.Adapter,
 	compilerAdapter *json_compiler.Adapter,
 	constantAdapter *json_constants.Adapter,
@@ -30,6 +33,7 @@ func createAdapter(
 	builder assignables.Builder,
 ) assignables.Adapter {
 	out := Adapter{
+		executionAdapter:    executionAdapter,
 		bytesAdapter:        bytesAdapter,
 		compilerAdapter:     compilerAdapter,
 		constantAdapter:     constantAdapter,
@@ -115,6 +119,11 @@ func (app *Adapter) AssignableToStruct(ins assignables.Assignable) (*Assignable,
 		out.List = ptr
 	}
 
+	if ins.IsExecution() {
+		execution := app.executionAdapter.ExecutionToStruct(ins.Execution())
+		out.Execution = &execution
+	}
+
 	return &out, nil
 }
 
@@ -164,6 +173,15 @@ func (app *Adapter) StructToAssignable(str Assignable) (assignables.Assignable, 
 		}
 
 		builder.WithList(ins)
+	}
+
+	if str.Execution != nil {
+		ins, err := app.executionAdapter.StructToExecution(*str.Execution)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithExecution(ins)
 	}
 
 	return builder.Now()
