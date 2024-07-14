@@ -1,7 +1,26 @@
 package merges
 
+import "github.com/steve-care-software/historydb/domain/hash"
+
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
+// Builder represents a merge builder
+type Builder interface {
+	Create() Builder
+	WithBase(base string) Builder
+	WithTop(top string) Builder
+	Now() (Merge, error)
+}
+
 // Merge represents a merge
 type Merge interface {
+	Hash() hash.Hash
 	Base() string
 	Top() string
 }
