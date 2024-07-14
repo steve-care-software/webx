@@ -18,6 +18,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the execution adapter
+type Adapter interface {
+	ToBytes(ins Execution) ([]byte, error)
+	ToInstance(bytes []byte) (Execution, error)
+}
+
 // Builder represents an execution builder
 type Builder interface {
 	Create() Builder
