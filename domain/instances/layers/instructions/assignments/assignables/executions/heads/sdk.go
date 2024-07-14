@@ -10,6 +10,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the head adapter
+type Adapter interface {
+	ToBytes(ins Head) ([]byte, error)
+	ToInstance(bytes []byte) (Head, error)
+}
+
 // Builder represents the head builder
 type Builder interface {
 	Create() Builder
