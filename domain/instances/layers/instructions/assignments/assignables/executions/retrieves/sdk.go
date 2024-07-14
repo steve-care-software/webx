@@ -10,6 +10,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the retrieve adapter
+type Adapter interface {
+	ToBytes(ins Retrieve) ([]byte, error)
+	ToInstance(bytes []byte) (Retrieve, error)
+}
+
 // Builder represents a retrieve builder
 type Builder interface {
 	Create() Builder
