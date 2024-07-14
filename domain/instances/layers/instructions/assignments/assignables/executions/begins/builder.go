@@ -1,16 +1,24 @@
 package begins
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/historydb/domain/hash"
+)
 
 type builder struct {
-	path    string
-	context string
+	hashAdapter hash.Adapter
+	path        string
+	context     string
 }
 
-func createBuilder() Builder {
+func createBuilder(
+	hashAdapter hash.Adapter,
+) Builder {
 	out := builder{
-		path:    "",
-		context: "",
+		hashAdapter: hashAdapter,
+		path:        "",
+		context:     "",
 	}
 
 	return &out
@@ -18,7 +26,9 @@ func createBuilder() Builder {
 
 // Create initializes the builder
 func (app *builder) Create() Builder {
-	return createBuilder()
+	return createBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithPath adds a path to the builder
@@ -43,5 +53,14 @@ func (app *builder) Now() (Begin, error) {
 		return nil, errors.New("the context is mandatory in order to build a Begin instance")
 	}
 
-	return createBegin(app.path, app.context), nil
+	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+		[]byte(app.path),
+		[]byte(app.context),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return createBegin(*pHash, app.path, app.context), nil
 }
