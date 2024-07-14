@@ -3,9 +3,6 @@ package executions
 import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/amounts"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/begins"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/executelayerpaths"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/executelayers"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/executepaths"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/executes"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/heads"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/inits"
@@ -32,12 +29,6 @@ type Execution interface {
 	Begin() begins.Begin
 	IsExecute() bool
 	Execute() executes.Execute
-	IsExecuteWithPath() bool
-	ExedcuteWithPath() executepaths.ExecutePath
-	IsExecuteLayer() bool
-	ExecuteLayer() executelayers.ExecuteLayer
-	IsExecuteLayerWithPath() bool
-	ExecuteLayerWithPath() executelayerpaths.ExecuteLayerPath
 	IsRetrieveAll() bool
 	RetrieveAll() retrievealls.RetrieveAll
 	IsRetrieveAt() bool
