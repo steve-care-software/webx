@@ -10,10 +10,24 @@ import (
 	"github.com/steve-care-software/historydb/domain/hash"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder represents an execution builder
 type Builder interface {
 	Create() Builder
-	IsList() Builder
+	WithList(list string) Builder
+	WithInit(init inits.Init) Builder
+	WithBegin(begin begins.Begin) Builder
+	WithExecute(execute executes.Execute) Builder
+	WithRetrieve(retrieve retrieves.Retrieve) Builder
+	WithAmount(amount amounts.Amount) Builder
+	WithHead(head heads.Head) Builder
 	Now() (Execution, error)
 }
 
