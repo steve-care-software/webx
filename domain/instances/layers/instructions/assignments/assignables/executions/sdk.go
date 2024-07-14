@@ -6,8 +6,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/executes"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/heads"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/inits"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/retrievealls"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/retrieveats"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/retrieves"
 	"github.com/steve-care-software/historydb/domain/hash"
 )
 
@@ -29,10 +28,8 @@ type Execution interface {
 	Begin() begins.Begin
 	IsExecute() bool
 	Execute() executes.Execute
-	IsRetrieveAll() bool
-	RetrieveAll() retrievealls.RetrieveAll
-	IsRetrieveAt() bool
-	RetrieveAt() retrieveats.RetrieveAt
+	IsRetrieve() bool
+	Retrieve() retrieves.Retrieve
 	IsAmount() bool
 	Amount() amounts.Amount
 	IsHead() bool
