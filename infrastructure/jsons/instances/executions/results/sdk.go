@@ -1,9 +1,9 @@
 package results
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/executions/layers/results"
-	json_interruptions "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/executions/layers/results/interruptions"
-	json_success "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/executions/layers/results/success"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results"
+	json_interruptions "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/executions/results/interruptions"
+	json_success "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/executions/results/success"
 )
 
 // NewAdapter creates a new adapter

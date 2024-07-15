@@ -1,16 +1,25 @@
-package outputs
+package results
 
 import (
 	"bytes"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/success/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results/interruptions"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results/success"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results/success/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/outputs/kinds"
 )
 
-func TestAdapter_Success(t *testing.T) {
+func TestAdapter_withSuccess_Success(t *testing.T) {
 
-	ins := outputs.NewOutputForTests(
-		[]byte("this is an input"),
+	ins := results.NewResultWithSuccessForTests(
+		success.NewSuccessForTests(
+			outputs.NewOutputForTests(
+				[]byte("this is an input"),
+			),
+			kinds.NewKindWithPromptForTests(),
+		),
 	)
 
 	adapter := NewAdapter()
@@ -33,11 +42,12 @@ func TestAdapter_Success(t *testing.T) {
 	}
 }
 
-func TestAdapter_withExecute_Success(t *testing.T) {
+func TestAdapter_withInterruption_Success(t *testing.T) {
 
-	ins := outputs.NewOutputWithExecuteForTests(
-		[]byte("this is an input"),
-		[]byte("this is stuff to execute"),
+	ins := results.NewResultWithInterruptionForTests(
+		interruptions.NewInterruptionWithStopForTests(
+			23,
+		),
 	)
 
 	adapter := NewAdapter()

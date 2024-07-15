@@ -1,7 +1,7 @@
 package success
 
 import (
-	json_outputs "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/executions/layers/results/success/outputs"
+	json_outputs "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/executions/results/success/outputs"
 	json_kinds "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/outputs/kinds"
 )
 

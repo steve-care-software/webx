@@ -1,7 +1,7 @@
 package interruptions
 
 import (
-	json_failures "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/executions/layers/results/interruptions/failures"
+	json_failures "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/executions/results/interruptions/failures"
 )
 
 // Interruption represents an interruption

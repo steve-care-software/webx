@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/success"
-	"github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/success/outputs"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results/success"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results/success/outputs"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/outputs/kinds"
 )
 

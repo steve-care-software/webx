@@ -1,17 +1,18 @@
-package interruptions
+package failures
 
 import (
 	"bytes"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/interruptions"
-	"github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/interruptions/failures"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results/interruptions/failures"
 )
 
-func TestAdapter_withStop_Success(t *testing.T) {
+func TestAdapter_Success(t *testing.T) {
 
-	ins := interruptions.NewInterruptionWithStopForTests(
-		23,
+	ins := failures.NewFailureForTests(
+		uint(34),
+		uint(32),
+		false,
 	)
 
 	adapter := NewAdapter()
@@ -34,14 +35,13 @@ func TestAdapter_withStop_Success(t *testing.T) {
 	}
 }
 
-func TestAdapter_withFailure_Success(t *testing.T) {
+func TestAdapter_withMessage_Success(t *testing.T) {
 
-	ins := interruptions.NewInterruptionWithFailureForTests(
-		failures.NewFailureForTests(
-			uint(34),
-			uint(32),
-			false,
-		),
+	ins := failures.NewFailureWithMessageForTests(
+		uint(34),
+		uint(32),
+		false,
+		"THis is a message",
 	)
 
 	adapter := NewAdapter()

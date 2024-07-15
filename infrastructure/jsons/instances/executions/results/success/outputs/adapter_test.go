@@ -1,18 +1,16 @@
-package failures
+package outputs
 
 import (
 	"bytes"
 	"testing"
 
-	"github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/interruptions/failures"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results/success/outputs"
 )
 
 func TestAdapter_Success(t *testing.T) {
 
-	ins := failures.NewFailureForTests(
-		uint(34),
-		uint(32),
-		false,
+	ins := outputs.NewOutputForTests(
+		[]byte("this is an input"),
 	)
 
 	adapter := NewAdapter()
@@ -35,13 +33,11 @@ func TestAdapter_Success(t *testing.T) {
 	}
 }
 
-func TestAdapter_withMessage_Success(t *testing.T) {
+func TestAdapter_withExecute_Success(t *testing.T) {
 
-	ins := failures.NewFailureWithMessageForTests(
-		uint(34),
-		uint(32),
-		false,
-		"THis is a message",
+	ins := outputs.NewOutputWithExecuteForTests(
+		[]byte("this is an input"),
+		[]byte("this is stuff to execute"),
 	)
 
 	adapter := NewAdapter()

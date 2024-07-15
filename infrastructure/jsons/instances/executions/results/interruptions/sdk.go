@@ -1,8 +1,8 @@
 package interruptions
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/executions/layers/results/interruptions"
-	json_failures "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/executions/layers/results/interruptions/failures"
+	"github.com/steve-care-software/datastencil/domain/instances/executions/results/interruptions"
+	json_failures "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/executions/results/interruptions/failures"
 )
 
 // NewAdapter creates a new adapter
