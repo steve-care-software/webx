@@ -24,8 +24,10 @@ func NewExecutionBuilder() ExecutionBuilder {
 
 // Adapter represents the layers adapter
 type Adapter interface {
-	ToBytes(ins Execution) ([]byte, error)
-	ToInstance(bytes []byte) (Execution, error)
+	InstanceToBytes(ins Execution) ([]byte, error)
+	BytesToInstance(bytes []byte) (Execution, error)
+	InstancesToBytes(ins Executions) ([]byte, error)
+	BytesToInstances(bytes []byte) (Executions, error)
 }
 
 // Builder represents an executions builder

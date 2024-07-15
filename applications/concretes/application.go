@@ -110,7 +110,7 @@ func (app *application) Execute(contextIdentifier uint, input []byte) ([]byte, e
 			return nil, err
 		}
 
-		output, err := app.executionsAdapter.ToBytes(layerExecution)
+		output, err := app.executionsAdapter.InstanceToBytes(layerExecution)
 		if err != nil {
 			return nil, err
 		}

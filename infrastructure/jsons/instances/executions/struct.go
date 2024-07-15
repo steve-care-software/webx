@@ -7,7 +7,7 @@ import (
 
 // Execution represents an execution
 type Execution struct {
-	Input  []byte               `json:"input"`
-	Source *json_layers.Layer   `json:"source"`
-	Result *json_results.Result `json:"result"`
+	Input  []byte              `json:"input"`
+	Source json_layers.Layer   `json:"source"`
+	Result json_results.Result `json:"result"`
 }
