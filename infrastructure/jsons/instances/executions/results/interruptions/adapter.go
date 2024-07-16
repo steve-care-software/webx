@@ -1,6 +1,7 @@
 package interruptions
 
 import (
+	"bytes"
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/executions/results/interruptions"
@@ -41,9 +42,11 @@ func (app *Adapter) ToBytes(ins interruptions.Interruption) ([]byte, error) {
 }
 
 // ToInstance converts bytes to interruption
-func (app *Adapter) ToInstance(bytes []byte) (interruptions.Interruption, error) {
+func (app *Adapter) ToInstance(data []byte) (interruptions.Interruption, error) {
 	ins := new(Interruption)
-	err := json.Unmarshal(bytes, ins)
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(ins)
 	if err != nil {
 		return nil, err
 	}

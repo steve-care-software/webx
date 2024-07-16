@@ -1,6 +1,7 @@
 package encryptions
 
 import (
+	"bytes"
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography/keys/encryptions"
@@ -45,9 +46,11 @@ func (app *Adapter) ToBytes(ins encryptions.Encryption) ([]byte, error) {
 }
 
 // ToInstance converts bytes to instance
-func (app *Adapter) ToInstance(bytes []byte) (encryptions.Encryption, error) {
+func (app *Adapter) ToInstance(data []byte) (encryptions.Encryption, error) {
 	ins := new(Encryption)
-	err := json.Unmarshal(bytes, ins)
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(ins)
 	if err != nil {
 		return nil, err
 	}

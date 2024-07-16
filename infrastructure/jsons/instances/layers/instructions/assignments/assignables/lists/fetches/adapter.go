@@ -1,6 +1,7 @@
 package fetches
 
 import (
+	"bytes"
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/lists/fetches"
@@ -37,9 +38,11 @@ func (app *Adapter) ToBytes(ins fetches.Fetch) ([]byte, error) {
 }
 
 // ToInstance converts bytes to instance
-func (app *Adapter) ToInstance(bytes []byte) (fetches.Fetch, error) {
+func (app *Adapter) ToInstance(data []byte) (fetches.Fetch, error) {
 	ins := new(Fetch)
-	err := json.Unmarshal(bytes, ins)
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(ins)
 	if err != nil {
 		return nil, err
 	}

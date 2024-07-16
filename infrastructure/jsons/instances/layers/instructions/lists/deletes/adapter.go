@@ -1,6 +1,7 @@
 package deletes
 
 import (
+	"bytes"
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/lists/deletes"
@@ -37,9 +38,11 @@ func (app *Adapter) ToBytes(ins deletes.Delete) ([]byte, error) {
 }
 
 // ToInstance converts bytes to instance
-func (app *Adapter) ToInstance(bytes []byte) (deletes.Delete, error) {
+func (app *Adapter) ToInstance(data []byte) (deletes.Delete, error) {
 	ins := new(Delete)
-	err := json.Unmarshal(bytes, ins)
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(ins)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +54,7 @@ func (app *Adapter) ToInstance(bytes []byte) (deletes.Delete, error) {
 func (app *Adapter) DeleteToStruct(ins deletes.Delete) (*Delete, error) {
 	return &Delete{
 		List:  ins.List(),
-		Index: ins.Index(),
+		Index: ins.Idx(),
 	}, nil
 }
 

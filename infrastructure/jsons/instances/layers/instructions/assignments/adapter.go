@@ -1,6 +1,7 @@
 package assignments
 
 import (
+	"bytes"
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments"
@@ -41,9 +42,11 @@ func (app *Adapter) ToBytes(ins assignments.Assignment) ([]byte, error) {
 }
 
 // ToInstance converts bytes to instance
-func (app *Adapter) ToInstance(bytes []byte) (assignments.Assignment, error) {
+func (app *Adapter) ToInstance(data []byte) (assignments.Assignment, error) {
 	ins := new(Assignment)
-	err := json.Unmarshal(bytes, ins)
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(ins)
 	if err != nil {
 		return nil, err
 	}

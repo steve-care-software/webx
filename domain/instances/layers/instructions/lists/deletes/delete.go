@@ -33,6 +33,6 @@ func (obj *delete) List() string {
 }
 
 // Index returns the index
-func (obj *delete) Index() string {
+func (obj *delete) Idx() string {
 	return obj.index
 }

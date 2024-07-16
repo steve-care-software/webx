@@ -1,6 +1,7 @@
 package bytes
 
 import (
+	go_bytes "bytes"
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/bytes"
@@ -37,9 +38,11 @@ func (app *Adapter) ToBytes(ins bytes.Bytes) ([]byte, error) {
 }
 
 // ToInstance converts bytes to instance
-func (app *Adapter) ToInstance(bytes []byte) (bytes.Bytes, error) {
+func (app *Adapter) ToInstance(data []byte) (bytes.Bytes, error) {
 	ins := new(Bytes)
-	err := json.Unmarshal(bytes, ins)
+	decoder := json.NewDecoder(go_bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(ins)
 	if err != nil {
 		return nil, err
 	}

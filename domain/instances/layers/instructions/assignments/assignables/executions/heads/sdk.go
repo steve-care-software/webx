@@ -28,5 +28,5 @@ type Builder interface {
 type Head interface {
 	Hash() hash.Hash
 	Context() string
-	Return() string
+	ReturnHash() string
 }

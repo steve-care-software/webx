@@ -22,8 +22,10 @@ func NewReferenceBuilder() ReferenceBuilder {
 
 // Adapter represents the references adapter
 type Adapter interface {
-	ToBytes(ins References) ([]byte, error)
-	ToInstance(bytes []byte) (References, error)
+	InstanceToBytes(ins Reference) ([]byte, error)
+	BytesToInstance(bytes []byte) (Reference, error)
+	InstancesToBytes(ins References) ([]byte, error)
+	BytesToInstances(bytes []byte) (References, error)
 }
 
 // Builder represents an references builder

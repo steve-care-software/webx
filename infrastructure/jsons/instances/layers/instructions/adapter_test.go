@@ -13,7 +13,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/lists/inserts"
 )
 
-func TestAdapter_Success(t *testing.T) {
+func TestAdapter_list_Success(t *testing.T) {
 	ins := instructions.NewInstructionsForTests([]instructions.Instruction{
 		instructions.NewInstructionWithAssignmentForTests(
 			assignments.NewAssignmentForTests(
@@ -76,13 +76,38 @@ func TestAdapter_Success(t *testing.T) {
 
 	adapter := NewAdapter()
 
-	retBytes, err := adapter.ToBytes(ins)
+	retBytes, err := adapter.InstancesToBytes(ins)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
 	}
 
-	retIns, err := adapter.ToInstance(retBytes)
+	retIns, err := adapter.BytesToInstances(retBytes)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(ins.Hash().Bytes(), retIns.Hash().Bytes()) {
+		t.Errorf("the returned instance is invalid")
+		return
+	}
+}
+
+func TestAdapter_Success(t *testing.T) {
+	ins := instructions.NewInstructionWithExecutionForTests(
+		executions.NewExecutionWithCommitForTests("myCommit"),
+	)
+
+	adapter := NewAdapter()
+
+	retBytes, err := adapter.InstanceToBytes(ins)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	retIns, err := adapter.BytesToInstance(retBytes)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return

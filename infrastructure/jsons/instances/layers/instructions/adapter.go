@@ -1,6 +1,7 @@
 package instructions
 
 import (
+	"bytes"
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions"
@@ -42,8 +43,36 @@ func createAdapter(
 	return &out
 }
 
-// ToBytes converts instance to bytes
-func (app *Adapter) ToBytes(ins instructions.Instructions) ([]byte, error) {
+// InstanceToBytes converts instance to bytes
+func (app *Adapter) InstanceToBytes(ins instructions.Instruction) ([]byte, error) {
+	ptr, err := app.InstructionToStruct(ins)
+	if err != nil {
+		return nil, err
+	}
+
+	js, err := json.Marshal(ptr)
+	if err != nil {
+		return nil, err
+	}
+
+	return js, nil
+}
+
+// BytesToInstance converts bytes to instances
+func (app *Adapter) BytesToInstance(data []byte) (instructions.Instruction, error) {
+	ins := new(Instruction)
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(ins)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.StructToInstruction(*ins)
+}
+
+// InstancesToBytes converts instances to bytes
+func (app *Adapter) InstancesToBytes(ins instructions.Instructions) ([]byte, error) {
 	ptr, err := app.InstructionsToStruct(ins)
 	if err != nil {
 		return nil, err
@@ -57,10 +86,12 @@ func (app *Adapter) ToBytes(ins instructions.Instructions) ([]byte, error) {
 	return js, nil
 }
 
-// ToInstance converts bytes to instance
-func (app *Adapter) ToInstance(bytes []byte) (instructions.Instructions, error) {
+// BytesToInstances converts bytes to instances
+func (app *Adapter) BytesToInstances(data []byte) (instructions.Instructions, error) {
 	ins := new([]Instruction)
-	err := json.Unmarshal(bytes, ins)
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(ins)
 	if err != nil {
 		return nil, err
 	}

@@ -41,8 +41,10 @@ func NewLoopBuuilder() LoopBuilder {
 
 // Adapter represents the instructions adapter
 type Adapter interface {
-	ToBytes(ins Instructions) ([]byte, error)
-	ToInstance(bytes []byte) (Instructions, error)
+	InstanceToBytes(ins Instruction) ([]byte, error)
+	BytesToInstance(bytes []byte) (Instruction, error)
+	InstancesToBytes(ins Instructions) ([]byte, error)
+	BytesToInstances(bytes []byte) (Instructions, error)
 }
 
 // Builder represents instructions builder

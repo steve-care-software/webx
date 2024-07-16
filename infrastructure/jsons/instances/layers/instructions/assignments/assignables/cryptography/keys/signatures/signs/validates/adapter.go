@@ -1,6 +1,7 @@
 package validates
 
 import (
+	"bytes"
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography/keys/signatures/signs/validates"
@@ -37,9 +38,11 @@ func (app *Adapter) ToBytes(ins validates.Validate) ([]byte, error) {
 }
 
 // ToInstance converts bytes to validates
-func (app *Adapter) ToInstance(bytes []byte) (validates.Validate, error) {
+func (app *Adapter) ToInstance(data []byte) (validates.Validate, error) {
 	ins := new(Validate)
-	err := json.Unmarshal(bytes, ins)
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(ins)
 	if err != nil {
 		return nil, err
 	}

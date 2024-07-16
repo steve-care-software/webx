@@ -22,8 +22,10 @@ func NewConstantBuilder() ConstantBuilder {
 
 // Adapter represents the constant adapter
 type Adapter interface {
-	ToBytes(ins Constant) ([]byte, error)
-	ToInstance(bytes []byte) (Constant, error)
+	InstanceToBytes(ins Constant) ([]byte, error)
+	BytesToInstance(bytes []byte) (Constant, error)
+	InstancesToBytes(ins Constants) ([]byte, error)
+	BytesToInstances(bytes []byte) (Constants, error)
 }
 
 // Builder represents a constants builder

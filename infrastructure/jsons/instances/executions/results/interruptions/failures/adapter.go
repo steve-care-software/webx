@@ -1,6 +1,7 @@
 package failures
 
 import (
+	"bytes"
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/executions/results/interruptions/failures"
@@ -37,9 +38,11 @@ func (app *Adapter) ToBytes(ins failures.Failure) ([]byte, error) {
 }
 
 // ToInstance converts bytes to instance
-func (app *Adapter) ToInstance(bytes []byte) (failures.Failure, error) {
+func (app *Adapter) ToInstance(data []byte) (failures.Failure, error) {
 	ins := new(Failure)
-	err := json.Unmarshal(bytes, ins)
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(ins)
 	if err != nil {
 		return nil, err
 	}

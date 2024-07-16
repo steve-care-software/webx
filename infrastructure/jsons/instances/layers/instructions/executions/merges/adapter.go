@@ -1,6 +1,7 @@
 package merges
 
 import (
+	"bytes"
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/executions/merges"
@@ -33,9 +34,11 @@ func (app *Adapter) ToBytes(ins merges.Merge) ([]byte, error) {
 }
 
 // ToInstance converts bytes to instance
-func (app *Adapter) ToInstance(bytes []byte) (merges.Merge, error) {
+func (app *Adapter) ToInstance(data []byte) (merges.Merge, error) {
 	ins := new(Merge)
-	err := json.Unmarshal(bytes, ins)
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(ins)
 	if err != nil {
 		return nil, err
 	}

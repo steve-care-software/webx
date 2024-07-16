@@ -31,7 +31,7 @@ func createApplication(
 
 // Execute executes the application
 func (app *application) Execute(frame stacks.Frame, assignable deletes.Delete) (stacks.Assignment, *uint, error) {
-	indexVar := assignable.Index()
+	indexVar := assignable.Idx()
 	pIndex, err := frame.FetchUnsignedInt(indexVar)
 	if err != nil {
 		code := failures.CouldNotFetchUnsignedIntegerFromFrame

@@ -1,6 +1,7 @@
 package compilers
 
 import (
+	"bytes"
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/compilers"
@@ -37,9 +38,11 @@ func (app *Adapter) ToBytes(ins compilers.Compiler) ([]byte, error) {
 }
 
 // ToInstance converts a bytes to compiler
-func (app *Adapter) ToInstance(bytes []byte) (compilers.Compiler, error) {
+func (app *Adapter) ToInstance(data []byte) (compilers.Compiler, error) {
 	ins := new(Compiler)
-	err := json.Unmarshal(bytes, ins)
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(ins)
 	if err != nil {
 		return nil, err
 	}

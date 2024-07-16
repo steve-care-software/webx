@@ -1,6 +1,7 @@
 package signatures
 
 import (
+	"bytes"
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography/keys/signatures"
@@ -45,9 +46,11 @@ func (app *Adapter) ToBytes(ins signatures.Signature) ([]byte, error) {
 }
 
 // ToInstance converts bytes to instance
-func (app *Adapter) ToInstance(bytes []byte) (signatures.Signature, error) {
+func (app *Adapter) ToInstance(data []byte) (signatures.Signature, error) {
 	ins := new(Signature)
-	err := json.Unmarshal(bytes, ins)
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(ins)
 	if err != nil {
 		return nil, err
 	}

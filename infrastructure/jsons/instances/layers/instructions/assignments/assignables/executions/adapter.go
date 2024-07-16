@@ -1,6 +1,7 @@
 package executions
 
 import (
+	"bytes"
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions"
@@ -57,9 +58,11 @@ func (app *Adapter) ToBytes(ins executions.Execution) ([]byte, error) {
 }
 
 // ToInstance converts a bytes to instance
-func (app *Adapter) ToInstance(bytes []byte) (executions.Execution, error) {
+func (app *Adapter) ToInstance(data []byte) (executions.Execution, error) {
 	ins := new(Execution)
-	err := json.Unmarshal(bytes, ins)
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(ins)
 	if err != nil {
 		return nil, err
 	}

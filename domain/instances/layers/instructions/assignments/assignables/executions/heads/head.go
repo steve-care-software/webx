@@ -32,7 +32,7 @@ func (obj *head) Context() string {
 	return obj.context
 }
 
-// Return returns the return
-func (obj *head) Return() string {
+// ReturnHash returns the return hash
+func (obj *head) ReturnHash() string {
 	return obj.ret
 }

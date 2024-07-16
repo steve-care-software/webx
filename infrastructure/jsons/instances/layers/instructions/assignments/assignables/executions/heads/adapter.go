@@ -1,6 +1,7 @@
 package heads
 
 import (
+	"bytes"
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/heads"
@@ -33,9 +34,11 @@ func (app *Adapter) ToBytes(ins heads.Head) ([]byte, error) {
 }
 
 // ToInstance converts a bytes to instance
-func (app *Adapter) ToInstance(bytes []byte) (heads.Head, error) {
+func (app *Adapter) ToInstance(data []byte) (heads.Head, error) {
 	ins := new(Head)
-	err := json.Unmarshal(bytes, ins)
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(ins)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +50,7 @@ func (app *Adapter) ToInstance(bytes []byte) (heads.Head, error) {
 func (app *Adapter) HeadToStruct(ins heads.Head) Head {
 	return Head{
 		Context: ins.Context(),
-		Return:  ins.Return(),
+		Return:  ins.ReturnHash(),
 	}
 }
 

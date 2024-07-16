@@ -75,7 +75,6 @@ func TestAdapter_withExecutions_Success(t *testing.T) {
 }
 
 func TestAdapter_withExecution_Success(t *testing.T) {
-
 	ins := executions.NewExecutionForTests(
 		[]byte("myInput"),
 		layers.NewLayerForTests(

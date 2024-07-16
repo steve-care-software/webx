@@ -1,6 +1,7 @@
 package constants
 
 import (
+	"bytes"
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/constants"
@@ -24,8 +25,8 @@ func createAdapter(
 	return &out
 }
 
-// ToBytes converts instance to bytes
-func (app *Adapter) ToBytes(ins constants.Constant) ([]byte, error) {
+// InstanceToBytes converts instance to bytes
+func (app *Adapter) InstanceToBytes(ins constants.Constant) ([]byte, error) {
 	ptr, err := app.ConstantToStruct(ins)
 	if err != nil {
 		return nil, err
@@ -39,15 +40,45 @@ func (app *Adapter) ToBytes(ins constants.Constant) ([]byte, error) {
 	return js, nil
 }
 
-// ToInstance converts bytes to instance
-func (app *Adapter) ToInstance(bytes []byte) (constants.Constant, error) {
+// BytesToInstance converts bytes to instances
+func (app *Adapter) BytesToInstance(data []byte) (constants.Constant, error) {
 	ins := new(Constant)
-	err := json.Unmarshal(bytes, ins)
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(ins)
 	if err != nil {
 		return nil, err
 	}
 
 	return app.StructToConstant(*ins)
+}
+
+// InstancesToBytes converts instances to bytes
+func (app *Adapter) InstancesToBytes(ins constants.Constants) ([]byte, error) {
+	ptr, err := app.ConstantsToStruct(ins)
+	if err != nil {
+		return nil, err
+	}
+
+	js, err := json.Marshal(ptr)
+	if err != nil {
+		return nil, err
+	}
+
+	return js, nil
+}
+
+// BytesToInstances converts bytes to instances
+func (app *Adapter) BytesToInstances(data []byte) (constants.Constants, error) {
+	ins := new([]Constant)
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(ins)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.StructToConstants(*ins)
 }
 
 // ConstantsToStruct converts a constant sto struct

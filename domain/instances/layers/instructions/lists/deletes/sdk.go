@@ -28,5 +28,5 @@ type Builder interface {
 type Delete interface {
 	Hash() hash.Hash
 	List() string
-	Index() string
+	Idx() string
 }

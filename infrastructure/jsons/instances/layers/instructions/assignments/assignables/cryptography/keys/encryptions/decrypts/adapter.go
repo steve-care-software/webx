@@ -1,6 +1,7 @@
 package decrypts
 
 import (
+	"bytes"
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography/keys/encryptions/decrypts"
@@ -37,9 +38,11 @@ func (app *Adapter) ToBytes(ins decrypts.Decrypt) ([]byte, error) {
 }
 
 // ToInstance converts bytes to instance
-func (app *Adapter) ToInstance(bytes []byte) (decrypts.Decrypt, error) {
+func (app *Adapter) ToInstance(data []byte) (decrypts.Decrypt, error) {
 	ins := new(Decrypt)
-	err := json.Unmarshal(bytes, ins)
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(ins)
 	if err != nil {
 		return nil, err
 	}
