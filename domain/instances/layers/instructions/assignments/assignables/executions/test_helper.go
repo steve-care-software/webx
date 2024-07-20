@@ -9,9 +9,9 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/retrieves"
 )
 
-// NewExecutionWithListForTests creates a new execution with list for tests
-func NewExecutionWithListForTests(list string) Execution {
-	ins, err := NewBuilder().Create().WithList(list).Now()
+// NewExecutionForTests creates a new execution for tests
+func NewExecutionForTests(executable string, content Content) Execution {
+	ins, err := NewBuilder().Create().WithExecutable(executable).WithContent(content).Now()
 	if err != nil {
 		panic(err)
 	}
@@ -19,9 +19,9 @@ func NewExecutionWithListForTests(list string) Execution {
 	return ins
 }
 
-// NewExecutionWithInitForTests creates a new execution with init for tests
-func NewExecutionWithInitForTests(init inits.Init) Execution {
-	ins, err := NewBuilder().Create().WithInit(init).Now()
+// NewContentWithListForTests creates a new execution with list for tests
+func NewContentWithListForTests(list string) Content {
+	ins, err := NewContentBuilder().Create().WithList(list).Now()
 	if err != nil {
 		panic(err)
 	}
@@ -29,9 +29,9 @@ func NewExecutionWithInitForTests(init inits.Init) Execution {
 	return ins
 }
 
-// NewExecutionWithBeginForTests creates a new execution with begin for tests
-func NewExecutionWithBeginForTests(begin begins.Begin) Execution {
-	ins, err := NewBuilder().Create().WithBegin(begin).Now()
+// NewContentWithInitForTests creates a new execution with init for tests
+func NewContentWithInitForTests(init inits.Init) Content {
+	ins, err := NewContentBuilder().Create().WithInit(init).Now()
 	if err != nil {
 		panic(err)
 	}
@@ -39,9 +39,9 @@ func NewExecutionWithBeginForTests(begin begins.Begin) Execution {
 	return ins
 }
 
-// NewExecutionWithExecuteForTests creates a new execution with execute for tests
-func NewExecutionWithExecuteForTests(execute executes.Execute) Execution {
-	ins, err := NewBuilder().Create().WithExecute(execute).Now()
+// NewContentWithBeginForTests creates a new execution with begin for tests
+func NewContentWithBeginForTests(begin begins.Begin) Content {
+	ins, err := NewContentBuilder().Create().WithBegin(begin).Now()
 	if err != nil {
 		panic(err)
 	}
@@ -49,9 +49,9 @@ func NewExecutionWithExecuteForTests(execute executes.Execute) Execution {
 	return ins
 }
 
-// NewExecutionWithRetrieveForTests creates a new execution with retrieve for tests
-func NewExecutionWithRetrieveForTests(retrieve retrieves.Retrieve) Execution {
-	ins, err := NewBuilder().Create().WithRetrieve(retrieve).Now()
+// NewContentWithExecuteForTests creates a new execution with execute for tests
+func NewContentWithExecuteForTests(execute executes.Execute) Content {
+	ins, err := NewContentBuilder().Create().WithExecute(execute).Now()
 	if err != nil {
 		panic(err)
 	}
@@ -59,9 +59,9 @@ func NewExecutionWithRetrieveForTests(retrieve retrieves.Retrieve) Execution {
 	return ins
 }
 
-// NewExecutionWithAmountForTests creates a new execution with amount for tests
-func NewExecutionWithAmountForTests(amount amounts.Amount) Execution {
-	ins, err := NewBuilder().Create().WithAmount(amount).Now()
+// NewContentWithRetrieveForTests creates a new execution with retrieve for tests
+func NewContentWithRetrieveForTests(retrieve retrieves.Retrieve) Content {
+	ins, err := NewContentBuilder().Create().WithRetrieve(retrieve).Now()
 	if err != nil {
 		panic(err)
 	}
@@ -69,9 +69,19 @@ func NewExecutionWithAmountForTests(amount amounts.Amount) Execution {
 	return ins
 }
 
-// NewExecutionWithHeadForTests creates a new execution with head for tests
-func NewExecutionWithHeadForTests(head heads.Head) Execution {
-	ins, err := NewBuilder().Create().WithHead(head).Now()
+// NewContentWithAmountForTests creates a new execution with amount for tests
+func NewContentWithAmountForTests(amount amounts.Amount) Content {
+	ins, err := NewContentBuilder().Create().WithAmount(amount).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewContentWithHeadForTests creates a new execution with head for tests
+func NewContentWithHeadForTests(head heads.Head) Content {
+	ins, err := NewContentBuilder().Create().WithHead(head).Now()
 	if err != nil {
 		panic(err)
 	}

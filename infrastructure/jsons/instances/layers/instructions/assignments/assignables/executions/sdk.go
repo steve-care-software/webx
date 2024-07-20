@@ -19,6 +19,7 @@ func NewAdapter() executions.Adapter {
 	initAdapter := json_inits.NewAdapter()
 	retrieveAdapter := json_retrieves.NewAdapter()
 	builder := executions.NewBuilder()
+	contentBuilder := executions.NewContentBuilder()
 	return createAdapter(
 		amountAdapter.(*json_amounts.Adapter),
 		beginAdapter.(*json_begins.Adapter),
@@ -27,5 +28,6 @@ func NewAdapter() executions.Adapter {
 		initAdapter.(*json_inits.Adapter),
 		retrieveAdapter.(*json_retrieves.Adapter),
 		builder,
+		contentBuilder,
 	)
 }

@@ -160,8 +160,11 @@ func TestAdapter_withList_Success(t *testing.T) {
 
 func TestAdapter_withExecution_Success(t *testing.T) {
 	ins := assignables.NewAssignableWithExecutionForTests(
-		executions.NewExecutionWithHeadForTests(
-			heads.NewHeadForTests("myContext", "myReturn"),
+		executions.NewExecutionForTests(
+			"myExecutable",
+			executions.NewContentWithHeadForTests(
+				heads.NewHeadForTests("myContext", "myReturn"),
+			),
 		),
 	)
 

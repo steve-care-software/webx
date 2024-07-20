@@ -10,10 +10,18 @@ import (
 	"github.com/steve-care-software/historydb/domain/hash"
 )
 
-// NewBuilder creates a new builder instance
+// NewBuilder creates a new builder for tests
 func NewBuilder() Builder {
 	hashAdapter := hash.NewAdapter()
 	return createBuilder(
+		hashAdapter,
+	)
+}
+
+// NewContentBuilder creates a new content builder instance
+func NewContentBuilder() ContentBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createContentBuilder(
 		hashAdapter,
 	)
 }
@@ -27,18 +35,33 @@ type Adapter interface {
 // Builder represents an execution builder
 type Builder interface {
 	Create() Builder
-	WithList(list string) Builder
-	WithInit(init inits.Init) Builder
-	WithBegin(begin begins.Begin) Builder
-	WithExecute(execute executes.Execute) Builder
-	WithRetrieve(retrieve retrieves.Retrieve) Builder
-	WithAmount(amount amounts.Amount) Builder
-	WithHead(head heads.Head) Builder
+	WithExecutable(executable string) Builder
+	WithContent(content Content) Builder
 	Now() (Execution, error)
 }
 
 // Execution represents an execution instruction
 type Execution interface {
+	Hash() hash.Hash
+	Executable() string
+	Content() Content
+}
+
+// ContentBuilder represents a content builder
+type ContentBuilder interface {
+	Create() ContentBuilder
+	WithList(list string) ContentBuilder
+	WithInit(init inits.Init) ContentBuilder
+	WithBegin(begin begins.Begin) ContentBuilder
+	WithExecute(execute executes.Execute) ContentBuilder
+	WithRetrieve(retrieve retrieves.Retrieve) ContentBuilder
+	WithAmount(amount amounts.Amount) ContentBuilder
+	WithHead(head heads.Head) ContentBuilder
+	Now() (Content, error)
+}
+
+// Content represents the content execution
+type Content interface {
 	Hash() hash.Hash
 	IsList() bool
 	List() string

@@ -11,6 +11,12 @@ import (
 
 // Execution represents an execution
 type Execution struct {
+	Executable string  `json:"executable"`
+	Content    Content `json:"content"`
+}
+
+// Content represents content
+type Content struct {
 	List     string                   `json:"list"`
 	Init     *json_inits.Init         `json:"init"`
 	Begin    *json_begins.Begin       `json:"begin"`

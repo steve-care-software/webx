@@ -16,7 +16,10 @@ import (
 
 func TestAdapter_withList_Success(t *testing.T) {
 	adapter := NewAdapter()
-	ins := executions.NewExecutionWithListForTests("myList")
+	ins := executions.NewExecutionForTests(
+		"myExecutable",
+		executions.NewContentWithListForTests("myList"),
+	)
 
 	retBytes, err := adapter.ToBytes(ins)
 	if err != nil {
@@ -38,8 +41,11 @@ func TestAdapter_withList_Success(t *testing.T) {
 
 func TestAdapter_withInit_Success(t *testing.T) {
 	adapter := NewAdapter()
-	ins := executions.NewExecutionWithInitForTests(
-		inits.NewInitForTests("myPath", "myNme", "myDescription", "myContext"),
+	ins := executions.NewExecutionForTests(
+		"myExecutable",
+		executions.NewContentWithInitForTests(
+			inits.NewInitForTests("myPath", "myNme", "myDescription", "myContext"),
+		),
 	)
 
 	retBytes, err := adapter.ToBytes(ins)
@@ -62,8 +68,11 @@ func TestAdapter_withInit_Success(t *testing.T) {
 
 func TestAdapter_withBegins_Success(t *testing.T) {
 	adapter := NewAdapter()
-	ins := executions.NewExecutionWithBeginForTests(
-		begins.NewBeginForTests("myPath", "myContext"),
+	ins := executions.NewExecutionForTests(
+		"myExecutable",
+		executions.NewContentWithBeginForTests(
+			begins.NewBeginForTests("myPath", "myContext"),
+		),
 	)
 
 	retBytes, err := adapter.ToBytes(ins)
@@ -86,11 +95,14 @@ func TestAdapter_withBegins_Success(t *testing.T) {
 
 func TestAdapter_withExecute_Success(t *testing.T) {
 	adapter := NewAdapter()
-	ins := executions.NewExecutionWithExecuteForTests(
-		executes.NewExecuteForTests(
-			"myContext",
-			inputs.NewInputWithPathForTests("myPath"),
-			"myReturn",
+	ins := executions.NewExecutionForTests(
+		"myExecutable",
+		executions.NewContentWithExecuteForTests(
+			executes.NewExecuteForTests(
+				"myContext",
+				inputs.NewInputWithPathForTests("myPath"),
+				"myReturn",
+			),
 		),
 	)
 
@@ -114,8 +126,11 @@ func TestAdapter_withExecute_Success(t *testing.T) {
 
 func TestAdapter_withRetrieve_Success(t *testing.T) {
 	adapter := NewAdapter()
-	ins := executions.NewExecutionWithRetrieveForTests(
-		retrieves.NewRetrieveForTests("myContext", "myIndex", "myReturn"),
+	ins := executions.NewExecutionForTests(
+		"myExecutable",
+		executions.NewContentWithRetrieveForTests(
+			retrieves.NewRetrieveForTests("myContext", "myIndex", "myReturn"),
+		),
 	)
 
 	retBytes, err := adapter.ToBytes(ins)
@@ -138,8 +153,11 @@ func TestAdapter_withRetrieve_Success(t *testing.T) {
 
 func TestAdapter_withAmount_Success(t *testing.T) {
 	adapter := NewAdapter()
-	ins := executions.NewExecutionWithAmountForTests(
-		amounts.NewAmountForTests("myContext", "myReturn"),
+	ins := executions.NewExecutionForTests(
+		"myExecutable",
+		executions.NewContentWithAmountForTests(
+			amounts.NewAmountForTests("myContext", "myReturn"),
+		),
 	)
 
 	retBytes, err := adapter.ToBytes(ins)
@@ -162,8 +180,11 @@ func TestAdapter_withAmount_Success(t *testing.T) {
 
 func TestAdapter_withHead_Success(t *testing.T) {
 	adapter := NewAdapter()
-	ins := executions.NewExecutionWithHeadForTests(
-		heads.NewHeadForTests("myContext", "myReturn"),
+	ins := executions.NewExecutionForTests(
+		"myExecutable",
+		executions.NewContentWithHeadForTests(
+			heads.NewHeadForTests("myContext", "myReturn"),
+		),
 	)
 
 	retBytes, err := adapter.ToBytes(ins)

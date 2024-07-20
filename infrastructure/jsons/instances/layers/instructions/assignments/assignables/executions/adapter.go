@@ -22,6 +22,7 @@ type Adapter struct {
 	initAdapter     *json_inits.Adapter
 	retrieveAdapter *json_retrieves.Adapter
 	builder         executions.Builder
+	contentBuilder  executions.ContentBuilder
 }
 
 func createAdapter(
@@ -32,6 +33,7 @@ func createAdapter(
 	initAdapter *json_inits.Adapter,
 	retrieveAdapter *json_retrieves.Adapter,
 	builder executions.Builder,
+	contentBuilder executions.ContentBuilder,
 ) executions.Adapter {
 	out := Adapter{
 		amountAdapter:   amountAdapter,
@@ -41,6 +43,7 @@ func createAdapter(
 		initAdapter:     initAdapter,
 		retrieveAdapter: retrieveAdapter,
 		builder:         builder,
+		contentBuilder:  contentBuilder,
 	}
 
 	return &out
@@ -72,46 +75,29 @@ func (app *Adapter) ToInstance(data []byte) (executions.Execution, error) {
 
 // ExecutionToStruct converts an execution to struct
 func (app *Adapter) ExecutionToStruct(ins executions.Execution) Execution {
-	out := Execution{}
-	if ins.IsAmount() {
-		amount := app.amountAdapter.AmountToStruct(ins.Amount())
-		out.Amount = &amount
+	str := app.ContentToStruct(ins.Content())
+	return Execution{
+		Executable: ins.Executable(),
+		Content:    str,
 	}
-
-	if ins.IsBegin() {
-		begin := app.beginAdapter.BeginToStruct(ins.Begin())
-		out.Begin = &begin
-	}
-
-	if ins.IsExecute() {
-		execute := app.executeAdapter.ExecuteToStruct(ins.Execute())
-		out.Execute = &execute
-	}
-
-	if ins.IsHead() {
-		head := app.headAdapter.HeadToStruct(ins.Head())
-		out.Head = &head
-	}
-
-	if ins.IsInit() {
-		init := app.initAdapter.InitToStruct(ins.Init())
-		out.Init = &init
-	}
-
-	if ins.IsRetrieve() {
-		retrieve := app.retrieveAdapter.RetrieveToStruct(ins.Retrieve())
-		out.Retrieve = &retrieve
-	}
-
-	if ins.IsList() {
-		out.List = ins.List()
-	}
-	return out
 }
 
 // StructToExecution converts a struct to execution
 func (app *Adapter) StructToExecution(str Execution) (executions.Execution, error) {
-	builder := app.builder.Create()
+	content, err := app.StructToContent(str.Content)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.builder.Create().
+		WithExecutable(str.Executable).
+		WithContent(content).
+		Now()
+}
+
+// StructToContent converts a struct to content
+func (app *Adapter) StructToContent(str Content) (executions.Content, error) {
+	builder := app.contentBuilder.Create()
 	if str.Amount != nil {
 		amount, err := app.amountAdapter.StructToAmount(*str.Amount)
 		if err != nil {
@@ -171,4 +157,43 @@ func (app *Adapter) StructToExecution(str Execution) (executions.Execution, erro
 	}
 
 	return builder.Now()
+}
+
+// ContentToStruct converts a content to struct
+func (app *Adapter) ContentToStruct(ins executions.Content) Content {
+	out := Content{}
+	if ins.IsAmount() {
+		amount := app.amountAdapter.AmountToStruct(ins.Amount())
+		out.Amount = &amount
+	}
+
+	if ins.IsBegin() {
+		begin := app.beginAdapter.BeginToStruct(ins.Begin())
+		out.Begin = &begin
+	}
+
+	if ins.IsExecute() {
+		execute := app.executeAdapter.ExecuteToStruct(ins.Execute())
+		out.Execute = &execute
+	}
+
+	if ins.IsHead() {
+		head := app.headAdapter.HeadToStruct(ins.Head())
+		out.Head = &head
+	}
+
+	if ins.IsInit() {
+		init := app.initAdapter.InitToStruct(ins.Init())
+		out.Init = &init
+	}
+
+	if ins.IsRetrieve() {
+		retrieve := app.retrieveAdapter.RetrieveToStruct(ins.Retrieve())
+		out.Retrieve = &retrieve
+	}
+
+	if ins.IsList() {
+		out.List = ins.List()
+	}
+	return out
 }
