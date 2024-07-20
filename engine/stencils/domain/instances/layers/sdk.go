@@ -40,15 +40,3 @@ type Layer interface {
 	HasReferences() bool
 	References() references.References
 }
-
-// RepositoryBuilder represents a repository builder
-type RepositoryBuilder interface {
-	Create() RepositoryBuilder
-	WithBasePath(basePath []string) RepositoryBuilder
-	Now() (Repository, error)
-}
-
-// Repository represents a layer repository
-type Repository interface {
-	Retrieve(path []string, history [][]string) (Layer, error)
-}
