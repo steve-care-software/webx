@@ -140,9 +140,7 @@ func TestAdapter_Success(t *testing.T) {
 		"layers.instructions.assignments.assignables.executions.retrieves": retrieves.NewRetrieveForTests("myContext", "myIndex", "myReturn").(instances.Instance),
 		"layers.instructions.assignments.assignables.executions": assignables_executions.NewExecutionForTests(
 			"myExecutable",
-			assignables_executions.NewContentWithListForTests(
-				"myList",
-			),
+			assignables_executions.NewContentWithListForTests(),
 		).(instances.Instance),
 		"layers.instructions.assignments.assignables.lists.fetches": fetches.NewFetchForTests(
 			"myList",

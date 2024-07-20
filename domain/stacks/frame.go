@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/steve-care-software/datastencil/applications"
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
@@ -264,6 +265,22 @@ func (obj *frame) FetchString(name string) (string, error) {
 
 	pString := assignable.String()
 	return *pString, nil
+}
+
+// FetchApplication fetches an application by name
+func (obj *frame) FetchApplication(name string) (applications.Application, error) {
+	assignable, err := obj.Fetch(name)
+	if err != nil {
+		return nil, err
+	}
+
+	if !assignable.IsApplication() {
+		str := fmt.Sprintf("the assignable (name: %s) was expected to contain an Application", name)
+		return nil, errors.New(str)
+	}
+
+	retApp := assignable.Applicattion()
+	return retApp, nil
 }
 
 // HasAssignments returns true if there is assignments, false otherwise

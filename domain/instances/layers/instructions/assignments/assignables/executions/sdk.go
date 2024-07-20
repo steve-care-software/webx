@@ -50,13 +50,13 @@ type Execution interface {
 // ContentBuilder represents a content builder
 type ContentBuilder interface {
 	Create() ContentBuilder
-	WithList(list string) ContentBuilder
 	WithInit(init inits.Init) ContentBuilder
 	WithBegin(begin begins.Begin) ContentBuilder
 	WithExecute(execute executes.Execute) ContentBuilder
 	WithRetrieve(retrieve retrieves.Retrieve) ContentBuilder
 	WithAmount(amount amounts.Amount) ContentBuilder
 	WithHead(head heads.Head) ContentBuilder
+	IsList() ContentBuilder
 	Now() (Content, error)
 }
 
@@ -64,7 +64,6 @@ type ContentBuilder interface {
 type Content interface {
 	Hash() hash.Hash
 	IsList() bool
-	List() string
 	IsInit() bool
 	Init() inits.Init
 	IsBegin() bool

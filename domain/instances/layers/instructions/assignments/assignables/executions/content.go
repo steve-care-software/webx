@@ -12,7 +12,7 @@ import (
 
 type content struct {
 	hash     hash.Hash
-	list     string
+	isList   bool
 	init     inits.Init
 	begin    begins.Begin
 	execute  executes.Execute
@@ -23,56 +23,55 @@ type content struct {
 
 func createContentWithList(
 	hash hash.Hash,
-	list string,
 ) Content {
-	return createContentInternally(hash, list, nil, nil, nil, nil, nil, nil)
+	return createContentInternally(hash, true, nil, nil, nil, nil, nil, nil)
 }
 
 func createContentWithInit(
 	hash hash.Hash,
 	init inits.Init,
 ) Content {
-	return createContentInternally(hash, "", init, nil, nil, nil, nil, nil)
+	return createContentInternally(hash, false, init, nil, nil, nil, nil, nil)
 }
 
 func createContentWithBegin(
 	hash hash.Hash,
 	begin begins.Begin,
 ) Content {
-	return createContentInternally(hash, "", nil, begin, nil, nil, nil, nil)
+	return createContentInternally(hash, false, nil, begin, nil, nil, nil, nil)
 }
 
 func createContentWithExecute(
 	hash hash.Hash,
 	execute executes.Execute,
 ) Content {
-	return createContentInternally(hash, "", nil, nil, execute, nil, nil, nil)
+	return createContentInternally(hash, false, nil, nil, execute, nil, nil, nil)
 }
 
 func createContentWithRetrieve(
 	hash hash.Hash,
 	retrieve retrieves.Retrieve,
 ) Content {
-	return createContentInternally(hash, "", nil, nil, nil, retrieve, nil, nil)
+	return createContentInternally(hash, false, nil, nil, nil, retrieve, nil, nil)
 }
 
 func createContentWithAmount(
 	hash hash.Hash,
 	amount amounts.Amount,
 ) Content {
-	return createContentInternally(hash, "", nil, nil, nil, nil, amount, nil)
+	return createContentInternally(hash, false, nil, nil, nil, nil, amount, nil)
 }
 
 func createContentWithHead(
 	hash hash.Hash,
 	head heads.Head,
 ) Content {
-	return createContentInternally(hash, "", nil, nil, nil, nil, nil, head)
+	return createContentInternally(hash, false, nil, nil, nil, nil, nil, head)
 }
 
 func createContentInternally(
 	hash hash.Hash,
-	list string,
+	isList bool,
 	init inits.Init,
 	begin begins.Begin,
 	execute executes.Execute,
@@ -82,7 +81,7 @@ func createContentInternally(
 ) Content {
 	out := content{
 		hash:     hash,
-		list:     list,
+		isList:   isList,
 		init:     init,
 		begin:    begin,
 		execute:  execute,
@@ -101,12 +100,7 @@ func (obj *content) Hash() hash.Hash {
 
 // IsList returns true if there is a list, false otherwise
 func (obj *content) IsList() bool {
-	return obj.list != ""
-}
-
-// List returns the list, if any
-func (obj *content) List() string {
-	return obj.list
+	return obj.isList
 }
 
 // IsInit returns true if there is an init, false otherwise

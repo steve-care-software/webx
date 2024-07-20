@@ -20,8 +20,8 @@ func NewExecutionForTests(executable string, content Content) Execution {
 }
 
 // NewContentWithListForTests creates a new execution with list for tests
-func NewContentWithListForTests(list string) Content {
-	ins, err := NewContentBuilder().Create().WithList(list).Now()
+func NewContentWithListForTests() Content {
+	ins, err := NewContentBuilder().Create().IsList().Now()
 	if err != nil {
 		panic(err)
 	}

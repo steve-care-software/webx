@@ -123,4 +123,10 @@ const (
 
 	// CouldNotFetchDatabaseFromFrame represents a could not fetch database from frame
 	CouldNotFetchDatabaseFromFrame
+
+	// CouldNotFetchExecutableeFromFrame represents a could not fetch executable from frame
+	CouldNotFetchExecutableeFromFrame
+
+	// CouldNotExecuteListFromExecutable represents a could not execute list from executable
+	CouldNotExecuteListFromExecutable
 )

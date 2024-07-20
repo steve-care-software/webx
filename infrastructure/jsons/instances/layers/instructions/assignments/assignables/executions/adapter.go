@@ -152,8 +152,8 @@ func (app *Adapter) StructToContent(str Content) (executions.Content, error) {
 		builder.WithRetrieve(retrieve)
 	}
 
-	if str.List != "" {
-		builder.WithList(str.List)
+	if str.IsList {
+		builder.IsList()
 	}
 
 	return builder.Now()
@@ -193,7 +193,7 @@ func (app *Adapter) ContentToStruct(ins executions.Content) Content {
 	}
 
 	if ins.IsList() {
-		out.List = ins.List()
+		out.IsList = true
 	}
 	return out
 }

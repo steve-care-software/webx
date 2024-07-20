@@ -14,7 +14,7 @@ import (
 
 type contentBuilder struct {
 	hashAdapter hash.Adapter
-	list        string
+	isList      bool
 	init        inits.Init
 	begin       begins.Begin
 	execute     executes.Execute
@@ -28,7 +28,7 @@ func createContentBuilder(
 ) ContentBuilder {
 	out := contentBuilder{
 		hashAdapter: hashAdapter,
-		list:        "",
+		isList:      false,
 		init:        nil,
 		begin:       nil,
 		execute:     nil,
@@ -47,54 +47,53 @@ func (app *contentBuilder) Create() ContentBuilder {
 	)
 }
 
-// WithList adds a list to the contentBuilder
-func (app *contentBuilder) WithList(list string) ContentBuilder {
-	app.list = list
-	return app
-}
-
-// WithInit adds an init to the contentBuilder
+// WithInit adds an init to the builder
 func (app *contentBuilder) WithInit(init inits.Init) ContentBuilder {
 	app.init = init
 	return app
 }
 
-// WithBegin adds a begin to the contentBuilder
+// WithBegin adds a begin to the builder
 func (app *contentBuilder) WithBegin(begin begins.Begin) ContentBuilder {
 	app.begin = begin
 	return app
 }
 
-// WithExecute adds an execute to the contentBuilder
+// WithExecute adds an execute to the builder
 func (app *contentBuilder) WithExecute(execute executes.Execute) ContentBuilder {
 	app.execute = execute
 	return app
 }
 
-// WithRetrieve adds a retrieve to the contentBuilder
+// WithRetrieve adds a retrieve to the builder
 func (app *contentBuilder) WithRetrieve(retrieve retrieves.Retrieve) ContentBuilder {
 	app.retrieve = retrieve
 	return app
 }
 
-// WithAmount adds an amount to the contentBuilder
+// WithAmount adds an amount to the builder
 func (app *contentBuilder) WithAmount(amount amounts.Amount) ContentBuilder {
 	app.amount = amount
 	return app
 }
 
-// WithHead adds an head to the contentBuilder
+// WithHead adds an head to the builder
 func (app *contentBuilder) WithHead(head heads.Head) ContentBuilder {
 	app.head = head
+	return app
+}
+
+// IsList flags the builder as a list
+func (app *contentBuilder) IsList() ContentBuilder {
+	app.isList = true
 	return app
 }
 
 // Now builds a new Execution instance
 func (app *contentBuilder) Now() (Content, error) {
 	bytes := [][]byte{}
-	if app.list != "" {
-		bytes = append(bytes, []byte("list"))
-		bytes = append(bytes, []byte(app.list))
+	if app.isList {
+		bytes = append(bytes, []byte("isList"))
 	}
 
 	if app.init != nil {
@@ -127,7 +126,8 @@ func (app *contentBuilder) Now() (Content, error) {
 		bytes = append(bytes, app.head.Hash().Bytes())
 	}
 
-	if len(bytes) != 2 {
+	amount := len(bytes)
+	if amount != 1 && amount != 2 {
 		return nil, errors.New("the Execution is invalid")
 	}
 
@@ -136,8 +136,8 @@ func (app *contentBuilder) Now() (Content, error) {
 		return nil, err
 	}
 
-	if app.list != "" {
-		return createContentWithList(*pHash, app.list), nil
+	if app.isList {
+		return createContentWithList(*pHash), nil
 	}
 
 	if app.init != nil {

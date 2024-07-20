@@ -107,6 +107,7 @@ type Frame interface {
 	FetchVote(name string) (signers.Vote, error)
 	FetchList(name string) (Assignables, error)
 	FetchString(name string) (string, error)
+	FetchApplication(name string) (applications.Application, error)
 	HasAssignments() bool
 	Assignments() Assignments
 }

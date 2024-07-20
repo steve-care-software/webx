@@ -18,7 +18,7 @@ func TestAdapter_withList_Success(t *testing.T) {
 	adapter := NewAdapter()
 	ins := executions.NewExecutionForTests(
 		"myExecutable",
-		executions.NewContentWithListForTests("myList"),
+		executions.NewContentWithListForTests(),
 	)
 
 	retBytes, err := adapter.ToBytes(ins)

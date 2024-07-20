@@ -17,7 +17,7 @@ type Execution struct {
 
 // Content represents content
 type Content struct {
-	List     string                   `json:"list"`
+	IsList   bool                     `json:"is_list"`
 	Init     *json_inits.Init         `json:"init"`
 	Begin    *json_begins.Begin       `json:"begin"`
 	Execute  *json_executes.Execute   `json:"execute"`
