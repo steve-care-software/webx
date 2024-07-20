@@ -1,2 +1,2 @@
-# DataStencil
-DataStencil is a software used to generate, parse, extract, compose and transform data using instructions written in JSON.
+# webX
+webX is a decentralized network application used to communicate programmed instructions without relying on a central entity.
