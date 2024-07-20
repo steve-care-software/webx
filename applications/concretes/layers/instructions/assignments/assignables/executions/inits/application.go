@@ -58,7 +58,7 @@ func (app *application) Execute(frame stacks.Frame, executable applications.Appl
 
 	pContext, err := executable.Init(path, name, description)
 	if err != nil {
-		code := failures.CouldNotExecuteInithFromExecutable
+		code := failures.CouldNotExecuteInitFromExecutable
 		return nil, &code, err
 	}
 

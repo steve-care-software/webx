@@ -152,5 +152,11 @@ const (
 	CouldNotExecuteExecuteLayerWithPathFromExecutable
 
 	// CouldNotExecuteInithFromExecutable represents a could not execute init from executable
-	CouldNotExecuteInithFromExecutable
+	CouldNotExecuteInitFromExecutable
+
+	// CouldNotExecuteRetrieveAtFromExecutable represents a could not execute retrieveAt from executable
+	CouldNotExecuteRetrieveAtFromExecutable
+
+	// CouldNotExecuteRetrieveAllFromExecutable represents a could not execute retrieveAll from executable
+	CouldNotExecuteRetrieveAllFromExecutable
 )
