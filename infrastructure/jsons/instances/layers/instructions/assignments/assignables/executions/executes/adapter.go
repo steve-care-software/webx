@@ -56,12 +56,10 @@ func (app *Adapter) ExecuteToStruct(ins executes.Execute) Execute {
 	out := Execute{
 		Context: ins.Context(),
 		Input:   input,
-		Return:  ins.Return(),
 	}
 
 	if ins.HasLayer() {
-		layer := app.inputAdapter.InputToStruct(ins.Layer())
-		out.Layer = &layer
+		out.Layer = ins.Layer()
 	}
 
 	return out
@@ -76,16 +74,10 @@ func (app *Adapter) StructToExecute(str Execute) (executes.Execute, error) {
 
 	builder := app.builder.Create().
 		WithContext(str.Context).
-		WithInput(input).
-		WithReturn(str.Return)
+		WithInput(input)
 
-	if str.Layer != nil {
-		layer, err := app.inputAdapter.StructToInput(*str.Layer)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithLayer(layer)
+	if str.Layer != "" {
+		builder.WithLayer(str.Layer)
 	}
 
 	return builder.Now()

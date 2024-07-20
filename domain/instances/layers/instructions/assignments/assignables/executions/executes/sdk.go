@@ -24,8 +24,7 @@ type Builder interface {
 	Create() Builder
 	WithContext(context string) Builder
 	WithInput(input inputs.Input) Builder
-	WithReturn(ret string) Builder
-	WithLayer(layer inputs.Input) Builder
+	WithLayer(layer string) Builder
 	Now() (Execute, error)
 }
 
@@ -34,7 +33,6 @@ type Execute interface {
 	Hash() hash.Hash
 	Context() string
 	Input() inputs.Input
-	Return() string
 	HasLayer() bool
-	Layer() inputs.Input
+	Layer() string
 }

@@ -128,7 +128,6 @@ func TestAdapter_Success(t *testing.T) {
 		"layers.instructions.assignments.assignables.executions.executes": executes.NewExecuteForTests(
 			"myContext",
 			executes_inputs.NewInputWithPathForTests("myPath"),
-			"myReturn",
 		).(instances.Instance),
 		"layers.instructions.assignments.assignables.executions.inits":     inits.NewInitForTests("myPath", "myNme", "myDescription", "myContext").(instances.Instance),
 		"layers.instructions.assignments.assignables.executions.retrieves": retrieves.NewRetrieveForTests("myContext", "myIndex", "myReturn").(instances.Instance),

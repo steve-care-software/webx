@@ -96,7 +96,6 @@ func TestAdapter_withExecute_Success(t *testing.T) {
 			executes.NewExecuteForTests(
 				"myContext",
 				inputs.NewInputWithPathForTests("myPath"),
-				"myReturn",
 			),
 		),
 	)

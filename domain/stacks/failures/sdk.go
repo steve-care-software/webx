@@ -138,4 +138,16 @@ const (
 
 	// CouldNotExecuteHeadFromExecutable represents a could not execute head from executable
 	CouldNotExecuteHeadFromExecutable
+
+	// CouldNotExecuteExecuteFromExecutable represents a could not execute execute from executable
+	CouldNotExecuteExecuteFromExecutable
+
+	// CouldNotExecuteWithPathFromExecutable represents a could not execute executeWithPath from executable
+	CouldNotExecuteWithPathFromExecutable
+
+	// CouldNotExecuteExecuteLayerFromExecutable represents a could not execute executeLayer from executable
+	CouldNotExecuteExecuteLayerFromExecutable
+
+	// CouldNotExecuteExecuteLayerWithPathFromExecutable represents a could not execute executeLayerWithPath from executable
+	CouldNotExecuteExecuteLayerWithPathFromExecutable
 )

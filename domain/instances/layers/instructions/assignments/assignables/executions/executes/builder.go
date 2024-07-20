@@ -11,8 +11,7 @@ type builder struct {
 	hashAdapter hash.Adapter
 	context     string
 	input       inputs.Input
-	ret         string
-	layer       inputs.Input
+	layer       string
 }
 
 func createBuilder(
@@ -22,8 +21,7 @@ func createBuilder(
 		hashAdapter: hashAdapter,
 		context:     "",
 		input:       nil,
-		ret:         "",
-		layer:       nil,
+		layer:       "",
 	}
 
 	return &out
@@ -48,14 +46,8 @@ func (app *builder) WithInput(input inputs.Input) Builder {
 	return app
 }
 
-// WithReturn adds a return to the builder
-func (app *builder) WithReturn(ret string) Builder {
-	app.ret = ret
-	return app
-}
-
 // WithLayer adds a layer to the builder
-func (app *builder) WithLayer(layer inputs.Input) Builder {
+func (app *builder) WithLayer(layer string) Builder {
 	app.layer = layer
 	return app
 }
@@ -70,18 +62,13 @@ func (app *builder) Now() (Execute, error) {
 		return nil, errors.New("the input is mandatory in order to build an Execute instance")
 	}
 
-	if app.ret == "" {
-		return nil, errors.New("the return is mandatory in order to build an Execute instance")
-	}
-
 	bytes := [][]byte{
 		[]byte(app.context),
 		app.input.Hash().Bytes(),
-		[]byte(app.ret),
 	}
 
-	if app.layer != nil {
-		bytes = append(bytes, app.layer.Hash().Bytes())
+	if app.layer != "" {
+		bytes = append(bytes, []byte(app.layer))
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes(bytes)
@@ -89,9 +76,9 @@ func (app *builder) Now() (Execute, error) {
 		return nil, err
 	}
 
-	if app.layer != nil {
-		return createExecuteWithLayer(*pHash, app.context, app.input, app.ret, app.layer), nil
+	if app.layer != "" {
+		return createExecuteWithLayer(*pHash, app.context, app.input, app.layer), nil
 	}
 
-	return createExecute(*pHash, app.context, app.input, app.ret), nil
+	return createExecute(*pHash, app.context, app.input), nil
 }

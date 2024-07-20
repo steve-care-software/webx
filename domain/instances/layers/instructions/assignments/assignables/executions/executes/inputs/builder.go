@@ -70,5 +70,4 @@ func (app *builder) Now() (Input, error) {
 	}
 
 	return createInputWithPath(*pHash, app.path), nil
-
 }

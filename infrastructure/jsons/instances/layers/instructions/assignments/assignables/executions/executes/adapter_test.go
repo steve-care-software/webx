@@ -13,7 +13,6 @@ func TestAdapter_Success(t *testing.T) {
 	ins := executes.NewExecuteForTests(
 		"myContext",
 		inputs.NewInputWithPathForTests("myPath"),
-		"myReturn",
 	)
 
 	retBytes, err := adapter.ToBytes(ins)
@@ -39,8 +38,7 @@ func TestAdapter_withLayer_Success(t *testing.T) {
 	ins := executes.NewExecuteWithLayerForTests(
 		"myContext",
 		inputs.NewInputWithPathForTests("myPath"),
-		"myReturn",
-		inputs.NewInputWithValueForTests("myLayer"),
+		"myLayer",
 	)
 
 	retBytes, err := adapter.ToBytes(ins)

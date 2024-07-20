@@ -9,41 +9,36 @@ type execute struct {
 	hash    hash.Hash
 	context string
 	input   inputs.Input
-	ret     string
-	layer   inputs.Input
+	layer   string
 }
 
 func createExecute(
 	hash hash.Hash,
 	context string,
 	input inputs.Input,
-	ret string,
 ) Execute {
-	return createExecuteInternally(hash, context, input, ret, nil)
+	return createExecuteInternally(hash, context, input, "")
 }
 
 func createExecuteWithLayer(
 	hash hash.Hash,
 	context string,
 	input inputs.Input,
-	ret string,
-	layer inputs.Input,
+	layer string,
 ) Execute {
-	return createExecuteInternally(hash, context, input, ret, layer)
+	return createExecuteInternally(hash, context, input, layer)
 }
 
 func createExecuteInternally(
 	hash hash.Hash,
 	context string,
 	input inputs.Input,
-	ret string,
-	layer inputs.Input,
+	layer string,
 ) Execute {
 	out := execute{
 		hash:    hash,
 		context: context,
 		input:   input,
-		ret:     ret,
 		layer:   layer,
 	}
 
@@ -65,17 +60,12 @@ func (obj *execute) Input() inputs.Input {
 	return obj.input
 }
 
-// Return returns the return
-func (obj *execute) Return() string {
-	return obj.ret
-}
-
 // HasLayer returns true if there is a layer, false otherwise
 func (obj *execute) HasLayer() bool {
-	return obj.layer != nil
+	return obj.layer != ""
 }
 
 // Layer returns the layer, if any
-func (obj *execute) Layer() inputs.Input {
+func (obj *execute) Layer() string {
 	return obj.layer
 }
