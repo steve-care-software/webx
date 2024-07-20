@@ -9,6 +9,7 @@ import (
 	json_compiler "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/compilers"
 	json_constants "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/constants"
 	json_cryptography "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/cryptography"
+	json_executables "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/executables"
 	json_executions "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/executions"
 	json_lists "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/lists"
 )
@@ -21,6 +22,7 @@ type Adapter struct {
 	constantAdapter     *json_constants.Adapter
 	cryptographyAdapter *json_cryptography.Adapter
 	listAdapter         *json_lists.Adapter
+	executableAdapter   *json_executables.Adapter
 	builder             assignables.Builder
 }
 
@@ -31,6 +33,7 @@ func createAdapter(
 	constantAdapter *json_constants.Adapter,
 	cryptographyAdapter *json_cryptography.Adapter,
 	listAdapter *json_lists.Adapter,
+	executableAdapter *json_executables.Adapter,
 	builder assignables.Builder,
 ) assignables.Adapter {
 	out := Adapter{
@@ -40,6 +43,7 @@ func createAdapter(
 		constantAdapter:     constantAdapter,
 		cryptographyAdapter: cryptographyAdapter,
 		listAdapter:         listAdapter,
+		executableAdapter:   executableAdapter,
 		builder:             builder,
 	}
 
@@ -127,6 +131,11 @@ func (app *Adapter) AssignableToStruct(ins assignables.Assignable) (*Assignable,
 		out.Execution = &execution
 	}
 
+	if ins.IsExecutable() {
+		executable := app.executableAdapter.ExecutableToStruct(ins.Executable())
+		out.Executable = &executable
+	}
+
 	return &out, nil
 }
 
@@ -185,6 +194,15 @@ func (app *Adapter) StructToAssignable(str Assignable) (assignables.Assignable, 
 		}
 
 		builder.WithExecution(ins)
+	}
+
+	if str.Executable != nil {
+		ins, err := app.executableAdapter.StructToExecutable(*str.Executable)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithExecutable(ins)
 	}
 
 	return builder.Now()

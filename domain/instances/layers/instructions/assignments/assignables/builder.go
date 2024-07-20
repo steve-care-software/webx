@@ -7,6 +7,7 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/compilers"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography"
+	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executables"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/lists"
 	"github.com/steve-care-software/historydb/domain/hash"
@@ -20,6 +21,7 @@ type builder struct {
 	compiler    compilers.Compiler
 	execution   executions.Execution
 	list        lists.List
+	executable  executables.Executable
 }
 
 func createBuilder(
@@ -33,6 +35,7 @@ func createBuilder(
 		compiler:    nil,
 		execution:   nil,
 		list:        nil,
+		executable:  nil,
 	}
 
 	return &out
@@ -81,6 +84,12 @@ func (app *builder) WithList(list lists.List) Builder {
 	return app
 }
 
+// WithExecutable adds an executable to the builder
+func (app *builder) WithExecutable(executable executables.Executable) Builder {
+	app.executable = executable
+	return app
+}
+
 // Now builds a new Assignable instance
 func (app *builder) Now() (Assignable, error) {
 	data := [][]byte{}
@@ -114,6 +123,11 @@ func (app *builder) Now() (Assignable, error) {
 		data = append(data, app.list.Hash().Bytes())
 	}
 
+	if app.executable != nil {
+		data = append(data, []byte("executable"))
+		data = append(data, app.executable.Hash().Bytes())
+	}
+
 	if len(data) != 2 {
 		return nil, errors.New("the Assignable is invalid")
 	}
@@ -141,6 +155,10 @@ func (app *builder) Now() (Assignable, error) {
 
 	if app.execution != nil {
 		return createAssignableWithExecution(*pHash, app.execution), nil
+	}
+
+	if app.executable != nil {
+		return createAssignableWithExecutable(*pHash, app.executable), nil
 	}
 
 	return createAssignableWithCompiler(*pHash, app.compiler), nil
