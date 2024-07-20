@@ -51,7 +51,6 @@ func (app *Adapter) RetrieveToStruct(ins retrieves.Retrieve) Retrieve {
 	out := Retrieve{
 		Context: ins.Context(),
 		Index:   ins.Index(),
-		Return:  ins.Return(),
 	}
 
 	if ins.HasLength() {
@@ -65,8 +64,7 @@ func (app *Adapter) RetrieveToStruct(ins retrieves.Retrieve) Retrieve {
 func (app *Adapter) StructToRetrieve(str Retrieve) (retrieves.Retrieve, error) {
 	builder := app.builder.Create().
 		WithContext(str.Context).
-		WithIndex(str.Index).
-		WithReturn(str.Return)
+		WithIndex(str.Index)
 
 	if str.Length != "" {
 		builder.WithLength(str.Length)

@@ -123,7 +123,7 @@ func TestAdapter_withRetrieve_Success(t *testing.T) {
 	ins := executions.NewExecutionForTests(
 		"myExecutable",
 		executions.NewContentWithRetrieveForTests(
-			retrieves.NewRetrieveForTests("myContext", "myIndex", "myReturn"),
+			retrieves.NewRetrieveForTests("myContext", "myIndex"),
 		),
 	)
 

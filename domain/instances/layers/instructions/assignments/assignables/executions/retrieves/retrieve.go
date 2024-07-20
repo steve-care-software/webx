@@ -6,7 +6,6 @@ type retrieve struct {
 	hash    hash.Hash
 	context string
 	index   string
-	ret     string
 	length  string
 }
 
@@ -14,33 +13,29 @@ func createRetrieve(
 	hash hash.Hash,
 	index string,
 	context string,
-	ret string,
 ) Retrieve {
-	return createRetrieveInternally(hash, index, context, ret, "")
+	return createRetrieveInternally(hash, index, context, "")
 }
 
 func createRetrieveWithLength(
 	hash hash.Hash,
 	index string,
 	context string,
-	ret string,
 	length string,
 ) Retrieve {
-	return createRetrieveInternally(hash, index, context, ret, length)
+	return createRetrieveInternally(hash, index, context, length)
 }
 
 func createRetrieveInternally(
 	hash hash.Hash,
 	index string,
 	context string,
-	ret string,
 	length string,
 ) Retrieve {
 	out := retrieve{
 		hash:    hash,
 		context: context,
 		index:   index,
-		ret:     ret,
 		length:  length,
 	}
 
@@ -60,11 +55,6 @@ func (obj *retrieve) Context() string {
 // Index returns the index
 func (obj *retrieve) Index() string {
 	return obj.index
-}
-
-// Return returns the return
-func (obj *retrieve) Return() string {
-	return obj.ret
 }
 
 // HasLength returns true if there is a length, false otherwise

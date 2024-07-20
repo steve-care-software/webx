@@ -21,7 +21,6 @@ type Builder interface {
 	Create() Builder
 	WithContext(context string) Builder
 	WithIndex(index string) Builder
-	WithReturn(ret string) Builder
 	WithLength(length string) Builder
 	Now() (Retrieve, error)
 }
@@ -31,7 +30,6 @@ type Retrieve interface {
 	Hash() hash.Hash
 	Context() string
 	Index() string
-	Return() string
 	HasLength() bool
 	Length() string
 }

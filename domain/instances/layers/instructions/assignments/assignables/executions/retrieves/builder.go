@@ -10,7 +10,6 @@ type builder struct {
 	hashAdapter hash.Adapter
 	context     string
 	index       string
-	ret         string
 	length      string
 }
 
@@ -21,7 +20,6 @@ func createBuilder(
 		hashAdapter: hashAdapter,
 		context:     "",
 		index:       "",
-		ret:         "",
 		length:      "",
 	}
 
@@ -47,12 +45,6 @@ func (app *builder) WithIndex(index string) Builder {
 	return app
 }
 
-// WithReturn adds a return to the builder
-func (app *builder) WithReturn(ret string) Builder {
-	app.ret = ret
-	return app
-}
-
 // WithLength adds a length to the builder
 func (app *builder) WithLength(length string) Builder {
 	app.length = length
@@ -69,14 +61,9 @@ func (app *builder) Now() (Retrieve, error) {
 		return nil, errors.New("the index is mandatory in order to build a Retrieve instance")
 	}
 
-	if app.ret == "" {
-		return nil, errors.New("the return is mandatory in order to build a Retrieve instance")
-	}
-
 	bytes := [][]byte{
 		[]byte(app.context),
 		[]byte(app.index),
-		[]byte(app.ret),
 	}
 
 	if app.length != "" {
@@ -89,8 +76,8 @@ func (app *builder) Now() (Retrieve, error) {
 	}
 
 	if app.length != "" {
-		return createRetrieveWithLength(*pHash, app.index, app.context, app.ret, app.length), nil
+		return createRetrieveWithLength(*pHash, app.index, app.context, app.length), nil
 	}
 
-	return createRetrieve(*pHash, app.index, app.context, app.ret), nil
+	return createRetrieve(*pHash, app.index, app.context), nil
 }

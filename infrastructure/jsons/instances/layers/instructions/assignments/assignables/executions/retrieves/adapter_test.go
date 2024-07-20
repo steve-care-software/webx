@@ -9,7 +9,7 @@ import (
 
 func TestAdapter_Success(t *testing.T) {
 	adapter := NewAdapter()
-	ins := retrieves.NewRetrieveForTests("myContext", "myIndex", "myReturn")
+	ins := retrieves.NewRetrieveForTests("myContext", "myIndex")
 
 	retBytes, err := adapter.ToBytes(ins)
 	if err != nil {
@@ -31,7 +31,7 @@ func TestAdapter_Success(t *testing.T) {
 
 func TestAdapter_withLength_Success(t *testing.T) {
 	adapter := NewAdapter()
-	ins := retrieves.NewRetrieveWithLengthForTests("myContext", "myIndex", "myReturn", "myLength")
+	ins := retrieves.NewRetrieveWithLengthForTests("myContext", "myIndex", "myReturn")
 
 	retBytes, err := adapter.ToBytes(ins)
 	if err != nil {
