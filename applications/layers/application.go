@@ -53,6 +53,7 @@ func createApplication(
 		assignmentBuilder:     assignmentBuilder,
 		assignableBuilder:     assignableBuilder,
 		layerExecutionBuilder: layerExecutionBuilder,
+		resultBuilder:         resultBuilder,
 	}
 
 	return &out
