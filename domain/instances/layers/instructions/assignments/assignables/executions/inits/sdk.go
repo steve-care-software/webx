@@ -22,7 +22,6 @@ type Builder interface {
 	WithPath(path string) Builder
 	WithName(name string) Builder
 	WithDescription(description string) Builder
-	WithContext(context string) Builder
 	Now() (Init, error)
 }
 
@@ -32,5 +31,4 @@ type Init interface {
 	Path() string
 	Name() string
 	Description() string
-	Context() string
 }

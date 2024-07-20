@@ -41,7 +41,7 @@ func TestAdapter_withInit_Success(t *testing.T) {
 	ins := executions.NewExecutionForTests(
 		"myExecutable",
 		executions.NewContentWithInitForTests(
-			inits.NewInitForTests("myPath", "myNme", "myDescription", "myContext"),
+			inits.NewInitForTests("myPath", "myNme", "myDescription"),
 		),
 	)
 

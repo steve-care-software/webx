@@ -11,7 +11,6 @@ type builder struct {
 	path        string
 	name        string
 	description string
-	context     string
 }
 
 func createBuilder(
@@ -22,7 +21,6 @@ func createBuilder(
 		path:        "",
 		name:        "",
 		description: "",
-		context:     "",
 	}
 
 	return &out
@@ -53,12 +51,6 @@ func (app *builder) WithDescription(description string) Builder {
 	return app
 }
 
-// WithContext adds a context to the builder
-func (app *builder) WithContext(context string) Builder {
-	app.context = context
-	return app
-}
-
 // Now builds a new Init instance
 func (app *builder) Now() (Init, error) {
 	if app.path == "" {
@@ -73,20 +65,15 @@ func (app *builder) Now() (Init, error) {
 		return nil, errors.New("the description is mandatory in order to build an Init instance")
 	}
 
-	if app.context == "" {
-		return nil, errors.New("the context is mandatory in order to build an Init instance")
-	}
-
 	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
 		[]byte(app.path),
 		[]byte(app.name),
 		[]byte(app.description),
-		[]byte(app.context),
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return createInit(*pHash, app.path, app.name, app.description, app.context), nil
+	return createInit(*pHash, app.path, app.name, app.description), nil
 }

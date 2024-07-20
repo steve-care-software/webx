@@ -9,7 +9,7 @@ import (
 
 func TestAdapter_Success(t *testing.T) {
 	adapter := NewAdapter()
-	ins := inits.NewInitForTests("myPath", "myNme", "myDescription", "myContext")
+	ins := inits.NewInitForTests("myPath", "myNme", "myDescription")
 
 	retBytes, err := adapter.ToBytes(ins)
 	if err != nil {

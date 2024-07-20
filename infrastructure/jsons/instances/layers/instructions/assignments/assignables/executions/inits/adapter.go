@@ -52,7 +52,6 @@ func (app *Adapter) InitToStruct(ins inits.Init) Init {
 		Path:        ins.Path(),
 		Name:        ins.Name(),
 		Description: ins.Description(),
-		Context:     ins.Context(),
 	}
 }
 
@@ -62,6 +61,5 @@ func (app *Adapter) StructToInit(str Init) (inits.Init, error) {
 		WithPath(str.Path).
 		WithName(str.Name).
 		WithDescription(str.Description).
-		WithContext(str.Context).
 		Now()
 }

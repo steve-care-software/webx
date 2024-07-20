@@ -7,7 +7,6 @@ type initStr struct {
 	path        string
 	name        string
 	description string
-	context     string
 }
 
 func createInit(
@@ -15,14 +14,12 @@ func createInit(
 	path string,
 	name string,
 	description string,
-	context string,
 ) Init {
 	out := initStr{
 		hash:        hash,
 		path:        path,
 		name:        name,
 		description: description,
-		context:     context,
 	}
 
 	return &out
@@ -46,9 +43,4 @@ func (obj *initStr) Name() string {
 // Description returns the description
 func (obj *initStr) Description() string {
 	return obj.description
-}
-
-// Context returns the context
-func (obj *initStr) Context() string {
-	return obj.context
 }

@@ -150,4 +150,7 @@ const (
 
 	// CouldNotExecuteExecuteLayerWithPathFromExecutable represents a could not execute executeLayerWithPath from executable
 	CouldNotExecuteExecuteLayerWithPathFromExecutable
+
+	// CouldNotExecuteInithFromExecutable represents a could not execute init from executable
+	CouldNotExecuteInithFromExecutable
 )
