@@ -70,7 +70,10 @@ func TestAdapter_list_Success(t *testing.T) {
 			),
 		),
 		instructions.NewInstructionWithExecutionForTests(
-			executions.NewExecutionWithCommitForTests("myCommit"),
+			executions.NewExecutionForTests(
+				"myExecutable",
+				executions.NewContentWithCommitForTests("myCommit"),
+			),
 		),
 	})
 
@@ -96,7 +99,10 @@ func TestAdapter_list_Success(t *testing.T) {
 
 func TestAdapter_Success(t *testing.T) {
 	ins := instructions.NewInstructionWithExecutionForTests(
-		executions.NewExecutionWithCommitForTests("myCommit"),
+		executions.NewExecutionForTests(
+			"myExecutable",
+			executions.NewContentWithCommitForTests("myCommit"),
+		),
 	)
 
 	adapter := NewAdapter()

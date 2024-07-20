@@ -124,8 +124,8 @@ const (
 	// CouldNotFetchDatabaseFromFrame represents a could not fetch database from frame
 	CouldNotFetchDatabaseFromFrame
 
-	// CouldNotFetchExecutableeFromFrame represents a could not fetch executable from frame
-	CouldNotFetchExecutableeFromFrame
+	// CouldNotFetchExecutableFromFrame represents a could not fetch executable from frame
+	CouldNotFetchExecutableFromFrame
 
 	// CouldNotExecuteListFromExecutable represents a could not execute list from executable
 	CouldNotExecuteListFromExecutable
@@ -159,4 +159,13 @@ const (
 
 	// CouldNotExecuteRetrieveAllFromExecutable represents a could not execute retrieveAll from executable
 	CouldNotExecuteRetrieveAllFromExecutable
+
+	// CouldNotExecuteCommitFromExecutable represents a could not execute commit from executable
+	CouldNotExecuteCommitFromExecutable
+
+	// CouldNotExecuteRollbackFromExecutable represents a could not execute rollback from executable
+	CouldNotExecuteRollbackFromExecutable
+
+	// CouldNotExecuteCancelFromExecutable represents a could not execute cancel from executable
+	CouldNotExecuteCancelFromExecutable
 )

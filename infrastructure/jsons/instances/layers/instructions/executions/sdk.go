@@ -9,8 +9,10 @@ import (
 func NewAdapter() executions.Adapter {
 	mergeAdapter := json_merges.NewAdapter()
 	builder := executions.NewBuilder()
+	contentBuilder := executions.NewContentBuilder()
 	return createAdapter(
 		mergeAdapter.(*json_merges.Adapter),
 		builder,
+		contentBuilder,
 	)
 }

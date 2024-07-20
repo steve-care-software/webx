@@ -162,8 +162,11 @@ func TestAdapter_Success(t *testing.T) {
 			),
 		).(instances.Instance),
 		"layers.instructions.executions.merges": merges.NewMergeForTests("myBase", "myTop").(instances.Instance),
-		"layers.instructions.executions": instructions_executions.NewExecutionWithMergeForTests(
-			merges.NewMergeForTests("myBase", "myTop"),
+		"layers.instructions.executions": instructions_executions.NewExecutionForTests(
+			"myExecutable",
+			instructions_executions.NewContentWithMergeForTests(
+				merges.NewMergeForTests("myBase", "myTop"),
+			),
 		).(instances.Instance),
 		"layers.instructions.lists.deletes": deletes.NewDeleteForTests(
 			"myList",
@@ -180,11 +183,21 @@ func TestAdapter_Success(t *testing.T) {
 			),
 		).(instances.Instance),
 		"layers.instructions{single}": instructions.NewInstructionWithExecutionForTests(
-			instructions_executions.NewExecutionWithCommitForTests("myCommit"),
+			instructions_executions.NewExecutionForTests(
+				"myExecutable",
+				instructions_executions.NewContentWithCommitForTests(
+					"myCommit",
+				),
+			),
 		).(instances.Instance),
 		"layers.instructions{list}": instructions.NewInstructionsForTests([]instructions.Instruction{
 			instructions.NewInstructionWithExecutionForTests(
-				instructions_executions.NewExecutionWithCommitForTests("myCommit"),
+				instructions_executions.NewExecutionForTests(
+					"myExecutable",
+					instructions_executions.NewContentWithCommitForTests(
+						"myCommit",
+					),
+				),
 			),
 		}).(instances.Instance),
 		"layers.outputs.kinds": kinds.NewKindWithContinueForTests().(instances.Instance),

@@ -40,7 +40,7 @@ func (app *application) Execute(frame stacks.Frame, assignable instruction_execu
 	executableVar := assignable.Executable()
 	retExecutable, err := frame.FetchApplication(executableVar)
 	if err != nil {
-		code := failures.CouldNotFetchExecutableeFromFrame
+		code := failures.CouldNotFetchExecutableFromFrame
 		return nil, &code, err
 	}
 

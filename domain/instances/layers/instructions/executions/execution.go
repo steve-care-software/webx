@@ -1,59 +1,22 @@
 package executions
 
-import (
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/executions/merges"
-	"github.com/steve-care-software/historydb/domain/hash"
-)
+import "github.com/steve-care-software/historydb/domain/hash"
 
 type execution struct {
-	hash     hash.Hash
-	commit   string
-	rollback string
-	cancel   string
-	merge    merges.Merge
+	hash      hash.Hash
+	excutable string
+	content   Content
 }
 
-func createExecutionWithCommit(
+func createExecution(
 	hash hash.Hash,
-	commit string,
-) Execution {
-	return createExecutionInternally(hash, commit, "", "", nil)
-}
-
-func createExecutionWithRollback(
-	hash hash.Hash,
-	rollback string,
-) Execution {
-	return createExecutionInternally(hash, "", rollback, "", nil)
-}
-
-func createExecutionWithCancel(
-	hash hash.Hash,
-	cancel string,
-) Execution {
-	return createExecutionInternally(hash, "", "", cancel, nil)
-}
-
-func createExecutionWithMerge(
-	hash hash.Hash,
-	merge merges.Merge,
-) Execution {
-	return createExecutionInternally(hash, "", "", "", merge)
-}
-
-func createExecutionInternally(
-	hash hash.Hash,
-	commit string,
-	rollback string,
-	cancel string,
-	merge merges.Merge,
+	excutable string,
+	content Content,
 ) Execution {
 	out := execution{
-		hash:     hash,
-		commit:   commit,
-		rollback: rollback,
-		cancel:   cancel,
-		merge:    merge,
+		hash:      hash,
+		excutable: excutable,
+		content:   content,
 	}
 
 	return &out
@@ -64,42 +27,12 @@ func (obj *execution) Hash() hash.Hash {
 	return obj.hash
 }
 
-// IsCommit returns true if there is a commit, false otherwise
-func (obj *execution) IsCommit() bool {
-	return obj.commit != ""
+// Executable returns the executable
+func (obj *execution) Executable() string {
+	return obj.excutable
 }
 
-// Commit returns the commit, if any
-func (obj *execution) Commit() string {
-	return obj.commit
-}
-
-// IsRollback returns true if there is a rollback, false otherwise
-func (obj *execution) IsRollback() bool {
-	return obj.rollback != ""
-}
-
-// Rollback returns the rollback, if any
-func (obj *execution) Rollback() string {
-	return obj.rollback
-}
-
-// IsCancel returns true if there is a cancel, false otherwise
-func (obj *execution) IsCancel() bool {
-	return obj.cancel != ""
-}
-
-// Cancel returns the cancel, if any
-func (obj *execution) Cancel() string {
-	return obj.cancel
-}
-
-// IsMerge returns true if there is a merge, false otherwise
-func (obj *execution) IsMerge() bool {
-	return obj.merge != nil
-}
-
-// Merge returns the merge, if any
-func (obj *execution) Merge() merges.Merge {
-	return obj.merge
+// Content returns the content
+func (obj *execution) Content() Content {
+	return obj.content
 }

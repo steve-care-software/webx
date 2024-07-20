@@ -4,9 +4,9 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/executions/merges"
 )
 
-// NewExecutionWithCommitForTests creates a new execution with commit for tests
-func NewExecutionWithCommitForTests(commit string) Execution {
-	ins, err := NewBuilder().WithCommit(commit).Now()
+// NewExecutionForTests creates a new execution for tests
+func NewExecutionForTests(executable string, content Content) Execution {
+	ins, err := NewBuilder().Create().WithExecutable(executable).WithContent(content).Now()
 	if err != nil {
 		panic(err)
 	}
@@ -14,9 +14,9 @@ func NewExecutionWithCommitForTests(commit string) Execution {
 	return ins
 }
 
-// NewExecutionWithRollbackForTests creates a new execution with rollback for tests
-func NewExecutionWithRollbackForTests(rollback string) Execution {
-	ins, err := NewBuilder().WithRollback(rollback).Now()
+// NewContentWithCommitForTests creates a new execution with commit for tests
+func NewContentWithCommitForTests(commit string) Content {
+	ins, err := NewContentBuilder().WithCommit(commit).Now()
 	if err != nil {
 		panic(err)
 	}
@@ -24,9 +24,9 @@ func NewExecutionWithRollbackForTests(rollback string) Execution {
 	return ins
 }
 
-// NewExecutionWithCancelForTests creates a new execution with cancel for tests
-func NewExecutionWithCancelForTests(cancel string) Execution {
-	ins, err := NewBuilder().WithCancel(cancel).Now()
+// NewContentWithRollbackForTests creates a new execution with rollback for tests
+func NewContentWithRollbackForTests(rollback string) Content {
+	ins, err := NewContentBuilder().WithRollback(rollback).Now()
 	if err != nil {
 		panic(err)
 	}
@@ -34,9 +34,19 @@ func NewExecutionWithCancelForTests(cancel string) Execution {
 	return ins
 }
 
-// NewExecutionWithMergeForTests creates a new execution with merge for tests
-func NewExecutionWithMergeForTests(merge merges.Merge) Execution {
-	ins, err := NewBuilder().WithMerge(merge).Now()
+// NewContentWithCancelForTests creates a new execution with cancel for tests
+func NewContentWithCancelForTests(cancel string) Content {
+	ins, err := NewContentBuilder().WithCancel(cancel).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewContentWithMergeForTests creates a new execution with merge for tests
+func NewContentWithMergeForTests(merge merges.Merge) Content {
+	ins, err := NewContentBuilder().WithMerge(merge).Now()
 	if err != nil {
 		panic(err)
 	}

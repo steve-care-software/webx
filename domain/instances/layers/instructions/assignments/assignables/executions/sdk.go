@@ -7,7 +7,7 @@ import (
 	"github.com/steve-care-software/historydb/domain/hash"
 )
 
-// NewBuilder creates a new builder for tests
+// NewBuilder creates a new builder
 func NewBuilder() Builder {
 	hashAdapter := hash.NewAdapter()
 	return createBuilder(

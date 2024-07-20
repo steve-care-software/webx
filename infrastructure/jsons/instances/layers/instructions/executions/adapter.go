@@ -10,17 +10,20 @@ import (
 
 // Adapter represents an execution adapter
 type Adapter struct {
-	mergeAdapter *json_merges.Adapter
-	builder      executions.Builder
+	mergeAdapter   *json_merges.Adapter
+	builder        executions.Builder
+	contentBuilder executions.ContentBuilder
 }
 
 func createAdapter(
 	mergeAdapter *json_merges.Adapter,
 	builder executions.Builder,
+	contentBuilder executions.ContentBuilder,
 ) executions.Adapter {
 	out := Adapter{
-		mergeAdapter: mergeAdapter,
-		builder:      builder,
+		mergeAdapter:   mergeAdapter,
+		builder:        builder,
+		contentBuilder: contentBuilder,
 	}
 
 	return &out
@@ -52,7 +55,29 @@ func (app *Adapter) ToInstance(data []byte) (executions.Execution, error) {
 
 // ExecutionToStruct converts an execution to struct
 func (app *Adapter) ExecutionToStruct(ins executions.Execution) Execution {
-	out := Execution{}
+	content := app.ContentToStruct(ins.Content())
+	return Execution{
+		Executable: ins.Executable(),
+		Content:    content,
+	}
+}
+
+// StructToExecution converts a struct to execution
+func (app *Adapter) StructToExecution(str Execution) (executions.Execution, error) {
+	content, err := app.StructToContent(str.Content)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.builder.Create().
+		WithExecutable(str.Executable).
+		WithContent(content).
+		Now()
+}
+
+// ContentToStruct converts a content to struct
+func (app *Adapter) ContentToStruct(ins executions.Content) Content {
+	out := Content{}
 	if ins.IsCommit() {
 		out.Commit = ins.Commit()
 	}
@@ -73,9 +98,9 @@ func (app *Adapter) ExecutionToStruct(ins executions.Execution) Execution {
 	return out
 }
 
-// StructToExecution converts a struct to execution
-func (app *Adapter) StructToExecution(str Execution) (executions.Execution, error) {
-	builder := app.builder.Create()
+// StructToContent converts a struct to content
+func (app *Adapter) StructToContent(str Content) (executions.Content, error) {
+	builder := app.contentBuilder.Create()
 	if str.Commit != "" {
 		builder.WithCommit(str.Commit)
 	}

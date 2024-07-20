@@ -9,8 +9,11 @@ import (
 )
 
 func TestAdapter_withMerge_Success(t *testing.T) {
-	ins := executions.NewExecutionWithMergeForTests(
-		merges.NewMergeForTests("myBase", "myTop"),
+	ins := executions.NewExecutionForTests(
+		"myExecutable",
+		executions.NewContentWithMergeForTests(
+			merges.NewMergeForTests("myBase", "myTop"),
+		),
 	)
 
 	adapter := NewAdapter()
@@ -34,7 +37,10 @@ func TestAdapter_withMerge_Success(t *testing.T) {
 }
 
 func TestAdapter_withCommit_Success(t *testing.T) {
-	ins := executions.NewExecutionWithCommitForTests("myCommit")
+	ins := executions.NewExecutionForTests(
+		"myExecutable",
+		executions.NewContentWithCommitForTests("myCommit"),
+	)
 
 	adapter := NewAdapter()
 
@@ -57,7 +63,10 @@ func TestAdapter_withCommit_Success(t *testing.T) {
 }
 
 func TestAdapter_withRollback_Success(t *testing.T) {
-	ins := executions.NewExecutionWithRollbackForTests("myRollback")
+	ins := executions.NewExecutionForTests(
+		"myExecutable",
+		executions.NewContentWithRollbackForTests("myRollback"),
+	)
 
 	adapter := NewAdapter()
 
@@ -80,7 +89,10 @@ func TestAdapter_withRollback_Success(t *testing.T) {
 }
 
 func TestAdapter_withCancel_Success(t *testing.T) {
-	ins := executions.NewExecutionWithCancelForTests("myCancel")
+	ins := executions.NewExecutionForTests(
+		"myExecutable",
+		executions.NewContentWithCancelForTests("myCancel"),
+	)
 
 	adapter := NewAdapter()
 
