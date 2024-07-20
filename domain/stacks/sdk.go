@@ -1,6 +1,7 @@
 package stacks
 
 import (
+	"github.com/steve-care-software/datastencil/applications"
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
@@ -167,6 +168,7 @@ type AssignableBuilder interface {
 	WithSignature(signature signers.Signature) AssignableBuilder
 	WithVote(vote signers.Vote) AssignableBuilder
 	WithList(list Assignables) AssignableBuilder
+	WithApplication(application applications.Application) AssignableBuilder
 	Now() (Assignable, error)
 }
 
@@ -202,4 +204,6 @@ type Assignable interface {
 	Vote() signers.Vote
 	IsList() bool
 	List() Assignables
+	IsApplication() bool
+	Applicattion() applications.Application
 }

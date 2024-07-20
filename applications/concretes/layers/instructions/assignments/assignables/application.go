@@ -5,6 +5,7 @@ import (
 	"github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/compilers"
 	"github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/cryptography"
+	executables "github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/excutables"
 	"github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/executions"
 	"github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/lists"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables"
@@ -18,6 +19,7 @@ type application struct {
 	execConstantApp  constants.Application
 	execCryptoApp    cryptography.Application
 	execListApp      lists.Application
+	execExcutableApp executables.Application
 }
 
 func createApplication(
@@ -27,6 +29,7 @@ func createApplication(
 	execConstantApp constants.Application,
 	execCryptoApp cryptography.Application,
 	execListApp lists.Application,
+	execExcutableApp executables.Application,
 ) Application {
 	out := application{
 		execCompilerApp:  execCompilerApp,
@@ -35,6 +38,7 @@ func createApplication(
 		execConstantApp:  execConstantApp,
 		execCryptoApp:    execCryptoApp,
 		execListApp:      execListApp,
+		execExcutableApp: execExcutableApp,
 	}
 
 	return &out
@@ -65,6 +69,10 @@ func (app *application) Execute(frame stacks.Frame, assignable assignables.Assig
 	if assignable.IsExecution() {
 		execution := assignable.Execution()
 		return app.execExecutionApp.Execute(frame, execution)
+	}
+
+	if assignable.IsExecutable() {
+
 	}
 
 	compiler := assignable.Compiler()

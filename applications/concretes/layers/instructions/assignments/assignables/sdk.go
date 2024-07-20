@@ -5,6 +5,7 @@ import (
 	"github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/compilers"
 	"github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/constants"
 	"github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/cryptography"
+	executables "github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/excutables"
 	"github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/executions"
 	"github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/lists"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables"
@@ -19,6 +20,7 @@ func NewApplication(
 	execConstantApp constants.Application,
 	execCryptoApp cryptography.Application,
 	execListApp lists.Application,
+	execExecutableApp executables.Application,
 ) Application {
 	return createApplication(
 		execCompilerApp,
@@ -27,6 +29,7 @@ func NewApplication(
 		execConstantApp,
 		execCryptoApp,
 		execListApp,
+		execExecutableApp,
 	)
 }
 

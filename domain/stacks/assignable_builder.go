@@ -3,6 +3,7 @@ package stacks
 import (
 	"errors"
 
+	"github.com/steve-care-software/datastencil/applications"
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
@@ -25,6 +26,7 @@ type assignableBuilder struct {
 	signature       signers.Signature
 	vote            signers.Vote
 	list            Assignables
+	application     applications.Application
 }
 
 func createAssignableBuilder() AssignableBuilder {
@@ -44,6 +46,7 @@ func createAssignableBuilder() AssignableBuilder {
 		signature:       nil,
 		vote:            nil,
 		list:            nil,
+		application:     nil,
 	}
 
 	return &out
@@ -141,6 +144,12 @@ func (app *assignableBuilder) WithVote(vote signers.Vote) AssignableBuilder {
 // WithList adds list to the builder
 func (app *assignableBuilder) WithList(list Assignables) AssignableBuilder {
 	app.list = list
+	return app
+}
+
+// WithApplication adds an application to the builder
+func (app *assignableBuilder) WithApplication(application applications.Application) AssignableBuilder {
+	app.application = application
 	return app
 }
 

@@ -22,6 +22,7 @@ import (
 	application_votes "github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes"
 	application_votes_creates "github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/creates"
 	application_votes_validates "github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/validates"
+	application_executables "github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/excutables"
 	application_lists "github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/lists"
 	application_fetches "github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/lists/fetches"
 	"github.com/steve-care-software/datastencil/domain/instances"
@@ -110,6 +111,7 @@ func TestExecute_Success(t *testing.T) {
 			application_lists.NewApplication(
 				application_fetches.NewApplication(),
 			),
+			application_executables.NewApplication(nil, nil),
 		),
 	)
 
@@ -209,6 +211,7 @@ func TestExecute_containsError_returnsError(t *testing.T) {
 			application_lists.NewApplication(
 				application_fetches.NewApplication(),
 			),
+			application_executables.NewApplication(nil, nil),
 		),
 	)
 

@@ -1,6 +1,7 @@
 package stacks
 
 import (
+	"github.com/steve-care-software/datastencil/applications"
 	"github.com/steve-care-software/datastencil/domain/instances"
 	"github.com/steve-care-software/datastencil/domain/keys/encryptors"
 	"github.com/steve-care-software/datastencil/domain/keys/signers"
@@ -23,96 +24,103 @@ type assignable struct {
 	signerPublicKey signers.PublicKey
 	vote            signers.Vote
 	list            Assignables
+	application     applications.Application
 }
 
 func createAssignableWithBool(
 	pBool *bool,
 ) Assignable {
-	return createAssignableInternally(pBool, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(pBool, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithString(
 	pString *string,
 ) Assignable {
-	return createAssignableInternally(nil, pString, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, pString, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithFloat(
 	pFloat *float64,
 ) Assignable {
-	return createAssignableInternally(nil, nil, pFloat, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, pFloat, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithInt(
 	pInt *int,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, pInt, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, nil, pInt, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithBytes(
 	bytes []byte,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, bytes, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, nil, nil, bytes, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithHash(
 	hash hash.Hash,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, hash, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, nil, nil, nil, hash, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithUnsignedInt(
 	pUnsignedInt *uint,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, pUnsignedInt, nil, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, nil, nil, nil, nil, pUnsignedInt, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithInstance(
 	instance instances.Instance,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, instance, nil, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, instance, nil, nil, nil, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithEncryptor(
 	encryptor encryptors.Encryptor,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, encryptor, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, encryptor, nil, nil, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithEncryptorPublicKey(
 	encPublicKey encryptors.PublicKey,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, encPublicKey, nil, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, encPublicKey, nil, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithSigner(
 	signer signers.Signer,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, signer, nil, nil, nil, nil)
+	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, signer, nil, nil, nil, nil, nil)
 }
 
 func createAssignableWithSignerPublicKey(
 	signerPubKey signers.PublicKey,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, signerPubKey, nil, nil, nil)
+	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, signerPubKey, nil, nil, nil, nil)
 }
 
 func createAssignableWithSignature(
 	signature signers.Signature,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, signature, nil, nil)
+	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, signature, nil, nil, nil)
 }
 
 func createAssignableWithVote(
 	vote signers.Vote,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, vote, nil)
+	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, vote, nil, nil)
 }
 
 func createAssignableWithList(
 	list Assignables,
 ) Assignable {
-	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, list)
+	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, list, nil)
+}
+
+func createAssignableWithApplication(
+	application applications.Application,
+) Assignable {
+	return createAssignableInternally(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, application)
 }
 
 func createAssignableInternally(
@@ -131,6 +139,7 @@ func createAssignableInternally(
 	signature signers.Signature,
 	vote signers.Vote,
 	list Assignables,
+	application applications.Application,
 ) Assignable {
 	out := assignable{
 		pBool:           pBool,
@@ -148,6 +157,7 @@ func createAssignableInternally(
 		signature:       signature,
 		vote:            vote,
 		list:            list,
+		application:     application,
 	}
 
 	return &out
@@ -301,4 +311,14 @@ func (obj *assignable) IsList() bool {
 // List returns the list, if any
 func (obj *assignable) List() Assignables {
 	return obj.list
+}
+
+// IsApplication returns true if application, false otherwise
+func (obj *assignable) IsApplication() bool {
+	return obj.application != nil
+}
+
+// Applicattion returns the application, if any
+func (obj *assignable) Applicattion() applications.Application {
+	return obj.application
 }
