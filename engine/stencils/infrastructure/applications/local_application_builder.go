@@ -178,8 +178,7 @@ func (app *localApplicationBuilder) Now() (applications.Application, error) {
 	)
 
 	layerAdapter := layers.NewAdapter()
-	executionsRepository := infrastructure_memories.NewExecutionRepository()
-	executionsService := infrastructure_memories.NewExecutionService()
+	executionsRepository, executionsService := infrastructure_memories.NewExecutionRepositoryAndService()
 	executionsAdapter := json_executions.NewAdapter()
 	executionsBuilder := executions.NewBuilder()
 	contextBuilder := contexts.NewBuilder()

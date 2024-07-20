@@ -2,12 +2,9 @@ package memories
 
 import "github.com/steve-care-software/webx/engine/stencils/domain/instances/executions"
 
-// NewExecutionRepository creates a new execution repository
-func NewExecutionRepository() executions.Repository {
-	return createExecutionRepository()
-}
-
-// NewExecutionService creates a new execution service
-func NewExecutionService() executions.Service {
-	return createExecutionService()
+// NewExecutionRepositoryAndService creates a new execution repository and service
+func NewExecutionRepositoryAndService() (executions.Repository, executions.Service) {
+	memory := map[string]map[string]executions.Execution{}
+	builder := executions.NewBuilder()
+	return createExecutionRepository(memory, builder), createExecutionService(memory)
 }
