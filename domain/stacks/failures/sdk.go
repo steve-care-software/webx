@@ -168,4 +168,7 @@ const (
 
 	// CouldNotExecuteCancelFromExecutable represents a could not execute cancel from executable
 	CouldNotExecuteCancelFromExecutable
+
+	// CouldNotExecuteMErgeFromExecutable represents a could not execute merge from executable
+	CouldNotExecuteMErgeFromExecutable
 )

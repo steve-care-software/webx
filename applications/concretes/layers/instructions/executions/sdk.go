@@ -10,9 +10,8 @@ import (
 func NewApplication(
 	execMergeApp merges.Application,
 ) Application {
-	assignableBuilder := stacks.NewAssignableBuilder()
 	return createApplication(
-		assignableBuilder,
+		execMergeApp,
 	)
 }
 

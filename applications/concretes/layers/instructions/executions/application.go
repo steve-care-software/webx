@@ -8,15 +8,14 @@ import (
 )
 
 type application struct {
-	execMergeApp      merges.Application
-	assignableBuilder stacks.AssignableBuilder
+	execMergeApp merges.Application
 }
 
 func createApplication(
-	assignableBuilder stacks.AssignableBuilder,
+	execMergeApp merges.Application,
 ) Application {
 	out := application{
-		assignableBuilder: assignableBuilder,
+		execMergeApp: execMergeApp,
 	}
 
 	return &out
