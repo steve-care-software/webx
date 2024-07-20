@@ -2,6 +2,7 @@ package instructions
 
 import (
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/assignments"
+	"github.com/steve-care-software/datastencil/applications/layers/instructions/executions"
 	"github.com/steve-care-software/datastencil/applications/layers/instructions/lists"
 	"github.com/steve-care-software/datastencil/domain/instances/executions/results/interruptions"
 	"github.com/steve-care-software/datastencil/domain/instances/executions/results/interruptions/failures"
@@ -12,6 +13,7 @@ import (
 type application struct {
 	assignmentApp       assignments.Application
 	listApp             lists.Application
+	executionApp        executions.Application
 	stackBuilder        stacks.Builder
 	framesBuilder       stacks.FramesBuilder
 	frameBuilder        stacks.FrameBuilder
@@ -23,6 +25,7 @@ type application struct {
 func createApplication(
 	assignmentApp assignments.Application,
 	listApp lists.Application,
+	executionApp executions.Application,
 	stackBuilder stacks.Builder,
 	framesBuilder stacks.FramesBuilder,
 	frameBuilder stacks.FrameBuilder,
@@ -33,6 +36,7 @@ func createApplication(
 	out := application{
 		assignmentApp:       assignmentApp,
 		listApp:             listApp,
+		executionApp:        executionApp,
 		stackBuilder:        stackBuilder,
 		framesBuilder:       framesBuilder,
 		frameBuilder:        frameBuilder,

@@ -1,15 +1,47 @@
 package layers
 
 import (
+	"github.com/steve-care-software/datastencil/applications/layers/binaries"
+	"github.com/steve-care-software/datastencil/applications/layers/instructions"
 	execution_layers "github.com/steve-care-software/datastencil/domain/instances/executions"
+	execution_results "github.com/steve-care-software/datastencil/domain/instances/executions/results"
+	execution_success "github.com/steve-care-software/datastencil/domain/instances/executions/results/success"
+	execution_outputs "github.com/steve-care-software/datastencil/domain/instances/executions/results/success/outputs"
 	"github.com/steve-care-software/datastencil/domain/instances/layers"
+	"github.com/steve-care-software/datastencil/domain/stacks"
 )
 
-// Builder represents an application builder
-type Builder interface {
-	Create() Builder
-	WithBasePath(basePath []string) Builder
-	Now() (Application, error)
+// NewApplication creates a new application
+func NewApplication(
+	instructionsApp instructions.Application,
+	binaryApp binaries.Application,
+) Application {
+	stackFactory := stacks.NewFactory()
+	stackBuilder := stacks.NewBuilder()
+	framesBuilder := stacks.NewFramesBuilder()
+	frameBuilder := stacks.NewFrameBuilder()
+	assignmentsBuilder := stacks.NewAssignmentsBuilder()
+	assignmentBuilder := stacks.NewAssignmentBuilder()
+	assignableBuilder := stacks.NewAssignableBuilder()
+	layerExecutionBuilder := execution_layers.NewExecutionBuilder()
+	resultBuilder := execution_results.NewBuilder()
+	successBuilder := execution_success.NewBuilder()
+	outputBuilder := execution_outputs.NewBuilder()
+	return createApplication(
+		instructionsApp,
+		binaryApp,
+		stackFactory,
+		stackBuilder,
+		framesBuilder,
+		frameBuilder,
+		assignmentsBuilder,
+		assignmentBuilder,
+		assignableBuilder,
+		layerExecutionBuilder,
+		resultBuilder,
+		successBuilder,
+		outputBuilder,
+	)
 }
 
 // Application represents a layer application

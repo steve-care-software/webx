@@ -41,6 +41,8 @@ func createApplication(
 	assignableBuilder stacks.AssignableBuilder,
 	layerExecutionBuilder execution_layers.ExecutionBuilder,
 	resultBuilder execution_results.Builder,
+	successBuilder execution_success.Builder,
+	outputBuilder execution_outputs.Builder,
 ) Application {
 	out := application{
 		instructionsApp:       instructionsApp,
@@ -54,6 +56,8 @@ func createApplication(
 		assignableBuilder:     assignableBuilder,
 		layerExecutionBuilder: layerExecutionBuilder,
 		resultBuilder:         resultBuilder,
+		successBuilder:        successBuilder,
+		outputBuilder:         outputBuilder,
 	}
 
 	return &out

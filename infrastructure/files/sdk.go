@@ -1,8 +1,19 @@
 package files
 
 import (
+	"github.com/steve-care-software/datastencil/domain/contexts"
 	"github.com/steve-care-software/datastencil/domain/instances/layers"
 )
+
+// NewContextRepository creates a new context repository
+func NewContextRepository() contexts.Repository {
+	return createContextRepository()
+}
+
+// NewContextService creates a new context service
+func NewContextService() contexts.Service {
+	return createContextService()
+}
 
 // NewLayerRepositoryBuilder creates a new layer repository builder
 func NewLayerRepositoryBuilder(

@@ -4,6 +4,14 @@ import (
 	"github.com/steve-care-software/historydb/domain/hash"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder represents a context builder
 type Builder interface {
 	Create() Builder
@@ -23,7 +31,6 @@ type Context interface {
 
 // Repository represents a context repository
 type Repository interface {
-	//Search(criteria criterias.Criteria) ([]hash.Hash, error)
 	Retrieve(dbPath []string) (Context, error)
 }
 
