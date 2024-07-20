@@ -129,4 +129,13 @@ const (
 
 	// CouldNotExecuteListFromExecutable represents a could not execute list from executable
 	CouldNotExecuteListFromExecutable
+
+	// CouldNotExecuteBeginFromExecutable represents a could not execute begin from executable
+	CouldNotExecuteBeginFromExecutable
+
+	// CouldNotExecuteAmountFromExecutable represents a could not execute amount from executable
+	CouldNotExecuteAmountFromExecutable
+
+	// CouldNotExecuteHeadFromExecutable represents a could not execute head from executable
+	CouldNotExecuteHeadFromExecutable
 )

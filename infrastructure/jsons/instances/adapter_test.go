@@ -34,11 +34,8 @@ import (
 	keys_signatures_votes_creates "github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/creates"
 	keys_signatures_votes_validates "github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/validates"
 	assignables_executions "github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/amounts"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/begins"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/executes"
 	executes_inputs "github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/executes/inputs"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/heads"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/inits"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/retrieves"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/lists"
@@ -127,15 +124,12 @@ func TestAdapter_Success(t *testing.T) {
 				"myPassword",
 			),
 		).(instances.Instance),
-		"layers.instructions.assignments.assignables.executions.amounts":         amounts.NewAmountForTests("myContext", "myReturn").(instances.Instance),
-		"layers.instructions.assignments.assignables.executions.begins":          begins.NewBeginForTests("myPath", "myContext").(instances.Instance),
 		"layers.instructions.assignments.assignables.executions.executes.inputs": executes_inputs.NewInputWithPathForTests("myPath").(instances.Instance),
 		"layers.instructions.assignments.assignables.executions.executes": executes.NewExecuteForTests(
 			"myContext",
 			executes_inputs.NewInputWithPathForTests("myPath"),
 			"myReturn",
 		).(instances.Instance),
-		"layers.instructions.assignments.assignables.executions.heads":     heads.NewHeadForTests("myContext", "myReturn").(instances.Instance),
 		"layers.instructions.assignments.assignables.executions.inits":     inits.NewInitForTests("myPath", "myNme", "myDescription", "myContext").(instances.Instance),
 		"layers.instructions.assignments.assignables.executions.retrieves": retrieves.NewRetrieveForTests("myContext", "myIndex", "myReturn").(instances.Instance),
 		"layers.instructions.assignments.assignables.executions": assignables_executions.NewExecutionForTests(

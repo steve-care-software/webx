@@ -1,10 +1,7 @@
 package executions
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/amounts"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/begins"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/executes"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/heads"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/inits"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/retrieves"
 )
@@ -40,7 +37,7 @@ func NewContentWithInitForTests(init inits.Init) Content {
 }
 
 // NewContentWithBeginForTests creates a new execution with begin for tests
-func NewContentWithBeginForTests(begin begins.Begin) Content {
+func NewContentWithBeginForTests(begin string) Content {
 	ins, err := NewContentBuilder().Create().WithBegin(begin).Now()
 	if err != nil {
 		panic(err)
@@ -70,7 +67,7 @@ func NewContentWithRetrieveForTests(retrieve retrieves.Retrieve) Content {
 }
 
 // NewContentWithAmountForTests creates a new execution with amount for tests
-func NewContentWithAmountForTests(amount amounts.Amount) Content {
+func NewContentWithAmountForTests(amount string) Content {
 	ins, err := NewContentBuilder().Create().WithAmount(amount).Now()
 	if err != nil {
 		panic(err)
@@ -80,7 +77,7 @@ func NewContentWithAmountForTests(amount amounts.Amount) Content {
 }
 
 // NewContentWithHeadForTests creates a new execution with head for tests
-func NewContentWithHeadForTests(head heads.Head) Content {
+func NewContentWithHeadForTests(head string) Content {
 	ins, err := NewContentBuilder().Create().WithHead(head).Now()
 	if err != nil {
 		panic(err)

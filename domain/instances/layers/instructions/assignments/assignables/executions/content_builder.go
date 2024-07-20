@@ -3,10 +3,7 @@ package executions
 import (
 	"errors"
 
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/amounts"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/begins"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/executes"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/heads"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/inits"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/retrieves"
 	"github.com/steve-care-software/historydb/domain/hash"
@@ -16,11 +13,11 @@ type contentBuilder struct {
 	hashAdapter hash.Adapter
 	isList      bool
 	init        inits.Init
-	begin       begins.Begin
+	begin       string
 	execute     executes.Execute
 	retrieve    retrieves.Retrieve
-	amount      amounts.Amount
-	head        heads.Head
+	amount      string
+	head        string
 }
 
 func createContentBuilder(
@@ -30,11 +27,11 @@ func createContentBuilder(
 		hashAdapter: hashAdapter,
 		isList:      false,
 		init:        nil,
-		begin:       nil,
+		begin:       "",
 		execute:     nil,
 		retrieve:    nil,
-		amount:      nil,
-		head:        nil,
+		amount:      "",
+		head:        "",
 	}
 
 	return &out
@@ -54,7 +51,7 @@ func (app *contentBuilder) WithInit(init inits.Init) ContentBuilder {
 }
 
 // WithBegin adds a begin to the builder
-func (app *contentBuilder) WithBegin(begin begins.Begin) ContentBuilder {
+func (app *contentBuilder) WithBegin(begin string) ContentBuilder {
 	app.begin = begin
 	return app
 }
@@ -72,13 +69,13 @@ func (app *contentBuilder) WithRetrieve(retrieve retrieves.Retrieve) ContentBuil
 }
 
 // WithAmount adds an amount to the builder
-func (app *contentBuilder) WithAmount(amount amounts.Amount) ContentBuilder {
+func (app *contentBuilder) WithAmount(amount string) ContentBuilder {
 	app.amount = amount
 	return app
 }
 
 // WithHead adds an head to the builder
-func (app *contentBuilder) WithHead(head heads.Head) ContentBuilder {
+func (app *contentBuilder) WithHead(head string) ContentBuilder {
 	app.head = head
 	return app
 }
@@ -101,9 +98,9 @@ func (app *contentBuilder) Now() (Content, error) {
 		bytes = append(bytes, app.init.Hash().Bytes())
 	}
 
-	if app.begin != nil {
+	if app.begin != "" {
 		bytes = append(bytes, []byte("begin"))
-		bytes = append(bytes, app.begin.Hash().Bytes())
+		bytes = append(bytes, []byte(app.begin))
 	}
 
 	if app.execute != nil {
@@ -116,14 +113,14 @@ func (app *contentBuilder) Now() (Content, error) {
 		bytes = append(bytes, app.retrieve.Hash().Bytes())
 	}
 
-	if app.amount != nil {
+	if app.amount != "" {
 		bytes = append(bytes, []byte("amount"))
-		bytes = append(bytes, app.amount.Hash().Bytes())
+		bytes = append(bytes, []byte(app.amount))
 	}
 
-	if app.head != nil {
+	if app.head != "" {
 		bytes = append(bytes, []byte("head"))
-		bytes = append(bytes, app.head.Hash().Bytes())
+		bytes = append(bytes, []byte(app.head))
 	}
 
 	amount := len(bytes)
@@ -144,7 +141,7 @@ func (app *contentBuilder) Now() (Content, error) {
 		return createContentWithInit(*pHash, app.init), nil
 	}
 
-	if app.begin != nil {
+	if app.begin != "" {
 		return createContentWithBegin(*pHash, app.begin), nil
 	}
 
@@ -156,7 +153,7 @@ func (app *contentBuilder) Now() (Content, error) {
 		return createContentWithRetrieve(*pHash, app.retrieve), nil
 	}
 
-	if app.amount != nil {
+	if app.amount != "" {
 		return createContentWithAmount(*pHash, app.amount), nil
 	}
 

@@ -30,11 +30,8 @@ import (
 	json_keys_signatures_votes_creates "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/creates"
 	json_keys_signatures_votes_validates "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/validates"
 	json_assignables_executions "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/executions"
-	json_amounts "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/executions/amounts"
-	json_begins "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/executions/begins"
 	json_executes "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/executions/executes"
 	json_executes_inputs "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/executions/executes/inputs"
-	json_heads "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/executions/heads"
 	json_inits "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/executions/inits"
 	json_retrieves "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/executions/retrieves"
 	json_lists "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/lists"
@@ -73,11 +70,8 @@ func NewAdapter() instances.Adapter {
 	keysSignatureAdapter := json_keys_signatures.NewAdapter()
 	keyAdapter := json_keys.NewAdapter()
 	cryptographyAdapter := json_cryptography.NewAdapter()
-	amountAdapter := json_amounts.NewAdapter()
-	beginAdapter := json_begins.NewAdapter()
 	executeInputAdapter := json_executes_inputs.NewAdapter()
 	executeAdapter := json_executes.NewAdapter()
-	headAdapter := json_heads.NewAdapter()
 	initAdapter := json_inits.NewAdapter()
 	retrieveAdapter := json_retrieves.NewAdapter()
 	assignableExecutionAdapter := json_assignables_executions.NewAdapter()
@@ -119,11 +113,8 @@ func NewAdapter() instances.Adapter {
 		keysSignatureAdapter,
 		keyAdapter,
 		cryptographyAdapter,
-		amountAdapter,
-		beginAdapter,
 		executeInputAdapter,
 		executeAdapter,
-		headAdapter,
 		initAdapter,
 		retrieveAdapter,
 		assignableExecutionAdapter,

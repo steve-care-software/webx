@@ -32,11 +32,8 @@ import (
 	keys_signatures_votes_creates "github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/creates"
 	keys_signatures_votes_validates "github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/validates"
 	assignables_executions "github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/amounts"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/begins"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/executes"
 	executes_inputs "github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/executes/inputs"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/heads"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/inits"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/retrieves"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/lists"
@@ -74,11 +71,8 @@ type adapter struct {
 	keysSignatureAdapter             keys_signatures.Adapter
 	keyAdapter                       keys.Adapter
 	cryptographyAdapter              cryptography.Adapter
-	amountAdapter                    amounts.Adapter
-	beginAdapter                     begins.Adapter
 	executeInputAdapter              executes_inputs.Adapter
 	executeAdapter                   executes.Adapter
-	headAdapter                      heads.Adapter
 	initAdapter                      inits.Adapter
 	retrieveAdapter                  retrieves.Adapter
 	assignableExecutionAdapter       assignables_executions.Adapter
@@ -122,11 +116,8 @@ func createAdapter(
 	keysSignatureAdapter keys_signatures.Adapter,
 	keyAdapter keys.Adapter,
 	cryptographyAdapter cryptography.Adapter,
-	amountAdapter amounts.Adapter,
-	beginAdapter begins.Adapter,
 	executeInputAdapter executes_inputs.Adapter,
 	executeAdapter executes.Adapter,
-	headAdapter heads.Adapter,
 	initAdapter inits.Adapter,
 	retrieveAdapter retrieves.Adapter,
 	assignableExecutionAdapter assignables_executions.Adapter,
@@ -169,11 +160,8 @@ func createAdapter(
 		keysSignatureAdapter:             keysSignatureAdapter,
 		keyAdapter:                       keyAdapter,
 		cryptographyAdapter:              cryptographyAdapter,
-		amountAdapter:                    amountAdapter,
-		beginAdapter:                     beginAdapter,
 		executeInputAdapter:              executeInputAdapter,
 		executeAdapter:                   executeAdapter,
-		headAdapter:                      headAdapter,
 		initAdapter:                      initAdapter,
 		retrieveAdapter:                  retrieveAdapter,
 		assignableExecutionAdapter:       assignableExecutionAdapter,
@@ -307,20 +295,8 @@ func (app *adapter) ToBytes(ins instances.Instance) ([]byte, error) {
 		return app.executeAdapter.ToBytes(casted)
 	}
 
-	if casted, ok := ins.(heads.Head); ok {
-		return app.headAdapter.ToBytes(casted)
-	}
-
-	if casted, ok := ins.(amounts.Amount); ok {
-		return app.amountAdapter.ToBytes(casted)
-	}
-
 	if casted, ok := ins.(inits.Init); ok {
 		return app.initAdapter.ToBytes(casted)
-	}
-
-	if casted, ok := ins.(begins.Begin); ok {
-		return app.beginAdapter.ToBytes(casted)
 	}
 
 	if casted, ok := ins.(executes_inputs.Input); ok {
@@ -535,24 +511,9 @@ func (app *adapter) ToInstance(data []byte) (instances.Instance, error) {
 		return execute, nil
 	}
 
-	head, err := app.headAdapter.ToInstance(data)
-	if err == nil {
-		return head, nil
-	}
-
-	amount, err := app.amountAdapter.ToInstance(data)
-	if err == nil {
-		return amount, nil
-	}
-
 	init, err := app.initAdapter.ToInstance(data)
 	if err == nil {
 		return init, nil
-	}
-
-	begin, err := app.beginAdapter.ToInstance(data)
-	if err == nil {
-		return begin, nil
 	}
 
 	executeInput, err := app.executeInputAdapter.ToInstance(data)

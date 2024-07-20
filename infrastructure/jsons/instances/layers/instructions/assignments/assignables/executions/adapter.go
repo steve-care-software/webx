@@ -5,20 +5,14 @@ import (
 	"encoding/json"
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions"
-	json_amounts "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/executions/amounts"
-	json_begins "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/executions/begins"
 	json_executes "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/executions/executes"
-	json_heads "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/executions/heads"
 	json_inits "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/executions/inits"
 	json_retrieves "github.com/steve-care-software/datastencil/infrastructure/jsons/instances/layers/instructions/assignments/assignables/executions/retrieves"
 )
 
 // Adapter represents an adapter
 type Adapter struct {
-	amountAdapter   *json_amounts.Adapter
-	beginAdapter    *json_begins.Adapter
 	executeAdapter  *json_executes.Adapter
-	headAdapter     *json_heads.Adapter
 	initAdapter     *json_inits.Adapter
 	retrieveAdapter *json_retrieves.Adapter
 	builder         executions.Builder
@@ -26,20 +20,14 @@ type Adapter struct {
 }
 
 func createAdapter(
-	amountAdapter *json_amounts.Adapter,
-	beginAdapter *json_begins.Adapter,
 	executeAdapter *json_executes.Adapter,
-	headAdapter *json_heads.Adapter,
 	initAdapter *json_inits.Adapter,
 	retrieveAdapter *json_retrieves.Adapter,
 	builder executions.Builder,
 	contentBuilder executions.ContentBuilder,
 ) executions.Adapter {
 	out := Adapter{
-		amountAdapter:   amountAdapter,
-		beginAdapter:    beginAdapter,
 		executeAdapter:  executeAdapter,
-		headAdapter:     headAdapter,
 		initAdapter:     initAdapter,
 		retrieveAdapter: retrieveAdapter,
 		builder:         builder,
@@ -98,22 +86,12 @@ func (app *Adapter) StructToExecution(str Execution) (executions.Execution, erro
 // StructToContent converts a struct to content
 func (app *Adapter) StructToContent(str Content) (executions.Content, error) {
 	builder := app.contentBuilder.Create()
-	if str.Amount != nil {
-		amount, err := app.amountAdapter.StructToAmount(*str.Amount)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithAmount(amount)
+	if str.Amount != "" {
+		builder.WithAmount(str.Amount)
 	}
 
-	if str.Begin != nil {
-		begin, err := app.beginAdapter.StructToBegin(*str.Begin)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithBegin(begin)
+	if str.Begin != "" {
+		builder.WithBegin(str.Begin)
 	}
 
 	if str.Execute != nil {
@@ -125,13 +103,8 @@ func (app *Adapter) StructToContent(str Content) (executions.Content, error) {
 		builder.WithExecute(execute)
 	}
 
-	if str.Head != nil {
-		head, err := app.headAdapter.StructToHead(*str.Head)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithHead(head)
+	if str.Head != "" {
+		builder.WithHead(str.Head)
 	}
 
 	if str.Init != nil {
@@ -163,13 +136,11 @@ func (app *Adapter) StructToContent(str Content) (executions.Content, error) {
 func (app *Adapter) ContentToStruct(ins executions.Content) Content {
 	out := Content{}
 	if ins.IsAmount() {
-		amount := app.amountAdapter.AmountToStruct(ins.Amount())
-		out.Amount = &amount
+		out.Amount = ins.Amount()
 	}
 
 	if ins.IsBegin() {
-		begin := app.beginAdapter.BeginToStruct(ins.Begin())
-		out.Begin = &begin
+		out.Begin = ins.Begin()
 	}
 
 	if ins.IsExecute() {
@@ -178,8 +149,7 @@ func (app *Adapter) ContentToStruct(ins executions.Content) Content {
 	}
 
 	if ins.IsHead() {
-		head := app.headAdapter.HeadToStruct(ins.Head())
-		out.Head = &head
+		out.Head = ins.Head()
 	}
 
 	if ins.IsInit() {

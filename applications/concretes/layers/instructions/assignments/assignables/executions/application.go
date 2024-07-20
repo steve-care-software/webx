@@ -1,10 +1,7 @@
 package executions
 
 import (
-	"github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/executions/amounts"
-	"github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/executions/begins"
 	"github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/executions/executes"
-	"github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/executions/heads"
 	"github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/executions/inits"
 	"github.com/steve-care-software/datastencil/applications/concretes/layers/instructions/assignments/assignables/executions/retrieves"
 	instruction_execution "github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions"
@@ -13,10 +10,7 @@ import (
 )
 
 type application struct {
-	execAmountApp      amounts.Application
-	execBeginApp       begins.Application
 	execExecuteApp     executes.Application
-	execHeadApp        heads.Application
 	execInitApp        inits.Application
 	execRetrieveApp    retrieves.Application
 	assignableBuilder  stacks.AssignableBuilder
@@ -24,20 +18,14 @@ type application struct {
 }
 
 func createApplication(
-	execAmountApp amounts.Application,
-	execBeginApp begins.Application,
 	execExecuteApp executes.Application,
-	execHeadApp heads.Application,
 	execInitApp inits.Application,
 	execRetrieveApp retrieves.Application,
 	assignableBuilder stacks.AssignableBuilder,
 	assignablesBuilder stacks.AssignablesBuilder,
 ) Application {
 	out := application{
-		execAmountApp:      execAmountApp,
-		execBeginApp:       execBeginApp,
 		execExecuteApp:     execExecuteApp,
-		execHeadApp:        execHeadApp,
 		execInitApp:        execInitApp,
 		execRetrieveApp:    execRetrieveApp,
 		assignableBuilder:  assignableBuilder,
@@ -63,8 +51,37 @@ func (app *application) Execute(frame stacks.Frame, assignable instruction_execu
 	}
 
 	if content.IsBegin() {
-		begin := content.Begin()
-		return app.execBeginApp.Execute(frame, retExecutable, begin)
+		pathVar := content.Begin()
+		retPath, err := frame.FetchList(pathVar)
+		if err != nil {
+			code := failures.CouldNotFetchListFromFrame
+			return nil, &code, err
+		}
+
+		path := []string{}
+		pathDirList := retPath.List()
+		for _, oneDir := range pathDirList {
+			if !oneDir.IsString() {
+				code := failures.CouldNotFetchStringFromList
+				return nil, &code, err
+			}
+
+			pStr := oneDir.String()
+			path = append(path, *pStr)
+		}
+
+		pContext, err := retExecutable.Begin(path)
+		if err != nil {
+			code := failures.CouldNotExecuteBeginFromExecutable
+			return nil, &code, err
+		}
+
+		ins, err := app.assignableBuilder.Create().WithUnsignedInt(*pContext).Now()
+		if err != nil {
+			return nil, nil, err
+		}
+
+		return ins, nil, nil
 	}
 
 	if content.IsExecute() {
@@ -79,12 +96,46 @@ func (app *application) Execute(frame stacks.Frame, assignable instruction_execu
 
 	if content.IsAmount() {
 		amount := content.Amount()
-		return app.execAmountApp.Execute(frame, retExecutable, amount)
+		pContext, err := frame.FetchUnsignedInt(amount)
+		if err != nil {
+			code := failures.CouldNotFetchUnsignedIntegerFromFrame
+			return nil, &code, err
+		}
+
+		pAmount, err := retExecutable.Amount(*pContext)
+		if err != nil {
+			code := failures.CouldNotExecuteAmountFromExecutable
+			return nil, &code, err
+		}
+
+		ins, err := app.assignableBuilder.Create().WithUnsignedInt(*pAmount).Now()
+		if err != nil {
+			return nil, nil, err
+		}
+
+		return ins, nil, nil
 	}
 
 	if content.IsHead() {
-		head := content.Head()
-		return app.execHeadApp.Execute(frame, retExecutable, head)
+		amount := content.Head()
+		pContext, err := frame.FetchUnsignedInt(amount)
+		if err != nil {
+			code := failures.CouldNotFetchUnsignedIntegerFromFrame
+			return nil, &code, err
+		}
+
+		pAmount, err := retExecutable.Amount(*pContext)
+		if err != nil {
+			code := failures.CouldNotExecuteHeadFromExecutable
+			return nil, &code, err
+		}
+
+		ins, err := app.assignableBuilder.Create().WithUnsignedInt(*pAmount).Now()
+		if err != nil {
+			return nil, nil, err
+		}
+
+		return ins, nil, nil
 	}
 
 	retPathList, err := retExecutable.List()

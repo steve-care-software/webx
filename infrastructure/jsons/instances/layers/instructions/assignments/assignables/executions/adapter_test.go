@@ -5,11 +5,8 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/amounts"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/begins"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/executes"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/executes/inputs"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/heads"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/inits"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/retrieves"
 )
@@ -70,9 +67,7 @@ func TestAdapter_withBegins_Success(t *testing.T) {
 	adapter := NewAdapter()
 	ins := executions.NewExecutionForTests(
 		"myExecutable",
-		executions.NewContentWithBeginForTests(
-			begins.NewBeginForTests("myPath", "myContext"),
-		),
+		executions.NewContentWithBeginForTests("myContext"),
 	)
 
 	retBytes, err := adapter.ToBytes(ins)
@@ -155,9 +150,7 @@ func TestAdapter_withAmount_Success(t *testing.T) {
 	adapter := NewAdapter()
 	ins := executions.NewExecutionForTests(
 		"myExecutable",
-		executions.NewContentWithAmountForTests(
-			amounts.NewAmountForTests("myContext", "myReturn"),
-		),
+		executions.NewContentWithAmountForTests("myContext"),
 	)
 
 	retBytes, err := adapter.ToBytes(ins)
@@ -182,9 +175,7 @@ func TestAdapter_withHead_Success(t *testing.T) {
 	adapter := NewAdapter()
 	ins := executions.NewExecutionForTests(
 		"myExecutable",
-		executions.NewContentWithHeadForTests(
-			heads.NewHeadForTests("myContext", "myReturn"),
-		),
+		executions.NewContentWithHeadForTests("myContext"),
 	)
 
 	retBytes, err := adapter.ToBytes(ins)

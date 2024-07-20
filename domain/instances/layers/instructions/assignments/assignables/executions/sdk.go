@@ -1,10 +1,7 @@
 package executions
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/amounts"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/begins"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/executes"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/heads"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/inits"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/retrieves"
 	"github.com/steve-care-software/historydb/domain/hash"
@@ -51,11 +48,11 @@ type Execution interface {
 type ContentBuilder interface {
 	Create() ContentBuilder
 	WithInit(init inits.Init) ContentBuilder
-	WithBegin(begin begins.Begin) ContentBuilder
+	WithBegin(begin string) ContentBuilder
 	WithExecute(execute executes.Execute) ContentBuilder
 	WithRetrieve(retrieve retrieves.Retrieve) ContentBuilder
-	WithAmount(amount amounts.Amount) ContentBuilder
-	WithHead(head heads.Head) ContentBuilder
+	WithAmount(amount string) ContentBuilder
+	WithHead(head string) ContentBuilder
 	IsList() ContentBuilder
 	Now() (Content, error)
 }
@@ -67,13 +64,13 @@ type Content interface {
 	IsInit() bool
 	Init() inits.Init
 	IsBegin() bool
-	Begin() begins.Begin
+	Begin() string
 	IsExecute() bool
 	Execute() executes.Execute
 	IsRetrieve() bool
 	Retrieve() retrieves.Retrieve
 	IsAmount() bool
-	Amount() amounts.Amount
+	Amount() string
 	IsHead() bool
-	Head() heads.Head
+	Head() string
 }

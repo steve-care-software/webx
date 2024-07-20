@@ -12,7 +12,6 @@ import (
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/cryptography/encrypts"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executables"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/heads"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/lists"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/lists/fetches"
 )
@@ -162,9 +161,7 @@ func TestAdapter_withExecution_Success(t *testing.T) {
 	ins := assignables.NewAssignableWithExecutionForTests(
 		executions.NewExecutionForTests(
 			"myExecutable",
-			executions.NewContentWithHeadForTests(
-				heads.NewHeadForTests("myContext", "myReturn"),
-			),
+			executions.NewContentWithHeadForTests("myContext"),
 		),
 	)
 

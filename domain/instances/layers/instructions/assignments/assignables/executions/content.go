@@ -1,10 +1,7 @@
 package executions
 
 import (
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/amounts"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/begins"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/executes"
-	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/heads"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/inits"
 	"github.com/steve-care-software/datastencil/domain/instances/layers/instructions/assignments/assignables/executions/retrieves"
 	"github.com/steve-care-software/historydb/domain/hash"
@@ -14,70 +11,70 @@ type content struct {
 	hash     hash.Hash
 	isList   bool
 	init     inits.Init
-	begin    begins.Begin
+	begin    string
 	execute  executes.Execute
 	retrieve retrieves.Retrieve
-	amount   amounts.Amount
-	head     heads.Head
+	amount   string
+	head     string
 }
 
 func createContentWithList(
 	hash hash.Hash,
 ) Content {
-	return createContentInternally(hash, true, nil, nil, nil, nil, nil, nil)
+	return createContentInternally(hash, true, nil, "", nil, nil, "", "")
 }
 
 func createContentWithInit(
 	hash hash.Hash,
 	init inits.Init,
 ) Content {
-	return createContentInternally(hash, false, init, nil, nil, nil, nil, nil)
+	return createContentInternally(hash, false, init, "", nil, nil, "", "")
 }
 
 func createContentWithBegin(
 	hash hash.Hash,
-	begin begins.Begin,
+	begin string,
 ) Content {
-	return createContentInternally(hash, false, nil, begin, nil, nil, nil, nil)
+	return createContentInternally(hash, false, nil, begin, nil, nil, "", "")
 }
 
 func createContentWithExecute(
 	hash hash.Hash,
 	execute executes.Execute,
 ) Content {
-	return createContentInternally(hash, false, nil, nil, execute, nil, nil, nil)
+	return createContentInternally(hash, false, nil, "", execute, nil, "", "")
 }
 
 func createContentWithRetrieve(
 	hash hash.Hash,
 	retrieve retrieves.Retrieve,
 ) Content {
-	return createContentInternally(hash, false, nil, nil, nil, retrieve, nil, nil)
+	return createContentInternally(hash, false, nil, "", nil, retrieve, "", "")
 }
 
 func createContentWithAmount(
 	hash hash.Hash,
-	amount amounts.Amount,
+	amount string,
 ) Content {
-	return createContentInternally(hash, false, nil, nil, nil, nil, amount, nil)
+	return createContentInternally(hash, false, nil, "", nil, nil, amount, "")
 }
 
 func createContentWithHead(
 	hash hash.Hash,
-	head heads.Head,
+	head string,
 ) Content {
-	return createContentInternally(hash, false, nil, nil, nil, nil, nil, head)
+	return createContentInternally(hash, false, nil, "", nil, nil, "", head)
 }
 
 func createContentInternally(
 	hash hash.Hash,
 	isList bool,
 	init inits.Init,
-	begin begins.Begin,
+	begin string,
 	execute executes.Execute,
 	retrieve retrieves.Retrieve,
-	amount amounts.Amount,
-	head heads.Head,
+	amount string,
+	head string,
 ) Content {
 	out := content{
 		hash:     hash,
@@ -115,11 +112,11 @@ func (obj *content) Init() inits.Init {
 
 // IsBegin returns true if there is a begin, false otherwise
 func (obj *content) IsBegin() bool {
-	return obj.begin != nil
+	return obj.begin != ""
 }
 
 // Begin returns the begin, if any
-func (obj *content) Begin() begins.Begin {
+func (obj *content) Begin() string {
 	return obj.begin
 }
 
@@ -145,20 +142,20 @@ func (obj *content) Retrieve() retrieves.Retrieve {
 
 // IsAmount returns true if there is an amount, false otherwise
 func (obj *content) IsAmount() bool {
-	return obj.amount != nil
+	return obj.amount != ""
 }
 
 // Amount returns the amount, if any
-func (obj *content) Amount() amounts.Amount {
+func (obj *content) Amount() string {
 	return obj.amount
 }
 
 // IsHead returns true if there is an head, false otherwise
 func (obj *content) IsHead() bool {
-	return obj.head != nil
+	return obj.head != ""
 }
 
 // Head returns the head, if any
-func (obj *content) Head() heads.Head {
+func (obj *content) Head() string {
 	return obj.head
 }
