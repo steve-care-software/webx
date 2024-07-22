@@ -26,5 +26,4 @@ invalid
 #### Output
 ```
 Error code: 1
-Error message: The first index of the provided data does not contain a number
 ```

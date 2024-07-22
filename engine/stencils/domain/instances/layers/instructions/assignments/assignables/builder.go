@@ -22,6 +22,7 @@ type builder struct {
 	execution   executions.Execution
 	list        lists.List
 	executable  executables.Executable
+	variable    string
 }
 
 func createBuilder(
@@ -36,6 +37,7 @@ func createBuilder(
 		execution:   nil,
 		list:        nil,
 		executable:  nil,
+		variable:    "",
 	}
 
 	return &out
@@ -90,6 +92,12 @@ func (app *builder) WithExecutable(executable executables.Executable) Builder {
 	return app
 }
 
+// WithVariable adds a variable to the builder
+func (app *builder) WithVariable(variable string) Builder {
+	app.variable = variable
+	return app
+}
+
 // Now builds a new Assignable instance
 func (app *builder) Now() (Assignable, error) {
 	data := [][]byte{}
@@ -128,6 +136,11 @@ func (app *builder) Now() (Assignable, error) {
 		data = append(data, app.executable.Hash().Bytes())
 	}
 
+	if app.variable != "" {
+		data = append(data, []byte("variable"))
+		data = append(data, []byte(app.variable))
+	}
+
 	if len(data) != 2 {
 		return nil, errors.New("the Assignable is invalid")
 	}
@@ -159,6 +172,10 @@ func (app *builder) Now() (Assignable, error) {
 
 	if app.executable != nil {
 		return createAssignableWithExecutable(*pHash, app.executable), nil
+	}
+
+	if app.variable != "" {
+		return createAssignableWithVariable(*pHash, app.variable), nil
 	}
 
 	return createAssignableWithCompiler(*pHash, app.compiler), nil

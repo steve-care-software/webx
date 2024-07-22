@@ -79,3 +79,13 @@ func NewAssignableWithExecutableForTests(executable executables.Executable) Assi
 
 	return ins
 }
+
+// NewAssignableWithVariableForTests creates a new assignable with variable for tests
+func NewAssignableWithVariableForTests(variable string) Assignable {
+	ins, err := NewBuilder().Create().WithVariable(variable).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}

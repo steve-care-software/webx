@@ -35,6 +35,7 @@ type Builder interface {
 	WithExecution(execution executions.Execution) Builder
 	WithList(list lists.List) Builder
 	WithExecutable(executable executables.Executable) Builder
+	WithVariable(variable string) Builder
 	Now() (Assignable, error)
 }
 
@@ -55,4 +56,6 @@ type Assignable interface {
 	List() lists.List
 	IsExecutable() bool
 	Executable() executables.Executable
+	IsVariable() bool
+	Variable() string
 }

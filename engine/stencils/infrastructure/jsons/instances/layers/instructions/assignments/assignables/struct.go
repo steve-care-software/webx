@@ -19,4 +19,5 @@ type Assignable struct {
 	List         *json_lists.List                `json:"list"`
 	Execution    *json_executions.Execution      `json:"execution"`
 	Executable   *json_executables.Executable    `json:"executable"`
+	Variable     string                          `json:"variable"`
 }

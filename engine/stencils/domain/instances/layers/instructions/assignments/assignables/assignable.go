@@ -20,55 +20,63 @@ type assignable struct {
 	execution  executions.Execution
 	list       lists.List
 	executable executables.Executable
+	variable   string
 }
 
 func createAssignableWithBytes(
 	hash hash.Hash,
 	bytes bytes.Bytes,
 ) Assignable {
-	return createAssignableInternally(hash, bytes, nil, nil, nil, nil, nil, nil)
+	return createAssignableInternally(hash, bytes, nil, nil, nil, nil, nil, nil, "")
 }
 
 func createAssignableWithConstant(
 	hash hash.Hash,
 	constant constants.Constant,
 ) Assignable {
-	return createAssignableInternally(hash, nil, constant, nil, nil, nil, nil, nil)
+	return createAssignableInternally(hash, nil, constant, nil, nil, nil, nil, nil, "")
 }
 
 func createAssignableWithCryptography(
 	hash hash.Hash,
 	crypto cryptography.Cryptography,
 ) Assignable {
-	return createAssignableInternally(hash, nil, nil, crypto, nil, nil, nil, nil)
+	return createAssignableInternally(hash, nil, nil, crypto, nil, nil, nil, nil, "")
 }
 
 func createAssignableWithCompiler(
 	hash hash.Hash,
 	compiler compilers.Compiler,
 ) Assignable {
-	return createAssignableInternally(hash, nil, nil, nil, compiler, nil, nil, nil)
+	return createAssignableInternally(hash, nil, nil, nil, compiler, nil, nil, nil, "")
 }
 
 func createAssignableWithExecution(
 	hash hash.Hash,
 	eecution executions.Execution,
 ) Assignable {
-	return createAssignableInternally(hash, nil, nil, nil, nil, eecution, nil, nil)
+	return createAssignableInternally(hash, nil, nil, nil, nil, eecution, nil, nil, "")
 }
 
 func createAssignableWithList(
 	hash hash.Hash,
 	list lists.List,
 ) Assignable {
-	return createAssignableInternally(hash, nil, nil, nil, nil, nil, list, nil)
+	return createAssignableInternally(hash, nil, nil, nil, nil, nil, list, nil, "")
 }
 
 func createAssignableWithExecutable(
 	hash hash.Hash,
 	executable executables.Executable,
 ) Assignable {
-	return createAssignableInternally(hash, nil, nil, nil, nil, nil, nil, executable)
+	return createAssignableInternally(hash, nil, nil, nil, nil, nil, nil, executable, "")
+}
+
+func createAssignableWithVariable(
+	hash hash.Hash,
+	variable string,
+) Assignable {
+	return createAssignableInternally(hash, nil, nil, nil, nil, nil, nil, nil, variable)
 }
 
 func createAssignableInternally(
@@ -80,6 +88,7 @@ func createAssignableInternally(
 	execution executions.Execution,
 	list lists.List,
 	executable executables.Executable,
+	variable string,
 ) Assignable {
 	out := assignable{
 		hash:       hash,
@@ -90,6 +99,7 @@ func createAssignableInternally(
 		execution:  execution,
 		list:       list,
 		executable: executable,
+		variable:   variable,
 	}
 
 	return &out
@@ -168,4 +178,14 @@ func (obj *assignable) IsExecutable() bool {
 // Executable returns the executable, if any
 func (obj *assignable) Executable() executables.Executable {
 	return obj.executable
+}
+
+// IsVariable returns true if there is a variable, false otherwise
+func (obj *assignable) IsVariable() bool {
+	return obj.variable != ""
+}
+
+// Variable returns the variable, if any
+func (obj *assignable) Variable() string {
+	return obj.variable
 }

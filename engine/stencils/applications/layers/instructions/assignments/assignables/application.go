@@ -10,6 +10,7 @@ import (
 	"github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/lists"
 	"github.com/steve-care-software/webx/engine/stencils/domain/instances/layers/instructions/assignments/assignables"
 	"github.com/steve-care-software/webx/engine/stencils/domain/stacks"
+	"github.com/steve-care-software/webx/engine/stencils/domain/stacks/failures"
 )
 
 type application struct {
@@ -72,7 +73,19 @@ func (app *application) Execute(frame stacks.Frame, assignable assignables.Assig
 	}
 
 	if assignable.IsExecutable() {
+		executable := assignable.Executable()
+		return app.execExcutableApp.Execute(frame, executable)
+	}
 
+	if assignable.IsVariable() {
+		variable := assignable.Variable()
+		assignable, err := frame.Fetch(variable)
+		if err != nil {
+			code := failures.CouldNotFetchFromFrame
+			return nil, &code, err
+		}
+
+		return assignable, nil, nil
 	}
 
 	compiler := assignable.Compiler()

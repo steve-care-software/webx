@@ -136,6 +136,11 @@ func (app *Adapter) AssignableToStruct(ins assignables.Assignable) (*Assignable,
 		out.Executable = &executable
 	}
 
+	if ins.IsVariable() {
+		variable := ins.Variable()
+		out.Variable = variable
+	}
+
 	return &out, nil
 }
 
@@ -203,6 +208,10 @@ func (app *Adapter) StructToAssignable(str Assignable) (assignables.Assignable, 
 		}
 
 		builder.WithExecutable(ins)
+	}
+
+	if str.Variable != "" {
+		builder.WithVariable(str.Variable)
 	}
 
 	return builder.Now()
