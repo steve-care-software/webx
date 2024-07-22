@@ -1,0 +1,20 @@
+package contexts
+
+import (
+	"github.com/steve-care-software/webx/engine/states/domain/hash"
+)
+
+// NewContextForTests creates a new context for tests
+func NewContextForTests(identifier uint, head hash.Hash, executions []hash.Hash) Context {
+	ins, err := NewBuilder().Create().
+		WithIdentifier(identifier).
+		WithHead(head).
+		WithExecutions(executions).
+		Now()
+
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}

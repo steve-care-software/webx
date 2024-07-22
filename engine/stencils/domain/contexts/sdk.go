@@ -12,6 +12,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents a context adapter
+type Adapter interface {
+	ToBytes(ins Context) ([]byte, error)
+	ToInstance(bytes []byte) (Context, error)
+}
+
 // Builder represents a context builder
 type Builder interface {
 	Create() Builder
