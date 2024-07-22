@@ -36,6 +36,7 @@ type Layer interface {
 	Hash() hash.Hash
 	Instructions() instructions.Instructions
 	Output() outputs.Output
+	HasInput() bool
 	Input() string
 	HasReferences() bool
 	References() references.References

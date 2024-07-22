@@ -117,6 +117,10 @@ func (app *Adapter) StructToConstants(list []Constant) (constants.Constants, err
 // ConstantToStruct converts a constant to struct
 func (app *Adapter) ConstantToStruct(ins constants.Constant) (*Constant, error) {
 	out := Constant{}
+	if ins.IsBytes() {
+		out.Bytes = ins.Bytes()
+	}
+
 	if ins.IsBool() {
 		out.Boolean = ins.Bool()
 	}
@@ -152,6 +156,10 @@ func (app *Adapter) ConstantToStruct(ins constants.Constant) (*Constant, error) 
 // StructToConstant converts a struct to constant
 func (app *Adapter) StructToConstant(str Constant) (constants.Constant, error) {
 	builder := app.constantBuilder.Create()
+	if str.Bytes != nil && len(str.Bytes) > 0 {
+		builder.WithBytes(str.Bytes)
+	}
+
 	if str.Boolean != nil {
 		builder.WithBool(*str.Boolean)
 	}

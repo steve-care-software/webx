@@ -25,6 +25,11 @@ func createApplication(
 // Execute executes the application
 func (app *application) Execute(assignable constants.Constant) (stacks.Assignable, *uint, error) {
 	builder := app.assignableBuilder.Create()
+	if assignable.IsBytes() {
+		bytes := assignable.Bytes()
+		builder.WithBytes(bytes)
+	}
+
 	if assignable.IsBool() {
 		pBool := assignable.Bool()
 		builder.WithBool(*pBool)

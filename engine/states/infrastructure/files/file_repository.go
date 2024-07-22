@@ -3,7 +3,6 @@ package files
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/steve-care-software/webx/engine/states/domain/files"
@@ -41,5 +40,5 @@ func (app *fileRepository) Retrieve(path []string) ([]byte, error) {
 		return nil, errors.New(str)
 	}
 
-	return ioutil.ReadFile(filePath)
+	return os.ReadFile(filePath)
 }

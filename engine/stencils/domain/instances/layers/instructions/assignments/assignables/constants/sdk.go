@@ -44,6 +44,7 @@ type Constants interface {
 // ConstantBuilder represents a constant builder
 type ConstantBuilder interface {
 	Create() ConstantBuilder
+	WithBytes(bytes []byte) ConstantBuilder
 	WithBool(boolValue bool) ConstantBuilder
 	WithString(strValue string) ConstantBuilder
 	WithInt(intValue int) ConstantBuilder
@@ -56,6 +57,8 @@ type ConstantBuilder interface {
 // Constant represents a constant assignable
 type Constant interface {
 	Hash() hash.Hash
+	IsBytes() bool
+	Bytes() []byte
 	IsBool() bool
 	Bool() *bool
 	IsString() bool

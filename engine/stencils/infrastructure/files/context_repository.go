@@ -10,17 +10,20 @@ import (
 type contextRepository struct {
 	adapter     contexts.Adapter
 	hashAdapter hash.Adapter
+	basePath    []string
 	endPath     []string
 }
 
 func createContextRepository(
 	adapter contexts.Adapter,
 	hashAdapter hash.Adapter,
+	basePath []string,
 	endPath []string,
 ) contexts.Repository {
 	out := contextRepository{
 		adapter:     adapter,
 		hashAdapter: hashAdapter,
+		basePath:    basePath,
 		endPath:     endPath,
 	}
 
@@ -29,7 +32,7 @@ func createContextRepository(
 
 // Retrieve retrieves a context
 func (app *contextRepository) Retrieve(dbPath []string) (contexts.Context, error) {
-	filePath, err := prepareFilePath(app.hashAdapter, dbPath, app.endPath)
+	filePath, err := prepareFilePath(app.hashAdapter, dbPath, app.basePath, app.endPath)
 	if err != nil {
 		return nil, err
 	}

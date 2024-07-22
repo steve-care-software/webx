@@ -19,8 +19,41 @@ func TestLayer_Success(t *testing.T) {
 		kinds.NewKindWithContinueForTests(),
 	)
 
-	input := "myInput"
 	layer := NewLayerForTests(
+		instructions,
+		output,
+	)
+
+	retInstructions := layer.Instructions()
+	if !reflect.DeepEqual(instructions, retInstructions) {
+		t.Errorf("the returned instructions is invalid")
+		return
+	}
+
+	retOutput := layer.Output()
+	if !reflect.DeepEqual(output, retOutput) {
+		t.Errorf("the returned output is invalid")
+		return
+	}
+
+	if layer.HasInput() {
+		t.Errorf("the layer was expected to NOT contain an input")
+		return
+	}
+}
+
+func TestLayer_withInput_Success(t *testing.T) {
+	instructions := instructions.NewInstructionsForTests([]instructions.Instruction{
+		instructions.NewInstructionWithStopForTests(),
+	})
+
+	output := outputs.NewOutputForTests(
+		"myVariable",
+		kinds.NewKindWithContinueForTests(),
+	)
+
+	input := "myInput"
+	layer := NewLayerWithInputForTests(
 		instructions,
 		output,
 		input,
@@ -66,22 +99,6 @@ func TestLayer_withoutOutput_returnsError(t *testing.T) {
 
 	input := "myInput"
 	_, err := NewBuilder().Create().WithInstructions(instructions).WithInput(input).Now()
-	if err == nil {
-		t.Errorf("the error was expected to be valid, nil returned")
-		return
-	}
-}
-
-func TestLayer_withoutInput_returnsError(t *testing.T) {
-	instructions := instructions.NewInstructionsForTests([]instructions.Instruction{
-		instructions.NewInstructionWithStopForTests(),
-	})
-
-	output := outputs.NewOutputForTests(
-		"myVariable",
-		kinds.NewKindWithContinueForTests(),
-	)
-	_, err := NewBuilder().Create().WithInstructions(instructions).WithOutput(output).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

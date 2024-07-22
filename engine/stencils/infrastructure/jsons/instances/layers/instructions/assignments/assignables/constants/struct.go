@@ -2,6 +2,7 @@ package constants
 
 // Constant represents a constant
 type Constant struct {
+	Bytes   []byte     `json:"bytes"`
 	Boolean *bool      `json:"bool"`
 	String  *string    `json:"string"`
 	Int     *int       `json:"int"`

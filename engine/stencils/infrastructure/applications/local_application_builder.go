@@ -191,11 +191,13 @@ func (app *localApplicationBuilder) Now() (applications.Application, error) {
 
 	contextRepository := infrastructure_files.NewContextRepository(
 		contextAdapter,
+		app.basePath,
 		app.contextEndPath,
 	)
 
 	contextService := infrastructure_files.NewContextService(
 		contextAdapter,
+		app.basePath,
 		app.contextEndPath,
 	)
 

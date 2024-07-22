@@ -227,7 +227,12 @@ func (app *application) frame(
 	currentFrame stacks.Frame,
 	newAssignment stacks.Assignment,
 ) (stacks.Frame, error) {
-	assignmentsList := append(currentFrame.Assignments().List(), newAssignment)
+	assignmentsList := []stacks.Assignment{}
+	if currentFrame.HasAssignments() {
+		assignmentsList = currentFrame.Assignments().List()
+	}
+
+	assignmentsList = append(assignmentsList, newAssignment)
 	assignments, err := app.assignmentsBuilder.Create().
 		WithList(assignmentsList).
 		Now()

@@ -7,21 +7,38 @@ import (
 type context struct {
 	hash       hash.Hash
 	identifier uint
-	head       hash.Hash
 	executions []hash.Hash
+	head       hash.Hash
 }
 
 func createContext(
 	hash hash.Hash,
 	identifier uint,
-	head hash.Hash,
 	executions []hash.Hash,
+) Context {
+	return createContextInternally(hash, identifier, executions, nil)
+}
+
+func createContextWithHead(
+	hash hash.Hash,
+	identifier uint,
+	executions []hash.Hash,
+	head hash.Hash,
+) Context {
+	return createContextInternally(hash, identifier, executions, head)
+}
+
+func createContextInternally(
+	hash hash.Hash,
+	identifier uint,
+	executions []hash.Hash,
+	head hash.Hash,
 ) Context {
 	out := context{
 		hash:       hash,
 		identifier: identifier,
-		head:       head,
 		executions: executions,
+		head:       head,
 	}
 
 	return &out
@@ -37,12 +54,17 @@ func (obj *context) Identifier() uint {
 	return obj.identifier
 }
 
-// Head returns the head
-func (obj *context) Head() hash.Hash {
-	return obj.head
-}
-
 // Executions returns the executions
 func (obj *context) Executions() []hash.Hash {
 	return obj.executions
+}
+
+// HasHead returns true if there is a head, false otherwise
+func (obj *context) HasHead() bool {
+	return obj.head != nil
+}
+
+// Head returns the head
+func (obj *context) Head() hash.Hash {
+	return obj.head
 }

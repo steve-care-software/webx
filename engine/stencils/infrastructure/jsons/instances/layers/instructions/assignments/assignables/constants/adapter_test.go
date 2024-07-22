@@ -32,6 +32,28 @@ func TestAdapter_Success(t *testing.T) {
 	}
 }
 
+func TestAdapter_withBytes_Success(t *testing.T) {
+	ins := constants.NewConstantWithBytesForTests([]byte("this is some bytes"))
+
+	adapter := NewAdapter()
+	retBytes, err := adapter.InstanceToBytes(ins)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	retIns, err := adapter.BytesToInstance(retBytes)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(ins.Hash().Bytes(), retIns.Hash().Bytes()) {
+		t.Errorf("the returned instance is invalid")
+		return
+	}
+}
+
 func TestAdapter_withBool_Success(t *testing.T) {
 	ins := constants.NewConstantWithBoolForTests(true)
 

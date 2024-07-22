@@ -19,9 +19,9 @@ import (
 
 func TestExecution_Success(t *testing.T) {
 	dbPath := []string{"my", "db", "path"}
-	first := executions.NewExecutionForTests(
+	first := executions.NewExecutionWithInputForTests(
 		[]byte("myInput"),
-		layers.NewLayerForTests(
+		layers.NewLayerWithInputForTests(
 			instructions.NewInstructionsForTests([]instructions.Instruction{
 				instructions.NewInstructionWithAssignmentForTests(
 					assignments.NewAssignmentForTests(

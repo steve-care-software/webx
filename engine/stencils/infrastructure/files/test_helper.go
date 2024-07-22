@@ -8,12 +8,13 @@ import (
 	"github.com/steve-care-software/webx/engine/states/domain/hash"
 )
 
-func prepareFilePath(hashAdapter hash.Adapter, dbPath []string, endPath []string) (string, error) {
+func prepareFilePath(hashAdapter hash.Adapter, dbPath []string, basePath []string, endPath []string) (string, error) {
 	if len(dbPath) <= 0 {
 		return "", errors.New("the database path is invalid")
 	}
 
 	path := []string{}
+	path = append(path, basePath...)
 	path = append(path, dbPath[0:len(dbPath)-1]...)
 	path = append(path, endPath...)
 

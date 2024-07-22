@@ -19,6 +19,35 @@ func createLayer(
 	hash hash.Hash,
 	instructions instructions.Instructions,
 	output outputs.Output,
+) Layer {
+	return createLayerInternally(
+		hash,
+		instructions,
+		output,
+		"",
+		nil,
+	)
+}
+
+func createLayerWithReferences(
+	hash hash.Hash,
+	instructions instructions.Instructions,
+	output outputs.Output,
+	references references.References,
+) Layer {
+	return createLayerInternally(
+		hash,
+		instructions,
+		output,
+		"",
+		references,
+	)
+}
+
+func createLayerWithInput(
+	hash hash.Hash,
+	instructions instructions.Instructions,
+	output outputs.Output,
 	input string,
 ) Layer {
 	return createLayerInternally(
@@ -30,12 +59,12 @@ func createLayer(
 	)
 }
 
-func createLayerWithReferences(
+func createLayerWithReferencesAndInput(
 	hash hash.Hash,
 	instructions instructions.Instructions,
 	output outputs.Output,
-	input string,
 	references references.References,
+	input string,
 ) Layer {
 	return createLayerInternally(
 		hash,
@@ -77,6 +106,11 @@ func (obj *layer) Instructions() instructions.Instructions {
 // Output returns the output
 func (obj *layer) Output() outputs.Output {
 	return obj.output
+}
+
+// HasInput returns true if there is an input, false otherwise
+func (obj *layer) HasInput() bool {
+	return obj.input != ""
 }
 
 // Input returns the input

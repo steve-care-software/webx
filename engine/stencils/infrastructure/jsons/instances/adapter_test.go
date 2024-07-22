@@ -209,7 +209,7 @@ func TestAdapter_Success(t *testing.T) {
 				[]string{"this", "is", "a", "path"},
 			),
 		}).(instances.Instance),
-		"layers": layers.NewLayerWithReferencesForTests(
+		"layers": layers.NewLayerWithReferencesAndInputForTests(
 			instructions.NewInstructionsForTests([]instructions.Instruction{
 				instructions.NewInstructionWithAssignmentForTests(
 					assignments.NewAssignmentForTests(
@@ -265,9 +265,9 @@ func TestAdapter_Success(t *testing.T) {
 				kinds.NewKindWithPromptForTests(),
 			),
 		),
-		"executions{single}": executions.NewExecutionForTests(
+		"executions{single}": executions.NewExecutionWithInputForTests(
 			[]byte("myInput"),
-			layers.NewLayerWithReferencesForTests(
+			layers.NewLayerWithReferencesAndInputForTests(
 				instructions.NewInstructionsForTests([]instructions.Instruction{
 					instructions.NewInstructionWithAssignmentForTests(
 						assignments.NewAssignmentForTests(
@@ -304,9 +304,46 @@ func TestAdapter_Success(t *testing.T) {
 			),
 		),
 		"executions{list}": executions.NewExecutionsForTests([]executions.Execution{
-			executions.NewExecutionForTests(
+			executions.NewExecutionWithInputForTests(
 				[]byte("myInput"),
-				layers.NewLayerWithReferencesForTests(
+				layers.NewLayerWithReferencesAndInputForTests(
+					instructions.NewInstructionsForTests([]instructions.Instruction{
+						instructions.NewInstructionWithAssignmentForTests(
+							assignments.NewAssignmentForTests(
+								"anotherName",
+								assignables.NewAssignableWithBytesForTests(
+									bytes_domain.NewBytesWithHashBytesForTests(
+										"anotherInput",
+									),
+								),
+							),
+						),
+						instructions.NewInstructionWithRaiseErrorForTests(22),
+						instructions.NewInstructionWithStopForTests(),
+					}),
+					outputs.NewOutputForTests(
+						"myVariable",
+						kinds.NewKindWithContinueForTests(),
+					),
+					"myInput",
+					references.NewReferencesForTests([]references.Reference{
+						references.NewReferenceForTests(
+							"myVariable",
+							[]string{"this", "is", "a", "path"},
+						),
+					}),
+				),
+				results.NewResultWithSuccessForTests(
+					success.NewSuccessForTests(
+						success_output.NewOutputForTests(
+							[]byte("this is an input"),
+						),
+						kinds.NewKindWithPromptForTests(),
+					),
+				),
+			),
+			executions.NewExecutionForTests(
+				layers.NewLayerWithReferencesAndInputForTests(
 					instructions.NewInstructionsForTests([]instructions.Instruction{
 						instructions.NewInstructionWithAssignmentForTests(
 							assignments.NewAssignmentForTests(

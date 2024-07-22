@@ -10,6 +10,16 @@ func NewConstantsForTests(list []Constant) Constants {
 	return ins
 }
 
+// NewConstantWithBytesForTests creates a new constant with bytes for tests
+func NewConstantWithBytesForTests(value []byte) Constant {
+	ins, err := NewConstantBuilder().Create().WithBytes(value).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
 // NewConstantWithBoolForTests creates a new constant with bool for tests
 func NewConstantWithBoolForTests(value bool) Constant {
 	ins, err := NewConstantBuilder().Create().WithBool(value).Now()

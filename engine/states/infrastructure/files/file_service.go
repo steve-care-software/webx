@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"io/ioutil"
 	"os"
 
 	"github.com/juju/fslock"
@@ -72,7 +71,7 @@ func (app *fileService) Unlock(path []string) error {
 // Save saves data in a file
 func (app *fileService) Save(path []string, bytes []byte) error {
 	filePath := createFilePath(app.basePath, path)
-	return ioutil.WriteFile(filePath, bytes, fs.ModePerm)
+	return os.WriteFile(filePath, bytes, fs.ModePerm)
 }
 
 // Transact transact bytes to a file

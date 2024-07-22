@@ -20,7 +20,7 @@ import (
 func TestAdapter_withExecutions_Success(t *testing.T) {
 
 	ins := executions.NewExecutionsForTests([]executions.Execution{
-		executions.NewExecutionForTests(
+		executions.NewExecutionWithInputForTests(
 			[]byte("myInput"),
 			layers.NewLayerForTests(
 				instructions.NewInstructionsForTests([]instructions.Instruction{
@@ -41,7 +41,6 @@ func TestAdapter_withExecutions_Success(t *testing.T) {
 					"myVariable",
 					kinds.NewKindWithContinueForTests(),
 				),
-				"myInput",
 			),
 			results.NewResultWithSuccessForTests(
 				success.NewSuccessForTests(
@@ -75,7 +74,7 @@ func TestAdapter_withExecutions_Success(t *testing.T) {
 }
 
 func TestAdapter_withExecution_Success(t *testing.T) {
-	ins := executions.NewExecutionForTests(
+	ins := executions.NewExecutionWithInputForTests(
 		[]byte("myInput"),
 		layers.NewLayerForTests(
 			instructions.NewInstructionsForTests([]instructions.Instruction{
@@ -96,7 +95,6 @@ func TestAdapter_withExecution_Success(t *testing.T) {
 				"myVariable",
 				kinds.NewKindWithContinueForTests(),
 			),
-			"myInput",
 		),
 		results.NewResultWithSuccessForTests(
 			success.NewSuccessForTests(

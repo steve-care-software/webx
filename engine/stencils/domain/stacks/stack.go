@@ -6,10 +6,6 @@ type stack struct {
 	head   Frame
 }
 
-func createStack() Stack {
-	return crateStackInternally(nil, nil, nil)
-}
-
 func createStackWithSingleFrame(
 	frames Frames,
 	head Frame,

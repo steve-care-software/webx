@@ -6,6 +6,7 @@ import (
 
 type constant struct {
 	hash    hash.Hash
+	bytes   []byte
 	pBool   *bool
 	pString *string
 	pInt    *int
@@ -14,50 +15,58 @@ type constant struct {
 	list    Constants
 }
 
+func createConstantWithBytes(
+	hash hash.Hash,
+	bytes []byte,
+) Constant {
+	return createConstantInternally(hash, bytes, nil, nil, nil, nil, nil, nil)
+}
+
 func createConstantWithBool(
 	hash hash.Hash,
 	pBool *bool,
 ) Constant {
-	return createConstantInternally(hash, pBool, nil, nil, nil, nil, nil)
+	return createConstantInternally(hash, nil, pBool, nil, nil, nil, nil, nil)
 }
 
 func createConstantWithString(
 	hash hash.Hash,
 	pString *string,
 ) Constant {
-	return createConstantInternally(hash, nil, pString, nil, nil, nil, nil)
+	return createConstantInternally(hash, nil, nil, pString, nil, nil, nil, nil)
 }
 
 func createConstantWithInt(
 	hash hash.Hash,
 	pInt *int,
 ) Constant {
-	return createConstantInternally(hash, nil, nil, pInt, nil, nil, nil)
+	return createConstantInternally(hash, nil, nil, nil, pInt, nil, nil, nil)
 }
 
 func createConstantWithUint(
 	hash hash.Hash,
 	pUint *uint,
 ) Constant {
-	return createConstantInternally(hash, nil, nil, nil, pUint, nil, nil)
+	return createConstantInternally(hash, nil, nil, nil, nil, pUint, nil, nil)
 }
 
 func createConstantWithFloat(
 	hash hash.Hash,
 	pFloat *float64,
 ) Constant {
-	return createConstantInternally(hash, nil, nil, nil, nil, pFloat, nil)
+	return createConstantInternally(hash, nil, nil, nil, nil, nil, pFloat, nil)
 }
 
 func createConstantWithList(
 	hash hash.Hash,
 	list Constants,
 ) Constant {
-	return createConstantInternally(hash, nil, nil, nil, nil, nil, list)
+	return createConstantInternally(hash, nil, nil, nil, nil, nil, nil, list)
 }
 
 func createConstantInternally(
 	hash hash.Hash,
+	bytes []byte,
 	pBool *bool,
 	pString *string,
 	pInt *int,
@@ -67,6 +76,7 @@ func createConstantInternally(
 ) Constant {
 	out := constant{
 		hash:    hash,
+		bytes:   bytes,
 		pBool:   pBool,
 		pString: pString,
 		pInt:    pInt,
@@ -81,6 +91,16 @@ func createConstantInternally(
 // Hash returns the hash
 func (obj *constant) Hash() hash.Hash {
 	return obj.hash
+}
+
+// IsBytes returns true if bytes, false otherwise
+func (obj *constant) IsBytes() bool {
+	return obj.bytes != nil
+}
+
+// Bytes returns the bytes, if any
+func (obj *constant) Bytes() []byte {
+	return obj.bytes
 }
 
 // IsBool returns true if bool, false otherwise

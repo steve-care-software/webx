@@ -16,7 +16,21 @@ func NewExecutionsForTests(list []Execution) Executions {
 }
 
 // NewExecutionForTests creates a new execution for tests
-func NewExecutionForTests(input []byte, source source_layers.Layer, result results.Result) Execution {
+func NewExecutionForTests(source source_layers.Layer, result results.Result) Execution {
+	ins, err := NewExecutionBuilder().Create().
+		WithSource(source).
+		WithResult(result).
+		Now()
+
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewExecutionWithInputForTests creates a new execution with input for tests
+func NewExecutionWithInputForTests(input []byte, source source_layers.Layer, result results.Result) Execution {
 	ins, err := NewExecutionBuilder().Create().
 		WithInput(input).
 		WithSource(source).

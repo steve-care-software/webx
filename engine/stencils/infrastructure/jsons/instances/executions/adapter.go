@@ -132,11 +132,16 @@ func (app *Adapter) ExecutionToStruct(ins executions.Execution) (*Execution, err
 		return nil, err
 	}
 
-	return &Execution{
-		Input:  ins.Input(),
+	out := Execution{
 		Source: *source,
 		Result: *result,
-	}, nil
+	}
+
+	if ins.HasInput() {
+		out.Input = ins.Input()
+	}
+
+	return &out, nil
 }
 
 // StructToExecution converts a struct to execution
@@ -151,9 +156,13 @@ func (app *Adapter) StructToExecution(str Execution) (executions.Execution, erro
 		return nil, err
 	}
 
-	return app.executionsBuilder.Create().
-		WithInput(str.Input).
+	builder := app.executionsBuilder.Create().
 		WithSource(source).
-		WithResult(result).
-		Now()
+		WithResult(result)
+
+	if str.Input != nil && len(str.Input) > 0 {
+		builder.WithInput(str.Input)
+	}
+
+	return builder.Now()
 }

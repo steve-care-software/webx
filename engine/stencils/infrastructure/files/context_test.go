@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/steve-care-software/webx/engine/states/domain/hash"
@@ -12,8 +13,12 @@ import (
 )
 
 func TestAdapter_withExecutions_Success(t *testing.T) {
-	dbPath := []string{
+	basePath := []string{
 		"test_files",
+	}
+
+	dbPath := []string{
+		"databases",
 		"myDbFile.data",
 	}
 
@@ -22,16 +27,10 @@ func TestAdapter_withExecutions_Success(t *testing.T) {
 	}
 
 	defer func() {
-		os.RemoveAll(dbPath[0])
+		os.RemoveAll(filepath.Join(basePath...))
 	}()
 
 	hashAdapter := hash.NewAdapter()
-	pHead, err := hashAdapter.FromBytes([]byte("this is the head hash"))
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
 	executions := []hash.Hash{}
 	for i := 0; i < 5; i++ {
 		pHash, err := hashAdapter.FromBytes([]byte(fmt.Sprintf("this is execution %d", i)))
@@ -43,21 +42,23 @@ func TestAdapter_withExecutions_Success(t *testing.T) {
 		executions = append(executions, *pHash)
 	}
 
-	firstIns := contexts.NewContextForTests(34, *pHead, executions)
-	secondIns := contexts.NewContextForTests(12, *pHead, executions)
+	firstIns := contexts.NewContextForTests(34, executions)
+	secondIns := contexts.NewContextWithHeadForTests(12, firstIns.Hash(), executions)
 	adapter := json_contexts.NewAdapter()
 
 	repository := NewContextRepository(
 		adapter,
+		basePath,
 		endPath,
 	)
 
 	service := NewContextService(
 		adapter,
+		basePath,
 		endPath,
 	)
 
-	_, err = repository.Retrieve(dbPath)
+	_, err := repository.Retrieve(dbPath)
 	if err == nil {
 		t.Errorf("the error was expected to be valid")
 		return

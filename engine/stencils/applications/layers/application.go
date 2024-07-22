@@ -148,7 +148,12 @@ func (app *application) frame(layer layers.Layer, input []byte) (stacks.Frame, e
 	}
 
 	if input == nil {
-		return app.stackFactory.Create().Head(), nil
+		stack, err := app.stackFactory.Create()
+		if err != nil {
+			return nil, err
+		}
+
+		return stack.Head(), nil
 	}
 
 	assignable, err := app.assignableBuilder.Create().

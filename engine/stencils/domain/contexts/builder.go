@@ -2,6 +2,7 @@ package contexts
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/steve-care-software/webx/engine/states/domain/hash"
 )
@@ -57,23 +58,34 @@ func (app *builder) Now() (Context, error) {
 		return nil, errors.New("the identifier is mandatory in order to build a Context instance")
 	}
 
-	if app.head == nil {
-		return nil, errors.New("the head is mandatory in order to build a Context instance")
-	}
-
 	if app.executions == nil {
 		return nil, errors.New("the executions is mandatory in order to build a Context instance")
 	}
 
-	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{})
+	data := [][]byte{
+		[]byte(fmt.Sprintf("%d", *app.pIdentifier)),
+	}
+
+	for _, oneHash := range app.executions {
+		data = append(data, oneHash.Bytes())
+	}
+
+	if app.head != nil {
+		data = append(data, app.head.Bytes())
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
+	}
+
+	if app.head != nil {
+		return createContextWithHead(*pHash, *app.pIdentifier, app.executions, app.head), nil
 	}
 
 	return createContext(
 		*pHash,
 		*app.pIdentifier,
-		app.head,
 		app.executions,
 	), nil
 }

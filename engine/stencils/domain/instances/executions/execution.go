@@ -8,22 +8,39 @@ import (
 
 type execution struct {
 	hash   hash.Hash
-	input  []byte
 	source source_layers.Layer
 	result results.Result
+	input  []byte
 }
 
 func createExecution(
 	hash hash.Hash,
-	input []byte,
 	source source_layers.Layer,
 	result results.Result,
 ) Execution {
+	return createExecutionInternally(hash, source, result, nil)
+}
+
+func createExecutionWithInput(
+	hash hash.Hash,
+	source source_layers.Layer,
+	result results.Result,
+	input []byte,
+) Execution {
+	return createExecutionInternally(hash, source, result, input)
+}
+
+func createExecutionInternally(
+	hash hash.Hash,
+	source source_layers.Layer,
+	result results.Result,
+	input []byte,
+) Execution {
 	out := execution{
 		hash:   hash,
-		input:  input,
 		source: source,
 		result: result,
+		input:  input,
 	}
 
 	return &out
@@ -34,11 +51,6 @@ func (obj *execution) Hash() hash.Hash {
 	return obj.hash
 }
 
-// Input returns the input
-func (obj *execution) Input() []byte {
-	return obj.input
-}
-
 // Source returns the source
 func (obj *execution) Source() source_layers.Layer {
 	return obj.source
@@ -47,4 +59,14 @@ func (obj *execution) Source() source_layers.Layer {
 // Result returns the result
 func (obj *execution) Result() results.Result {
 	return obj.result
+}
+
+// HasInput returns true if there is an input, false otherwise
+func (obj *execution) HasInput() bool {
+	return obj.input != nil
+}
+
+// Input returns the input
+func (obj *execution) Input() []byte {
+	return obj.input
 }

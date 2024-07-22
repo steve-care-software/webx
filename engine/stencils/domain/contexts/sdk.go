@@ -31,8 +31,9 @@ type Builder interface {
 type Context interface {
 	Hash() hash.Hash
 	Identifier() uint
-	Head() hash.Hash
 	Executions() []hash.Hash
+	HasHead() bool
+	Head() hash.Hash
 }
 
 // Repository represents a context repository

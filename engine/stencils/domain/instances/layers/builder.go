@@ -72,18 +72,17 @@ func (app *builder) Now() (Layer, error) {
 		return nil, errors.New("the output is mandatory in order to build a Layer instance")
 	}
 
-	if app.input == "" {
-		return nil, errors.New("the input is mandatory in order to build a Layer instance")
-	}
-
 	data := [][]byte{
 		app.instructions.Hash().Bytes(),
 		app.output.Hash().Bytes(),
-		[]byte(app.input),
 	}
 
 	if app.references != nil {
 		data = append(data, app.references.Hash().Bytes())
+	}
+
+	if app.input != "" {
+		data = append(data, []byte(app.input))
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes(data)
@@ -91,10 +90,18 @@ func (app *builder) Now() (Layer, error) {
 		return nil, err
 	}
 
-	if app.references != nil {
-		return createLayerWithReferences(*pHash, app.instructions, app.output, app.input, app.references), nil
+	if app.references != nil && app.input != "" {
+		return createLayerWithReferencesAndInput(*pHash, app.instructions, app.output, app.references, app.input), nil
 	}
 
-	return createLayer(*pHash, app.instructions, app.output, app.input), nil
+	if app.references != nil {
+		return createLayerWithReferences(*pHash, app.instructions, app.output, app.references), nil
+	}
+
+	if app.input != "" {
+		return createLayerWithInput(*pHash, app.instructions, app.output, app.input), nil
+	}
+
+	return createLayer(*pHash, app.instructions, app.output), nil
 
 }

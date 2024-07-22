@@ -55,9 +55,10 @@ type ExecutionBuilder interface {
 // Execution represents an executed layer
 type Execution interface {
 	Hash() hash.Hash
-	Input() []byte
 	Source() source_layers.Layer
 	Result() results.Result
+	HasInput() bool
+	Input() []byte
 }
 
 // Repository represents an executions repository

@@ -9,6 +9,7 @@ import (
 
 type constantBuilder struct {
 	hashAdapter hash.Adapter
+	bytes       []byte
 	pBool       *bool
 	pString     *string
 	pInt        *int
@@ -22,6 +23,7 @@ func createConstantBuilder(
 ) ConstantBuilder {
 	out := constantBuilder{
 		hashAdapter: hashAdapter,
+		bytes:       nil,
 		pBool:       nil,
 		pString:     nil,
 		pInt:        nil,
@@ -38,6 +40,12 @@ func (app *constantBuilder) Create() ConstantBuilder {
 	return createConstantBuilder(
 		app.hashAdapter,
 	)
+}
+
+// WithBytes add bytes to the constantBuilder
+func (app *constantBuilder) WithBytes(bytes []byte) ConstantBuilder {
+	app.bytes = bytes
+	return app
 }
 
 // WithBool adds a bool to the constantBuilder
@@ -78,6 +86,10 @@ func (app *constantBuilder) WithList(list Constants) ConstantBuilder {
 
 // Now builds a new Constant instance
 func (app *constantBuilder) Now() (Constant, error) {
+	if app.bytes != nil && len(app.bytes) <= 0 {
+		app.bytes = nil
+	}
+
 	data := [][]byte{}
 	if app.pBool != nil {
 		value := "false"
@@ -87,6 +99,11 @@ func (app *constantBuilder) Now() (Constant, error) {
 
 		data = append(data, []byte("bool"))
 		data = append(data, []byte(value))
+	}
+
+	if app.bytes != nil {
+		data = append(data, []byte("bytes"))
+		data = append(data, app.bytes)
 	}
 
 	if app.pString != nil {
@@ -121,6 +138,10 @@ func (app *constantBuilder) Now() (Constant, error) {
 	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
+	}
+
+	if app.bytes != nil {
+		return createConstantWithBytes(*pHash, app.bytes), nil
 	}
 
 	if app.pBool != nil {

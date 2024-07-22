@@ -115,6 +115,12 @@ func (app *localApplication) Execute(contextIdentifier uint, input []byte) ([]by
 			return nil, err
 		}
 
+		// Execute executes in the database
+		err = app.dbApp.Execute(contextIdentifier, input)
+		if err != nil {
+			return nil, err
+		}
+
 		// save the execution:
 		err = app.executionsService.Save(currentContext.dbPath, layerExecution)
 		if err != nil {
@@ -179,25 +185,30 @@ func (app *localApplication) Head(context uint) (hash.Hash, error) {
 // Commit commits executions to a context
 func (app *localApplication) Commit(contextIdentifier uint) error {
 	if currentContext, ok := app.executions[contextIdentifier]; ok {
+		// commit to the database:
+		err := app.dbApp.Commit(contextIdentifier)
+		if err != nil {
+			return err
+		}
+
+		// push to the database
+		err = app.dbApp.Push(contextIdentifier)
+		if err != nil {
+			return err
+		}
+
+		builder := app.contextBuilder.Create().
+			WithIdentifier(contextIdentifier).
+			WithExecutions(currentContext.executions)
+
 		// read the database:
 		dbIns, err := app.dbApp.Retrieve(currentContext.dbPath)
-		if err != nil {
-			return err
+		if err == nil {
+			head := dbIns.Head().Hash()
+			builder.WithHead(head)
 		}
 
-		// commit to the database:
-		err = app.dbApp.Commit(contextIdentifier)
-		if err != nil {
-			return err
-		}
-
-		head := dbIns.Head().Hash()
-		contextIns, err := app.contextBuilder.Create().
-			WithIdentifier(contextIdentifier).
-			WithHead(head).
-			WithExecutions(currentContext.executions).
-			Now()
-
+		contextIns, err := builder.Now()
 		if err != nil {
 			return err
 		}

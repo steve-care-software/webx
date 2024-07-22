@@ -59,27 +59,31 @@ func (app *executionBuilder) Now() (Execution, error) {
 		app.input = nil
 	}
 
-	if app.input == nil {
-		return nil, errors.New("the input is mandatory in order to build a Layer instance")
-	}
-
 	if app.source == nil {
-		return nil, errors.New("the source is mandatory in order to build a Layer instance")
+		return nil, errors.New("the source is mandatory in order to build an Execution instance")
 	}
 
 	if app.result == nil {
-		return nil, errors.New("the result is mandatory in order to build a Layer instance")
+		return nil, errors.New("the result is mandatory in order to build an Execution instance")
 	}
 
-	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
-		app.input,
+	data := [][]byte{
 		app.source.Hash().Bytes(),
 		app.result.Hash().Bytes(),
-	})
+	}
 
+	if app.input != nil {
+		data = append(data, app.input)
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
 	}
 
-	return createExecution(*pHash, app.input, app.source, app.result), nil
+	if app.input != nil {
+		return createExecutionWithInput(*pHash, app.source, app.result, app.input), nil
+	}
+
+	return createExecution(*pHash, app.source, app.result), nil
 }

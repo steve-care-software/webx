@@ -10,17 +10,20 @@ import (
 type contextService struct {
 	adapter     contexts.Adapter
 	hashAdapter hash.Adapter
+	basePath    []string
 	endPath     []string
 }
 
 func createContextService(
 	adapter contexts.Adapter,
 	hashAdapter hash.Adapter,
+	basePath []string,
 	endPath []string,
 ) contexts.Service {
 	out := contextService{
 		adapter:     adapter,
 		hashAdapter: hashAdapter,
+		basePath:    basePath,
 		endPath:     endPath,
 	}
 
@@ -29,7 +32,7 @@ func createContextService(
 
 // Save saves a context
 func (app *contextService) Save(dbPath []string, context contexts.Context) error {
-	filePath, err := prepareFilePath(app.hashAdapter, dbPath, app.endPath)
+	filePath, err := prepareFilePath(app.hashAdapter, dbPath, app.basePath, app.endPath)
 	if err != nil {
 		return err
 	}
@@ -44,7 +47,7 @@ func (app *contextService) Save(dbPath []string, context contexts.Context) error
 
 // Delete deletes a context
 func (app *contextService) Delete(dbPath []string) error {
-	filePath, err := prepareFilePath(app.hashAdapter, dbPath, app.endPath)
+	filePath, err := prepareFilePath(app.hashAdapter, dbPath, app.basePath, app.endPath)
 	if err != nil {
 		return err
 	}

@@ -10,7 +10,12 @@ import (
 
 // NewFactory creates a new factory
 func NewFactory() Factory {
-	return createFactory()
+	framesBuilder := NewFramesBuilder()
+	frameBuilder := NewFrameBuilder()
+	return createFactory(
+		framesBuilder,
+		frameBuilder,
+	)
 }
 
 // NewBuilder creates a new builder
@@ -53,7 +58,7 @@ func NewAssignableBuilder() AssignableBuilder {
 
 // Factory represents the stack factory
 type Factory interface {
-	Create() Stack
+	Create() (Stack, error)
 }
 
 // Builder represents a stack builder

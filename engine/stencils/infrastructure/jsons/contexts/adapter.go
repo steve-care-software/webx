@@ -60,19 +60,19 @@ func (app *adapter) contextToStruct(ins contexts.Context) (*Context, error) {
 		executions = append(executions, oneIns.String())
 	}
 
-	return &Context{
+	context := Context{
 		Identifier: ins.Identifier(),
-		Head:       ins.Hash().String(),
 		Executions: executions,
-	}, nil
+	}
+
+	if ins.HasHead() {
+		context.Head = ins.Head().String()
+	}
+
+	return &context, nil
 }
 
 func (app *adapter) structToContext(str Context) (contexts.Context, error) {
-	pHead, err := app.hashAdapter.FromString(str.Head)
-	if err != nil {
-		return nil, err
-	}
-
 	hashes := []hash.Hash{}
 	for _, oneStr := range str.Executions {
 		pHash, err := app.hashAdapter.FromString(oneStr)
@@ -83,9 +83,18 @@ func (app *adapter) structToContext(str Context) (contexts.Context, error) {
 		hashes = append(hashes, *pHash)
 	}
 
-	return app.builder.Create().
+	builder := app.builder.Create().
 		WithIdentifier(str.Identifier).
-		WithHead(*pHead).
-		WithExecutions(hashes).
-		Now()
+		WithExecutions(hashes)
+
+	if str.Head != "" {
+		pHead, err := app.hashAdapter.FromString(str.Head)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithHead(*pHead)
+	}
+
+	return builder.Now()
 }
