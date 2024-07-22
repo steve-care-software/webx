@@ -1,0 +1,22 @@
+
+
+{
+    "instructions": [
+        {
+            "assignment": {
+                "name": "myReturneValue",
+                "assignable": {
+                    "constant": {
+                        "bytes": [45, 65, 56, 6]
+                    }
+                }
+            }
+        }
+    ],
+    "output": {
+        "variable": "myReturneValue",
+        "kind": {
+            "prompt": true
+        }
+    }
+}
