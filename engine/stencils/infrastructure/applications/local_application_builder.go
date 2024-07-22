@@ -42,6 +42,7 @@ import (
 	"github.com/steve-care-software/webx/engine/stencils/domain/instances/executions"
 	"github.com/steve-care-software/webx/engine/stencils/infrastructure/edwards25519"
 	infrastructure_files "github.com/steve-care-software/webx/engine/stencils/infrastructure/files"
+	json_contexts "github.com/steve-care-software/webx/engine/stencils/infrastructure/jsons/contexts"
 	"github.com/steve-care-software/webx/engine/stencils/infrastructure/jsons/instances"
 	json_executions "github.com/steve-care-software/webx/engine/stencils/infrastructure/jsons/instances/executions"
 	"github.com/steve-care-software/webx/engine/stencils/infrastructure/jsons/instances/layers"
@@ -51,6 +52,7 @@ import (
 type localApplicationBuilder struct {
 	dbAppBuilder          db_applications.Builder
 	basePath              []string
+	contextEndPath        []string
 	commitInnerPath       []string
 	chunksInnerPath       []string
 	sizeInBytesToChunk    uint
@@ -59,6 +61,7 @@ type localApplicationBuilder struct {
 
 func createLocalApplicationBuilder(
 	dbAppBuilder db_applications.Builder,
+	contextEndPath []string,
 	commitInnerPath []string,
 	chunksInnerPath []string,
 	sizeInBytesToChunk uint,
@@ -66,6 +69,7 @@ func createLocalApplicationBuilder(
 ) applications.LocalBuilder {
 	out := localApplicationBuilder{
 		dbAppBuilder:          dbAppBuilder,
+		contextEndPath:        contextEndPath,
 		commitInnerPath:       commitInnerPath,
 		chunksInnerPath:       chunksInnerPath,
 		sizeInBytesToChunk:    sizeInBytesToChunk,
@@ -80,6 +84,7 @@ func createLocalApplicationBuilder(
 func (app *localApplicationBuilder) Create() applications.LocalBuilder {
 	return createLocalApplicationBuilder(
 		app.dbAppBuilder,
+		app.contextEndPath,
 		app.commitInnerPath,
 		app.chunksInnerPath,
 		app.sizeInBytesToChunk,
@@ -182,8 +187,17 @@ func (app *localApplicationBuilder) Now() (applications.Application, error) {
 	executionsAdapter := json_executions.NewAdapter()
 	executionsBuilder := executions.NewBuilder()
 	contextBuilder := contexts.NewBuilder()
-	contextRepository := infrastructure_files.NewContextRepository()
-	contextService := infrastructure_files.NewContextService()
+	contextAdapter := json_contexts.NewAdapter()
+
+	contextRepository := infrastructure_files.NewContextRepository(
+		contextAdapter,
+		app.contextEndPath,
+	)
+
+	contextService := infrastructure_files.NewContextService(
+		contextAdapter,
+		app.contextEndPath,
+	)
 
 	return createLocalApplication(
 		dbApp,

@@ -42,6 +42,6 @@ type Repository interface {
 
 // Service represents a service
 type Service interface {
-	Save(context Context) error
-	Delete(hash hash.Hash) error
+	Save(dbPath []string, context Context) error
+	Delete(dbPath []string) error
 }

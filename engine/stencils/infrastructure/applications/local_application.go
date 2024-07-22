@@ -202,7 +202,7 @@ func (app *localApplication) Commit(contextIdentifier uint) error {
 			return err
 		}
 
-		return app.contextService.Save(contextIns)
+		return app.contextService.Save(currentContext.dbPath, contextIns)
 	}
 
 	str := fmt.Sprintf(invalidPatternErr, contextIdentifier)

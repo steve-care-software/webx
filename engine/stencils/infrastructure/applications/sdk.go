@@ -23,12 +23,14 @@ func NewLayerBinaryApplication() binaries.Application {
 // NewLocalApplicationBuilder creates a new local application builder
 func NewLocalApplicationBuilder() applications.LocalBuilder {
 	dbAppBuilder := applications_databases.NewBuilder()
+	contextEndPath := []string{"context"}
 	commitInnerPath := []string{"commits"}
 	chunksInnerPath := []string{"chunks"}
 	sizeToChunk := uint(1024)
 	splitHashInThisAmount := uint(16)
 	return createLocalApplicationBuilder(
 		dbAppBuilder,
+		contextEndPath,
 		commitInnerPath,
 		chunksInnerPath,
 		sizeToChunk,
