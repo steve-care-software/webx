@@ -16,7 +16,7 @@ Here's a valid example.
 ```
 
 ### Invalid
-Here's a valid example.
+Here's an invalid example.
 
 #### Input
 ```
