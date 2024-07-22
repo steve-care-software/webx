@@ -1,6 +1,6 @@
 # Command
 ```
-"./this/is/a/path/myfile.json" 0644 [34, 54, 56, 65, 67, 76, 78]
+os.files.x86.linux.save "./this/is/a/path/myfile.json" 0644 [34, 54, 56, 65, 67, 76, 78]
 ```
 
 # Compile the assembly to machine code:
