@@ -3,7 +3,7 @@ Commands are scripts that are built-in inside our base logic.  They enable the e
 
 ## CareScript Example
 ```
-command: carescript -> core:layer {
+command:carescript -> core:layer {
     myVariable = byte.join [
         [34, 54, 67, 76],
         [33, 21, 23, 45],
