@@ -2,7 +2,7 @@ package applications
 
 import (
 	"github.com/steve-care-software/webx/engine/states/domain/hash"
-	"github.com/steve-care-software/webx/engine/stencils/domain/instances/executions"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions"
 )
 
 // RemoteBuilder represents a remote application builder

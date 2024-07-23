@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/webx/engine/states/domain/hash"
-	"github.com/steve-care-software/webx/engine/stencils/domain/contexts"
-	json_contexts "github.com/steve-care-software/webx/engine/stencils/infrastructure/jsons/contexts"
+	"github.com/steve-care-software/webx/engine/vms/domain/contexts"
+	json_contexts "github.com/steve-care-software/webx/engine/vms/infrastructure/jsons/contexts"
 )
 
 func TestAdapter_withExecutions_Success(t *testing.T) {

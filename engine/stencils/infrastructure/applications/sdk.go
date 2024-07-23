@@ -3,21 +3,14 @@ package applications
 import (
 	applications_databases "github.com/steve-care-software/webx/engine/states/infrastructure/applications"
 	"github.com/steve-care-software/webx/engine/stencils/applications"
-	"github.com/steve-care-software/webx/engine/stencils/applications/layers/binaries"
+	vm_infrastructure_applications "github.com/steve-care-software/webx/engine/vms/infrastructure/applications"
 )
 
 const invalidPatternErr = "the provided context (%d) does not exists"
 
-const keyEncryptionBitrate = 4096
-
 // NewRemoteApplicationBuilder creates a new remote application builder
 func NewRemoteApplicationBuilder() applications.RemoteBuilder {
 	return createRemoteApplicationBuilder()
-}
-
-// NewLayerBinaryApplication creates a new layer binary application
-func NewLayerBinaryApplication() binaries.Application {
-	return createLayerBinaryApplication()
 }
 
 // NewLocalApplicationBuilder creates a new local application builder
@@ -28,7 +21,7 @@ func NewLocalApplicationBuilder() applications.LocalBuilder {
 	chunksInnerPath := []string{"chunks"}
 	sizeToChunk := uint(1024)
 	splitHashInThisAmount := uint(16)
-	return createLocalApplicationBuilder(
+	ins := createLocalApplicationBuilder(
 		dbAppBuilder,
 		contextEndPath,
 		commitInnerPath,
@@ -36,4 +29,11 @@ func NewLocalApplicationBuilder() applications.LocalBuilder {
 		sizeToChunk,
 		splitHashInThisAmount,
 	)
+
+	vmAppFactory := vm_infrastructure_applications.NewApplicationFactory(
+		ins,
+		NewRemoteApplicationBuilder(),
+	)
+
+	return ins.(*localApplicationBuilder).init(vmAppFactory)
 }

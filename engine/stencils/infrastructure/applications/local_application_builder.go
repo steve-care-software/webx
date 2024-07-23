@@ -5,51 +5,18 @@ import (
 
 	db_applications "github.com/steve-care-software/webx/engine/states/applications"
 	"github.com/steve-care-software/webx/engine/stencils/applications"
-	applications_layers "github.com/steve-care-software/webx/engine/stencils/applications/layers"
-	instructions "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions"
-	assignments "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments"
-	assignables "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables"
-	assignables_bytes "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/bytes"
-	"github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/compilers"
-	assignables_constants "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/constants"
-	cryptography "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/cryptography"
-	cryptography_decrypts "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/cryptography/decrypts"
-	cryptography_encrypts "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/cryptography/encrypts"
-	cryptography_keys "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/cryptography/keys"
-	cryptography_keys_encryptions "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/cryptography/keys/encryptions"
-	cryptography_keys_encryptions_decrypts "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/cryptography/keys/encryptions/decrypts"
-	cryptography_keys_encryptions_encrypts "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/cryptography/keys/encryptions/encrypts"
-	cryptography_keys_signatures "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/cryptography/keys/signatures"
-	cryptography_keys_signatures_signs "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/cryptography/keys/signatures/signs"
-	cryptography_keys_signatures_signs_creates "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/cryptography/keys/signatures/signs/creates"
-	cryptography_keys_signatures_signs_validates "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/cryptography/keys/signatures/signs/validates"
-	cryptography_keys_signatures_votes "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes"
-	cryptography_keys_signatures_votes_creates "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/creates"
-	cryptography_keys_signatures_votes_validates "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/validates"
-	executables "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/excutables"
-	assignables_executions "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/executions"
-	assignables_executions_executes "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/executions/executes"
-	assignables_executions_inits "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/executions/inits"
-	assignables_executions_retrieves "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/executions/retrieves"
-	assignables_lists "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/lists"
-	assignables_lists_fetches "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/assignments/assignables/lists/fetches"
-	instructions_executions "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/executions"
-	instructions_executions_merges "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/executions/merges"
-	instructions_lists "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/lists"
-	instructions_lists_deletes "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/lists/deletes"
-	instructions_lists_inserts "github.com/steve-care-software/webx/engine/stencils/applications/layers/instructions/lists/inserts"
-	"github.com/steve-care-software/webx/engine/stencils/domain/contexts"
-	"github.com/steve-care-software/webx/engine/stencils/domain/instances/executions"
-	"github.com/steve-care-software/webx/engine/stencils/infrastructure/edwards25519"
 	infrastructure_files "github.com/steve-care-software/webx/engine/stencils/infrastructure/files"
-	json_contexts "github.com/steve-care-software/webx/engine/stencils/infrastructure/jsons/contexts"
-	"github.com/steve-care-software/webx/engine/stencils/infrastructure/jsons/instances"
-	json_executions "github.com/steve-care-software/webx/engine/stencils/infrastructure/jsons/instances/executions"
-	"github.com/steve-care-software/webx/engine/stencils/infrastructure/jsons/instances/layers"
-	infrastructure_memories "github.com/steve-care-software/webx/engine/stencils/infrastructure/memories"
+	vm_applications "github.com/steve-care-software/webx/engine/vms/applications"
+	"github.com/steve-care-software/webx/engine/vms/domain/contexts"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions"
+	json_contexts "github.com/steve-care-software/webx/engine/vms/infrastructure/jsons/contexts"
+	json_executions "github.com/steve-care-software/webx/engine/vms/infrastructure/jsons/instances/executions"
+	"github.com/steve-care-software/webx/engine/vms/infrastructure/jsons/instances/layers"
+	infrastructure_memories "github.com/steve-care-software/webx/engine/vms/infrastructure/memories"
 )
 
 type localApplicationBuilder struct {
+	vmmAppFactory         vm_applications.Factory
 	dbAppBuilder          db_applications.Builder
 	basePath              []string
 	contextEndPath        []string
@@ -74,15 +41,23 @@ func createLocalApplicationBuilder(
 		chunksInnerPath:       chunksInnerPath,
 		sizeInBytesToChunk:    sizeInBytesToChunk,
 		splitHashInThisAmount: splitHashInThisAmount,
+		vmmAppFactory:         nil,
 		basePath:              nil,
 	}
 
 	return &out
 }
 
+func (app *localApplicationBuilder) init(
+	vmmAppFactory vm_applications.Factory,
+) applications.LocalBuilder {
+	app.vmmAppFactory = vmmAppFactory
+	return app
+}
+
 // Create initializes the builder
 func (app *localApplicationBuilder) Create() applications.LocalBuilder {
-	return createLocalApplicationBuilder(
+	ins := createLocalApplicationBuilder(
 		app.dbAppBuilder,
 		app.contextEndPath,
 		app.commitInnerPath,
@@ -90,6 +65,8 @@ func (app *localApplicationBuilder) Create() applications.LocalBuilder {
 		app.sizeInBytesToChunk,
 		app.splitHashInThisAmount,
 	)
+
+	return ins.(*localApplicationBuilder).init(app.vmmAppFactory)
 }
 
 // WithBasePath adds a basePath to the builder
@@ -121,67 +98,7 @@ func (app *localApplicationBuilder) Now() (applications.Application, error) {
 		return nil, err
 	}
 
-	instanceAdapter := instances.NewAdapter()
-	encryptor := edwards25519.NewEncryptor()
-	layerApp := applications_layers.NewApplication(
-		instructions.NewApplication(
-			assignments.NewApplication(
-				assignables.NewApplication(
-					compilers.NewApplication(
-						instanceAdapter,
-					),
-					assignables_executions.NewApplication(
-						assignables_executions_executes.NewApplication(),
-						assignables_executions_inits.NewApplication(),
-						assignables_executions_retrieves.NewApplication(),
-					),
-					assignables_bytes.NewApplication(),
-					assignables_constants.NewApplication(),
-					cryptography.NewApplication(
-						cryptography_decrypts.NewApplication(
-							encryptor,
-						),
-						cryptography_encrypts.NewApplication(
-							encryptor,
-						),
-						cryptography_keys.NewApplication(
-							cryptography_keys_encryptions.NewApplication(
-								cryptography_keys_encryptions_decrypts.NewApplication(),
-								cryptography_keys_encryptions_encrypts.NewApplication(),
-								keyEncryptionBitrate,
-							),
-							cryptography_keys_signatures.NewApplication(
-								cryptography_keys_signatures_votes.NewApplication(
-									cryptography_keys_signatures_votes_creates.NewApplication(),
-									cryptography_keys_signatures_votes_validates.NewApplication(),
-								),
-								cryptography_keys_signatures_signs.NewApplication(
-									cryptography_keys_signatures_signs_creates.NewApplication(),
-									cryptography_keys_signatures_signs_validates.NewApplication(),
-								),
-							),
-						),
-					),
-					assignables_lists.NewApplication(
-						assignables_lists_fetches.NewApplication(),
-					),
-					executables.NewApplication(
-						NewLocalApplicationBuilder(),
-						NewRemoteApplicationBuilder(),
-					),
-				),
-			),
-			instructions_lists.NewApplication(
-				instructions_lists_inserts.NewApplication(),
-				instructions_lists_deletes.NewApplication(),
-			),
-			instructions_executions.NewApplication(
-				instructions_executions_merges.NewApplication(),
-			),
-		),
-		NewLayerBinaryApplication(),
-	)
-
+	vmApp := app.vmmAppFactory.Create()
 	layerAdapter := layers.NewAdapter()
 	executionsRepository, executionsService := infrastructure_memories.NewExecutionRepositoryAndService()
 	executionsAdapter := json_executions.NewAdapter()
@@ -203,7 +120,7 @@ func (app *localApplicationBuilder) Now() (applications.Application, error) {
 
 	return createLocalApplication(
 		dbApp,
-		layerApp,
+		vmApp,
 		layerAdapter,
 		executionsRepository,
 		executionsService,

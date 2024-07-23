@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/steve-care-software/webx/engine/states/domain/hash"
-	"github.com/steve-care-software/webx/engine/stencils/domain/contexts"
+	"github.com/steve-care-software/webx/engine/vms/domain/contexts"
 )
 
 type contextRepository struct {

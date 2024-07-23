@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/steve-care-software/webx/engine/stencils/domain/instances/executions"
-	json_executions "github.com/steve-care-software/webx/engine/stencils/infrastructure/jsons/instances/executions"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions"
+	json_executions "github.com/steve-care-software/webx/engine/vms/infrastructure/jsons/instances/executions"
 )
 
 type testExecution func(t *testing.T, execution executions.Execution)

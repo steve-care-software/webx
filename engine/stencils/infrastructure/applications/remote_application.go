@@ -3,7 +3,7 @@ package applications
 import (
 	"github.com/steve-care-software/webx/engine/states/domain/hash"
 	"github.com/steve-care-software/webx/engine/stencils/applications"
-	"github.com/steve-care-software/webx/engine/stencils/domain/instances/executions"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions"
 )
 
 type remoteApplication struct {
