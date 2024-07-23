@@ -7,7 +7,6 @@ The byte command can take any kind of data directly, or variables.  When using d
 ## Join
 The join command takes the input data and joins them together. 
 ```
-// Source:
 join [
     firstVariabke,
     "This is a string",
@@ -21,7 +20,6 @@ join [
 ## Compare
 The compare command takes the input data and compares them together.
 ```
-// Source:
 compare [
     firstVariable,
     "this is a string",
@@ -31,7 +29,6 @@ compare [
 ## Hash
 The hash command takes the input parameter and returns its hash.
 ```
-// Source:
 hash myVariable;
 hash "this is a string";
 hash [34, 32, 34, 54];
