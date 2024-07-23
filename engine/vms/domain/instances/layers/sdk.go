@@ -5,6 +5,7 @@ import (
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/instructions"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/outputs"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/references"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/routes"
 )
 
 // NewBuilder creates a new layer builder instance
@@ -24,6 +25,7 @@ type Adapter interface {
 // Builder represents a layer builder
 type Builder interface {
 	Create() Builder
+	WithRoute(route routes.Route) Builder
 	WithInstructions(instructions instructions.Instructions) Builder
 	WithOutput(output outputs.Output) Builder
 	WithInput(input string) Builder
@@ -34,6 +36,7 @@ type Builder interface {
 // Layer represents a layer
 type Layer interface {
 	Hash() hash.Hash
+	Route() routes.Route
 	Instructions() instructions.Instructions
 	Output() outputs.Output
 	HasInput() bool
