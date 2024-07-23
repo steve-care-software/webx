@@ -91,7 +91,7 @@ retVote = command.identity vote {
 };
 ```
 
-## Validating a evote
+## Validating a vote
 ```
 // First Authenticate:
 myIdentity = command.identity authenticate  {
