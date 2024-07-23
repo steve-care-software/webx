@@ -21,7 +21,14 @@ layer {
                     // this is a string:
                     "this is a string",
                 ];
-            } {1,}, // This is the cardinality, this means that there must be at least 1 match, but can have unlimited.  If there is no cardinality, there must be exactly 1 match
+            }, {1,}, // This is the cardinality, this means that there must be at least 1 match, but can have unlimited.  If there is no cardinality, there must be exactly 1 match
+            {
+                " "|" ": [
+                    361434c52eda44645178675eac8d630a942630504425a24aac1fa07fd74dc497f268ef585bcebded3f5b50facae47b431901345abe5354c84aec455c1baa9b85,
+                    [23, 43, 45],
+                    "this is a string",
+                ];
+            } {1,},
         ];
     };
 
