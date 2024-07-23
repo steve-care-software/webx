@@ -37,7 +37,7 @@ func (app *repository) Exists(path []string) bool {
 
 // Retrieve retrieves a database by path
 func (app *repository) Retrieve(path []string) (Database, error) {
-	bytes, err := app.fileRepository.Retrieve(path)
+	bytes, err := app.fileRepository.RetrieveFromPath(path)
 	if err != nil {
 		return nil, err
 	}

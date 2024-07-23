@@ -2,6 +2,7 @@ package stacks
 
 import (
 	"errors"
+	"os"
 
 	"github.com/steve-care-software/webx/engine/states/domain/hash"
 	"github.com/steve-care-software/webx/engine/stencils/applications"
@@ -27,6 +28,7 @@ type assignableBuilder struct {
 	vote            signers.Vote
 	list            Assignables
 	application     applications.Application
+	filePtr         *os.File
 }
 
 func createAssignableBuilder() AssignableBuilder {
@@ -47,6 +49,7 @@ func createAssignableBuilder() AssignableBuilder {
 		vote:            nil,
 		list:            nil,
 		application:     nil,
+		filePtr:         nil,
 	}
 
 	return &out
@@ -153,6 +156,12 @@ func (app *assignableBuilder) WithApplication(application applications.Applicati
 	return app
 }
 
+// WithFilePointer adds a file pointer to the builder
+func (app *assignableBuilder) WithFilePointer(filePtr os.File) AssignableBuilder {
+	app.filePtr = &filePtr
+	return app
+}
+
 // Now builds a new Assignable instance
 func (app *assignableBuilder) Now() (Assignable, error) {
 	if app.pBool != nil {
@@ -213,6 +222,14 @@ func (app *assignableBuilder) Now() (Assignable, error) {
 
 	if app.list != nil {
 		return createAssignableWithList(app.list), nil
+	}
+
+	if app.application != nil {
+		return createAssignableWithApplication(app.application), nil
+	}
+
+	if app.filePtr != nil {
+		return createAssignableWithFilePointer(app.filePtr), nil
 	}
 
 	return nil, errors.New("the Assignable is invalid")

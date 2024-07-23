@@ -1,6 +1,8 @@
 package stacks
 
 import (
+	"os"
+
 	"github.com/steve-care-software/webx/engine/states/domain/hash"
 	"github.com/steve-care-software/webx/engine/stencils/applications"
 	"github.com/steve-care-software/webx/engine/stencils/domain/instances"
@@ -113,6 +115,7 @@ type Frame interface {
 	FetchList(name string) (Assignables, error)
 	FetchString(name string) (string, error)
 	FetchApplication(name string) (applications.Application, error)
+	FetchFile(name string) (*os.File, error)
 	HasAssignments() bool
 	Assignments() Assignments
 }
@@ -175,6 +178,7 @@ type AssignableBuilder interface {
 	WithVote(vote signers.Vote) AssignableBuilder
 	WithList(list Assignables) AssignableBuilder
 	WithApplication(application applications.Application) AssignableBuilder
+	WithFilePointer(file os.File) AssignableBuilder
 	Now() (Assignable, error)
 }
 
@@ -212,4 +216,6 @@ type Assignable interface {
 	List() Assignables
 	IsApplication() bool
 	Applicattion() applications.Application
+	IsFilePointer() bool
+	FilePointer() *os.File
 }

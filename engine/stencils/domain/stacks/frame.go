@@ -3,6 +3,7 @@ package stacks
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/steve-care-software/webx/engine/states/domain/hash"
 	"github.com/steve-care-software/webx/engine/stencils/applications"
@@ -281,6 +282,22 @@ func (obj *frame) FetchApplication(name string) (applications.Application, error
 
 	retApp := assignable.Applicattion()
 	return retApp, nil
+}
+
+// FetchFile fetches file identifier by name
+func (obj *frame) FetchFile(name string) (*os.File, error) {
+	assignable, err := obj.Fetch(name)
+	if err != nil {
+		return nil, err
+	}
+
+	if !assignable.IsFilePointer() {
+		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a file pointer", name)
+		return nil, errors.New(str)
+	}
+
+	retFile := assignable.FilePointer()
+	return retFile, nil
 }
 
 // HasAssignments returns true if there is assignments, false otherwise

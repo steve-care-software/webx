@@ -91,3 +91,9 @@ func (app *fileService) Transact(path []string, bytes []byte) error {
 	defer app.Unlock(path)
 	return app.Save(path, bytes)
 }
+
+// Delete deletes a file from path
+func (app *fileService) Delete(path []string) error {
+	filePath := createFilePath(app.basePath, path)
+	return os.Remove(filePath)
+}

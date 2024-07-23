@@ -24,7 +24,7 @@ func createRepository(
 
 // Retrieve retrieves a commit by hash
 func (app *repository) Retrieve(hash hash.Hash) (Commit, error) {
-	bytes, err := app.fileRepository.Retrieve([]string{
+	bytes, err := app.fileRepository.RetrieveFromPath([]string{
 		hash.String(),
 	})
 

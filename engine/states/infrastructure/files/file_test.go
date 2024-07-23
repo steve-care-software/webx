@@ -67,7 +67,7 @@ func TestTransactManually_Success(t *testing.T) {
 		return
 	}
 
-	retBytes, err := repository.Retrieve(path)
+	retBytes, err := repository.RetrieveFromPath(path)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -127,7 +127,7 @@ func TestTransact_Success(t *testing.T) {
 		return
 	}
 
-	retBytes, err := repository.Retrieve(path)
+	retBytes, err := repository.RetrieveFromPath(path)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -144,7 +144,7 @@ func TestTransact_Success(t *testing.T) {
 		return
 	}
 
-	retBytesAgain, err := repository.Retrieve(path)
+	retBytesAgain, err := repository.RetrieveFromPath(path)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return

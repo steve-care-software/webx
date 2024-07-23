@@ -171,4 +171,19 @@ const (
 
 	// CouldNotExecuteMErgeFromExecutable represents a could not execute merge from executable
 	CouldNotExecuteMErgeFromExecutable
+
+	// CouldNotOpenFile represents a could not open file
+	CouldNotOpenFile
+
+	// CouldNotFetchFileFromFrame represents a could not fetch file from frame
+	CouldNotFetchFileFromFrame
+
+	// CouldNotRetrieveAllFromFile represents a could not retrieve all from file repository
+	CouldNotRetrieveAllFromFile
+
+	// CouldNotRetrieveChunkFromFile represents a could not retrieve chunk from file repository
+	CouldNotRetrieveChunkFromFile
+
+	// CouldNotRetrieveFromFromFile represents a could not retrieve from from file repository
+	CouldNotRetrieveFromFromFile
 )

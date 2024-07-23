@@ -84,7 +84,7 @@ func (app *application) RetrieveCommit(commitHash hash.Hash) (commits.Commit, er
 // RetrieveChunkBytes retrieves chunk bytes
 func (app *application) RetrieveChunkBytes(fingerHash hash.Hash) ([]byte, error) {
 	split := app.splitString(fingerHash.String())
-	return app.chunkFileRepository.Retrieve(split)
+	return app.chunkFileRepository.RetrieveFromPath(split)
 }
 
 // Begin begins a context on a database
