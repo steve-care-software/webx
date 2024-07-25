@@ -2,8 +2,8 @@ package applications
 
 import (
 	stencil_applications "github.com/steve-care-software/webx/engine/stencils/applications"
-	"github.com/steve-care-software/webx/engine/vms/applications"
-	"github.com/steve-care-software/webx/engine/vms/applications/binaries"
+	vm_layers "github.com/steve-care-software/webx/engine/vms/applications/layers"
+	"github.com/steve-care-software/webx/engine/vms/applications/layers/binaries"
 )
 
 const keyEncryptionBitrate = 4096
@@ -12,7 +12,7 @@ const keyEncryptionBitrate = 4096
 func NewApplicationFactory(
 	localApplicationBuilder stencil_applications.LocalBuilder,
 	remoteApplicationBuilder stencil_applications.RemoteBuilder,
-) applications.Factory {
+) vm_layers.Factory {
 	return createFactory(
 		localApplicationBuilder,
 		remoteApplicationBuilder,

@@ -1,6 +1,6 @@
 package applications
 
-import "github.com/steve-care-software/webx/engine/vms/applications/binaries"
+import "github.com/steve-care-software/webx/engine/vms/applications/layers/binaries"
 
 type layerBinaryApplication struct {
 }

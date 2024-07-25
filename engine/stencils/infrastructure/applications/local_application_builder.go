@@ -6,7 +6,7 @@ import (
 	db_applications "github.com/steve-care-software/webx/engine/states/applications"
 	"github.com/steve-care-software/webx/engine/stencils/applications"
 	infrastructure_files "github.com/steve-care-software/webx/engine/stencils/infrastructure/files"
-	vm_applications "github.com/steve-care-software/webx/engine/vms/applications"
+	vm_applications "github.com/steve-care-software/webx/engine/vms/applications/layers"
 	"github.com/steve-care-software/webx/engine/vms/domain/contexts"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions"
 	json_contexts "github.com/steve-care-software/webx/engine/vms/infrastructure/jsons/contexts"

@@ -42,7 +42,7 @@ type Route interface {
 
 // Repository represents a route repository
 type Repository interface {
-	List() ([]hash.Hash, error)
+	List(index uint, amount uint) ([]hash.Hash, error)
 	Retrieve(hash hash.Hash) (Route, error)
 }
 
