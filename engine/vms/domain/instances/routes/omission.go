@@ -49,6 +49,11 @@ func (obj *omission) Hash() hash.Hash {
 	return obj.hash
 }
 
+// Remaining returns the remaining bytes
+func (obj *omission) Remaining(input []byte) []byte {
+	return nil
+}
+
 // HasPrefix returns true if there is a prefix, false otherwise
 func (obj *omission) HasPrefix() bool {
 	return obj.prefix != nil

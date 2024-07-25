@@ -50,6 +50,11 @@ func (obj *token) Hash() hash.Hash {
 	return obj.hash
 }
 
+// Remaining returns the remaining bytes
+func (obj *token) Remaining(input []byte) []byte {
+	return nil
+}
+
 // Elements returns the elements
 func (obj *token) Elements() Elements {
 	return obj.elements

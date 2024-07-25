@@ -1,27 +1,29 @@
 package applications
 
 import (
-	"github.com/steve-care-software/webx/engine/vms/applications/layers"
-	route_applications "github.com/steve-care-software/webx/engine/vms/applications/routes"
-	execution_layers "github.com/steve-care-software/webx/engine/vms/domain/instances/executions"
+	applications_layer "github.com/steve-care-software/webx/engine/vms/applications/layers"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes"
 )
 
 func NewApplication(
-	layerApp layers.Application,
-	routeApp route_applications.Application,
+	layerApp applications_layer.Application,
+	layerRepository layers.Repository,
 	routeRepository routes.Repository,
 	batchSize uint,
 ) Application {
+	executionsBuilder := executions.NewBuilder()
 	return createApplication(
 		layerApp,
-		routeApp,
+		layerRepository,
 		routeRepository,
+		executionsBuilder,
 		batchSize,
 	)
 }
 
 // Application represents the application
 type Application interface {
-	Execute(input []byte) (execution_layers.Execution, error)
+	Execute(input []byte) (executions.Executions, error)
 }

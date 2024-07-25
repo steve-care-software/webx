@@ -1,42 +1,68 @@
 package applications
 
 import (
+	"bytes"
 	"errors"
 
-	"github.com/steve-care-software/webx/engine/vms/applications/layers"
-	route_applications "github.com/steve-care-software/webx/engine/vms/applications/routes"
-	execution_layers "github.com/steve-care-software/webx/engine/vms/domain/instances/executions"
+	layer_applications "github.com/steve-care-software/webx/engine/vms/applications/layers"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes"
 )
 
 type application struct {
-	layerApp        layers.Application
-	routeApp        route_applications.Application
-	routeRepository routes.Repository
-	batchSize       uint
+	layerApp          layer_applications.Application
+	layerRepository   layers.Repository
+	routeRepository   routes.Repository
+	executionsBuilder executions.Builder
+	batchSize         uint
 }
 
 func createApplication(
-	layerApp layers.Application,
-	routeApp route_applications.Application,
+	layerApp layer_applications.Application,
+	layerRepository layers.Repository,
 	routeRepository routes.Repository,
+	executionsBuilder executions.Builder,
 	batchSize uint,
 ) Application {
 	out := application{
-		layerApp:        layerApp,
-		routeApp:        routeApp,
-		routeRepository: routeRepository,
-		batchSize:       batchSize,
+		layerApp:          layerApp,
+		layerRepository:   layerRepository,
+		routeRepository:   routeRepository,
+		executionsBuilder: executionsBuilder,
+		batchSize:         batchSize,
 	}
 
 	return &out
 }
 
 // Execute executes the application
-func (app *application) Execute(input []byte) (execution_layers.Execution, error) {
+func (app *application) Execute(input []byte) (executions.Executions, error) {
+	lastRemaining := []byte{}
+	executionsList := []executions.Execution{}
+	for {
+		retExecution, retRemaining, err := app.executeOnce(input)
+		if err != nil {
+			return nil, err
+		}
+
+		executionsList = append(executionsList, retExecution)
+		if len(retRemaining) < len(lastRemaining) {
+			continue
+		}
+
+		break
+	}
+
+	return app.executionsBuilder.Create().
+		WithList(executionsList).
+		Now()
+}
+
+func (app *application) executeOnce(input []byte) (executions.Execution, []byte, error) {
 	pTotal, err := app.routeRepository.Amount()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	amountLoops := int(float64(*pTotal / app.batchSize))
@@ -50,24 +76,36 @@ func (app *application) Execute(input []byte) (execution_layers.Execution, error
 
 		list, err := app.routeRepository.List(index, amount)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		for _, oneHash := range list {
 			route, err := app.routeRepository.Retrieve(oneHash)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 
-			retLayer, err := app.routeApp.Execute(input, route)
+			// verify if the route has a match against the data
+			remaining := route.Remaining(input)
+			if !bytes.HasPrefix(input, remaining) {
+				continue
+			}
+
+			hash := route.Layer()
+			retLayer, err := app.layerRepository.Retrieve(hash)
 			if err != nil {
 				continue
 			}
 
-			return app.layerApp.ExecuteWithInput(retLayer, input)
+			retExecution, err := app.layerApp.ExecuteWithInput(retLayer, input)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			return retExecution, remaining, nil
 		}
 
 	}
 
-	return nil, errors.New("there is no Route that matches the provided input data")
+	return nil, nil, errors.New("there is no Route that matches the provided input data")
 }

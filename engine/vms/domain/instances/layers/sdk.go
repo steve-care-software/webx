@@ -41,3 +41,8 @@ type Layer interface {
 	HasReferences() bool
 	References() references.References
 }
+
+// Repository represents a layer repository
+type Repository interface {
+	Retrieve(hash hash.Hash) (Layer, error)
+}
