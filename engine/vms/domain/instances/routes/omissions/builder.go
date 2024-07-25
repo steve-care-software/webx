@@ -57,7 +57,8 @@ func (app *builder) Now() (Omission, error) {
 		data = append(data, app.suffix.Bytes())
 	}
 
-	if len(data) != 2 {
+	length := len(data)
+	if length != 2 && length != 4 {
 		return nil, errors.New("the Omission is invalid")
 	}
 
