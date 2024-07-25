@@ -5,6 +5,14 @@ import (
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/cardinalities"
 )
 
+// NewBuilder creates a new route builder
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
 // NewTokensBuilder creates a new tokens builder
 func NewTokensBuilder() TokensBuilder {
 	hashAdapter := hash.NewAdapter()
@@ -62,18 +70,6 @@ type Route interface {
 	Global() Omission
 	HasToken() bool
 	Token() Omission
-}
-
-// Repository represents a route repository
-type Repository interface {
-	List(index uint, amount uint) ([]hash.Hash, error)
-	Retrieve(hash hash.Hash) (Route, error)
-}
-
-// Service represents a route service
-type Service interface {
-	Insert(ins Route) error
-	Delete(hash hash.Hash) error
 }
 
 // TokensBuilder represents tokens builder
@@ -140,7 +136,7 @@ type Elements interface {
 // ElementBuilder represents an element builder
 type ElementBuilder interface {
 	Create() ElementBuilder
-	WithLayer(layer []string) ElementBuilder
+	WithLayer(layer hash.Hash) ElementBuilder
 	WithBytes(bytes []byte) ElementBuilder
 	WithString(str string) ElementBuilder
 	Now() (Element, error)
@@ -150,7 +146,7 @@ type ElementBuilder interface {
 type Element interface {
 	Hash() hash.Hash
 	IsLayer() bool
-	Layer() []string
+	Layer() hash.Hash
 	IsBytes() bool
 	Bytes() []byte
 	IsString() bool
