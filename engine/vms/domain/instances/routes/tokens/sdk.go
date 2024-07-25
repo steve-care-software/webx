@@ -23,10 +23,12 @@ func NewTokenBuilder() TokenBuilder {
 	)
 }
 
-// TokensAdapter represents the tokens adapter
-type TokensAdapter interface {
-	ToBytes(ins Tokens) ([]byte, error)
-	ToInstance(bytes []byte) (Tokens, error)
+// Adapter represents the tokens adapter
+type Adapter interface {
+	InstancesToBytes(ins Tokens) ([]byte, error)
+	BytesToInstances(bytes []byte) (Tokens, error)
+	InstanceToBytes(ins Token) ([]byte, error)
+	BytesToInstance(bytes []byte) (Token, error)
 }
 
 // Builder represents tokens builder
@@ -40,12 +42,6 @@ type Builder interface {
 type Tokens interface {
 	Hash() hash.Hash
 	List() []Token
-}
-
-// TokenAdapter represents the token adapter
-type TokenAdapter interface {
-	ToBytes(ins Token) ([]byte, error)
-	ToInstance(bytes []byte) (Token, error)
 }
 
 // TokenBuilder represents a token builder
