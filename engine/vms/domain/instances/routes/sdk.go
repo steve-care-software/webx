@@ -5,6 +5,14 @@ import (
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/cardinalities"
 )
 
+// NewTokenBuilder creates a new token builder
+func NewTokenBuilder() TokenBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createTokenBuilder(
+		hashAdapter,
+	)
+}
+
 // NewOmissionBuilder creates a new omission builder
 func NewOmissionBuilder() OmissionBuilder {
 	hashAdapter := hash.NewAdapter()
