@@ -12,6 +12,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the cardinality adapter
+type Adapter interface {
+	ToBytes(ins Cardinality) ([]byte, error)
+	ToInstance(bytes []byte) (Cardinality, error)
+}
+
 // Builder represents the cardinality builder
 type Builder interface {
 	Create() Builder

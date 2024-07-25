@@ -4,14 +4,16 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/webx/engine/states/domain/hash"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/omissions"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/tokens"
 )
 
 type builder struct {
 	hashAdapter hash.Adapter
-	tokens      Tokens
+	tokens      tokens.Tokens
 	layer       hash.Hash
-	global      Omission
-	token       Omission
+	global      omissions.Omission
+	token       omissions.Omission
 }
 
 func createBuilder(
@@ -42,19 +44,19 @@ func (app *builder) WithLayer(layer hash.Hash) Builder {
 }
 
 // WithTokens add tokens to the builder
-func (app *builder) WithTokens(tokens Tokens) Builder {
+func (app *builder) WithTokens(tokens tokens.Tokens) Builder {
 	app.tokens = tokens
 	return app
 }
 
 // WithGlobal add global to the builder
-func (app *builder) WithGlobal(global Omission) Builder {
+func (app *builder) WithGlobal(global omissions.Omission) Builder {
 	app.global = global
 	return app
 }
 
 // WithToken add token to the builder
-func (app *builder) WithToken(token Omission) Builder {
+func (app *builder) WithToken(token omissions.Omission) Builder {
 	app.token = token
 	return app
 }

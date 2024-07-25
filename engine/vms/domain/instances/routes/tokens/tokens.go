@@ -1,4 +1,4 @@
-package routes
+package tokens
 
 import "github.com/steve-care-software/webx/engine/states/domain/hash"
 

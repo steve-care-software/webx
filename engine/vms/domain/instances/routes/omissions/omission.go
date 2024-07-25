@@ -1,39 +1,42 @@
-package routes
+package omissions
 
-import "github.com/steve-care-software/webx/engine/states/domain/hash"
+import (
+	"github.com/steve-care-software/webx/engine/states/domain/hash"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/elements"
+)
 
 type omission struct {
 	hash   hash.Hash
-	prefix Element
-	suffix Element
+	prefix elements.Element
+	suffix elements.Element
 }
 
 func createOmissionWithPrefix(
 	hash hash.Hash,
-	prefix Element,
+	prefix elements.Element,
 ) Omission {
 	return createOmissionInternally(hash, prefix, nil)
 }
 
 func createOmissionWithSuffix(
 	hash hash.Hash,
-	suffix Element,
+	suffix elements.Element,
 ) Omission {
 	return createOmissionInternally(hash, nil, suffix)
 }
 
 func createOmissionWithPrefixAndSuffix(
 	hash hash.Hash,
-	prefix Element,
-	suffix Element,
+	prefix elements.Element,
+	suffix elements.Element,
 ) Omission {
 	return createOmissionInternally(hash, prefix, suffix)
 }
 
 func createOmissionInternally(
 	hash hash.Hash,
-	prefix Element,
-	suffix Element,
+	prefix elements.Element,
+	suffix elements.Element,
 ) Omission {
 	out := omission{
 		hash:   hash,
@@ -55,7 +58,7 @@ func (obj *omission) HasPrefix() bool {
 }
 
 // Prefix returns the prefix, if any
-func (obj *omission) Prefix() Element {
+func (obj *omission) Prefix() elements.Element {
 	return obj.prefix
 }
 
@@ -65,6 +68,6 @@ func (obj *omission) HasSuffix() bool {
 }
 
 // Suffix returns the suffix, if any
-func (obj *omission) Suffix() Element {
+func (obj *omission) Suffix() elements.Element {
 	return obj.suffix
 }

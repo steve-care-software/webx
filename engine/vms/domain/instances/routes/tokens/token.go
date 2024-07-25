@@ -1,20 +1,22 @@
-package routes
+package tokens
 
 import (
 	"github.com/steve-care-software/webx/engine/states/domain/hash"
-	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/cardinalities"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/elements"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/omissions"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/tokens/cardinalities"
 )
 
 type token struct {
 	hash        hash.Hash
-	elements    Elements
+	elements    elements.Elements
 	cardinality cardinalities.Cardinality
-	omissiom    Omission
+	omissiom    omissions.Omission
 }
 
 func createToken(
 	hash hash.Hash,
-	elements Elements,
+	elements elements.Elements,
 	cardinality cardinalities.Cardinality,
 ) Token {
 	return createTokenInternally(hash, elements, cardinality, nil)
@@ -22,18 +24,18 @@ func createToken(
 
 func createTokenWithOmission(
 	hash hash.Hash,
-	elements Elements,
+	elements elements.Elements,
 	cardinality cardinalities.Cardinality,
-	omissiom Omission,
+	omissiom omissions.Omission,
 ) Token {
 	return createTokenInternally(hash, elements, cardinality, omissiom)
 }
 
 func createTokenInternally(
 	hash hash.Hash,
-	elements Elements,
+	elements elements.Elements,
 	cardinality cardinalities.Cardinality,
-	omissiom Omission,
+	omissiom omissions.Omission,
 ) Token {
 	out := token{
 		hash:        hash,
@@ -51,7 +53,7 @@ func (obj *token) Hash() hash.Hash {
 }
 
 // Elements returns the elements
-func (obj *token) Elements() Elements {
+func (obj *token) Elements() elements.Elements {
 	return obj.elements
 }
 
@@ -66,6 +68,6 @@ func (obj *token) HasOmission() bool {
 }
 
 // Omission returns the omission, if any
-func (obj *token) Omission() Omission {
+func (obj *token) Omission() omissions.Omission {
 	return obj.omissiom
 }

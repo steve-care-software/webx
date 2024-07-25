@@ -4,6 +4,9 @@ import (
 	"bytes"
 
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/elements"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/omissions"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/tokens"
 )
 
 type application struct {
@@ -54,7 +57,7 @@ func (app *application) route(input []byte, route routes.Route) ([]byte, error) 
 	)
 }
 
-func (app *application) tokens(input []byte, tokens routes.Tokens, tokenOmission routes.Omission) ([]byte, error) {
+func (app *application) tokens(input []byte, tokens tokens.Tokens, tokenOmission omissions.Omission) ([]byte, error) {
 	remaining := input
 	list := tokens.List()
 	for _, oneToken := range list {
@@ -72,7 +75,7 @@ func (app *application) tokens(input []byte, tokens routes.Tokens, tokenOmission
 	return remaining, nil
 }
 
-func (app *application) token(input []byte, token routes.Token, tokenOmission routes.Omission) ([]byte, error) {
+func (app *application) token(input []byte, token tokens.Token, tokenOmission omissions.Omission) ([]byte, error) {
 	remaining := input
 	if tokenOmission != nil {
 		retRemaining, err := app.omission(remaining, tokenOmission)
@@ -124,7 +127,7 @@ func (app *application) token(input []byte, token routes.Token, tokenOmission ro
 	return remaining, nil
 }
 
-func (app *application) omission(input []byte, omission routes.Omission) ([]byte, error) {
+func (app *application) omission(input []byte, omission omissions.Omission) ([]byte, error) {
 	remaining := input
 	if omission.HasPrefix() {
 		retRemaining, err := app.element(input, omission.Prefix())
@@ -164,7 +167,7 @@ func (app *application) omission(input []byte, omission routes.Omission) ([]byte
 	return remaining, nil
 }
 
-func (app *application) elements(input []byte, elements routes.Elements) ([]byte, error) {
+func (app *application) elements(input []byte, elements elements.Elements) ([]byte, error) {
 	remaining := input
 	list := elements.List()
 	for _, oneElement := range list {
@@ -193,7 +196,7 @@ func (app *application) elements(input []byte, elements routes.Elements) ([]byte
 	return remaining, nil
 }
 
-func (app *application) element(input []byte, element routes.Element) ([]byte, error) {
+func (app *application) element(input []byte, element elements.Element) ([]byte, error) {
 	if element.IsLayer() {
 		layerHash := element.Layer()
 		route, err := app.routeRepository.RetrieveFromLayer(layerHash)

@@ -1,19 +1,23 @@
 package routes
 
-import "github.com/steve-care-software/webx/engine/states/domain/hash"
+import (
+	"github.com/steve-care-software/webx/engine/states/domain/hash"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/omissions"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/tokens"
+)
 
 type route struct {
 	hash   hash.Hash
 	layer  hash.Hash
-	tokens Tokens
-	global Omission
-	token  Omission
+	tokens tokens.Tokens
+	global omissions.Omission
+	token  omissions.Omission
 }
 
 func createRoute(
 	hash hash.Hash,
 	layer hash.Hash,
-	tokens Tokens,
+	tokens tokens.Tokens,
 ) Route {
 	return createRouteInternally(hash, layer, tokens, nil, nil)
 }
@@ -21,8 +25,8 @@ func createRoute(
 func createRouteWithGlobal(
 	hash hash.Hash,
 	layer hash.Hash,
-	tokens Tokens,
-	global Omission,
+	tokens tokens.Tokens,
+	global omissions.Omission,
 ) Route {
 	return createRouteInternally(hash, layer, tokens, global, nil)
 }
@@ -30,8 +34,8 @@ func createRouteWithGlobal(
 func createRouteWithToken(
 	hash hash.Hash,
 	layer hash.Hash,
-	tokens Tokens,
-	local Omission,
+	tokens tokens.Tokens,
+	local omissions.Omission,
 ) Route {
 	return createRouteInternally(hash, layer, tokens, nil, local)
 }
@@ -39,9 +43,9 @@ func createRouteWithToken(
 func createRouteWithGlobalAndToken(
 	hash hash.Hash,
 	layer hash.Hash,
-	tokens Tokens,
-	global Omission,
-	local Omission,
+	tokens tokens.Tokens,
+	global omissions.Omission,
+	local omissions.Omission,
 ) Route {
 	return createRouteInternally(hash, layer, tokens, global, local)
 }
@@ -49,9 +53,9 @@ func createRouteWithGlobalAndToken(
 func createRouteInternally(
 	hash hash.Hash,
 	layer hash.Hash,
-	tokens Tokens,
-	global Omission,
-	token Omission,
+	tokens tokens.Tokens,
+	global omissions.Omission,
+	token omissions.Omission,
 ) Route {
 	out := route{
 		hash:   hash,
@@ -75,7 +79,7 @@ func (obj *route) Layer() hash.Hash {
 }
 
 // Tokens returns the tokens
-func (obj *route) Tokens() Tokens {
+func (obj *route) Tokens() tokens.Tokens {
 	return obj.tokens
 }
 
@@ -85,7 +89,7 @@ func (obj *route) HasGlobal() bool {
 }
 
 // Global returns the global, if any
-func (obj *route) Global() Omission {
+func (obj *route) Global() omissions.Omission {
 	return obj.global
 }
 
@@ -95,6 +99,6 @@ func (obj *route) HasToken() bool {
 }
 
 // Token returns the token, if any
-func (obj *route) Token() Omission {
+func (obj *route) Token() omissions.Omission {
 	return obj.token
 }

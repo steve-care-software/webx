@@ -1,17 +1,19 @@
-package routes
+package tokens
 
 import (
 	"errors"
 
 	"github.com/steve-care-software/webx/engine/states/domain/hash"
-	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/cardinalities"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/elements"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/omissions"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/tokens/cardinalities"
 )
 
 type tokenBuilder struct {
 	hashAdapter hash.Adapter
-	elements    Elements
+	elements    elements.Elements
 	cardinality cardinalities.Cardinality
-	omission    Omission
+	omission    omissions.Omission
 }
 
 func createTokenBuilder(
@@ -34,8 +36,8 @@ func (app *tokenBuilder) Create() TokenBuilder {
 	)
 }
 
-// WithElements add elements to the builder
-func (app *tokenBuilder) WithElements(elements Elements) TokenBuilder {
+// Withelements.Elements add elements to the builder
+func (app *tokenBuilder) WithElements(elements elements.Elements) TokenBuilder {
 	app.elements = elements
 	return app
 }
@@ -47,7 +49,7 @@ func (app *tokenBuilder) WithCardinality(cardinality cardinalities.Cardinality) 
 }
 
 // WithOmission add omission to the builder
-func (app *tokenBuilder) WithOmission(omission Omission) TokenBuilder {
+func (app *tokenBuilder) WithOmission(omission omissions.Omission) TokenBuilder {
 	app.omission = omission
 	return app
 }

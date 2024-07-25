@@ -1,21 +1,22 @@
-package routes
+package omissions
 
 import (
 	"errors"
 
 	"github.com/steve-care-software/webx/engine/states/domain/hash"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/elements"
 )
 
-type omissionBuilder struct {
+type builder struct {
 	hashAdapter hash.Adapter
-	prefix      Element
-	suffix      Element
+	prefix      elements.Element
+	suffix      elements.Element
 }
 
-func createOmissionBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) OmissionBuilder {
-	out := omissionBuilder{
+) Builder {
+	out := builder{
 		hashAdapter: hashAdapter,
 		prefix:      nil,
 		suffix:      nil,
@@ -25,26 +26,26 @@ func createOmissionBuilder(
 }
 
 // Create initializes the builder
-func (app *omissionBuilder) Create() OmissionBuilder {
-	return createOmissionBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithPrefix adds a prefix to the builder
-func (app *omissionBuilder) WithPrefix(prefix Element) OmissionBuilder {
+func (app *builder) WithPrefix(prefix elements.Element) Builder {
 	app.prefix = prefix
 	return app
 }
 
 // WithSuffix adds a suffix to the builder
-func (app *omissionBuilder) WithSuffix(suffix Element) OmissionBuilder {
+func (app *builder) WithSuffix(suffix elements.Element) Builder {
 	app.suffix = suffix
 	return app
 }
 
 // Now builds a new Omission instance
-func (app *omissionBuilder) Now() (Omission, error) {
+func (app *builder) Now() (Omission, error) {
 	data := [][]byte{}
 	if app.prefix != nil {
 		data = append(data, []byte("prefix"))
