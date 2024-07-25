@@ -54,7 +54,7 @@ func (app *Adapter) CardinalityToStruct(ins cardinalities.Cardinality) Cardinali
 
 	if ins.HasMax() {
 		pMax := ins.Max()
-		out.Max = *&pMax
+		out.Max = pMax
 	}
 
 	return out
