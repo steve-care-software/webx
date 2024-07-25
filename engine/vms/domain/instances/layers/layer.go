@@ -5,12 +5,10 @@ import (
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/instructions"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/outputs"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/references"
-	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/routes"
 )
 
 type layer struct {
 	hash         hash.Hash
-	route        routes.Route
 	instructions instructions.Instructions
 	output       outputs.Output
 	input        string
@@ -19,13 +17,11 @@ type layer struct {
 
 func createLayer(
 	hash hash.Hash,
-	route routes.Route,
 	instructions instructions.Instructions,
 	output outputs.Output,
 ) Layer {
 	return createLayerInternally(
 		hash,
-		route,
 		instructions,
 		output,
 		"",
@@ -35,14 +31,12 @@ func createLayer(
 
 func createLayerWithReferences(
 	hash hash.Hash,
-	route routes.Route,
 	instructions instructions.Instructions,
 	output outputs.Output,
 	references references.References,
 ) Layer {
 	return createLayerInternally(
 		hash,
-		route,
 		instructions,
 		output,
 		"",
@@ -52,14 +46,12 @@ func createLayerWithReferences(
 
 func createLayerWithInput(
 	hash hash.Hash,
-	route routes.Route,
 	instructions instructions.Instructions,
 	output outputs.Output,
 	input string,
 ) Layer {
 	return createLayerInternally(
 		hash,
-		route,
 		instructions,
 		output,
 		input,
@@ -69,7 +61,6 @@ func createLayerWithInput(
 
 func createLayerWithReferencesAndInput(
 	hash hash.Hash,
-	route routes.Route,
 	instructions instructions.Instructions,
 	output outputs.Output,
 	references references.References,
@@ -77,7 +68,6 @@ func createLayerWithReferencesAndInput(
 ) Layer {
 	return createLayerInternally(
 		hash,
-		route,
 		instructions,
 		output,
 		input,
@@ -87,7 +77,6 @@ func createLayerWithReferencesAndInput(
 
 func createLayerInternally(
 	hash hash.Hash,
-	route routes.Route,
 	instructions instructions.Instructions,
 	output outputs.Output,
 	input string,
@@ -95,7 +84,6 @@ func createLayerInternally(
 ) Layer {
 	out := layer{
 		hash:         hash,
-		route:        route,
 		instructions: instructions,
 		output:       output,
 		input:        input,
@@ -108,11 +96,6 @@ func createLayerInternally(
 // Hash returns the hash
 func (obj *layer) Hash() hash.Hash {
 	return obj.hash
-}
-
-// Route returns the route
-func (obj *layer) Route() routes.Route {
-	return obj.route
 }
 
 // Instructions returns the instructions

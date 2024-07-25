@@ -4,14 +4,14 @@ import "github.com/steve-care-software/webx/engine/states/domain/hash"
 
 type element struct {
 	hash  hash.Hash
-	layer hash.Hash
+	layer []string
 	bytes []byte
 	str   string
 }
 
 func createElementWithLayer(
 	hash hash.Hash,
-	layer hash.Hash,
+	layer []string,
 ) Element {
 	return createElementInternally(hash, layer, nil, "")
 }
@@ -32,7 +32,7 @@ func createElementWithString(
 
 func createElementInternally(
 	hash hash.Hash,
-	layer hash.Hash,
+	layer []string,
 	bytes []byte,
 	str string,
 ) Element {
@@ -57,7 +57,7 @@ func (obj *element) IsLayer() bool {
 }
 
 // Layer returns the layer, if any
-func (obj *element) Layer() hash.Hash {
+func (obj *element) Layer() []string {
 	return obj.layer
 }
 

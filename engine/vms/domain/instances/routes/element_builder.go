@@ -2,13 +2,14 @@ package routes
 
 import (
 	"errors"
+	"path/filepath"
 
 	"github.com/steve-care-software/webx/engine/states/domain/hash"
 )
 
 type elementBuilder struct {
 	hashAdapter hash.Adapter
-	layer       hash.Hash
+	layer       []string
 	bytes       []byte
 	str         string
 }
@@ -34,7 +35,7 @@ func (app *elementBuilder) Create() ElementBuilder {
 }
 
 // WithLayer adds a layer to the builder
-func (app *elementBuilder) WithLayer(layer hash.Hash) ElementBuilder {
+func (app *elementBuilder) WithLayer(layer []string) ElementBuilder {
 	app.layer = layer
 	return app
 }
@@ -57,10 +58,15 @@ func (app *elementBuilder) Now() (Element, error) {
 		app.bytes = nil
 	}
 
+	if app.layer != nil && len(app.layer) <= 0 {
+		app.layer = nil
+	}
+
 	data := [][]byte{}
 	if app.layer != nil {
+		path := filepath.Join(app.layer...)
 		data = append(data, []byte("layer"))
-		data = append(data, []byte(app.layer.Bytes()))
+		data = append(data, []byte(path))
 	}
 
 	if app.bytes != nil {

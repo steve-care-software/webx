@@ -7,12 +7,10 @@ import (
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/instructions"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/outputs"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/references"
-	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/routes"
 )
 
 type builder struct {
 	hashAdapter  hash.Adapter
-	route        routes.Route
 	input        string
 	instructions instructions.Instructions
 	output       outputs.Output
@@ -24,7 +22,6 @@ func createBuilder(
 ) Builder {
 	out := builder{
 		hashAdapter:  hashAdapter,
-		route:        nil,
 		input:        "",
 		instructions: nil,
 		output:       nil,
@@ -39,12 +36,6 @@ func (app *builder) Create() Builder {
 	return createBuilder(
 		app.hashAdapter,
 	)
-}
-
-// WithRoute adds a route to the builder
-func (app *builder) WithRoute(route routes.Route) Builder {
-	app.route = route
-	return app
 }
 
 // WithInstructions add instructions to the builder
@@ -73,10 +64,6 @@ func (app *builder) WithReferences(references references.References) Builder {
 
 // Now builds a new Layer instance
 func (app *builder) Now() (Layer, error) {
-	if app.route == nil {
-		return nil, errors.New("the route is mandatory in order to build a Layer instance")
-	}
-
 	if app.instructions == nil {
 		return nil, errors.New("the instructions is mandatory in order to build a Layer instance")
 	}
@@ -86,7 +73,6 @@ func (app *builder) Now() (Layer, error) {
 	}
 
 	data := [][]byte{
-		app.route.Hash().Bytes(),
 		app.instructions.Hash().Bytes(),
 		app.output.Hash().Bytes(),
 	}
@@ -105,17 +91,17 @@ func (app *builder) Now() (Layer, error) {
 	}
 
 	if app.references != nil && app.input != "" {
-		return createLayerWithReferencesAndInput(*pHash, app.route, app.instructions, app.output, app.references, app.input), nil
+		return createLayerWithReferencesAndInput(*pHash, app.instructions, app.output, app.references, app.input), nil
 	}
 
 	if app.references != nil {
-		return createLayerWithReferences(*pHash, app.route, app.instructions, app.output, app.references), nil
+		return createLayerWithReferences(*pHash, app.instructions, app.output, app.references), nil
 	}
 
 	if app.input != "" {
-		return createLayerWithInput(*pHash, app.route, app.instructions, app.output, app.input), nil
+		return createLayerWithInput(*pHash, app.instructions, app.output, app.input), nil
 	}
 
-	return createLayer(*pHash, app.route, app.instructions, app.output), nil
+	return createLayer(*pHash, app.instructions, app.output), nil
 
 }

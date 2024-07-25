@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/steve-care-software/webx/engine/states/domain/hash"
-	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/routes/cardinalities"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/cardinalities"
 )
 
 // NewElementsBuilder creates a new elements builder
@@ -38,6 +38,18 @@ type Route interface {
 	Global() Omission
 	HasToken() bool
 	Token() Omission
+}
+
+// Repository represents a route repository
+type Repository interface {
+	List() ([]hash.Hash, error)
+	Retrieve(hash hash.Hash) (Route, error)
+}
+
+// Service represents a route service
+type Service interface {
+	Insert(ins Route) error
+	Delete(hash hash.Hash) error
 }
 
 // TokensBuilder represents tokens builder
@@ -104,7 +116,7 @@ type Elements interface {
 // ElementBuilder represents an element builder
 type ElementBuilder interface {
 	Create() ElementBuilder
-	WithLayer(layer hash.Hash) ElementBuilder
+	WithLayer(layer []string) ElementBuilder
 	WithBytes(bytes []byte) ElementBuilder
 	WithString(str string) ElementBuilder
 	Now() (Element, error)
@@ -114,7 +126,7 @@ type ElementBuilder interface {
 type Element interface {
 	Hash() hash.Hash
 	IsLayer() bool
-	Layer() hash.Hash
+	Layer() []string
 	IsBytes() bool
 	Bytes() []byte
 	IsString() bool
