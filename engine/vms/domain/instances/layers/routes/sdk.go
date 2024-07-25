@@ -5,6 +5,14 @@ import (
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/routes/cardinalities"
 )
 
+// NewElementBuilder creates a new element builder
+func NewElementBuilder() ElementBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createElementBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder represents a route builder
 type Builder interface {
 	Create() Builder
@@ -102,5 +110,5 @@ type Element interface {
 	IsBytes() bool
 	Bytes() []byte
 	IsString() bool
-	String() *string
+	String() string
 }
