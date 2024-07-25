@@ -4,6 +4,7 @@ import "github.com/steve-care-software/webx/engine/states/domain/hash"
 
 type route struct {
 	hash   hash.Hash
+	layer  hash.Hash
 	tokens Tokens
 	global Omission
 	token  Omission
@@ -11,44 +12,50 @@ type route struct {
 
 func createRoute(
 	hash hash.Hash,
+	layer hash.Hash,
 	tokens Tokens,
 ) Route {
-	return createRouteInternally(hash, tokens, nil, nil)
+	return createRouteInternally(hash, layer, tokens, nil, nil)
 }
 
 func createRouteWithGlobal(
 	hash hash.Hash,
+	layer hash.Hash,
 	tokens Tokens,
 	global Omission,
 ) Route {
-	return createRouteInternally(hash, tokens, global, nil)
+	return createRouteInternally(hash, layer, tokens, global, nil)
 }
 
 func createRouteWithToken(
 	hash hash.Hash,
+	layer hash.Hash,
 	tokens Tokens,
 	local Omission,
 ) Route {
-	return createRouteInternally(hash, tokens, nil, local)
+	return createRouteInternally(hash, layer, tokens, nil, local)
 }
 
 func createRouteWithGlobalAndToken(
 	hash hash.Hash,
+	layer hash.Hash,
 	tokens Tokens,
 	global Omission,
 	local Omission,
 ) Route {
-	return createRouteInternally(hash, tokens, global, local)
+	return createRouteInternally(hash, layer, tokens, global, local)
 }
 
 func createRouteInternally(
 	hash hash.Hash,
+	layer hash.Hash,
 	tokens Tokens,
 	global Omission,
 	token Omission,
 ) Route {
 	out := route{
 		hash:   hash,
+		layer:  layer,
 		tokens: tokens,
 		global: global,
 		token:  token,
@@ -60,6 +67,11 @@ func createRouteInternally(
 // Hash returns the hash
 func (obj *route) Hash() hash.Hash {
 	return obj.hash
+}
+
+// Layer returns the layer
+func (obj *route) Layer() hash.Hash {
+	return obj.layer
 }
 
 // Tokens returns the tokens

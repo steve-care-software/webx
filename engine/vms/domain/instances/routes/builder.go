@@ -9,6 +9,7 @@ import (
 type builder struct {
 	hashAdapter hash.Adapter
 	tokens      Tokens
+	layer       hash.Hash
 	global      Omission
 	token       Omission
 }
@@ -19,6 +20,7 @@ func createBuilder(
 	out := builder{
 		hashAdapter: hashAdapter,
 		tokens:      nil,
+		layer:       nil,
 		global:      nil,
 		token:       nil,
 	}
@@ -31,6 +33,12 @@ func (app *builder) Create() Builder {
 	return createBuilder(
 		app.hashAdapter,
 	)
+}
+
+// WithLayer add layer to the builder
+func (app *builder) WithLayer(layer hash.Hash) Builder {
+	app.layer = layer
+	return app
 }
 
 // WithTokens add tokens to the builder
@@ -57,6 +65,10 @@ func (app *builder) Now() (Route, error) {
 		return nil, errors.New("the tokens is mandatory in order to build a Route instance")
 	}
 
+	if app.layer != nil {
+		return nil, errors.New("the layer is mandatory in order to build a Route instance")
+	}
+
 	data := [][]byte{
 		[]byte("token"),
 		app.tokens.Hash().Bytes(),
@@ -76,16 +88,16 @@ func (app *builder) Now() (Route, error) {
 	}
 
 	if app.global != nil && app.token != nil {
-		return createRouteWithGlobalAndToken(*pHash, app.tokens, app.global, app.token), nil
+		return createRouteWithGlobalAndToken(*pHash, app.layer, app.tokens, app.global, app.token), nil
 	}
 
 	if app.global != nil {
-		return createRouteWithGlobal(*pHash, app.tokens, app.global), nil
+		return createRouteWithGlobal(*pHash, app.layer, app.tokens, app.global), nil
 	}
 
 	if app.token != nil {
-		return createRouteWithToken(*pHash, app.tokens, app.token), nil
+		return createRouteWithToken(*pHash, app.layer, app.tokens, app.token), nil
 	}
 
-	return createRoute(*pHash, app.tokens), nil
+	return createRoute(*pHash, app.layer, app.tokens), nil
 }

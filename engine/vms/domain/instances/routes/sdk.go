@@ -56,6 +56,7 @@ func NewElementBuilder() ElementBuilder {
 // Builder represents a route builder
 type Builder interface {
 	Create() Builder
+	WithLayer(layer hash.Hash) Builder
 	WithTokens(tokens Tokens) Builder
 	WithGlobal(omission Omission) Builder
 	WithToken(token Omission) Builder
@@ -65,11 +66,19 @@ type Builder interface {
 // Route represents a route
 type Route interface {
 	Hash() hash.Hash
+	Layer() hash.Hash
 	Tokens() Tokens
 	HasGlobal() bool
 	Global() Omission
 	HasToken() bool
 	Token() Omission
+}
+
+// Repository represents a route repository
+type Repository interface {
+	Amount() (*uint, error)
+	List(index uint, amount uint) ([]hash.Hash, error)
+	Retrieve(hash hash.Hash) (Route, error)
 }
 
 // TokensBuilder represents tokens builder
