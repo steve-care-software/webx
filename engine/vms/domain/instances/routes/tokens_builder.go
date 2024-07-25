@@ -6,15 +6,15 @@ import (
 	"github.com/steve-care-software/webx/engine/states/domain/hash"
 )
 
-type elementsBuilder struct {
+type tokensBuilder struct {
 	hashAdapter hash.Adapter
-	list        []Element
+	list        []Token
 }
 
-func createElementsBuilder(
+func createTokensBuilder(
 	hashAdapter hash.Adapter,
-) ElementsBuilder {
-	out := elementsBuilder{
+) TokensBuilder {
+	out := tokensBuilder{
 		hashAdapter: hashAdapter,
 		list:        nil,
 	}
@@ -23,26 +23,26 @@ func createElementsBuilder(
 }
 
 // Create initializes the builder
-func (app *elementsBuilder) Create() ElementsBuilder {
-	return createElementsBuilder(
+func (app *tokensBuilder) Create() TokensBuilder {
+	return createTokensBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithList adds a list to the builder
-func (app *elementsBuilder) WithList(list []Element) ElementsBuilder {
+func (app *tokensBuilder) WithList(list []Token) TokensBuilder {
 	app.list = list
 	return app
 }
 
-// Now builds a new Elements instance
-func (app *elementsBuilder) Now() (Elements, error) {
+// Now builds a new Tokens instance
+func (app *tokensBuilder) Now() (Tokens, error) {
 	if app.list != nil && len(app.list) <= 0 {
 		app.list = nil
 	}
 
 	if app.list == nil {
-		return nil, errors.New("there must be at least 1 Element in order to build an Elements instance")
+		return nil, errors.New("there must be at least 1 Token in order to build an Tokens instance")
 	}
 
 	data := [][]byte{}
@@ -55,5 +55,5 @@ func (app *elementsBuilder) Now() (Elements, error) {
 		return nil, err
 	}
 
-	return createElements(*pHash, app.list), nil
+	return createTokens(*pHash, app.list), nil
 }
