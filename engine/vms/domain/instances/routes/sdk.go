@@ -5,6 +5,14 @@ import (
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/cardinalities"
 )
 
+// NewOmissionBuilder creates a new omission builder
+func NewOmissionBuilder() OmissionBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createOmissionBuilder(
+		hashAdapter,
+	)
+}
+
 // NewElementsBuilder creates a new elements builder
 func NewElementsBuilder() ElementsBuilder {
 	hashAdapter := hash.NewAdapter()
