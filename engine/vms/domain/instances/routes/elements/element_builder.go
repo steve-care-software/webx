@@ -2,6 +2,7 @@ package elements
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/steve-care-software/webx/engine/states/domain/hash"
 )
@@ -48,6 +49,7 @@ func (app *elementBuilder) WithBytes(bytes []byte) ElementBuilder {
 // WithString add string to the builder
 func (app *elementBuilder) WithString(str string) ElementBuilder {
 	app.str = str
+	fmt.Printf("pass")
 	return app
 }
 
@@ -55,10 +57,6 @@ func (app *elementBuilder) WithString(str string) ElementBuilder {
 func (app *elementBuilder) Now() (Element, error) {
 	if app.bytes != nil && len(app.bytes) <= 0 {
 		app.bytes = nil
-	}
-
-	if app.layer != nil && len(app.layer) <= 0 {
-		app.layer = nil
 	}
 
 	data := [][]byte{}

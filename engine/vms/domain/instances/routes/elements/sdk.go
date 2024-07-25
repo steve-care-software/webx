@@ -20,8 +20,8 @@ func NewElementBuilder() ElementBuilder {
 	)
 }
 
-// ElementsAdapter represents the elements adapter
-type ElementsAdapter interface {
+// Adapter represents the elements adapter
+type Adapter interface {
 	InstancesToBytes(ins Elements) ([]byte, error)
 	BytesToInstances(bytes []byte) (Elements, error)
 	InstanceToBytes(ins Element) ([]byte, error)
