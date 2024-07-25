@@ -66,7 +66,6 @@ type Builder interface {
 // Route represents a route
 type Route interface {
 	Hash() hash.Hash
-	Remaining(input []byte) []byte
 	Layer() hash.Hash
 	Tokens() Tokens
 	HasGlobal() bool
@@ -80,6 +79,7 @@ type Repository interface {
 	Amount() (*uint, error)
 	List(index uint, amount uint) ([]hash.Hash, error)
 	Retrieve(hash hash.Hash) (Route, error)
+	RetrieveFromLayer(layerHash hash.Hash) (Route, error)
 }
 
 // TokensBuilder represents tokens builder
@@ -92,8 +92,6 @@ type TokensBuilder interface {
 // Tokens represents tokens
 type Tokens interface {
 	Hash() hash.Hash
-	RemainingWithOmission(input []byte, tokenOmission Omission) []byte
-	Remaining(input []byte) []byte
 	List() []Token
 }
 
@@ -109,7 +107,6 @@ type TokenBuilder interface {
 // Token represents a token
 type Token interface {
 	Hash() hash.Hash
-	Remaining(input []byte) []byte
 	Elements() Elements
 	Cardinality() cardinalities.Cardinality
 	HasOmission() bool
@@ -127,7 +124,6 @@ type OmissionBuilder interface {
 // Omission represents an omission
 type Omission interface {
 	Hash() hash.Hash
-	Remaining(input []byte) []byte
 	HasPrefix() bool
 	Prefix() Element
 	HasSuffix() bool

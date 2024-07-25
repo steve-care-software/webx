@@ -1,16 +1,17 @@
 package applications
 
 import (
-	"bytes"
 	"errors"
 
 	layer_applications "github.com/steve-care-software/webx/engine/vms/applications/layers"
+	route_applications "github.com/steve-care-software/webx/engine/vms/applications/routes"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes"
 )
 
 type application struct {
+	routeApp          route_applications.Application
 	layerApp          layer_applications.Application
 	layerRepository   layers.Repository
 	routeRepository   routes.Repository
@@ -19,6 +20,7 @@ type application struct {
 }
 
 func createApplication(
+	routeApp route_applications.Application,
 	layerApp layer_applications.Application,
 	layerRepository layers.Repository,
 	routeRepository routes.Repository,
@@ -26,6 +28,7 @@ func createApplication(
 	batchSize uint,
 ) Application {
 	out := application{
+		routeApp:          routeApp,
 		layerApp:          layerApp,
 		layerRepository:   layerRepository,
 		routeRepository:   routeRepository,
@@ -86,8 +89,13 @@ func (app *application) executeOnce(input []byte) (executions.Execution, []byte,
 			}
 
 			// verify if the route has a match against the data
-			remaining := route.Remaining(input)
-			if !bytes.HasPrefix(input, remaining) {
+			isMatch, remaining, err := app.routeApp.Execute(input, route)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			// if there is no match, continue
+			if !isMatch {
 				continue
 			}
 

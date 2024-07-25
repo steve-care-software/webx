@@ -69,17 +69,6 @@ func (obj *route) Hash() hash.Hash {
 	return obj.hash
 }
 
-// Remaining returns the remaining bytes of the input after trying to matching it
-func (obj *route) Remaining(input []byte) []byte {
-	remaining := input
-	if obj.HasGlobal() {
-		remaining = obj.Global().Remaining(input)
-	}
-
-	remaining = obj.Tokens().Remaining(remaining)
-	return remaining
-}
-
 // Layer returns the layer
 func (obj *route) Layer() hash.Hash {
 	return obj.layer
