@@ -38,13 +38,3 @@ type State interface {
 	HasContainers() bool
 	Containers() containers.Containers
 }
-
-// Repository represents an state reposiotry
-type Repository interface {
-	Retrieve() (State, error)
-}
-
-// Service represents an state service
-type Service interface {
-	Save() (State, error)
-}

@@ -29,16 +29,3 @@ type Entry interface {
 	Pointer() pointers.Pointer
 	Bytes() []byte
 }
-
-type Repository interface {
-	Retrieve(pointer pointers.Pointer) ([]byte, error)
-	RetrieveAll(pointers pointers.Pointers) ([][]byte, error)
-}
-
-// Service represents an instance service
-type Service interface {
-	Insert(entry Entry) error
-	InsertAll(entries Entries) error
-	Delete(pointer pointers.Pointer) error
-	DeleteAll(pointers pointers.Pointers) error
-}
