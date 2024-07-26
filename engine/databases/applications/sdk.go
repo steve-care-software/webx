@@ -4,6 +4,7 @@ import (
 	"github.com/steve-care-software/webx/engine/databases/domain/deletes"
 	"github.com/steve-care-software/webx/engine/databases/domain/entries"
 	"github.com/steve-care-software/webx/engine/databases/domain/headers/states/containers/pointers"
+	"github.com/steve-care-software/webx/engine/databases/domain/retrievals"
 )
 
 // Application represents the database application
@@ -11,8 +12,8 @@ type Application interface {
 	Begin(path []string) (*uint, error)
 	List(context uint, keyname string, index uint, length uint) (pointers.Pointer, error)
 	Amount(context uint, keyname string) (*uint, error)
-	Retrieve(context uint, pointer pointers.Pointer) ([]byte, error)
-	RetrieveAll(context uint, pointers pointers.Pointers) ([][]byte, error)
+	Retrieve(context uint, retrival retrievals.Retrieval) ([]byte, error)
+	RetrieveAll(context uint, retrievals retrievals.Retrievals) ([][]byte, error)
 	Insert(context uint, entry entries.Entry) error
 	InsertAll(context uint, entries entries.Entries) error
 	Delete(context uint, delete deletes.Delete) error

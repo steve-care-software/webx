@@ -1,5 +1,7 @@
 package pointers
 
+import "github.com/steve-care-software/webx/engine/databases/domain/retrievals"
+
 // Adapter represents a pointers adapter
 type Adapter interface {
 	InstancesToBytes(ins Pointers) ([]byte, error)
@@ -23,13 +25,13 @@ type Pointers interface {
 // PointerBuilder represents a pointer builder
 type PointerBuilder interface {
 	Create() PointerBuilder
-	WithIndex(index int64) PointerBuilder
-	WithLength(length int64) PointerBuilder
+	WithRetrieval(retrieval retrievals.Retrieval) PointerBuilder
+	IsDeleted() PointerBuilder
 	Now() (Pointer, error)
 }
 
 // Pointer represents a pointer
 type Pointer interface {
-	Index() int64
-	Length() int64
+	Retrieval() retrievals.Retrieval
+	IsDeleted() bool
 }

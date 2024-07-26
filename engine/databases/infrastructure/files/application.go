@@ -12,6 +12,7 @@ import (
 	"github.com/steve-care-software/webx/engine/databases/domain/entries"
 	"github.com/steve-care-software/webx/engine/databases/domain/headers/states/containers/pointers"
 	"github.com/steve-care-software/webx/engine/databases/domain/modifications"
+	"github.com/steve-care-software/webx/engine/databases/domain/retrievals"
 )
 
 type application struct {
@@ -78,9 +79,9 @@ func (app *application) Amount(context uint, keyname string) (*uint, error) {
 }
 
 // Retrieve retrieves entry data from a context
-func (app *application) Retrieve(identifier uint, pointer pointers.Pointer) ([]byte, error) {
+func (app *application) Retrieve(identifier uint, retrieval retrievals.Retrieval) ([]byte, error) {
 	if pContext, ok := app.contexts[identifier]; ok {
-		return app.readEntry(pContext.pFile, pointer)
+		return app.readEntry(pContext.pFile, retrieval)
 	}
 
 	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
@@ -88,9 +89,9 @@ func (app *application) Retrieve(identifier uint, pointer pointers.Pointer) ([]b
 }
 
 // RetrieveAll retrieves multiple entry data from context
-func (app *application) RetrieveAll(identifier uint, pointers pointers.Pointers) ([][]byte, error) {
+func (app *application) RetrieveAll(identifier uint, retrievals retrievals.Retrievals) ([][]byte, error) {
 	if pContext, ok := app.contexts[identifier]; ok {
-		return app.readEntries(pContext.pFile, pointers)
+		return app.readEntries(pContext.pFile, retrievals)
 	}
 
 	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
@@ -257,11 +258,11 @@ func (app *application) Cancel(identifier uint) error {
 	return errors.New(str)
 }
 
-func (app *application) readEntries(file *os.File, pointers pointers.Pointers) ([][]byte, error) {
+func (app *application) readEntries(file *os.File, retrievals retrievals.Retrievals) ([][]byte, error) {
 	output := [][]byte{}
-	list := pointers.List()
-	for idx, onePointer := range list {
-		bytes, err := app.readEntry(file, onePointer)
+	list := retrievals.List()
+	for idx, oneRetrieval := range list {
+		bytes, err := app.readEntry(file, oneRetrieval)
 		if err != nil {
 			str := fmt.Sprintf("could not read entry (pointer index: %d): %s", idx, err.Error())
 			return nil, errors.New(str)
@@ -273,14 +274,14 @@ func (app *application) readEntries(file *os.File, pointers pointers.Pointers) (
 	return output, nil
 }
 
-func (app *application) readEntry(file *os.File, pointer pointers.Pointer) ([]byte, error) {
-	index := pointer.Index()
+func (app *application) readEntry(file *os.File, retrieval retrievals.Retrieval) ([]byte, error) {
+	index := retrieval.Index()
 	_, err := file.Seek(index, 0)
 	if err != nil {
 		return nil, err
 	}
 
-	length := pointer.Length()
+	length := retrieval.Length()
 	buffer := make([]byte, int64(length))
 	_, err = file.Read(buffer)
 	if err != nil {
