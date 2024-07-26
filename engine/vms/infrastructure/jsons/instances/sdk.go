@@ -44,6 +44,11 @@ import (
 	json_outputs "github.com/steve-care-software/webx/engine/vms/infrastructure/jsons/instances/layers/outputs"
 	json_outputs_kinds "github.com/steve-care-software/webx/engine/vms/infrastructure/jsons/instances/layers/outputs/kinds"
 	json_references "github.com/steve-care-software/webx/engine/vms/infrastructure/jsons/instances/layers/references"
+	json_routes "github.com/steve-care-software/webx/engine/vms/infrastructure/jsons/instances/routes"
+	json_route_elements "github.com/steve-care-software/webx/engine/vms/infrastructure/jsons/instances/routes/elements"
+	json_route_omissions "github.com/steve-care-software/webx/engine/vms/infrastructure/jsons/instances/routes/omissions"
+	json_route_tokens "github.com/steve-care-software/webx/engine/vms/infrastructure/jsons/instances/routes/tokens"
+	json_route_tokens_cardinalities "github.com/steve-care-software/webx/engine/vms/infrastructure/jsons/instances/routes/tokens/cardinalities"
 )
 
 // NewAdapter creates a new adapter
@@ -90,6 +95,11 @@ func NewAdapter() instances.Adapter {
 	referenceAdapter := json_references.NewAdapter()
 	layerAdapter := json_layers.NewAdapter()
 	executionAdapter := json_executions.NewAdapter()
+	routeOmissionAdapter := json_route_omissions.NewAdapter()
+	routeTokensAdapter := json_route_tokens.NewAdapter()
+	routeCardinalityAdapter := json_route_tokens_cardinalities.NewAdapter()
+	routeElementsAdapter := json_route_elements.NewAdapter()
+	routeAdapter := json_routes.NewAdapter()
 	return createAdapter(
 		failureAdapter,
 		interruptionAdapter,
@@ -133,5 +143,10 @@ func NewAdapter() instances.Adapter {
 		referenceAdapter,
 		layerAdapter,
 		executionAdapter,
+		routeOmissionAdapter,
+		routeTokensAdapter,
+		routeCardinalityAdapter,
+		routeElementsAdapter,
+		routeAdapter,
 	)
 }

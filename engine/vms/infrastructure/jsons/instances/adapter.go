@@ -46,6 +46,11 @@ import (
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/outputs"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/outputs/kinds"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/references"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/elements"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/omissions"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/tokens"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/tokens/cardinalities"
 )
 
 type adapter struct {
@@ -91,6 +96,11 @@ type adapter struct {
 	referenceAdapter                 references.Adapter
 	layerAdapter                     layers.Adapter
 	executionAdapter                 executions.Adapter
+	routeOmissionAdapter             omissions.Adapter
+	routeTokensAdapter               tokens.Adapter
+	routeCardinalityAdapter          cardinalities.Adapter
+	routeElementsAdapter             elements.Adapter
+	routeAdapter                     routes.Adapter
 }
 
 func createAdapter(
@@ -136,6 +146,11 @@ func createAdapter(
 	referenceAdapter references.Adapter,
 	layerAdapter layers.Adapter,
 	executionAdapter executions.Adapter,
+	routeOmissionAdapter omissions.Adapter,
+	routeTokensAdapter tokens.Adapter,
+	routeCardinalityAdapter cardinalities.Adapter,
+	routeElementsAdapter elements.Adapter,
+	routeAdapter routes.Adapter,
 ) instances.Adapter {
 	out := adapter{
 		failureAdapter:                   failureAdapter,
@@ -180,6 +195,11 @@ func createAdapter(
 		referenceAdapter:                 referenceAdapter,
 		layerAdapter:                     layerAdapter,
 		executionAdapter:                 executionAdapter,
+		routeOmissionAdapter:             routeOmissionAdapter,
+		routeTokensAdapter:               routeTokensAdapter,
+		routeCardinalityAdapter:          routeCardinalityAdapter,
+		routeElementsAdapter:             routeElementsAdapter,
+		routeAdapter:                     routeAdapter,
 	}
 
 	return &out
@@ -369,6 +389,34 @@ func (app *adapter) ToBytes(ins instances.Instance) ([]byte, error) {
 
 	if casted, ok := ins.(executions.Executions); ok {
 		return app.executionAdapter.InstancesToBytes(casted)
+	}
+
+	if casted, ok := ins.(omissions.Omission); ok {
+		return app.routeOmissionAdapter.ToBytes(casted)
+	}
+
+	if casted, ok := ins.(tokens.Tokens); ok {
+		return app.routeTokensAdapter.InstancesToBytes(casted)
+	}
+
+	if casted, ok := ins.(tokens.Token); ok {
+		return app.routeTokensAdapter.InstanceToBytes(casted)
+	}
+
+	if casted, ok := ins.(cardinalities.Cardinality); ok {
+		return app.routeCardinalityAdapter.ToBytes(casted)
+	}
+
+	if casted, ok := ins.(elements.Elements); ok {
+		return app.routeElementsAdapter.InstancesToBytes(casted)
+	}
+
+	if casted, ok := ins.(elements.Element); ok {
+		return app.routeElementsAdapter.InstanceToBytes(casted)
+	}
+
+	if casted, ok := ins.(routes.Route); ok {
+		return app.routeAdapter.ToBytes(casted)
 	}
 
 	return nil, errors.New("the Instance could not be converted to bytes")
@@ -604,6 +652,41 @@ func (app *adapter) ToInstance(data []byte) (instances.Instance, error) {
 	executions, err := app.executionAdapter.BytesToInstances(data)
 	if err == nil {
 		return executions, nil
+	}
+
+	omissions, err := app.routeOmissionAdapter.ToInstance(data)
+	if err == nil {
+		return omissions, nil
+	}
+
+	tokens, err := app.routeTokensAdapter.BytesToInstances(data)
+	if err == nil {
+		return tokens, nil
+	}
+
+	token, err := app.routeTokensAdapter.BytesToInstance(data)
+	if err == nil {
+		return token, nil
+	}
+
+	cardinality, err := app.routeCardinalityAdapter.ToInstance(data)
+	if err == nil {
+		return cardinality, nil
+	}
+
+	elements, err := app.routeElementsAdapter.BytesToInstances(data)
+	if err == nil {
+		return elements, nil
+	}
+
+	element, err := app.routeElementsAdapter.BytesToInstance(data)
+	if err == nil {
+		return element, nil
+	}
+
+	route, err := app.routeAdapter.ToInstance(data)
+	if err == nil {
+		return route, nil
 	}
 
 	return nil, errors.New("the bytes could not be converted to an Instance")

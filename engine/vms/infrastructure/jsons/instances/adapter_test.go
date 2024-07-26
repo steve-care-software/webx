@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/steve-care-software/webx/engine/states/domain/hash"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions/results"
@@ -48,10 +49,87 @@ import (
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/outputs"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/outputs/kinds"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/references"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/elements"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/omissions"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/tokens"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/tokens/cardinalities"
 )
 
 func TestAdapter_Success(t *testing.T) {
+	pHash, err := hash.NewAdapter().FromBytes([]byte("this is a layer hash"))
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
 	instances := map[string]instances.Instance{
+		"routes.omissions": omissions.NewOmissionWithPrefixForTests(
+			elements.NewElementWithBytesForTests([]byte("prefix")),
+		),
+		"routes.tokens{list}": tokens.NewTokensForTests([]tokens.Token{
+			tokens.NewTokenWithOmissionForTests(
+				elements.NewElementsForTests([]elements.Element{
+					elements.NewElementWithBytesForTests([]byte("this is some bytes")),
+					elements.NewElementWithStringForTests("this is a string"),
+				}),
+				cardinalities.NewCardinalityForTests(45),
+				omissions.NewOmissionWithPrefixForTests(
+					elements.NewElementWithBytesForTests([]byte("prefix")),
+				),
+			),
+			tokens.NewTokenForTests(
+				elements.NewElementsForTests([]elements.Element{
+					elements.NewElementWithBytesForTests([]byte("this is some bytes")),
+					elements.NewElementWithStringForTests("this is a string"),
+				}),
+				cardinalities.NewCardinalityForTests(45),
+			),
+		}),
+		"routes.tokens{single}": tokens.NewTokenWithOmissionForTests(
+			elements.NewElementsForTests([]elements.Element{
+				elements.NewElementWithBytesForTests([]byte("this is some bytes")),
+				elements.NewElementWithStringForTests("this is a string"),
+			}),
+			cardinalities.NewCardinalityForTests(45),
+			omissions.NewOmissionWithPrefixForTests(
+				elements.NewElementWithBytesForTests([]byte("prefix")),
+			),
+		),
+		"routes.elements": elements.NewElementsForTests([]elements.Element{
+			elements.NewElementWithBytesForTests([]byte("this is some bytes")),
+			elements.NewElementWithStringForTests("this is a string"),
+		}),
+		"routes": routes.NewRouteWithGobalAndTokenForTests(
+			*pHash,
+			tokens.NewTokensForTests([]tokens.Token{
+				tokens.NewTokenWithOmissionForTests(
+					elements.NewElementsForTests([]elements.Element{
+						elements.NewElementWithBytesForTests([]byte("this is some bytes")),
+						elements.NewElementWithStringForTests("this is a string"),
+					}),
+					cardinalities.NewCardinalityForTests(45),
+					omissions.NewOmissionWithPrefixForTests(
+						elements.NewElementWithBytesForTests([]byte("prefix")),
+					),
+				),
+				tokens.NewTokenForTests(
+					elements.NewElementsForTests([]elements.Element{
+						elements.NewElementWithBytesForTests([]byte("this is some bytes")),
+						elements.NewElementWithStringForTests("this is a string"),
+					}),
+					cardinalities.NewCardinalityForTests(45),
+				),
+			}),
+			omissions.NewOmissionWithPrefixForTests(
+				elements.NewElementWithBytesForTests([]byte(" ")),
+			),
+			omissions.NewOmissionWithPrefixForTests(
+				elements.NewElementWithBytesForTests([]byte("prefix")),
+			),
+		),
+		"routes.element":     elements.NewElementWithBytesForTests([]byte("this is some bytes")),
+		"routes.cardinality": cardinalities.NewCardinalityForTests(45),
 		"layers.instructions.assignments.assignables.bytes": bytes_domain.NewBytesWithHashBytesForTests(
 			"myInput",
 		).(instances.Instance),
