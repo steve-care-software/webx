@@ -67,6 +67,16 @@ func (app *application) Begin(path []string) (*uint, error) {
 	return &identifier, nil
 }
 
+// List returns the list of pointers
+func (app *application) List(context uint, keyname string, index uint, length uint) (pointers.Pointer, error) {
+	return nil, nil
+}
+
+// Amount returns the amount of entities in the keyanme
+func (app *application) Amount(context uint, keyname string) (*uint, error) {
+	return nil, nil
+}
+
 // Retrieve retrieves entry data from a context
 func (app *application) Retrieve(identifier uint, pointer pointers.Pointer) ([]byte, error) {
 	if pContext, ok := app.contexts[identifier]; ok {

@@ -9,6 +9,8 @@ import (
 // Application represents the database application
 type Application interface {
 	Begin(path []string) (*uint, error)
+	List(context uint, keyname string, index uint, length uint) (pointers.Pointer, error)
+	Amount(context uint, keyname string) (*uint, error)
 	Retrieve(context uint, pointer pointers.Pointer) ([]byte, error)
 	RetrieveAll(context uint, pointers pointers.Pointers) ([][]byte, error)
 	Insert(context uint, entry entries.Entry) error
