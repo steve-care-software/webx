@@ -63,11 +63,11 @@ func (app *builder) WithToken(token omissions.Omission) Builder {
 
 // Now builds a new Route instance
 func (app *builder) Now() (Route, error) {
-	if app.tokens != nil {
+	if app.tokens == nil {
 		return nil, errors.New("the tokens is mandatory in order to build a Route instance")
 	}
 
-	if app.layer != nil {
+	if app.layer == nil {
 		return nil, errors.New("the layer is mandatory in order to build a Route instance")
 	}
 
