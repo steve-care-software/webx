@@ -1,7 +1,7 @@
 package entries
 
 import (
-	"github.com/steve-care-software/webx/engine/databases/domain/states/containers/pointers"
+	"github.com/steve-care-software/webx/engine/databases/domain/headers/states/containers/pointers"
 )
 
 // Builder represents an entries builder

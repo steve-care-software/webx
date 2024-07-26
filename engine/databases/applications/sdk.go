@@ -3,7 +3,7 @@ package applications
 import (
 	"github.com/steve-care-software/webx/engine/databases/domain/deletes"
 	"github.com/steve-care-software/webx/engine/databases/domain/entries"
-	"github.com/steve-care-software/webx/engine/databases/domain/states/containers/pointers"
+	"github.com/steve-care-software/webx/engine/databases/domain/headers/states/containers/pointers"
 )
 
 // Application represents the database application
