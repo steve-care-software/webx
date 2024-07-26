@@ -23,5 +23,6 @@ type Builder interface {
 type Header interface {
 	Length() uint64
 	States() states.States
+	Amount(keyname string) (*uint, error)
 	Fetch(keyname string, index uint, length uint) ([]retrievals.Retrieval, error)
 }

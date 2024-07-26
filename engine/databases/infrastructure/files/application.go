@@ -99,8 +99,13 @@ func (app *application) List(identifier uint, keyname string, index uint, length
 }
 
 // Amount returns the amount of entities in the keyanme
-func (app *application) Amount(context uint, keyname string) (*uint, error) {
-	return nil, nil
+func (app *application) Amount(identifier uint, keyname string) (*uint, error) {
+	if pContext, ok := app.contexts[identifier]; ok {
+		return pContext.currentHeader.Amount(keyname)
+	}
+
+	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
+	return nil, errors.New(str)
 }
 
 // Retrieve retrieves entry data from a context
