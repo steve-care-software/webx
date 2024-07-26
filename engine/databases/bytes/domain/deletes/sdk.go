@@ -2,6 +2,16 @@ package deletes
 
 import "github.com/steve-care-software/webx/engine/states/domain/databases/pointers"
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewDeleteBuilder creates a new delete builder
+func NewDeleteBuilder() DeleteBuilder {
+	return createDeleteBuilder()
+}
+
 // Builder represents a deletes builder
 type Builder interface {
 	Create() Builder
@@ -18,6 +28,7 @@ type Deletes interface {
 type DeleteBuilder interface {
 	Create() DeleteBuilder
 	WithKeyname(keyname string) DeleteBuilder
+	WithPointer(pointer pointers.Pointer) DeleteBuilder
 	Now() (Delete, error)
 }
 
