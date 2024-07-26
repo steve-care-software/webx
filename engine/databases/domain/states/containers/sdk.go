@@ -1,7 +1,7 @@
 package containers
 
 import (
-	"github.com/steve-care-software/webx/engine/databases/domain/headers/containers/pointers"
+	"github.com/steve-care-software/webx/engine/databases/domain/states/containers/pointers"
 )
 
 // Adapter represents a containers adapter

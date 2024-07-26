@@ -10,30 +10,30 @@ import (
 	"github.com/steve-care-software/webx/engine/databases/applications"
 	"github.com/steve-care-software/webx/engine/databases/domain/deletes"
 	"github.com/steve-care-software/webx/engine/databases/domain/entries"
-	"github.com/steve-care-software/webx/engine/databases/domain/headers/containers/pointers"
-	"github.com/steve-care-software/webx/engine/databases/domain/states"
+	"github.com/steve-care-software/webx/engine/databases/domain/modifications"
+	"github.com/steve-care-software/webx/engine/databases/domain/states/containers/pointers"
 )
 
 type application struct {
-	stateAdapter   states.Adapter
-	stateBuilder   states.Builder
-	entriesBuilder entries.Builder
-	deletesBuilder deletes.Builder
-	contexts       map[uint]*context
+	modificationAdapter modifications.Adapter
+	modificationBuilder modifications.Builder
+	entriesBuilder      entries.Builder
+	deletesBuilder      deletes.Builder
+	contexts            map[uint]*context
 }
 
 func createApplication(
-	stateAdapter states.Adapter,
-	stateBuilder states.Builder,
+	modificationAdapter modifications.Adapter,
+	modificationBuilder modifications.Builder,
 	entriesBuilder entries.Builder,
 	deletesBuilder deletes.Builder,
 ) applications.Application {
 	out := application{
-		stateAdapter:   stateAdapter,
-		stateBuilder:   stateBuilder,
-		entriesBuilder: entriesBuilder,
-		deletesBuilder: deletesBuilder,
-		contexts:       map[uint]*context{},
+		modificationAdapter: modificationAdapter,
+		modificationBuilder: modificationBuilder,
+		entriesBuilder:      entriesBuilder,
+		deletesBuilder:      deletesBuilder,
+		contexts:            map[uint]*context{},
 	}
 
 	return &out
