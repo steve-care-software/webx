@@ -7,7 +7,7 @@ import (
 // Builder represents an entries builder
 type Builder interface {
 	Create() Builder
-	WithList(list []Entries) Builder
+	WithList(list []Entry) Builder
 	Now() (Entries, error)
 }
 
