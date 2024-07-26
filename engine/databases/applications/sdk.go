@@ -17,5 +17,10 @@ type Application interface {
 	DeleteAll(context uint, deletes deletes.Deletes) error
 	Commit(context uint) error
 	Rollback(context uint) error
+	RollbackTo(context uint, amount uint) error
+	RollFront(context uint) error
+	RollFrontTo(context uint, amount uint) error
+	States(context uint, includesDeleted bool) (*uint, error)
+	DeletedStates(context uint) (*uint, error)
 	Cancel(context uint) error
 }

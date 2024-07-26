@@ -191,9 +191,34 @@ func (app *application) Commit(context uint) error {
 	return nil
 }
 
-// Rollback rollbacks a context
+// Rollback rollbacks a context to the previous state
 func (app *application) Rollback(context uint) error {
 	return nil
+}
+
+// RollbackTo rollbacks a context to the amount provided
+func (app *application) RollbackTo(context uint, amount uint) error {
+	return nil
+}
+
+// RollFront rollfronts a context to the front state state
+func (app *application) RollFront(context uint) error {
+	return nil
+}
+
+// RollFrontTo rollfronts a context to the amount provided
+func (app *application) RollFrontTo(context uint, amount uint) error {
+	return nil
+}
+
+// States returns the amount of states
+func (app *application) States(context uint, includesDeleted bool) (*uint, error) {
+	return nil, nil
+}
+
+// DeletedStates returns the amount of deleted states
+func (app *application) DeletedStates(context uint) (*uint, error) {
+	return nil, nil
 }
 
 // Cancel cancels a context
