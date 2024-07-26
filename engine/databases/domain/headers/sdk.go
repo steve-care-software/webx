@@ -2,6 +2,7 @@ package headers
 
 import (
 	"github.com/steve-care-software/webx/engine/databases/domain/headers/states"
+	"github.com/steve-care-software/webx/engine/databases/domain/retrievals"
 )
 
 // Adaptetr represents an header adapter
@@ -22,4 +23,5 @@ type Builder interface {
 type Header interface {
 	Length() uint64
 	States() states.States
+	Fetch(keyname string, index uint, length uint) ([]retrievals.Retrieval, error)
 }

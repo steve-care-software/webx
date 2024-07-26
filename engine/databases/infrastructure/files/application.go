@@ -10,30 +10,36 @@ import (
 	"github.com/steve-care-software/webx/engine/databases/applications"
 	"github.com/steve-care-software/webx/engine/databases/domain/deletes"
 	"github.com/steve-care-software/webx/engine/databases/domain/entries"
-	"github.com/steve-care-software/webx/engine/databases/domain/headers/states/containers/pointers"
+	"github.com/steve-care-software/webx/engine/databases/domain/headers"
 	"github.com/steve-care-software/webx/engine/databases/domain/modifications"
 	"github.com/steve-care-software/webx/engine/databases/domain/retrievals"
 )
 
 type application struct {
+	headerAdapter       headers.Adaptetr
 	modificationAdapter modifications.Adapter
 	modificationBuilder modifications.Builder
 	entriesBuilder      entries.Builder
 	deletesBuilder      deletes.Builder
+	retrievalsBuilder   retrievals.Builder
 	contexts            map[uint]*context
 }
 
 func createApplication(
+	headerAdapter headers.Adaptetr,
 	modificationAdapter modifications.Adapter,
 	modificationBuilder modifications.Builder,
 	entriesBuilder entries.Builder,
 	deletesBuilder deletes.Builder,
+	retrievalsBuilder retrievals.Builder,
 ) applications.Application {
 	out := application{
+		headerAdapter:       headerAdapter,
 		modificationAdapter: modificationAdapter,
 		modificationBuilder: modificationBuilder,
 		entriesBuilder:      entriesBuilder,
 		deletesBuilder:      deletesBuilder,
+		retrievalsBuilder:   retrievalsBuilder,
 		contexts:            map[uint]*context{},
 	}
 
@@ -56,21 +62,40 @@ func (app *application) Begin(path []string) (*uint, error) {
 		return nil, errors.New(str)
 	}
 
+	currentHeader, err := app.readHeader(pFile)
+	if err != nil {
+		str := fmt.Sprintf("failed to read Header: %s", err.Error())
+		return nil, errors.New(str)
+	}
+
 	identifier := uint(len(app.contexts))
 	app.contexts[identifier] = &context{
-		path:       path,
-		insertions: nil,
-		deletions:  nil,
-		pLock:      pLock,
-		pFile:      pFile,
+		path:          path,
+		currentHeader: currentHeader,
+		insertions:    nil,
+		deletions:     nil,
+		pLock:         pLock,
+		pFile:         pFile,
 	}
 
 	return &identifier, nil
 }
 
 // List returns the list of pointers
-func (app *application) List(context uint, keyname string, index uint, length uint) (pointers.Pointer, error) {
-	return nil, nil
+func (app *application) List(identifier uint, keyname string, index uint, length uint) (retrievals.Retrievals, error) {
+	if pContext, ok := app.contexts[identifier]; ok {
+		list, err := pContext.currentHeader.Fetch(keyname, index, length)
+		if err != nil {
+			return nil, err
+		}
+
+		return app.retrievalsBuilder.Create().
+			WithList(list).
+			Now()
+	}
+
+	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
+	return nil, errors.New(str)
 }
 
 // Amount returns the amount of entities in the keyanme
@@ -274,15 +299,38 @@ func (app *application) readEntries(file *os.File, retrievals retrievals.Retriev
 	return output, nil
 }
 
+func (app *application) readHeader(file *os.File) (headers.Header, error) {
+	// read the first int64 of the file:
+	lengthBytes, err := app.readBytes(file, 0, amountOfBytesIntUint64)
+	if err != nil {
+		return nil, err
+	}
+
+	// convert the bytes to the length:
+	length := int64(bytesToUint64(lengthBytes))
+
+	// read the data:
+	headerBytes, err := app.readBytes(file, amountOfBytesIntUint64, length)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.headerAdapter.ToInstance(headerBytes)
+}
+
 func (app *application) readEntry(file *os.File, retrieval retrievals.Retrieval) ([]byte, error) {
 	index := retrieval.Index()
+	length := retrieval.Length()
+	return app.readBytes(file, index, length)
+}
+
+func (app *application) readBytes(file *os.File, index int64, length int64) ([]byte, error) {
 	_, err := file.Seek(index, 0)
 	if err != nil {
 		return nil, err
 	}
 
-	length := retrieval.Length()
-	buffer := make([]byte, int64(length))
+	buffer := make([]byte, length)
 	_, err = file.Read(buffer)
 	if err != nil {
 		return nil, err
