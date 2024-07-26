@@ -25,4 +25,5 @@ type Application interface {
 	States(context uint, includesDeleted bool) (*uint, error)
 	DeletedStates(context uint) (*uint, error)
 	Cancel(context uint) error
+	Purge(context uint) error
 }

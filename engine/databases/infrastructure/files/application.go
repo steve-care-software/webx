@@ -231,6 +231,11 @@ func (app *application) DeletedStates(context uint) (*uint, error) {
 	return nil, nil
 }
 
+// Purge purges the previous states and only keep the latest one.  It also deletes previously deleted entries
+func (app *application) Purge(context uint) error {
+	return nil
+}
+
 // Cancel cancels a context
 func (app *application) Cancel(identifier uint) error {
 	if pContext, ok := app.contexts[identifier]; ok {
