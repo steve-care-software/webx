@@ -1,6 +1,6 @@
 package pointers
 
-import "github.com/steve-care-software/webx/engine/databases/domain/retrievals"
+import "github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
 
 // Adapter represents a pointers adapter
 type Adapter interface {

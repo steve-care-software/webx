@@ -1,6 +1,6 @@
 package chunks
 
-import "github.com/steve-care-software/webx/engine/states/domain/hash"
+import "github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 
 // NewBuilder creates a new chunk builder
 func NewBuilder() Builder {

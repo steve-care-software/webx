@@ -1,6 +1,6 @@
 package creates
 
-import "github.com/steve-care-software/webx/engine/states/domain/hash"
+import "github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 
 type create struct {
 	hash       hash.Hash

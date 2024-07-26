@@ -4,10 +4,10 @@ import (
 	"encoding/base64"
 	"encoding/json"
 
+	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 	"github.com/steve-care-software/webx/engine/states/domain/databases/commits"
 	"github.com/steve-care-software/webx/engine/states/domain/databases/commits/executions"
 	"github.com/steve-care-software/webx/engine/states/domain/databases/commits/executions/chunks"
-	"github.com/steve-care-software/webx/engine/states/domain/hash"
 )
 
 type commitAdapter struct {

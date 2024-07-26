@@ -1,6 +1,6 @@
 package deletes
 
-import "github.com/steve-care-software/webx/engine/states/domain/hash"
+import "github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 
 type delete struct {
 	hash  hash.Hash

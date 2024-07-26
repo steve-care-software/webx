@@ -1,9 +1,9 @@
 package modifications
 
 import (
-	"github.com/steve-care-software/webx/engine/databases/domain/entries"
-	"github.com/steve-care-software/webx/engine/databases/domain/headers/states"
-	"github.com/steve-care-software/webx/engine/databases/domain/headers/states/containers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/entries"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/headers/states"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/headers/states/containers"
 )
 
 // Adapter represents a modification adapter

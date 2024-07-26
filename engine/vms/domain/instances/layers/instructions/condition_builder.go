@@ -3,7 +3,7 @@ package instructions
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/engine/states/domain/hash"
+	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 )
 
 type conditionBuilder struct {

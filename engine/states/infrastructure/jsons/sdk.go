@@ -1,12 +1,12 @@
 package jsons
 
 import (
+	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 	"github.com/steve-care-software/webx/engine/states/domain/databases/commits"
 	"github.com/steve-care-software/webx/engine/states/domain/databases/commits/executions"
 	"github.com/steve-care-software/webx/engine/states/domain/databases/commits/executions/chunks"
 	"github.com/steve-care-software/webx/engine/states/domain/databases/metadatas"
 	"github.com/steve-care-software/webx/engine/states/domain/databases/pointers"
-	"github.com/steve-care-software/webx/engine/states/domain/hash"
 )
 
 // NewCommitAdapter creates a new commit adapter

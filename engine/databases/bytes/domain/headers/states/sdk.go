@@ -1,7 +1,7 @@
 package states
 
 import (
-	"github.com/steve-care-software/webx/engine/databases/domain/headers/states/containers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/headers/states/containers"
 )
 
 // Adapter represents an state adapter

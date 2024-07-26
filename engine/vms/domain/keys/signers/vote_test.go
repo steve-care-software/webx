@@ -3,7 +3,7 @@ package signers
 import (
 	"testing"
 
-	"github.com/steve-care-software/webx/engine/states/domain/hash"
+	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 )
 
 func TestVote_Success(t *testing.T) {

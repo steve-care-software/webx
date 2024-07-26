@@ -1,6 +1,6 @@
 package constants
 
-import "github.com/steve-care-software/webx/engine/states/domain/hash"
+import "github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 
 type constants struct {
 	hash hash.Hash

@@ -4,8 +4,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 
+	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 	"github.com/steve-care-software/webx/engine/states/domain/databases/pointers"
-	"github.com/steve-care-software/webx/engine/states/domain/hash"
 )
 
 type pointerAdapter struct {

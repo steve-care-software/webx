@@ -1,8 +1,8 @@
 package headers
 
 import (
-	"github.com/steve-care-software/webx/engine/databases/domain/headers/states"
-	"github.com/steve-care-software/webx/engine/databases/domain/retrievals"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/headers/states"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
 )
 
 // Adaptetr represents an header adapter
@@ -24,5 +24,5 @@ type Header interface {
 	Length() uint64
 	States() states.States
 	Amount(keyname string) (*uint, error)
-	Fetch(keyname string, index uint, length uint) ([]retrievals.Retrieval, error)
+	Fetch(keyname string, index uint64, length uint64) ([]retrievals.Retrieval, error)
 }

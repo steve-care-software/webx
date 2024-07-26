@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/steve-care-software/webx/engine/states/domain/hash"
+	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions"
 )
 

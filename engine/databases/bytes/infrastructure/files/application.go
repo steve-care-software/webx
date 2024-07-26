@@ -7,12 +7,13 @@ import (
 	"path/filepath"
 
 	"github.com/juju/fslock"
-	"github.com/steve-care-software/webx/engine/databases/applications"
-	"github.com/steve-care-software/webx/engine/databases/domain/deletes"
-	"github.com/steve-care-software/webx/engine/databases/domain/entries"
-	"github.com/steve-care-software/webx/engine/databases/domain/headers"
-	"github.com/steve-care-software/webx/engine/databases/domain/modifications"
-	"github.com/steve-care-software/webx/engine/databases/domain/retrievals"
+	"github.com/steve-care-software/webx/engine/databases/bytes/applications"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/deletes"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/entries"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/headers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/listers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/modifications"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
 )
 
 type application struct {
@@ -82,8 +83,11 @@ func (app *application) Begin(path []string) (*uint, error) {
 }
 
 // List returns the list of pointers
-func (app *application) List(identifier uint, keyname string, index uint, length uint) (retrievals.Retrievals, error) {
+func (app *application) List(identifier uint, lister listers.Lister) (retrievals.Retrievals, error) {
 	if pContext, ok := app.contexts[identifier]; ok {
+		keyname := lister.Keyname()
+		index := lister.Index()
+		length := lister.Length()
 		list, err := pContext.currentHeader.Fetch(keyname, index, length)
 		if err != nil {
 			return nil, err
@@ -228,7 +232,7 @@ func (app *application) DeleteAll(identifier uint, deletes deletes.Deletes) erro
 }
 
 // Commit commits a context
-func (app *application) Commit(context uint) error {
+func (app *application) Commit(identifier uint) error {
 	return nil
 }
 

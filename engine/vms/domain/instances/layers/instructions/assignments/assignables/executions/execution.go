@@ -1,6 +1,6 @@
 package executions
 
-import "github.com/steve-care-software/webx/engine/states/domain/hash"
+import "github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 
 type execution struct {
 	hash      hash.Hash

@@ -4,9 +4,9 @@ import (
 	"os"
 
 	"github.com/juju/fslock"
-	"github.com/steve-care-software/webx/engine/databases/domain/deletes"
-	"github.com/steve-care-software/webx/engine/databases/domain/entries"
-	"github.com/steve-care-software/webx/engine/databases/domain/headers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/deletes"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/entries"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/headers"
 )
 
 type context struct {

@@ -3,7 +3,7 @@ package references
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/engine/states/domain/hash"
+	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 )
 
 type builder struct {

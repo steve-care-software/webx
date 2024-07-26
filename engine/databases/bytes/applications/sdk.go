@@ -1,15 +1,16 @@
 package applications
 
 import (
-	"github.com/steve-care-software/webx/engine/databases/domain/deletes"
-	"github.com/steve-care-software/webx/engine/databases/domain/entries"
-	"github.com/steve-care-software/webx/engine/databases/domain/retrievals"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/deletes"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/entries"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/listers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
 )
 
 // Application represents the database application
 type Application interface {
 	Begin(path []string) (*uint, error)
-	List(context uint, keyname string, index uint, length uint) (retrievals.Retrievals, error)
+	List(context uint, lister listers.Lister) (retrievals.Retrievals, error)
 	Amount(context uint, keyname string) (*uint, error)
 	Retrieve(context uint, retrival retrievals.Retrieval) ([]byte, error)
 	RetrieveAll(context uint, retrievals retrievals.Retrievals) ([][]byte, error)

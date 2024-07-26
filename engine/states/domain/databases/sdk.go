@@ -1,11 +1,11 @@
 package databases
 
 import (
+	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 	"github.com/steve-care-software/webx/engine/states/domain/databases/commits"
 	"github.com/steve-care-software/webx/engine/states/domain/databases/metadatas"
 	"github.com/steve-care-software/webx/engine/states/domain/databases/pointers"
 	"github.com/steve-care-software/webx/engine/states/domain/files"
-	"github.com/steve-care-software/webx/engine/states/domain/hash"
 )
 
 // NewRepository creates a new repository
