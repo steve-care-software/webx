@@ -12,4 +12,7 @@ type Application interface {
 	Delete(context uint, hash hash.Hash) error
 	Retrieve(context uint, identifier string) (blockchains.Blockchain, error)
 	Transact(context uint, identifier string, trx transactions.Transactions) error
+	Queue(context uint, identifier string) (transactions.Transactions, error)
+	Mine(context uint, identifier string) error
+	Sync(context uint, identifier string) error
 }
