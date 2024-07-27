@@ -8,11 +8,13 @@ import (
 
 // Application represents the units database
 type Application interface {
-	Insert(context uint, blockchain blockchains.Blockchain) error
-	Delete(context uint, hash hash.Hash) error
-	Retrieve(context uint, identifier string) (blockchains.Blockchain, error)
-	Transact(context uint, identifier string, trx transactions.Transactions) error
-	Queue(context uint, identifier string) (transactions.Transactions, error)
-	Mine(context uint, identifier string) error
-	Sync(context uint, identifier string) error
+	List() ([]string, error)
+	Insert(blockchain blockchains.Blockchain) error
+	Update(currentIdentifier string, newIdentifier string) error
+	Delete(hash hash.Hash) error
+	Retrieve(identifier string) (blockchains.Blockchain, error)
+	Transact(identifier string, trx transactions.Transactions) error
+	Queue(identifier string) (transactions.Transactions, error)
+	Mine(identifier string) error
+	Sync(identifier string) error
 }

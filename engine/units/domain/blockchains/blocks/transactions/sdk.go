@@ -6,6 +6,13 @@ import (
 	"github.com/steve-care-software/webx/engine/units/domain/units/clears"
 )
 
+// Builder represents the transactions builder
+type Builder interface {
+	Create() Builder
+	WithList(list []Transaction) Builder
+	Now() (Transactions, error)
+}
+
 // Transactions represents transactions
 type Transactions interface {
 	Hash() hash.Hash
