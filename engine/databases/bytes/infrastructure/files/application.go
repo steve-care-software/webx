@@ -86,8 +86,9 @@ func (app *application) Begin(path []string) (*uint, error) {
 func (app *application) List(identifier uint, lister listers.Lister) (retrievals.Retrievals, error) {
 	if pContext, ok := app.contexts[identifier]; ok {
 		keyname := lister.Keyname()
-		index := lister.Index()
-		length := lister.Length()
+		retrieval := lister.Retrieval()
+		index := retrieval.Index()
+		length := retrieval.Length()
 		list, err := pContext.currentHeader.Fetch(keyname, index, length)
 		if err != nil {
 			return nil, err
@@ -330,7 +331,7 @@ func (app *application) readHeader(file *os.File) (states.States, error) {
 func (app *application) readEntry(file *os.File, retrieval retrievals.Retrieval) ([]byte, error) {
 	index := retrieval.Index()
 	length := retrieval.Length()
-	return app.readBytes(file, index, length)
+	return app.readBytes(file, int64(index), int64(length))
 }
 
 func (app *application) readBytes(file *os.File, index int64, length int64) ([]byte, error) {

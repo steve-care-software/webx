@@ -1,8 +1,10 @@
 package listers
 
+import "github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
+
 // NewListerForTests creates a new lister for tests
-func NewListerForTests(keyname string, index uint64, length uint64) Lister {
-	ins, err := NewBuilder().Create().WithKeyname(keyname).WithIndex(index).WithLength(length).Now()
+func NewListerForTests(keyname string, retrieval retrievals.Retrieval) Lister {
+	ins, err := NewBuilder().Create().WithKeyname(keyname).WithRetrieval(retrieval).Now()
 	if err != nil {
 		panic(err)
 	}

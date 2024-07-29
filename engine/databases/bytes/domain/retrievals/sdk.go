@@ -1,5 +1,15 @@
 package retrievals
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewRetrievalBuilder creates a new retrieval builder
+func NewRetrievalBuilder() RetrievalBuilder {
+	return createRetrievalBuilder()
+}
+
 // Builder represents the retrievals builder
 type Builder interface {
 	Create() Builder
@@ -15,13 +25,13 @@ type Retrievals interface {
 // RetrievalBuilder represents the retrieval builder
 type RetrievalBuilder interface {
 	Create() RetrievalBuilder
-	WithIndex(index int64) RetrievalBuilder
-	WithLength(length int64) RetrievalBuilder
+	WithIndex(index uint64) RetrievalBuilder
+	WithLength(length uint64) RetrievalBuilder
 	Now() (Retrieval, error)
 }
 
 // Retrieval represents a retrieval
 type Retrieval interface {
-	Index() int64
-	Length() int64
+	Index() uint64
+	Length() uint64
 }

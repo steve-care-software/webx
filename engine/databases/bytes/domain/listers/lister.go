@@ -1,20 +1,19 @@
 package listers
 
+import "github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
+
 type lister struct {
-	keyname string
-	index   uint64
-	length  uint64
+	keyname   string
+	retrieval retrievals.Retrieval
 }
 
 func createLister(
 	keyname string,
-	index uint64,
-	length uint64,
+	retrieval retrievals.Retrieval,
 ) Lister {
 	out := lister{
-		keyname: keyname,
-		index:   index,
-		length:  length,
+		keyname:   keyname,
+		retrieval: retrieval,
 	}
 
 	return &out
@@ -25,12 +24,7 @@ func (obj *lister) Keyname() string {
 	return obj.keyname
 }
 
-// Index returns the index
-func (obj *lister) Index() uint64 {
-	return obj.index
-}
-
-// Length returns the length
-func (obj *lister) Length() uint64 {
-	return obj.length
+// Retrieval returns the retrieval
+func (obj *lister) Retrieval() retrievals.Retrieval {
+	return obj.retrieval
 }

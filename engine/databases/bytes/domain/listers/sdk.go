@@ -1,5 +1,7 @@
 package listers
 
+import "github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
+
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
 	return createBuilder()
@@ -9,14 +11,12 @@ func NewBuilder() Builder {
 type Builder interface {
 	Create() Builder
 	WithKeyname(keyname string) Builder
-	WithIndex(index uint64) Builder
-	WithLength(length uint64) Builder
+	WithRetrieval(retrieval retrievals.Retrieval) Builder
 	Now() (Lister, error)
 }
 
 // Lister represents a lister
 type Lister interface {
 	Keyname() string
-	Index() uint64
-	Length() uint64
+	Retrieval() retrievals.Retrieval
 }
