@@ -4,6 +4,16 @@ import (
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/headers/states/containers/pointers"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewContainerBuilder creates a new container builder
+func NewContainerBuilder() ContainerBuilder {
+	return createContainerBuilder()
+}
+
 // Adapter represents a containers adapter
 type Adapter interface {
 	InstancesToBytes(ins Containers) ([]byte, error)
@@ -24,16 +34,16 @@ type Containers interface {
 	List() []Container
 }
 
-// ContrainerBuilder represents a container builder
-type ContrainerBuilder interface {
-	Create() ContrainerBuilder
-	WithKeyname(keyname string) ContrainerBuilder
-	WithPointers(pointers pointers.Pointer) ContrainerBuilder
+// ContainerBuilder represents a container builder
+type ContainerBuilder interface {
+	Create() ContainerBuilder
+	WithKeyname(keyname string) ContainerBuilder
+	WithPointers(pointers pointers.Pointers) ContainerBuilder
 	Now() (Container, error)
 }
 
 // Container represents a container
 type Container interface {
 	Keyname() string
-	Pointers() pointers.Pointer
+	Pointers() pointers.Pointers
 }
