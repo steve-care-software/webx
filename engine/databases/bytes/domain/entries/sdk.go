@@ -4,6 +4,16 @@ import (
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/headers/states/containers/pointers"
 )
 
+// NewBuilder initializes the builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewEntryBuilder creates a new entry builder
+func NewEntryBuilder() EntryBuilder {
+	return createEntryBuilder()
+}
+
 // Builder represents an entries builder
 type Builder interface {
 	Create() Builder
