@@ -4,6 +4,16 @@ import (
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/headers/states/containers"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewStateBuilder creates a new state builder
+func NewStateBuilder() StateBuilder {
+	return createStateBuilder()
+}
+
 // Adapter represents an state adapter
 type Adapter interface {
 	InstanceToBytes(ins State) ([]byte, error)
@@ -28,7 +38,7 @@ type States interface {
 type StateBuilder interface {
 	Create() StateBuilder
 	WithContainers(containers containers.Containers) StateBuilder
-	IsDeleted() bool
+	IsDeleted() StateBuilder
 	Now() (State, error)
 }
 
