@@ -2,6 +2,16 @@ package pointers
 
 import "github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewPointerBuilder creates a new pointer builder
+func NewPointerBuilder() PointerBuilder {
+	return createPointerBuilder()
+}
+
 // Adapter represents a pointers adapter
 type Adapter interface {
 	InstancesToBytes(ins Pointers) ([]byte, error)

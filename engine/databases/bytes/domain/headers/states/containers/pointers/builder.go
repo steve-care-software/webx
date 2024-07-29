@@ -1,9 +1,9 @@
-package entries
+package pointers
 
 import "errors"
 
 type builder struct {
-	list []Entry
+	list []Pointer
 }
 
 func createBuilder() Builder {
@@ -20,22 +20,22 @@ func (app *builder) Create() Builder {
 }
 
 // WithList adds a list to the builder
-func (app *builder) WithList(list []Entry) Builder {
+func (app *builder) WithList(list []Pointer) Builder {
 	app.list = list
 	return app
 }
 
-// Now builds a new Entries instance
-func (app *builder) Now() (Entries, error) {
+// Now builds a new Pointers instance
+func (app *builder) Now() (Pointers, error) {
 	if app.list != nil && len(app.list) <= 0 {
 		app.list = nil
 	}
 
 	if app.list == nil {
-		return nil, errors.New("there must be at least 1 Entry in order to build an Entries instance")
+		return nil, errors.New("there must be at least 1 Pointer in order to build a Pointers instance")
 	}
 
-	return createEntries(
+	return createPointers(
 		app.list,
 	), nil
 }
