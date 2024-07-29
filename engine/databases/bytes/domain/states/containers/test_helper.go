@@ -1,6 +1,6 @@
 package containers
 
-import "github.com/steve-care-software/webx/engine/databases/bytes/domain/headers/states/containers/pointers"
+import "github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers"
 
 // NewContainersForTests creates a new containers for tests
 func NewContainersForTests(list []Container) Containers {

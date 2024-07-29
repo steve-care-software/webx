@@ -1,7 +1,8 @@
 package states
 
 import (
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/headers/states/containers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers"
 )
 
 // NewBuilder creates a new builder
@@ -32,6 +33,8 @@ type Builder interface {
 // States represents a states
 type States interface {
 	List() []State
+	Amount(keyname string) (*uint, error)
+	Fetch(keyname string, index uint64, length uint64) ([]retrievals.Retrieval, error)
 }
 
 // StateBuilder represents a state builder

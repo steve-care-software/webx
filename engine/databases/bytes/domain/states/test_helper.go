@@ -1,6 +1,6 @@
 package states
 
-import "github.com/steve-care-software/webx/engine/databases/bytes/domain/headers/states/containers"
+import "github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers"
 
 // NewStatesForTests creates a new states for tests
 func NewStatesForTests(list []State) States {

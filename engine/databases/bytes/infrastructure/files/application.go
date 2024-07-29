@@ -10,14 +10,14 @@ import (
 	"github.com/steve-care-software/webx/engine/databases/bytes/applications"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/deletes"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/entries"
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/headers"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/listers"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/modifications"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states"
 )
 
 type application struct {
-	headerAdapter       headers.Adaptetr
+	statesAdapter       states.Adapter
 	modificationAdapter modifications.Adapter
 	modificationBuilder modifications.Builder
 	entriesBuilder      entries.Builder
@@ -27,7 +27,7 @@ type application struct {
 }
 
 func createApplication(
-	headerAdapter headers.Adaptetr,
+	statesAdapter states.Adapter,
 	modificationAdapter modifications.Adapter,
 	modificationBuilder modifications.Builder,
 	entriesBuilder entries.Builder,
@@ -35,7 +35,7 @@ func createApplication(
 	retrievalsBuilder retrievals.Builder,
 ) applications.Application {
 	out := application{
-		headerAdapter:       headerAdapter,
+		statesAdapter:       statesAdapter,
 		modificationAdapter: modificationAdapter,
 		modificationBuilder: modificationBuilder,
 		entriesBuilder:      entriesBuilder,
@@ -308,7 +308,7 @@ func (app *application) readEntries(file *os.File, retrievals retrievals.Retriev
 	return output, nil
 }
 
-func (app *application) readHeader(file *os.File) (headers.Header, error) {
+func (app *application) readHeader(file *os.File) (states.States, error) {
 	// read the first int64 of the file:
 	lengthBytes, err := app.readBytes(file, 0, amountOfBytesIntUint64)
 	if err != nil {
@@ -324,7 +324,7 @@ func (app *application) readHeader(file *os.File) (headers.Header, error) {
 		return nil, err
 	}
 
-	return app.headerAdapter.ToInstance(headerBytes)
+	return app.statesAdapter.BytesToInstances(headerBytes)
 }
 
 func (app *application) readEntry(file *os.File, retrieval retrievals.Retrieval) ([]byte, error) {

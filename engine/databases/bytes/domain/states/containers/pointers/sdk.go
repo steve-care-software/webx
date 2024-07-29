@@ -30,6 +30,7 @@ type Builder interface {
 // Pointers represents pointers
 type Pointers interface {
 	List() []Pointer
+	Fetch(index uint64, length uint64) ([]retrievals.Retrieval, error)
 }
 
 // PointerBuilder represents a pointer builder

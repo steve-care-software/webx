@@ -35,7 +35,14 @@ func (app *builder) Now() (Containers, error) {
 		return nil, errors.New("there must be at least 1 Container in order to build a Containers instance")
 	}
 
+	mp := map[string]Container{}
+	for _, oneContainer := range app.list {
+		keyname := oneContainer.Keyname()
+		mp[keyname] = oneContainer
+	}
+
 	return createContainers(
+		mp,
 		app.list,
 	), nil
 }

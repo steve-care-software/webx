@@ -1,7 +1,7 @@
 package containers
 
 import (
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/headers/states/containers/pointers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers"
 )
 
 // NewBuilder creates a new builder instance
@@ -32,6 +32,7 @@ type Builder interface {
 // Containers represents containers
 type Containers interface {
 	List() []Container
+	Fetch(keyname string) (Container, error)
 }
 
 // ContainerBuilder represents a container builder
