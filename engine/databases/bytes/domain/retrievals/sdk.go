@@ -10,6 +10,14 @@ func NewRetrievalBuilder() RetrievalBuilder {
 	return createRetrievalBuilder()
 }
 
+// Adapter represents a retrieval adapter
+type Adapter interface {
+	InstancesToBytes(ins Retrievals) ([]byte, error)
+	BytesToInstances(data []byte) (Retrievals, []byte, error)
+	InstanceToBytes(ins Retrieval) ([]byte, error)
+	BytesToInstance(data []byte) (Retrieval, []byte, error)
+}
+
 // Builder represents the retrievals builder
 type Builder interface {
 	Create() Builder

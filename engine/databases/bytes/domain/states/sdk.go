@@ -17,10 +17,10 @@ func NewStateBuilder() StateBuilder {
 
 // Adapter represents an state adapter
 type Adapter interface {
-	InstanceToBytes(ins State) ([]byte, error)
-	BytesToInstance(data []byte) (State, error)
 	InstancesToBytes(ins States) ([]byte, error)
-	BytesToInstances(data []byte) (States, error)
+	BytesToInstances(data []byte) (States, []byte, error)
+	InstanceToBytes(ins State) ([]byte, error)
+	BytesToInstance(data []byte) (State, []byte, error)
 }
 
 // Builder represents a states builder

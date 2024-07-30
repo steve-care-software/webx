@@ -3,6 +3,7 @@ package files
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -14,11 +15,13 @@ import (
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/modifications"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states"
+	infra_bytes "github.com/steve-care-software/webx/engine/databases/bytes/infrastructure/bytes"
+	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 )
 
 type application struct {
+	hashAdapter         hash.Adapter
 	statesAdapter       states.Adapter
-	modificationAdapter modifications.Adapter
 	modificationBuilder modifications.Builder
 	entriesBuilder      entries.Builder
 	deletesBuilder      deletes.Builder
@@ -27,16 +30,16 @@ type application struct {
 }
 
 func createApplication(
+	hashAdapter hash.Adapter,
 	statesAdapter states.Adapter,
-	modificationAdapter modifications.Adapter,
 	modificationBuilder modifications.Builder,
 	entriesBuilder entries.Builder,
 	deletesBuilder deletes.Builder,
 	retrievalsBuilder retrievals.Builder,
 ) applications.Application {
 	out := application{
+		hashAdapter:         hashAdapter,
 		statesAdapter:       statesAdapter,
-		modificationAdapter: modificationAdapter,
 		modificationBuilder: modificationBuilder,
 		entriesBuilder:      entriesBuilder,
 		deletesBuilder:      deletesBuilder,
@@ -50,13 +53,6 @@ func createApplication(
 // Begin begins a context
 func (app *application) Begin(path []string) (*uint, error) {
 	filePath := filepath.Join(path...)
-	pLock := fslock.New(filePath)
-	err := pLock.TryLock()
-	if err != nil {
-		str := fmt.Sprintf("failed to acquire lock: %s", err.Error())
-		return nil, errors.New(str)
-	}
-
 	pFile, err := os.Open(filePath)
 	if err != nil {
 		str := fmt.Sprintf("failed to open file: %s", err.Error())
@@ -75,7 +71,6 @@ func (app *application) Begin(path []string) (*uint, error) {
 		currentHeader: currentHeader,
 		insertions:    nil,
 		deletions:     nil,
-		pLock:         pLock,
 		pFile:         pFile,
 	}
 
@@ -148,7 +143,6 @@ func (app *application) Insert(identifier uint, entry entries.Entry) error {
 			path:       pContext.path,
 			insertions: entries,
 			deletions:  pContext.deletions,
-			pLock:      pContext.pLock,
 			pFile:      pContext.pFile,
 		}
 
@@ -172,7 +166,6 @@ func (app *application) InsertAll(identifier uint, newEntries entries.Entries) e
 			path:       pContext.path,
 			insertions: entries,
 			deletions:  pContext.deletions,
-			pLock:      pContext.pLock,
 			pFile:      pContext.pFile,
 		}
 
@@ -198,7 +191,6 @@ func (app *application) Delete(identifier uint, delete deletes.Delete) error {
 			path:       pContext.path,
 			insertions: pContext.insertions,
 			deletions:  retDeletes,
-			pLock:      pContext.pLock,
 			pFile:      pContext.pFile,
 		}
 
@@ -221,7 +213,6 @@ func (app *application) DeleteAll(identifier uint, deletes deletes.Deletes) erro
 			path:       pContext.path,
 			insertions: pContext.insertions,
 			deletions:  retDeletes,
-			pLock:      pContext.pLock,
 			pFile:      pContext.pFile,
 		}
 
@@ -234,7 +225,75 @@ func (app *application) DeleteAll(identifier uint, deletes deletes.Deletes) erro
 
 // Commit commits a context
 func (app *application) Commit(identifier uint) error {
-	return nil
+	if pContext, ok := app.contexts[identifier]; ok {
+		// lock the origin file:
+		originPath := filepath.Join(pContext.path...)
+		pLock := fslock.New(originPath)
+		err := pLock.TryLock()
+		if err != nil {
+			str := fmt.Sprintf("failed to acquire lock: %s", err.Error())
+			return errors.New(str)
+		}
+
+		defer pLock.Lock()
+		defer pContext.pFile.Close()
+
+		// hash the origin path to build the tmp file name:
+		pHash, err := app.hashAdapter.FromBytes([]byte(originPath))
+		if err != nil {
+			return err
+		}
+
+		// create the destination path:
+		destinationPath := filepath.Join(append(pContext.path[:len(pContext.path)-1], pHash.String())...)
+
+		// create the temporary file:
+		destinationFile, err := os.Create(destinationPath)
+		if err != nil {
+			return err
+		}
+
+		defer destinationFile.Close()
+
+		// copy the database to a temp database file:
+		_, err = io.Copy(destinationFile, pContext.pFile)
+		if err != nil {
+			return err
+		}
+
+		// update the header states:
+		err = app.writeHeader(destinationFile, pContext.currentHeader)
+		if err != nil {
+			return err
+		}
+
+		// write the insertions:
+		if pContext.insertions != nil {
+			err = app.writeInsertions(destinationFile, pContext.insertions)
+			if err != nil {
+				return err
+			}
+		}
+
+		// write the deletions:
+		if pContext.deletions != nil {
+			err = app.writeDeletions(destinationFile, pContext.deletions)
+			if err != nil {
+				return err
+			}
+		}
+
+		// write the destination file back to the original file:
+		_, err = io.Copy(pContext.pFile, destinationFile)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
+	return errors.New(str)
 }
 
 // Rollback rollbacks a context to the previous state
@@ -280,17 +339,50 @@ func (app *application) Cancel(identifier uint) error {
 			return err
 		}
 
-		err = pContext.pLock.Lock()
-		if err != nil {
-			return err
-		}
-
 		delete(app.contexts, identifier)
 		return nil
 	}
 
 	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
 	return errors.New(str)
+}
+
+func (app *application) writeHeader(file *os.File, header states.States) error {
+	bytes, err := app.statesAdapter.InstancesToBytes(header)
+	if err != nil {
+		return err
+	}
+
+	length := len(bytes)
+	lengthBytes := infra_bytes.Uint64ToBytes(uint64(length))
+
+	output := append(lengthBytes, bytes...)
+
+	// start at the beginning of the file:
+	err = file.Truncate(0)
+	if err != nil {
+		return err
+	}
+
+	_, err = file.Seek(0, 0)
+	if err != nil {
+		return err
+	}
+
+	_, err = file.Write(output)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *application) writeInsertions(file *os.File, insertions entries.Entries) error {
+	return nil
+}
+
+func (app *application) writeDeletions(file *os.File, deletions deletes.Deletes) error {
+	return nil
 }
 
 func (app *application) readEntries(file *os.File, retrievals retrievals.Retrievals) ([][]byte, error) {
@@ -317,7 +409,7 @@ func (app *application) readHeader(file *os.File) (states.States, error) {
 	}
 
 	// convert the bytes to the length:
-	length := int64(bytesToUint64(lengthBytes))
+	length := int64(infra_bytes.BytesToUint64(lengthBytes))
 
 	// read the data:
 	headerBytes, err := app.readBytes(file, amountOfBytesIntUint64, length)
@@ -325,7 +417,12 @@ func (app *application) readHeader(file *os.File) (states.States, error) {
 		return nil, err
 	}
 
-	return app.statesAdapter.BytesToInstances(headerBytes)
+	retIns, _, err := app.statesAdapter.BytesToInstances(headerBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	return retIns, nil
 }
 
 func (app *application) readEntry(file *os.File, retrieval retrievals.Retrieval) ([]byte, error) {

@@ -17,9 +17,9 @@ func NewContainerBuilder() ContainerBuilder {
 // Adapter represents a containers adapter
 type Adapter interface {
 	InstancesToBytes(ins Containers) ([]byte, error)
-	BytesToInstances(data []byte) (Containers, error)
+	BytesToInstances(data []byte) (Containers, []byte, error)
 	InstanceToBytes(ins Container) ([]byte, error)
-	BytesToInstance(data []byte) (Container, error)
+	BytesToInstance(data []byte) (Container, []byte, error)
 }
 
 // Builder represents a containers builder

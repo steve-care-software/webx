@@ -15,9 +15,9 @@ func NewPointerBuilder() PointerBuilder {
 // Adapter represents a pointers adapter
 type Adapter interface {
 	InstancesToBytes(ins Pointers) ([]byte, error)
-	BytesToInstances(data []byte) (Pointers, error)
+	BytesToInstances(data []byte) (Pointers, []byte, error)
 	InstanceToBytes(ins Pointer) ([]byte, error)
-	BytesToInstance(data []byte) (Pointer, error)
+	BytesToInstance(data []byte) (Pointer, []byte, error)
 }
 
 // Builder represents the pointers builder

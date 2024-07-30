@@ -13,7 +13,22 @@ func NewStatesForTests(list []State) States {
 }
 
 // NewStateForTests creates a new state for tests
-func NewStateForTests(containers containers.Containers, isDeleted bool) State {
+func NewStateForTests(isDeleted bool) State {
+	builder := NewStateBuilder().Create()
+	if isDeleted {
+		builder.IsDeleted()
+	}
+
+	ins, err := builder.Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewStateWithContainersForTests creates a new state with containers for tests
+func NewStateWithContainersForTests(containers containers.Containers, isDeleted bool) State {
 	builder := NewStateBuilder().Create().WithContainers(containers)
 	if isDeleted {
 		builder.IsDeleted()

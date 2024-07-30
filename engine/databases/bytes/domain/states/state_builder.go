@@ -1,8 +1,6 @@
 package states
 
 import (
-	"errors"
-
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers"
 )
 
@@ -39,13 +37,17 @@ func (app *stateBuilder) IsDeleted() StateBuilder {
 
 // Now builds a new State instance
 func (app *stateBuilder) Now() (State, error) {
-	if app.containers == nil {
-		return nil, errors.New("the containers is mandatory in order to build a State instance")
+	if app.isDeleted && app.containers != nil {
+		return createStateWithContainersAndDeleted(app.containers), nil
+	}
+
+	if app.containers != nil {
+		return createStateWithContainers(app.containers), nil
 	}
 
 	if app.isDeleted {
 		return createStateWithDeleted(app.containers), nil
 	}
 
-	return createState(app.containers), nil
+	return createState(), nil
 }

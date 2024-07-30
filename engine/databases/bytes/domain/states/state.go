@@ -7,13 +7,23 @@ type state struct {
 	containers containers.Containers
 }
 
-func createState(
+func createState() State {
+	return createStateInternally(false, nil)
+}
+
+func createStateWithContainers(
 	containers containers.Containers,
 ) State {
 	return createStateInternally(false, containers)
 }
 
 func createStateWithDeleted(
+	containers containers.Containers,
+) State {
+	return createStateInternally(true, containers)
+}
+
+func createStateWithContainersAndDeleted(
 	containers containers.Containers,
 ) State {
 	return createStateInternally(true, containers)
