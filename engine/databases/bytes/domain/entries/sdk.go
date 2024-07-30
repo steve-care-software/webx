@@ -1,7 +1,7 @@
 package entries
 
 import (
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers/delimiters"
 )
 
 // NewBuilder initializes the builder
@@ -29,13 +29,15 @@ type Entries interface {
 // EntryBuilder represents an entry builder
 type EntryBuilder interface {
 	Create() EntryBuilder
-	WithPointer(pointer pointers.Pointer) EntryBuilder
+	WithKeyname(keyname string) EntryBuilder
+	WithDelimiter(delimiter delimiters.Delimiter) EntryBuilder
 	WithBytes(bytes []byte) EntryBuilder
 	Now() (Entry, error)
 }
 
 // Entry represents an entry
 type Entry interface {
-	Pointer() pointers.Pointer
+	Keyname() string
+	Delimiter() delimiters.Delimiter
 	Bytes() []byte
 }

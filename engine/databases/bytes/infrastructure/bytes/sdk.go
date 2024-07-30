@@ -7,6 +7,7 @@ import (
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers/delimiters"
 )
 
 // AmountOfBytesIntUint64 represents the amount of bytes a uint64 contains
@@ -38,11 +39,11 @@ func NewContainerAdapter() containers.Adapter {
 
 // NewPointerAdapter creates a new pointer adapter
 func NewPointerAdapter() pointers.Adapter {
-	retrievalAdapter := NewRetrievalAdapter()
+	delimiterAdapter := NewDelimiterAdapter()
 	builder := pointers.NewBuilder()
 	pointerBuilder := pointers.NewPointerBuilder()
 	return createPointerAdapter(
-		retrievalAdapter,
+		delimiterAdapter,
 		builder,
 		pointerBuilder,
 	)
@@ -55,6 +56,16 @@ func NewRetrievalAdapter() retrievals.Adapter {
 	return createRetrievalAdapter(
 		builder,
 		retrievalBuilder,
+	)
+}
+
+// NewDelimiterAdapter creates a new delimiter adapter
+func NewDelimiterAdapter() delimiters.Adapter {
+	builder := delimiters.NewBuilder()
+	delimiterBuilder := delimiters.NewDelimiterBuilder()
+	return createDelimiterAdapter(
+		builder,
+		delimiterBuilder,
 	)
 }
 

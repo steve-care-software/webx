@@ -3,11 +3,11 @@ package files
 import (
 	"errors"
 	"fmt"
-	"io"
+	"math/rand"
 	"os"
 	"path/filepath"
+	"strconv"
 
-	"github.com/juju/fslock"
 	"github.com/steve-care-software/webx/engine/databases/bytes/applications"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/deletes"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/entries"
@@ -15,6 +15,8 @@ import (
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/modifications"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers"
 	infra_bytes "github.com/steve-care-software/webx/engine/databases/bytes/infrastructure/bytes"
 	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 )
@@ -22,28 +24,49 @@ import (
 type application struct {
 	hashAdapter         hash.Adapter
 	statesAdapter       states.Adapter
+	statesBuilder       states.Builder
+	stateBuilder        states.StateBuilder
+	containersBuilder   containers.Builder
+	containerBuilder    containers.ContainerBuilder
+	pointersBuilder     pointers.Builder
+	pointerBuilder      pointers.PointerBuilder
 	modificationBuilder modifications.Builder
 	entriesBuilder      entries.Builder
 	deletesBuilder      deletes.Builder
 	retrievalsBuilder   retrievals.Builder
+	basepath            []string
 	contexts            map[uint]*context
 }
 
 func createApplication(
 	hashAdapter hash.Adapter,
 	statesAdapter states.Adapter,
+	statesBuilder states.Builder,
+	stateBuilder states.StateBuilder,
+	containersBuilder containers.Builder,
+	containerBuilder containers.ContainerBuilder,
+	pointersBuilder pointers.Builder,
+	pointerBuilder pointers.PointerBuilder,
 	modificationBuilder modifications.Builder,
 	entriesBuilder entries.Builder,
 	deletesBuilder deletes.Builder,
 	retrievalsBuilder retrievals.Builder,
+	basepath []string,
 ) applications.Application {
 	out := application{
 		hashAdapter:         hashAdapter,
 		statesAdapter:       statesAdapter,
+		statesBuilder:       statesBuilder,
+		stateBuilder:        stateBuilder,
+		containersBuilder:   containersBuilder,
+		containerBuilder:    containerBuilder,
+		pointersBuilder:     pointersBuilder,
+		pointerBuilder:      pointerBuilder,
 		modificationBuilder: modificationBuilder,
 		entriesBuilder:      entriesBuilder,
 		deletesBuilder:      deletesBuilder,
 		retrievalsBuilder:   retrievalsBuilder,
+		basepath:            basepath,
 		contexts:            map[uint]*context{},
 	}
 
@@ -51,23 +74,55 @@ func createApplication(
 }
 
 // Begin begins a context
-func (app *application) Begin(path []string) (*uint, error) {
-	filePath := filepath.Join(path...)
-	pFile, err := os.Open(filePath)
-	if err != nil {
-		str := fmt.Sprintf("failed to open file: %s", err.Error())
-		return nil, errors.New(str)
+func (app *application) Begin(name string) (*uint, error) {
+	fullPath := append(app.basepath, name)
+	filePath := filepath.Join(fullPath...)
+	var pFile *os.File
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		dir := filepath.Dir(filePath)
+		err := os.MkdirAll(dir, os.ModePerm) // Create the directory path
+		if err != nil {
+			return nil, err
+		}
+
+		// Create the file
+		pFile, err = os.Create(filePath)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if pFile == nil {
+		pOpenFile, err := os.Open(filePath)
+		if err != nil {
+			str := fmt.Sprintf("failed to open file: %s", err.Error())
+			return nil, errors.New(str)
+		}
+
+		pFile = pOpenFile
 	}
 
 	currentHeader, err := app.readHeader(pFile)
 	if err != nil {
-		str := fmt.Sprintf("failed to read Header: %s", err.Error())
-		return nil, errors.New(str)
+		state, err := app.stateBuilder.Create().Now()
+		if err != nil {
+			return nil, err
+		}
+
+		states, err := app.statesBuilder.WithList([]states.State{
+			state,
+		}).Now()
+
+		if err != nil {
+			return nil, err
+		}
+
+		currentHeader = states
 	}
 
 	identifier := uint(len(app.contexts))
 	app.contexts[identifier] = &context{
-		path:          path,
+		path:          fullPath,
 		currentHeader: currentHeader,
 		insertions:    nil,
 		deletions:     nil,
@@ -140,10 +195,11 @@ func (app *application) Insert(identifier uint, entry entries.Entry) error {
 		}
 
 		app.contexts[identifier] = &context{
-			path:       pContext.path,
-			insertions: entries,
-			deletions:  pContext.deletions,
-			pFile:      pContext.pFile,
+			path:          pContext.path,
+			insertions:    entries,
+			currentHeader: pContext.currentHeader,
+			deletions:     pContext.deletions,
+			pFile:         pContext.pFile,
 		}
 
 		return nil
@@ -157,16 +213,16 @@ func (app *application) Insert(identifier uint, entry entries.Entry) error {
 func (app *application) InsertAll(identifier uint, newEntries entries.Entries) error {
 	if pContext, ok := app.contexts[identifier]; ok {
 		entries, err := app.mergeInsert(pContext.insertions, newEntries.List())
-
 		if err != nil {
 			return err
 		}
 
 		app.contexts[identifier] = &context{
-			path:       pContext.path,
-			insertions: entries,
-			deletions:  pContext.deletions,
-			pFile:      pContext.pFile,
+			path:          pContext.path,
+			insertions:    entries,
+			currentHeader: pContext.currentHeader,
+			deletions:     pContext.deletions,
+			pFile:         pContext.pFile,
 		}
 
 		return nil
@@ -188,10 +244,11 @@ func (app *application) Delete(identifier uint, delete deletes.Delete) error {
 		}
 
 		app.contexts[identifier] = &context{
-			path:       pContext.path,
-			insertions: pContext.insertions,
-			deletions:  retDeletes,
-			pFile:      pContext.pFile,
+			path:          pContext.path,
+			currentHeader: pContext.currentHeader,
+			insertions:    pContext.insertions,
+			deletions:     retDeletes,
+			pFile:         pContext.pFile,
 		}
 
 		return nil
@@ -210,10 +267,11 @@ func (app *application) DeleteAll(identifier uint, deletes deletes.Deletes) erro
 		}
 
 		app.contexts[identifier] = &context{
-			path:       pContext.path,
-			insertions: pContext.insertions,
-			deletions:  retDeletes,
-			pFile:      pContext.pFile,
+			path:          pContext.path,
+			currentHeader: pContext.currentHeader,
+			insertions:    pContext.insertions,
+			deletions:     retDeletes,
+			pFile:         pContext.pFile,
 		}
 
 		return nil
@@ -227,7 +285,7 @@ func (app *application) DeleteAll(identifier uint, deletes deletes.Deletes) erro
 func (app *application) Commit(identifier uint) error {
 	if pContext, ok := app.contexts[identifier]; ok {
 		// lock the origin file:
-		originPath := filepath.Join(pContext.path...)
+		/*originPath := filepath.Join(pContext.path...)
 		pLock := fslock.New(originPath)
 		err := pLock.TryLock()
 		if err != nil {
@@ -235,11 +293,12 @@ func (app *application) Commit(identifier uint) error {
 			return errors.New(str)
 		}
 
-		defer pLock.Lock()
+		defer pLock.Lock()*/
 		defer pContext.pFile.Close()
 
-		// hash the origin path to build the tmp file name:
-		pHash, err := app.hashAdapter.FromBytes([]byte(originPath))
+		// create the temporary file name:
+		value := strconv.Itoa(rand.Int())
+		pHash, err := app.hashAdapter.FromBytes([]byte(value))
 		if err != nil {
 			return err
 		}
@@ -253,41 +312,49 @@ func (app *application) Commit(identifier uint) error {
 			return err
 		}
 
+		// close the file, then clearnup
 		defer destinationFile.Close()
+		//defer os.Remove(destinationPath)
 
 		// copy the database to a temp database file:
-		_, err = io.Copy(destinationFile, pContext.pFile)
+		/*_, err = io.Copy(destinationFile, pContext.pFile)
+		if err != nil {
+			return err
+		}*/
+
+		// update the header states:
+		updatedStates, err := app.insertInStates(pContext.currentHeader, pContext.insertions)
 		if err != nil {
 			return err
 		}
 
-		// update the header states:
-		err = app.writeHeader(destinationFile, pContext.currentHeader)
+		// update the header states on file:
+		err = app.writeHeader(destinationFile, updatedStates)
 		if err != nil {
 			return err
 		}
 
 		// write the insertions:
-		if pContext.insertions != nil {
+		/*if pContext.insertions != nil {
 			err = app.writeInsertions(destinationFile, pContext.insertions)
 			if err != nil {
 				return err
 			}
-		}
+		}*/
 
 		// write the deletions:
-		if pContext.deletions != nil {
+		/*if pContext.deletions != nil {
 			err = app.writeDeletions(destinationFile, pContext.deletions)
 			if err != nil {
 				return err
 			}
-		}
+		}*/
 
 		// write the destination file back to the original file:
-		_, err = io.Copy(pContext.pFile, destinationFile)
+		/*_, err = io.Copy(pContext.pFile, destinationFile)
 		if err != nil {
 			return err
-		}
+		}*/
 
 		return nil
 	}
@@ -355,7 +422,6 @@ func (app *application) writeHeader(file *os.File, header states.States) error {
 
 	length := len(bytes)
 	lengthBytes := infra_bytes.Uint64ToBytes(uint64(length))
-
 	output := append(lengthBytes, bytes...)
 
 	// start at the beginning of the file:
@@ -467,5 +533,146 @@ func (app *application) mergeDelete(original deletes.Deletes, newEntries []delet
 	list = append(list, newEntries...)
 	return app.deletesBuilder.Create().
 		WithList(list).
+		Now()
+}
+
+func (app *application) insertInStates(statesIns states.States, entries entries.Entries) (states.States, error) {
+	output := []states.State{}
+	list := statesIns.List()
+	length := len(list)
+	for i := 0; i < length; i++ {
+		index := length - 1 - i
+		currentState := list[index]
+		if currentState.IsDeleted() {
+			output = append(output, currentState)
+			continue
+		}
+
+		containers := currentState.Containers()
+		newContainersList, err := app.createContainersForEntities(containers, entries)
+		if err != nil {
+			return nil, err
+		}
+
+		if !currentState.HasContainers() {
+			currentContainers, err := app.containersBuilder.Create().
+				WithList(newContainersList).
+				Now()
+
+			if err != nil {
+				return nil, err
+			}
+
+			containers = currentContainers
+		}
+
+		updatedAfterInsertContainers, err := app.insertInContainers(containers, entries)
+		if err != nil {
+			return nil, err
+		}
+
+		updatedState, err := app.stateBuilder.Create().WithContainers(updatedAfterInsertContainers).Now()
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, updatedState)
+	}
+
+	return app.statesBuilder.Create().
+		WithList(output).
+		Now()
+}
+
+func (app *application) createContainersForEntities(containersIns containers.Containers, entries entries.Entries) ([]containers.Container, error) {
+	mp := map[string][]pointers.Pointer{}
+	list := entries.List()
+	for _, oneEntry := range list {
+		keyname := oneEntry.Keyname()
+		if containersIns != nil {
+			_, err := containersIns.Fetch(keyname)
+			if err == nil {
+				continue
+			}
+		}
+
+		delimiter := oneEntry.Delimiter()
+		pointer, err := app.pointerBuilder.Create().WithDelimiter(delimiter).Now()
+		if err != nil {
+			return nil, err
+		}
+
+		if _, ok := mp[keyname]; !ok {
+			mp[keyname] = []pointers.Pointer{}
+		}
+
+		mp[keyname] = append(mp[keyname], pointer)
+	}
+
+	output := []containers.Container{}
+	for keyname, pointersList := range mp {
+		pointers, err := app.pointersBuilder.Create().WithList(pointersList).Now()
+		if err != nil {
+			return nil, err
+		}
+
+		container, err := app.containerBuilder.Create().WithKeyname(keyname).WithPointers(pointers).Now()
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, container)
+	}
+
+	return output, nil
+}
+
+func (app *application) insertInContainers(containersIns containers.Containers, entries entries.Entries) (containers.Containers, error) {
+	updated := []containers.Container{}
+	list := containersIns.List()
+	for _, oneContainer := range list {
+		updatedContainer, err := app.insertInContainer(oneContainer, entries)
+		if err != nil {
+			return nil, err
+		}
+
+		updated = append(updated, updatedContainer)
+	}
+
+	return app.containersBuilder.Create().
+		WithList(updated).
+		Now()
+}
+
+func (app *application) insertInContainer(container containers.Container, entries entries.Entries) (containers.Container, error) {
+	pointersList := []pointers.Pointer{}
+	keyname := container.Keyname()
+	list := entries.List()
+	for _, oneEntry := range list {
+		if oneEntry.Keyname() != keyname {
+			continue
+		}
+
+		delimiter := oneEntry.Delimiter()
+		pointer, err := app.pointerBuilder.Create().WithDelimiter(delimiter).Now()
+		if err != nil {
+			return nil, err
+		}
+
+		pointersList = append(pointersList, pointer)
+	}
+
+	currentPointers := container.Pointers().List()
+	updatedPointers, err := app.pointersBuilder.Create().
+		WithList(append(currentPointers, pointersList...)).
+		Now()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return app.containerBuilder.Create().
+		WithKeyname(keyname).
+		WithPointers(updatedPointers).
 		Now()
 }

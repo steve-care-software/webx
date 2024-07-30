@@ -3,18 +3,20 @@ package entries
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers/delimiters"
 )
 
 type entryBuilder struct {
-	pointer pointers.Pointer
-	bytes   []byte
+	keyname   string
+	delimiter delimiters.Delimiter
+	bytes     []byte
 }
 
 func createEntryBuilder() EntryBuilder {
 	out := entryBuilder{
-		pointer: nil,
-		bytes:   nil,
+		keyname:   "",
+		delimiter: nil,
+		bytes:     nil,
 	}
 
 	return &out
@@ -25,9 +27,15 @@ func (app *entryBuilder) Create() EntryBuilder {
 	return createEntryBuilder()
 }
 
-// WithPointer adds a pointer to the builder
-func (app *entryBuilder) WithPointer(pointer pointers.Pointer) EntryBuilder {
-	app.pointer = pointer
+// WithKeyname adds a keyname to the builder
+func (app *entryBuilder) WithKeyname(keyname string) EntryBuilder {
+	app.keyname = keyname
+	return app
+}
+
+// WithDelimiter adds a delimiter to the builder
+func (app *entryBuilder) WithDelimiter(delimiter delimiters.Delimiter) EntryBuilder {
+	app.delimiter = delimiter
 	return app
 }
 
@@ -39,8 +47,12 @@ func (app *entryBuilder) WithBytes(bytes []byte) EntryBuilder {
 
 // Now builds a new Entry instance
 func (app *entryBuilder) Now() (Entry, error) {
-	if app.pointer == nil {
-		return nil, errors.New("the pointer is mandatory in order to build an Entry instance")
+	if app.keyname == "" {
+		return nil, errors.New("the keyname is mandatory in order to build an Entry instance")
+	}
+
+	if app.delimiter == nil {
+		return nil, errors.New("the delimiter is mandatory in order to build an Entry instance")
 	}
 
 	if app.bytes != nil && len(app.bytes) <= 0 {
@@ -52,7 +64,8 @@ func (app *entryBuilder) Now() (Entry, error) {
 	}
 
 	return createEntry(
-		app.pointer,
+		app.keyname,
+		app.delimiter,
 		app.bytes,
 	), nil
 }

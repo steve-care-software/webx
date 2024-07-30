@@ -1,27 +1,35 @@
 package entries
 
-import "github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers"
+import "github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers/delimiters"
 
 type entry struct {
-	pointer pointers.Pointer
-	bytes   []byte
+	keyname   string
+	delimiter delimiters.Delimiter
+	bytes     []byte
 }
 
 func createEntry(
-	pointer pointers.Pointer,
+	keyname string,
+	delimiter delimiters.Delimiter,
 	bytes []byte,
 ) Entry {
 	out := entry{
-		pointer: pointer,
-		bytes:   bytes,
+		keyname:   keyname,
+		delimiter: delimiter,
+		bytes:     bytes,
 	}
 
 	return &out
 }
 
-// Pointer returns the pointer
-func (obj *entry) Pointer() pointers.Pointer {
-	return obj.pointer
+// Keyname returns the keyname
+func (obj *entry) Keyname() string {
+	return obj.keyname
+}
+
+// Delimiter returns the delimiter
+func (obj *entry) Delimiter() delimiters.Delimiter {
+	return obj.delimiter
 }
 
 // Bytes returns the bytes

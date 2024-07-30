@@ -4,23 +4,23 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers/delimiters"
 )
 
 type pointerAdapter struct {
-	retrievalAdapter retrievals.Adapter
+	delimiterAdapter delimiters.Adapter
 	builder          pointers.Builder
 	pointerBuilder   pointers.PointerBuilder
 }
 
 func createPointerAdapter(
-	retrievalAdapter retrievals.Adapter,
+	delimiterAdapter delimiters.Adapter,
 	builder pointers.Builder,
 	pointerBuilder pointers.PointerBuilder,
 ) pointers.Adapter {
 	out := pointerAdapter{
-		retrievalAdapter: retrievalAdapter,
+		delimiterAdapter: delimiterAdapter,
 		builder:          builder,
 		pointerBuilder:   pointerBuilder,
 	}
@@ -74,7 +74,7 @@ func (app *pointerAdapter) BytesToInstances(data []byte) (pointers.Pointers, []b
 
 // InstanceToBytes converts instance to bytes
 func (app *pointerAdapter) InstanceToBytes(ins pointers.Pointer) ([]byte, error) {
-	retrievalBytes, err := app.retrievalAdapter.InstanceToBytes(ins.Retrieval())
+	retrievalBytes, err := app.delimiterAdapter.InstanceToBytes(ins.Delimiter())
 	if err != nil {
 		return nil, err
 	}
@@ -102,12 +102,12 @@ func (app *pointerAdapter) BytesToInstance(data []byte) (pointers.Pointer, []byt
 		builder.IsDeleted()
 	}
 
-	retRetrieval, retRemaining, err := app.retrievalAdapter.BytesToInstance(data[1:])
+	retDelimiter, retRemaining, err := app.delimiterAdapter.BytesToInstance(data[1:])
 	if err != nil {
 		return nil, nil, err
 	}
 
-	ins, err := builder.WithRetrieval(retRetrieval).Now()
+	ins, err := builder.WithDelimiter(retDelimiter).Now()
 	if err != nil {
 		return nil, nil, err
 	}

@@ -3,17 +3,17 @@ package pointers
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers/delimiters"
 )
 
 type pointerBuilder struct {
-	retrieval retrievals.Retrieval
+	delimiter delimiters.Delimiter
 	isDeleted bool
 }
 
 func createPointerBuilder() PointerBuilder {
 	out := pointerBuilder{
-		retrieval: nil,
+		delimiter: nil,
 		isDeleted: false,
 	}
 
@@ -25,9 +25,9 @@ func (app *pointerBuilder) Create() PointerBuilder {
 	return createPointerBuilder()
 }
 
-// WithRetrieval adds a retrieval to the builder
-func (app *pointerBuilder) WithRetrieval(retrieval retrievals.Retrieval) PointerBuilder {
-	app.retrieval = retrieval
+// WithDelimiter adds a delimiter to the builder
+func (app *pointerBuilder) WithDelimiter(delimiter delimiters.Delimiter) PointerBuilder {
+	app.delimiter = delimiter
 	return app
 }
 
@@ -39,13 +39,13 @@ func (app *pointerBuilder) IsDeleted() PointerBuilder {
 
 // Now builds a new Pointer instance
 func (app *pointerBuilder) Now() (Pointer, error) {
-	if app.retrieval == nil {
-		return nil, errors.New("the retrieval is mandatory in order to build a Pointer instance")
+	if app.delimiter == nil {
+		return nil, errors.New("the delimiter is mandatory in order to build a Pointer instance")
 	}
 
 	if app.isDeleted {
-		return createPointerWithDeleted(app.retrieval), nil
+		return createPointerWithDeleted(app.delimiter), nil
 	}
 
-	return createPointer(app.retrieval), nil
+	return createPointer(app.delimiter), nil
 }

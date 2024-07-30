@@ -1,39 +1,39 @@
 package pointers
 
-import "github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
+import "github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers/delimiters"
 
 type pointer struct {
-	retrieval retrievals.Retrieval
+	delimiter delimiters.Delimiter
 	isDeleted bool
 }
 
 func createPointer(
-	retrieval retrievals.Retrieval,
+	delimiter delimiters.Delimiter,
 ) Pointer {
-	return createPointerInternally(retrieval, false)
+	return createPointerInternally(delimiter, false)
 }
 
 func createPointerWithDeleted(
-	retrieval retrievals.Retrieval,
+	delimiter delimiters.Delimiter,
 ) Pointer {
-	return createPointerInternally(retrieval, true)
+	return createPointerInternally(delimiter, true)
 }
 
 func createPointerInternally(
-	retrieval retrievals.Retrieval,
+	delimiter delimiters.Delimiter,
 	isDeleted bool,
 ) Pointer {
 	out := pointer{
-		retrieval: retrieval,
+		delimiter: delimiter,
 		isDeleted: isDeleted,
 	}
 
 	return &out
 }
 
-// Retrieval returns the retrieval
-func (obj *pointer) Retrieval() retrievals.Retrieval {
-	return obj.retrieval
+// Delimiter returns the delimiter
+func (obj *pointer) Delimiter() delimiters.Delimiter {
+	return obj.delimiter
 }
 
 // IsDeleted returns true if deleted, false otherwise

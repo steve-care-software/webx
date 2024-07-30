@@ -5,9 +5,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers/delimiters"
 )
 
 func TestContainerAdapter_single_Success(t *testing.T) {
@@ -15,11 +15,11 @@ func TestContainerAdapter_single_Success(t *testing.T) {
 		"myKeyname",
 		pointers.NewPointersForTests([]pointers.Pointer{
 			pointers.NewPointerForTests(
-				retrievals.NewRetrievalForTests(0, 12),
+				delimiters.NewDelimiterForTests(0, 12),
 				true,
 			),
 			pointers.NewPointerForTests(
-				retrievals.NewRetrievalForTests(1, 22),
+				delimiters.NewDelimiterForTests(1, 22),
 				false,
 			),
 		}))
@@ -53,11 +53,11 @@ func TestContainerAdapter_single_withRemaining_Success(t *testing.T) {
 		"myKeyname",
 		pointers.NewPointersForTests([]pointers.Pointer{
 			pointers.NewPointerForTests(
-				retrievals.NewRetrievalForTests(0, 12),
+				delimiters.NewDelimiterForTests(0, 12),
 				true,
 			),
 			pointers.NewPointerForTests(
-				retrievals.NewRetrievalForTests(1, 22),
+				delimiters.NewDelimiterForTests(1, 22),
 				false,
 			),
 		}))
@@ -94,11 +94,11 @@ func TestContainerAdapter_multiple_Success(t *testing.T) {
 			"firstContainer",
 			pointers.NewPointersForTests([]pointers.Pointer{
 				pointers.NewPointerForTests(
-					retrievals.NewRetrievalForTests(0, 12),
+					delimiters.NewDelimiterForTests(0, 12),
 					true,
 				),
 				pointers.NewPointerForTests(
-					retrievals.NewRetrievalForTests(1, 22),
+					delimiters.NewDelimiterForTests(1, 22),
 					false,
 				),
 			})),
@@ -106,11 +106,11 @@ func TestContainerAdapter_multiple_Success(t *testing.T) {
 			"secondContainer",
 			pointers.NewPointersForTests([]pointers.Pointer{
 				pointers.NewPointerForTests(
-					retrievals.NewRetrievalForTests(0, 12),
+					delimiters.NewDelimiterForTests(0, 12),
 					true,
 				),
 				pointers.NewPointerForTests(
-					retrievals.NewRetrievalForTests(1, 22),
+					delimiters.NewDelimiterForTests(1, 22),
 					false,
 				),
 			})),
@@ -146,11 +146,11 @@ func TestContainerAdapter_multiple_withRemaining_Success(t *testing.T) {
 			"firstContainer",
 			pointers.NewPointersForTests([]pointers.Pointer{
 				pointers.NewPointerForTests(
-					retrievals.NewRetrievalForTests(0, 12),
+					delimiters.NewDelimiterForTests(0, 12),
 					true,
 				),
 				pointers.NewPointerForTests(
-					retrievals.NewRetrievalForTests(1, 22),
+					delimiters.NewDelimiterForTests(1, 22),
 					false,
 				),
 			})),
@@ -158,11 +158,11 @@ func TestContainerAdapter_multiple_withRemaining_Success(t *testing.T) {
 			"secondContainer",
 			pointers.NewPointersForTests([]pointers.Pointer{
 				pointers.NewPointerForTests(
-					retrievals.NewRetrievalForTests(0, 12),
+					delimiters.NewDelimiterForTests(0, 12),
 					true,
 				),
 				pointers.NewPointerForTests(
-					retrievals.NewRetrievalForTests(1, 22),
+					delimiters.NewDelimiterForTests(1, 22),
 					false,
 				),
 			})),

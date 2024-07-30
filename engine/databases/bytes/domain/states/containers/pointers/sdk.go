@@ -1,6 +1,9 @@
 package pointers
 
-import "github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
+import (
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers/delimiters"
+)
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
@@ -36,13 +39,13 @@ type Pointers interface {
 // PointerBuilder represents a pointer builder
 type PointerBuilder interface {
 	Create() PointerBuilder
-	WithRetrieval(retrieval retrievals.Retrieval) PointerBuilder
+	WithDelimiter(delimiter delimiters.Delimiter) PointerBuilder
 	IsDeleted() PointerBuilder
 	Now() (Pointer, error)
 }
 
 // Pointer represents a pointer
 type Pointer interface {
-	Retrieval() retrievals.Retrieval
+	Delimiter() delimiters.Delimiter
 	IsDeleted() bool
 }

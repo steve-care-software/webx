@@ -5,18 +5,13 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers/delimiters"
 )
 
-func TestPointerAdapter_single_Success(t *testing.T) {
-	pointer := pointers.NewPointerForTests(
-		delimiters.NewDelimiterForTests(0, 12),
-		true,
-	)
-
-	adapter := NewPointerAdapter()
-	retBytes, err := adapter.InstanceToBytes(pointer)
+func TestDelimiterAdapter_single_Success(t *testing.T) {
+	delimiter := delimiters.NewDelimiterForTests(0, 12)
+	adapter := NewDelimiterAdapter()
+	retBytes, err := adapter.InstanceToBytes(delimiter)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -33,20 +28,16 @@ func TestPointerAdapter_single_Success(t *testing.T) {
 		return
 	}
 
-	if !reflect.DeepEqual(pointer, retIns) {
+	if !reflect.DeepEqual(delimiter, retIns) {
 		t.Errorf("the returned instance is invalid")
 		return
 	}
 }
 
-func TestPointerAdapter_single_withRemaining_Success(t *testing.T) {
-	pointer := pointers.NewPointerForTests(
-		delimiters.NewDelimiterForTests(0, 12),
-		true,
-	)
-
-	adapter := NewPointerAdapter()
-	retBytes, err := adapter.InstanceToBytes(pointer)
+func TestDelimiterAdapter_single_withRemaining_Success(t *testing.T) {
+	delimiter := delimiters.NewDelimiterForTests(0, 12)
+	adapter := NewDelimiterAdapter()
+	retBytes, err := adapter.InstanceToBytes(delimiter)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -65,26 +56,21 @@ func TestPointerAdapter_single_withRemaining_Success(t *testing.T) {
 		return
 	}
 
-	if !reflect.DeepEqual(pointer, retIns) {
+	if !reflect.DeepEqual(delimiter, retIns) {
 		t.Errorf("the returned instance is invalid")
 		return
 	}
 }
 
-func TestPointerAdapter_multiple_Success(t *testing.T) {
-	pointers := pointers.NewPointersForTests([]pointers.Pointer{
-		pointers.NewPointerForTests(
-			delimiters.NewDelimiterForTests(0, 12),
-			true,
-		),
-		pointers.NewPointerForTests(
-			delimiters.NewDelimiterForTests(1, 22),
-			false,
-		),
+func TestDelimiterAdapter_multiple_Success(t *testing.T) {
+
+	delimiters := delimiters.NewDelimitersForTests([]delimiters.Delimiter{
+		delimiters.NewDelimiterForTests(0, 12),
+		delimiters.NewDelimiterForTests(1, 33),
 	})
 
-	adapter := NewPointerAdapter()
-	retBytes, err := adapter.InstancesToBytes(pointers)
+	adapter := NewDelimiterAdapter()
+	retBytes, err := adapter.InstancesToBytes(delimiters)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -101,26 +87,21 @@ func TestPointerAdapter_multiple_Success(t *testing.T) {
 		return
 	}
 
-	if !reflect.DeepEqual(pointers, retIns) {
+	if !reflect.DeepEqual(delimiters, retIns) {
 		t.Errorf("the returned instance is invalid")
 		return
 	}
 }
 
-func TestPointerAdapter_multiple_withRemaining_Success(t *testing.T) {
-	pointers := pointers.NewPointersForTests([]pointers.Pointer{
-		pointers.NewPointerForTests(
-			delimiters.NewDelimiterForTests(0, 12),
-			true,
-		),
-		pointers.NewPointerForTests(
-			delimiters.NewDelimiterForTests(1, 22),
-			false,
-		),
+func TestDelimiterAdapter_multiple_withRemaining_Success(t *testing.T) {
+
+	delimiters := delimiters.NewDelimitersForTests([]delimiters.Delimiter{
+		delimiters.NewDelimiterForTests(0, 12),
+		delimiters.NewDelimiterForTests(1, 33),
 	})
 
-	adapter := NewPointerAdapter()
-	retBytes, err := adapter.InstancesToBytes(pointers)
+	adapter := NewDelimiterAdapter()
+	retBytes, err := adapter.InstancesToBytes(delimiters)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -139,7 +120,7 @@ func TestPointerAdapter_multiple_withRemaining_Success(t *testing.T) {
 		return
 	}
 
-	if !reflect.DeepEqual(pointers, retIns) {
+	if !reflect.DeepEqual(delimiters, retIns) {
 		t.Errorf("the returned instance is invalid")
 		return
 	}

@@ -6,9 +6,17 @@ import (
 	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 )
 
+// Builder represents the application builder
+type Builder interface {
+	Create() Builder
+	WithBasePath(basePath []string) Builder
+	WithNamespace(namespace string) Builder
+	Now() (Application, error)
+}
+
 // Application represents the database application
 type Application interface {
-	Begin(path []string) (*uint, error)
+	Begin(name string) (*uint, error)
 	List(context uint, lister listers.Lister) ([]hash.Hash, error)
 	Amount(context uint, keyname string) (*uint, error)
 	Retrieve(context uint, hash hash.Hash) (entities.Entity, error)

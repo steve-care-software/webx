@@ -1,6 +1,8 @@
 package pointers
 
-import "github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
+import (
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers/delimiters"
+)
 
 // NewPointersForTests creates a new pointers for tests
 func NewPointersForTests(list []Pointer) Pointers {
@@ -13,8 +15,8 @@ func NewPointersForTests(list []Pointer) Pointers {
 }
 
 // NewPointerForTests creates a new pointer for tests
-func NewPointerForTests(retireval retrievals.Retrieval, isDeleted bool) Pointer {
-	builder := NewPointerBuilder().Create().WithRetrieval(retireval)
+func NewPointerForTests(delimiter delimiters.Delimiter, isDeleted bool) Pointer {
+	builder := NewPointerBuilder().Create().WithDelimiter(delimiter)
 	if isDeleted {
 		builder.IsDeleted()
 	}
