@@ -2,6 +2,8 @@ package files
 
 import (
 	"bytes"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/entries"
@@ -12,6 +14,10 @@ func TestSingleTransaction_Success(t *testing.T) {
 	basePath := []string{
 		"test_files",
 	}
+
+	defer func() {
+		os.RemoveAll(filepath.Join(basePath...))
+	}()
 
 	dbName := "mydatabase.db"
 	application, err := NewApplicationBuilder().Create().WithBasePath(basePath).Now()
