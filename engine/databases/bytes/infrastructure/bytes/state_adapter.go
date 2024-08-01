@@ -5,24 +5,24 @@ import (
 	"fmt"
 
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states"
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
 )
 
 type stateAdapter struct {
-	containerAdapter containers.Adapter
-	builder          states.Builder
-	stateBuilder     states.StateBuilder
+	pointerAdapter pointers.Adapter
+	builder        states.Builder
+	stateBuilder   states.StateBuilder
 }
 
 func createStateAdapter(
-	containerAdapter containers.Adapter,
+	pointerAdapter pointers.Adapter,
 	builder states.Builder,
 	stateBuilder states.StateBuilder,
 ) states.Adapter {
 	out := stateAdapter{
-		containerAdapter: containerAdapter,
-		builder:          builder,
-		stateBuilder:     stateBuilder,
+		pointerAdapter: pointerAdapter,
+		builder:        builder,
+		stateBuilder:   stateBuilder,
 	}
 
 	return &out
@@ -80,8 +80,8 @@ func (app *stateAdapter) InstanceToBytes(ins states.State) ([]byte, error) {
 		output[0] = 1
 	}
 
-	if ins.HasContainers() {
-		retBytes, err := app.containerAdapter.InstancesToBytes(ins.Containers())
+	if ins.HasPointers() {
+		retBytes, err := app.pointerAdapter.InstancesToBytes(ins.Pointers())
 		if err != nil {
 			return nil, err
 		}
@@ -106,13 +106,13 @@ func (app *stateAdapter) BytesToInstance(data []byte) (states.State, []byte, err
 		builder.IsDeleted()
 	}
 
-	containers, retRemaining, err := app.containerAdapter.BytesToInstances(data[1:])
+	pointers, retRemaining, err := app.pointerAdapter.BytesToInstances(data[1:])
 	if err != nil {
 		retRemaining = data[1:]
 	}
 
-	if containers != nil {
-		builder.WithContainers(containers)
+	if pointers != nil {
+		builder.WithPointers(pointers)
 	}
 
 	ins, err := builder.Now()

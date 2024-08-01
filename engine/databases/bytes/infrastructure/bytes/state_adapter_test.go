@@ -2,42 +2,26 @@ package bytes
 
 import (
 	"bytes"
+	"fmt"
 	"reflect"
 	"testing"
 
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states"
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers"
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers"
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers/delimiters"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 )
 
-func TestStateAdapter_withContainers_single_Success(t *testing.T) {
-	state := states.NewStateWithContainersForTests(
-		containers.NewContainersForTests([]containers.Container{
-			containers.NewContainerForTests(
-				"firstContainer",
-				pointers.NewPointersForTests([]pointers.Pointer{
-					pointers.NewPointerForTests(
-						delimiters.NewDelimiterForTests(0, 12),
-						true,
-					),
-					pointers.NewPointerForTests(
-						delimiters.NewDelimiterForTests(1, 22),
-						false,
-					),
-				})),
-			containers.NewContainerForTests(
-				"secondContainer",
-				pointers.NewPointersForTests([]pointers.Pointer{
-					pointers.NewPointerForTests(
-						delimiters.NewDelimiterForTests(0, 12),
-						true,
-					),
-					pointers.NewPointerForTests(
-						delimiters.NewDelimiterForTests(1, 22),
-						false,
-					),
-				})),
+func TestStateAdapter_withPointers_single_Success(t *testing.T) {
+	state := states.NewStateWithPointersForTests(
+		pointers.NewPointersForTests([]pointers.Pointer{
+			pointers.NewPointerForTests(
+				delimiters.NewDelimiterForTests(0, 12),
+				true,
+			),
+			pointers.NewPointerForTests(
+				delimiters.NewDelimiterForTests(1, 22),
+				false,
+			),
 		}),
 		true,
 	)
@@ -66,33 +50,17 @@ func TestStateAdapter_withContainers_single_Success(t *testing.T) {
 	}
 }
 
-func TestStateAdapter_withContainers_single_withRemaining_Success(t *testing.T) {
-	state := states.NewStateWithContainersForTests(
-		containers.NewContainersForTests([]containers.Container{
-			containers.NewContainerForTests(
-				"firstContainer",
-				pointers.NewPointersForTests([]pointers.Pointer{
-					pointers.NewPointerForTests(
-						delimiters.NewDelimiterForTests(0, 12),
-						true,
-					),
-					pointers.NewPointerForTests(
-						delimiters.NewDelimiterForTests(1, 22),
-						false,
-					),
-				})),
-			containers.NewContainerForTests(
-				"secondContainer",
-				pointers.NewPointersForTests([]pointers.Pointer{
-					pointers.NewPointerForTests(
-						delimiters.NewDelimiterForTests(0, 12),
-						true,
-					),
-					pointers.NewPointerForTests(
-						delimiters.NewDelimiterForTests(1, 22),
-						false,
-					),
-				})),
+func TestStateAdapter_withPointers_single_withRemaining_Success(t *testing.T) {
+	state := states.NewStateWithPointersForTests(
+		pointers.NewPointersForTests([]pointers.Pointer{
+			pointers.NewPointerForTests(
+				delimiters.NewDelimiterForTests(0, 12),
+				true,
+			),
+			pointers.NewPointerForTests(
+				delimiters.NewDelimiterForTests(1, 22),
+				false,
+			),
 		}),
 		true,
 	)
@@ -123,7 +91,7 @@ func TestStateAdapter_withContainers_single_withRemaining_Success(t *testing.T) 
 	}
 }
 
-func TestStateAdapter_withoutContainers_single_Success(t *testing.T) {
+func TestStateAdapter_withoutPointers_single_Success(t *testing.T) {
 	state := states.NewStateForTests(
 		false,
 	)
@@ -152,7 +120,7 @@ func TestStateAdapter_withoutContainers_single_Success(t *testing.T) {
 	}
 }
 
-func TestStateAdapter_withoutContainers_single_withRemaining_Success(t *testing.T) {
+func TestStateAdapter_withoutPointers_single_withRemaining_Success(t *testing.T) {
 	state := states.NewStateForTests(
 		false,
 	)
@@ -164,13 +132,15 @@ func TestStateAdapter_withoutContainers_single_withRemaining_Success(t *testing.
 		return
 	}
 
-	remaining := []byte("this is some bytes long enough")
+	remaining := []byte("blah")
 	retBytes = append(retBytes, remaining...)
 	retIns, retRemaining, err := adapter.BytesToInstance(retBytes)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
 	}
+
+	fmt.Printf("\n%s\n%s\n", remaining, retRemaining)
 
 	if !bytes.Equal(remaining, retRemaining) {
 		t.Errorf("the returned remaining is invalid")
@@ -185,34 +155,18 @@ func TestStateAdapter_withoutContainers_single_withRemaining_Success(t *testing.
 
 func TestStateAdapter_multiple_Success(t *testing.T) {
 	states := states.NewStatesForTests([]states.State{
-		states.NewStateWithContainersForTests(
-			containers.NewContainersForTests([]containers.Container{
-				containers.NewContainerForTests(
-					"firstContainer",
-					pointers.NewPointersForTests([]pointers.Pointer{
-						pointers.NewPointerForTests(
-							delimiters.NewDelimiterForTests(0, 12),
-							true,
-						),
-						pointers.NewPointerForTests(
-							delimiters.NewDelimiterForTests(1, 22),
-							false,
-						),
-					})),
-				containers.NewContainerForTests(
-					"secondContainer",
-					pointers.NewPointersForTests([]pointers.Pointer{
-						pointers.NewPointerForTests(
-							delimiters.NewDelimiterForTests(0, 12),
-							true,
-						),
-						pointers.NewPointerForTests(
-							delimiters.NewDelimiterForTests(1, 22),
-							false,
-						),
-					})),
+		states.NewStateWithPointersForTests(
+			pointers.NewPointersForTests([]pointers.Pointer{
+				pointers.NewPointerForTests(
+					delimiters.NewDelimiterForTests(0, 12),
+					true,
+				),
+				pointers.NewPointerForTests(
+					delimiters.NewDelimiterForTests(1, 22),
+					false,
+				),
 			}),
-			true,
+			false,
 		),
 		states.NewStateForTests(
 			false,
@@ -248,32 +202,16 @@ func TestStateAdapter_multiple_Success(t *testing.T) {
 
 func TestStateAdapter_multiple_withRemaining_Success(t *testing.T) {
 	states := states.NewStatesForTests([]states.State{
-		states.NewStateWithContainersForTests(
-			containers.NewContainersForTests([]containers.Container{
-				containers.NewContainerForTests(
-					"firstContainer",
-					pointers.NewPointersForTests([]pointers.Pointer{
-						pointers.NewPointerForTests(
-							delimiters.NewDelimiterForTests(0, 12),
-							true,
-						),
-						pointers.NewPointerForTests(
-							delimiters.NewDelimiterForTests(1, 22),
-							false,
-						),
-					})),
-				containers.NewContainerForTests(
-					"secondContainer",
-					pointers.NewPointersForTests([]pointers.Pointer{
-						pointers.NewPointerForTests(
-							delimiters.NewDelimiterForTests(0, 12),
-							true,
-						),
-						pointers.NewPointerForTests(
-							delimiters.NewDelimiterForTests(1, 22),
-							false,
-						),
-					})),
+		states.NewStateWithPointersForTests(
+			pointers.NewPointersForTests([]pointers.Pointer{
+				pointers.NewPointerForTests(
+					delimiters.NewDelimiterForTests(0, 12),
+					true,
+				),
+				pointers.NewPointerForTests(
+					delimiters.NewDelimiterForTests(1, 22),
+					false,
+				),
 			}),
 			true,
 		),
@@ -292,7 +230,7 @@ func TestStateAdapter_multiple_withRemaining_Success(t *testing.T) {
 		return
 	}
 
-	remaining := []byte("this is some bytes long enough")
+	remaining := []byte("blah")
 	retBytes = append(retBytes, remaining...)
 	retIns, retRemaining, err := adapter.BytesToInstances(retBytes)
 	if err != nil {

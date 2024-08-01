@@ -3,8 +3,8 @@ package states
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 )
 
 type states struct {
@@ -26,45 +26,43 @@ func (obj *states) List() []State {
 	return obj.list
 }
 
-// Amount returns the amount of pointers a containers contains
-func (obj *states) Amount(keyname string) (*uint, error) {
-	container, err := obj.fetchContainer(keyname)
+// Fetch fetches a pointer from the keyname and delimiter
+func (obj *states) Fetch(delimiter delimiters.Delimiter) (pointers.Pointer, error) {
+	pointers, err := obj.fetchCurrentStatePointers()
 	if err != nil {
 		return nil, err
 	}
 
-	list := container.Pointers().List()
-	amount := uint(len(list))
-	return &amount, nil
+	return pointers.Fetch(delimiter)
 }
 
-// Fetch fetches a list of retrievals based on a container
-func (obj *states) Fetch(keyname string, index uint64, length uint64) ([]retrievals.Retrieval, error) {
-	container, err := obj.fetchContainer(keyname)
+// Subset fetches a list subset of pointers based on a container
+func (obj *states) Subset(index uint64, length uint64) ([]pointers.Pointer, error) {
+	pointers, err := obj.fetchCurrentStatePointers()
 	if err != nil {
 		return nil, err
 	}
 
-	return container.Pointers().Fetch(index, length)
+	return pointers.Subset(index, length)
 }
 
-func (obj *states) fetchContainer(keyname string) (containers.Container, error) {
+func (obj *states) fetchCurrentStatePointers() (pointers.Pointers, error) {
 	currentState, err := obj.currentState()
 	if err != nil {
 		return nil, err
 	}
 
-	if !currentState.HasContainers() {
-		return nil, errors.New("the current state contains no contaniners")
+	if !currentState.HasPointers() {
+		return nil, errors.New("the current state contains no pointers")
 	}
 
-	return currentState.Containers().Fetch(keyname)
+	return currentState.Pointers(), nil
 }
 
 func (obj *states) currentState() (State, error) {
 	length := len(obj.list)
 	for i := 0; i < length; i++ {
-		index := length - i
+		index := length - 1 - i
 		if obj.list[index].IsDeleted() {
 			continue
 		}

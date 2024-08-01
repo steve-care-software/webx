@@ -1,7 +1,7 @@
 package pointers
 
 import (
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers/delimiters"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 )
 
 // NewPointersForTests creates a new pointers for tests

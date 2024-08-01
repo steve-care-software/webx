@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers"
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers/delimiters"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 )
 
 type pointerAdapter struct {

@@ -2,13 +2,13 @@ package delimiters
 
 import "errors"
 
-type delimiterDelimiterBuilder struct {
+type delimiterBuilder struct {
 	pIndex *uint64
 	length uint64
 }
 
 func createDelimiterBuilder() DelimiterBuilder {
-	out := delimiterDelimiterBuilder{
+	out := delimiterBuilder{
 		pIndex: nil,
 		length: 0,
 	}
@@ -16,25 +16,25 @@ func createDelimiterBuilder() DelimiterBuilder {
 	return &out
 }
 
-// Create initializes the delimiterDelimiterBuilder
-func (app *delimiterDelimiterBuilder) Create() DelimiterBuilder {
+// Create initializes the delimiterBuilder
+func (app *delimiterBuilder) Create() DelimiterBuilder {
 	return createDelimiterBuilder()
 }
 
-// WithIndex adds an index to the delimiterDelimiterBuilder
-func (app *delimiterDelimiterBuilder) WithIndex(index uint64) DelimiterBuilder {
+// WithIndex adds an index to the delimiterBuilder
+func (app *delimiterBuilder) WithIndex(index uint64) DelimiterBuilder {
 	app.pIndex = &index
 	return app
 }
 
-// WithLength adds a length to the delimiterDelimiterBuilder
-func (app *delimiterDelimiterBuilder) WithLength(length uint64) DelimiterBuilder {
+// WithLength adds a length to the delimiterBuilder
+func (app *delimiterBuilder) WithLength(length uint64) DelimiterBuilder {
 	app.length = length
 	return app
 }
 
 // Now builds a new Lister instance
-func (app *delimiterDelimiterBuilder) Now() (Delimiter, error) {
+func (app *delimiterBuilder) Now() (Delimiter, error) {
 	if app.pIndex == nil {
 		return nil, errors.New("the index is mandatory in order to build a Lister instance")
 	}

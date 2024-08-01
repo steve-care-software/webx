@@ -1,8 +1,7 @@
 package pointers
 
 import (
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers/delimiters"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 )
 
 // NewBuilder creates a new builder instance
@@ -33,7 +32,9 @@ type Builder interface {
 // Pointers represents pointers
 type Pointers interface {
 	List() []Pointer
-	Fetch(index uint64, length uint64) ([]retrievals.Retrieval, error)
+	Fetch(delimiter delimiters.Delimiter) (Pointer, error)
+	Subset(index uint64, length uint64) ([]Pointer, error)
+	Search(index uint64, length uint64) ([]delimiters.Delimiter, error)
 }
 
 // PointerBuilder represents a pointer builder

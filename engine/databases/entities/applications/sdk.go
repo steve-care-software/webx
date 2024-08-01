@@ -1,7 +1,6 @@
 package applications
 
 import (
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/listers"
 	"github.com/steve-care-software/webx/engine/databases/entities/domain/entities"
 	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 )
@@ -17,8 +16,8 @@ type Builder interface {
 // Application represents the database application
 type Application interface {
 	Begin(name string) (*uint, error)
-	List(context uint, lister listers.Lister) ([]hash.Hash, error)
-	Amount(context uint, keyname string) (*uint, error)
+	//List(context uint, lister listers.Lister) ([]hash.Hash, error)
+	//Amount(context uint, keyname string) (*uint, error)
 	Retrieve(context uint, hash hash.Hash) (entities.Entity, error)
 	RetrieveAll(context uint, hashes []hash.Hash) ([]entities.Entity, error)
 	Insert(context uint, entity entities.Entity) error

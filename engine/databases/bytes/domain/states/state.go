@@ -1,41 +1,41 @@
 package states
 
-import "github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers"
+import "github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
 
 type state struct {
-	isDeleted  bool
-	containers containers.Containers
+	isDeleted bool
+	pointers  pointers.Pointers
 }
 
 func createState() State {
 	return createStateInternally(false, nil)
 }
 
-func createStateWithContainers(
-	containers containers.Containers,
+func createStateWithPointers(
+	pointers pointers.Pointers,
 ) State {
-	return createStateInternally(false, containers)
+	return createStateInternally(false, pointers)
 }
 
 func createStateWithDeleted(
-	containers containers.Containers,
+	pointers pointers.Pointers,
 ) State {
-	return createStateInternally(true, containers)
+	return createStateInternally(true, pointers)
 }
 
-func createStateWithContainersAndDeleted(
-	containers containers.Containers,
+func createStateWithPointersAndDeleted(
+	pointers pointers.Pointers,
 ) State {
-	return createStateInternally(true, containers)
+	return createStateInternally(true, pointers)
 }
 
 func createStateInternally(
 	isDeleted bool,
-	containers containers.Containers,
+	pointers pointers.Pointers,
 ) State {
 	out := state{
-		isDeleted:  isDeleted,
-		containers: containers,
+		isDeleted: isDeleted,
+		pointers:  pointers,
 	}
 
 	return &out
@@ -46,12 +46,12 @@ func (obj *state) IsDeleted() bool {
 	return obj.isDeleted
 }
 
-// HasContainers returns true if there is containers, false otherwise
-func (obj *state) HasContainers() bool {
-	return obj.containers != nil
+// HasPointers returns true if there is pointers, false otherwise
+func (obj *state) HasPointers() bool {
+	return obj.pointers != nil
 }
 
-// Containers returns the containers, if any
-func (obj *state) Containers() containers.Containers {
-	return obj.containers
+// Pointers returns the pointers, if any
+func (obj *state) Pointers() pointers.Pointers {
+	return obj.pointers
 }

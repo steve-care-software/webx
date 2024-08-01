@@ -1,6 +1,6 @@
 package states
 
-import "github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers"
+import "github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
 
 // NewStatesForTests creates a new states for tests
 func NewStatesForTests(list []State) States {
@@ -27,9 +27,9 @@ func NewStateForTests(isDeleted bool) State {
 	return ins
 }
 
-// NewStateWithContainersForTests creates a new state with containers for tests
-func NewStateWithContainersForTests(containers containers.Containers, isDeleted bool) State {
-	builder := NewStateBuilder().Create().WithContainers(containers)
+// NewStateWithPointersForTests creates a new state with pointers for tests
+func NewStateWithPointersForTests(pointers pointers.Pointers, isDeleted bool) State {
+	builder := NewStateBuilder().Create().WithPointers(pointers)
 	if isDeleted {
 		builder.IsDeleted()
 	}

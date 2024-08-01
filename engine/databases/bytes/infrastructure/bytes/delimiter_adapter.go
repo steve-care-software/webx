@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers/delimiters"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 )
 
 type delimiterAdapter struct {

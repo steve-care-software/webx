@@ -1,6 +1,6 @@
 package pointers
 
-import "github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers/delimiters"
+import "github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 
 type pointer struct {
 	delimiter delimiters.Delimiter

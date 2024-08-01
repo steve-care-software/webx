@@ -3,11 +3,9 @@ package bytes
 import (
 	"encoding/binary"
 
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states"
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers"
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers"
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers/pointers/delimiters"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 )
 
 // AmountOfBytesIntUint64 represents the amount of bytes a uint64 contains
@@ -15,25 +13,13 @@ const AmountOfBytesIntUint64 = 8
 
 // NewStateAdapter creates a new state adapter
 func NewStateAdapter() states.Adapter {
-	containerAdapter := NewContainerAdapter()
+	pointerAdapter := NewPointerAdapter()
 	builder := states.NewBuilder()
 	stateBuilder := states.NewStateBuilder()
 	return createStateAdapter(
-		containerAdapter,
-		builder,
-		stateBuilder,
-	)
-}
-
-// NewContainerAdapter creates a new container adapter
-func NewContainerAdapter() containers.Adapter {
-	pointerAdapter := NewPointerAdapter()
-	builder := containers.NewBuilder()
-	containerBuilder := containers.NewContainerBuilder()
-	return createContainerAdapter(
 		pointerAdapter,
 		builder,
-		containerBuilder,
+		stateBuilder,
 	)
 }
 
@@ -46,16 +32,6 @@ func NewPointerAdapter() pointers.Adapter {
 		delimiterAdapter,
 		builder,
 		pointerBuilder,
-	)
-}
-
-// NewRetrievalAdapter creates a new retrieval adapter
-func NewRetrievalAdapter() retrievals.Adapter {
-	builder := retrievals.NewBuilder()
-	retrievalBuilder := retrievals.NewRetrievalBuilder()
-	return createRetrievalAdapter(
-		builder,
-		retrievalBuilder,
 	)
 }
 

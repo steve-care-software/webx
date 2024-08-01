@@ -1,10 +1,8 @@
 package applications
 
 import (
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/deletes"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/entries"
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/listers"
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 )
 
 // Builder represents the application builder
@@ -17,21 +15,17 @@ type Builder interface {
 // Application represents the database application
 type Application interface {
 	Begin(name string) (*uint, error)
-	List(context uint, lister listers.Lister) (retrievals.Retrievals, error)
-	Amount(context uint, keyname string) (*uint, error)
-	Retrieve(context uint, retrival retrievals.Retrieval) ([]byte, error)
-	RetrieveAll(context uint, retrievals retrievals.Retrievals) ([][]byte, error)
+	Retrieve(context uint, retrival delimiters.Delimiter) ([]byte, error)
+	RetrieveAll(context uint, retrievals delimiters.Delimiters) ([][]byte, error)
 	Insert(context uint, entry entries.Entry) error
 	InsertAll(context uint, entries entries.Entries) error
-	Delete(context uint, delete deletes.Delete) error
-	DeleteAll(context uint, deletes deletes.Deletes) error
+	Delete(context uint, delete delimiters.Delimiter) error
+	DeleteAll(context uint, deletes delimiters.Delimiters) error
 	Commit(context uint) error
-	Rollback(context uint) error
-	RollbackTo(context uint, amount uint) error
-	RollFront(context uint) error
-	RollFrontTo(context uint, amount uint) error
-	States(context uint, includesDeleted bool) (*uint, error)
-	DeletedStates(context uint) (*uint, error)
-	Cancel(context uint) error
+	DeleteState(context uint, stateIndex uint) error
+	RecoverState(context uint, stateIndex uint) error
+	StateIndex(context uint, includesDeleted bool) (*uint, error)
+	DeletedStateIndexes(context uint) ([]uint, error)
+	Close(context uint) error
 	Purge(context uint) error
 }

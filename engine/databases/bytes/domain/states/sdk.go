@@ -1,8 +1,8 @@
 package states
 
 import (
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/retrievals"
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/containers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 )
 
 // NewBuilder creates a new builder
@@ -33,14 +33,14 @@ type Builder interface {
 // States represents a states
 type States interface {
 	List() []State
-	Amount(keyname string) (*uint, error)
-	Fetch(keyname string, index uint64, length uint64) ([]retrievals.Retrieval, error)
+	Fetch(delimiter delimiters.Delimiter) (pointers.Pointer, error)
+	Subset(index uint64, length uint64) ([]pointers.Pointer, error)
 }
 
 // StateBuilder represents a state builder
 type StateBuilder interface {
 	Create() StateBuilder
-	WithContainers(containers containers.Containers) StateBuilder
+	WithPointers(pointers pointers.Pointers) StateBuilder
 	IsDeleted() StateBuilder
 	Now() (State, error)
 }
@@ -48,6 +48,6 @@ type StateBuilder interface {
 // State represents an state
 type State interface {
 	IsDeleted() bool
-	HasContainers() bool
-	Containers() containers.Containers
+	HasPointers() bool
+	Pointers() pointers.Pointers
 }
