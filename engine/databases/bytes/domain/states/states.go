@@ -26,40 +26,8 @@ func (obj *states) List() []State {
 	return obj.list
 }
 
-// Fetch fetches a pointer from the keyname and delimiter
+// Fetch fetches a pointer from the delimiter
 func (obj *states) Fetch(delimiter delimiters.Delimiter) (pointers.Pointer, error) {
-	pointers, err := obj.fetchCurrentStatePointers()
-	if err != nil {
-		return nil, err
-	}
-
-	return pointers.Fetch(delimiter)
-}
-
-// Subset fetches a list subset of pointers based on a container
-func (obj *states) Subset(index uint64, length uint64) ([]pointers.Pointer, error) {
-	pointers, err := obj.fetchCurrentStatePointers()
-	if err != nil {
-		return nil, err
-	}
-
-	return pointers.Subset(index, length)
-}
-
-func (obj *states) fetchCurrentStatePointers() (pointers.Pointers, error) {
-	currentState, err := obj.currentState()
-	if err != nil {
-		return nil, err
-	}
-
-	if !currentState.HasPointers() {
-		return nil, errors.New("the current state contains no pointers")
-	}
-
-	return currentState.Pointers(), nil
-}
-
-func (obj *states) currentState() (State, error) {
 	length := len(obj.list)
 	for i := 0; i < length; i++ {
 		index := length - 1 - i
@@ -67,8 +35,18 @@ func (obj *states) currentState() (State, error) {
 			continue
 		}
 
-		return obj.list[index], nil
+		currentState := obj.list[index]
+		if !currentState.HasPointers() {
+			continue
+		}
+
+		retPointers, err := currentState.Pointers().Fetch(delimiter)
+		if err != nil {
+			continue
+		}
+
+		return retPointers, nil
 	}
 
-	return nil, errors.New("there is no current active state")
+	return nil, errors.New("there is no pointers related to the provided delimiter")
 }

@@ -59,14 +59,25 @@ func TestSingleTransaction_Success(t *testing.T) {
 
 	// create a second entry entry:
 	secondData := []byte("this is some other data")
-	secondDelimiter := delimiters.NewDelimiterForTests(0, uint64(len(secondData)))
+	secondDelimiter := delimiters.NewDelimiterForTests(
+		firstDelimiter.Index()+firstDelimiter.Length(),
+		uint64(len(secondData)),
+	)
+
 	secondEntry := entries.NewEntryForTests(
 		secondDelimiter,
-		firstData,
+		secondData,
 	)
 
 	// insert the second entry:
 	err = application.Insert(*pContext, secondEntry)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	// commit:
+	err = application.Commit(*pContext)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -99,10 +110,45 @@ func TestSingleTransaction_Success(t *testing.T) {
 		return
 	}
 
-	// retrieve the content from the delimiter:
+	// retrieve the content from the first delimiter, returns error:
 	_, err = application.Retrieve(*pContext, firstDelimiter)
 	if err == nil {
 		t.Errorf("the error was expected to contain an error, nil returned")
 		return
 	}
+
+	// retrieve the content from the second delimiter:
+	retData, err = application.Retrieve(*pContext, secondDelimiter)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	// the returned data is expected to be equal:
+	if !bytes.Equal(secondData, retData) {
+		t.Errorf("the returned data is invalid")
+		return
+	}
+
+	// delete the second state:
+	err = application.DeleteState(*pContext, 2)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	// commit:
+	err = application.Commit(*pContext)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	// retrieve the content from the second delimiter, returns error:
+	_, err = application.Retrieve(*pContext, secondDelimiter)
+	if err == nil {
+		t.Errorf("the error was expected to contain an error, nil returned")
+		return
+	}
+
 }

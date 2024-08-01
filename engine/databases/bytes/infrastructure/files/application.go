@@ -247,6 +247,44 @@ func (app *application) Commit(identifier uint) error {
 			return err
 		}
 
+		// copy the existing data:
+		dataIndex := uint64(0)
+		if pContext.pDataIndex != nil {
+			dataIndex = *pContext.pDataIndex
+		}
+
+		_, err = pContext.pFile.Seek(int64(dataIndex), io.SeekStart)
+		if err != nil {
+			return err
+		}
+
+		_, err = destinationFile.Seek(0, io.SeekEnd)
+		if err != nil {
+			return err
+		}
+
+		buffer := make([]byte, 1024)
+		for {
+			amountRead, err := pContext.pFile.Read(buffer)
+			if err != nil && err != io.EOF {
+				return err
+			}
+
+			if amountRead == 0 {
+				break
+			}
+
+			amountWritten, err := destinationFile.Write(buffer[0:amountRead])
+			if err != nil {
+				return err
+			}
+
+			if amountRead != amountWritten {
+				str := fmt.Sprintf("there was an error while copying data, amount bytes read: %d, amount bytes written: %d", amountRead, amountWritten)
+				return errors.New(str)
+			}
+		}
+
 		// write the insertions:
 		if pContext.insertions != nil {
 			err = app.writeInsertions(destinationFile, pContext.insertions)
@@ -281,8 +319,53 @@ func (app *application) Commit(identifier uint) error {
 }
 
 // DeleteState deletes a states from the context by state index
-func (app *application) DeleteState(context uint, stateIndex uint) error {
-	return nil
+func (app *application) DeleteState(identifier uint, stateIndex uint) error {
+	if pContext, ok := app.contexts[identifier]; ok {
+		list := pContext.currentHeader.List()
+		if len(list)-1 < int(stateIndex) {
+			str := fmt.Sprintf("the header contains %d states, the requested state index (%d) does not exists", len(list), stateIndex)
+			return errors.New(str)
+		}
+
+		currentState := list[stateIndex]
+		if currentState.IsDeleted() {
+			str := fmt.Sprintf("the state (index: %d) is already deleted", stateIndex)
+			return errors.New(str)
+		}
+
+		stateBuilder := app.stateBuilder.Create().IsDeleted()
+		if currentState.HasPointers() {
+			pointers := currentState.Pointers()
+			stateBuilder.WithPointers(pointers)
+		}
+
+		updatedState, err := stateBuilder.Now()
+		if err != nil {
+			return err
+		}
+
+		list[stateIndex] = updatedState
+		updatedStates, err := app.statesBuilder.Create().WithList(list).Now()
+		if err != nil {
+			return err
+		}
+
+		app.contexts[identifier] = &context{
+			path:          pContext.path,
+			name:          pContext.name,
+			pDataIndex:    pContext.pDataIndex,
+			currentHeader: updatedStates,
+			insertions:    pContext.insertions,
+			deletions:     pContext.deletions,
+			pFile:         pContext.pFile,
+			pLock:         pContext.pLock,
+		}
+
+		return nil
+	}
+
+	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
+	return errors.New(str)
 }
 
 // RecoverState recovers a state in context by state index
@@ -623,6 +706,7 @@ func (app *application) updateStatesWithDeletes(statesIns states.States, deletes
 			pointersList := oneState.Pointers().List()
 			for _, onePointer := range pointersList {
 				if onePointer.IsDeleted() {
+					updatedPointersList = append(updatedPointersList, onePointer)
 					continue
 				}
 

@@ -34,7 +34,6 @@ type Builder interface {
 type States interface {
 	List() []State
 	Fetch(delimiter delimiters.Delimiter) (pointers.Pointer, error)
-	Subset(index uint64, length uint64) ([]pointers.Pointer, error)
 }
 
 // StateBuilder represents a state builder
