@@ -369,8 +369,53 @@ func (app *application) DeleteState(identifier uint, stateIndex uint) error {
 }
 
 // RecoverState recovers a state in context by state index
-func (app *application) RecoverState(context uint, stateIndex uint) error {
-	return nil
+func (app *application) RecoverState(identifier uint, stateIndex uint) error {
+	if pContext, ok := app.contexts[identifier]; ok {
+		list := pContext.currentHeader.List()
+		if len(list)-1 < int(stateIndex) {
+			str := fmt.Sprintf("the header contains %d states, the requested state index (%d) does not exists", len(list), stateIndex)
+			return errors.New(str)
+		}
+
+		currentState := list[stateIndex]
+		if !currentState.IsDeleted() {
+			str := fmt.Sprintf("the state (index: %d) has not been deleted", stateIndex)
+			return errors.New(str)
+		}
+
+		stateBuilder := app.stateBuilder.Create()
+		if currentState.HasPointers() {
+			pointers := currentState.Pointers()
+			stateBuilder.WithPointers(pointers)
+		}
+
+		updatedState, err := stateBuilder.Now()
+		if err != nil {
+			return err
+		}
+
+		list[stateIndex] = updatedState
+		updatedStates, err := app.statesBuilder.Create().WithList(list).Now()
+		if err != nil {
+			return err
+		}
+
+		app.contexts[identifier] = &context{
+			path:          pContext.path,
+			name:          pContext.name,
+			pDataIndex:    pContext.pDataIndex,
+			currentHeader: updatedStates,
+			insertions:    pContext.insertions,
+			deletions:     pContext.deletions,
+			pFile:         pContext.pFile,
+			pLock:         pContext.pLock,
+		}
+
+		return nil
+	}
+
+	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
+	return errors.New(str)
 }
 
 // StateIndex returns the current state index

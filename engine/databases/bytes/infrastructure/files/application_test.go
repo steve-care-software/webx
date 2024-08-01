@@ -130,7 +130,7 @@ func TestSingleTransaction_Success(t *testing.T) {
 		return
 	}
 
-	// delete the second state:
+	// delete the third state:
 	err = application.DeleteState(*pContext, 2)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
@@ -148,6 +148,33 @@ func TestSingleTransaction_Success(t *testing.T) {
 	_, err = application.Retrieve(*pContext, secondDelimiter)
 	if err == nil {
 		t.Errorf("the error was expected to contain an error, nil returned")
+		return
+	}
+
+	// recover the third state:
+	err = application.RecoverState(*pContext, 2)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	// commit:
+	err = application.Commit(*pContext)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	// retrieve the content from the second delimiter:
+	retData, err = application.Retrieve(*pContext, secondDelimiter)
+	if err != nil {
+		t.Errorf("the error was expected to contain an error, nil returned")
+		return
+	}
+
+	// the returned data is expected to be equal:
+	if !bytes.Equal(secondData, retData) {
+		t.Errorf("the returned data is invalid")
 		return
 	}
 
