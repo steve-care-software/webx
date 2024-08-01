@@ -24,7 +24,7 @@ type Application interface {
 	Commit(context uint) error
 	DeleteState(context uint, stateIndex uint) error
 	RecoverState(context uint, stateIndex uint) error
-	StateIndex(context uint, includesDeleted bool) (*uint, error)
+	StatesAmount(context uint) (*uint, error)
 	DeletedStateIndexes(context uint) ([]uint, error)
 	Close(context uint) error
 	Purge(context uint) error

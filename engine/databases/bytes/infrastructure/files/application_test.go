@@ -151,6 +151,23 @@ func TestSingleTransaction_Success(t *testing.T) {
 		return
 	}
 
+	// retrieve the deleted state indexes:
+	deletedIndexes, err := application.DeletedStateIndexes(*pContext)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if len(deletedIndexes) != 1 {
+		t.Errorf("%d deleted states were expected, %d returned", len(deletedIndexes), 1)
+		return
+	}
+
+	if deletedIndexes[0] != 2 {
+		t.Errorf("the state %d was expected to be deleted, %d was actually deleted", 2, deletedIndexes[0])
+		return
+	}
+
 	// recover the third state:
 	err = application.RecoverState(*pContext, 2)
 	if err != nil {
@@ -175,6 +192,18 @@ func TestSingleTransaction_Success(t *testing.T) {
 	// the returned data is expected to be equal:
 	if !bytes.Equal(secondData, retData) {
 		t.Errorf("the returned data is invalid")
+		return
+	}
+
+	// verify the amount of states:
+	pAmountStates, err := application.StatesAmount(*pContext)
+	if err != nil {
+		t.Errorf("the error was expected to contain an error, nil returned")
+		return
+	}
+
+	if *pAmountStates != 3 {
+		t.Errorf("%d states were expected, %d returned", 3, *pAmountStates)
 		return
 	}
 

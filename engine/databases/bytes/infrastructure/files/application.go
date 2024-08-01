@@ -418,24 +418,34 @@ func (app *application) RecoverState(identifier uint, stateIndex uint) error {
 	return errors.New(str)
 }
 
-// StateIndex returns the current state index
-func (app *application) StateIndex(context uint, includesDeleted bool) (*uint, error) {
-	return nil, nil
-}
-
 // DeletedStateIndexes returns the deleted state indexes
-func (app *application) DeletedStateIndexes(context uint) ([]uint, error) {
-	return nil, nil
+func (app *application) DeletedStateIndexes(identifier uint) ([]uint, error) {
+	if pContext, ok := app.contexts[identifier]; ok {
+		indexes := []uint{}
+		list := pContext.currentHeader.List()
+		for idx, oneState := range list {
+			if oneState.IsDeleted() {
+				indexes = append(indexes, uint(idx))
+			}
+		}
+
+		return indexes, nil
+	}
+
+	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
+	return nil, errors.New(str)
 }
 
-// States returns the amount of states
-func (app *application) States(context uint, includesDeleted bool) (*uint, error) {
-	return nil, nil
-}
+// StatesAmount returns the amount of states
+func (app *application) StatesAmount(identifier uint) (*uint, error) {
+	if pContext, ok := app.contexts[identifier]; ok {
+		list := pContext.currentHeader.List()
+		amount := uint(len(list))
+		return &amount, nil
+	}
 
-// DeletedStates returns the amount of deleted states
-func (app *application) DeletedStates(context uint) (*uint, error) {
-	return nil, nil
+	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
+	return nil, errors.New(str)
 }
 
 // Purge purges the previous states and only keep the latest one.  It also deletes previously deleted entries
