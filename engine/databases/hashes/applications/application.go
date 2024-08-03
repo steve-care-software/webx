@@ -6,7 +6,7 @@ import (
 
 	bytes_applications "github.com/steve-care-software/webx/engine/databases/bytes/applications"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
-	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
+	"github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
 	"github.com/steve-care-software/webx/engine/databases/hashes/domain/pointers"
 )
 
@@ -16,7 +16,6 @@ type application struct {
 	pointersBuilder  pointers.Builder
 	pointerBuilder   pointers.PointerBuilder
 	delimiterBuilder delimiters.DelimiterBuilder
-	hashAdapter      hash.Adapter
 	contexts         map[uint]*context
 }
 
@@ -26,7 +25,6 @@ func createApplication(
 	pointersBuilder pointers.Builder,
 	pointerBuilder pointers.PointerBuilder,
 	delimiterBuilder delimiters.DelimiterBuilder,
-	hashAdapter hash.Adapter,
 ) Application {
 	out := application{
 		bytesApp:         bytesApp,
@@ -34,7 +32,6 @@ func createApplication(
 		pointersBuilder:  pointersBuilder,
 		pointerBuilder:   pointerBuilder,
 		delimiterBuilder: delimiterBuilder,
-		hashAdapter:      hashAdapter,
 		contexts:         map[uint]*context{},
 	}
 
@@ -95,50 +92,15 @@ func (app *application) Retrieve(identifier uint, hash hash.Hash) ([]byte, error
 	return nil, errors.New(str)
 }
 
-// RetrieveAll retrieves all data from hashes
-func (app *application) RetrieveAll(identifier uint, hashes []hash.Hash) ([][]byte, error) {
-	if pContext, ok := app.contexts[identifier]; ok {
-		if pContext.current == nil {
-			return nil, errors.New("there is zero entry in our database")
-		}
-
-		pointersList, err := pContext.current.RetrieveAll(hashes)
-		if err != nil {
-			return nil, err
-		}
-
-		output := [][]byte{}
-		for _, onePointer := range pointersList {
-			delimiter := onePointer.Delimiter()
-			retBytes, err := app.bytesApp.Retrieve(identifier, delimiter)
-			if err != nil {
-				return nil, err
-			}
-
-			output = append(output, retBytes)
-		}
-
-		return output, nil
-	}
-
-	str := fmt.Sprintf(contextIdentifierUndefinedPattern, identifier)
-	return nil, errors.New(str)
-}
-
 // Insert inserts data
-func (app *application) Insert(identifier uint, data []byte) error {
+func (app *application) Insert(identifier uint, hash hash.Hash, data []byte) error {
 	if pContext, ok := app.contexts[identifier]; ok {
 		delimiter, err := app.bytesApp.Insert(identifier, data)
 		if err != nil {
 			return err
 		}
 
-		pHash, err := app.hashAdapter.FromBytes(data)
-		if err != nil {
-			return err
-		}
-
-		pointer, err := app.pointerBuilder.Create().WithDelimiter(delimiter).WithHash(*pHash).Now()
+		pointer, err := app.pointerBuilder.Create().WithDelimiter(delimiter).WithHash(hash).Now()
 		if err != nil {
 			return err
 		}

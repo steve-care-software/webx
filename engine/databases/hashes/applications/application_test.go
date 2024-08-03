@@ -1,14 +1,13 @@
 package applications
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
 	"testing"
 
 	bytesdb_infra_files "github.com/steve-care-software/webx/engine/databases/bytes/infrastructure/files"
-	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
+	"github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
 	infra_bytes "github.com/steve-care-software/webx/engine/databases/hashes/infrastructure/bytes"
 )
 
@@ -41,7 +40,7 @@ func TestApplication_Success(t *testing.T) {
 	}
 
 	firstData := []byte("this is some data")
-	pFirstHash, err := hashAdapter.FromBytes(firstData)
+	pFirstHash, err := hashAdapter.FromBytes([]byte("this is the first key"))
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -53,9 +52,7 @@ func TestApplication_Success(t *testing.T) {
 		return
 	}
 
-	fmt.Printf("\n%s\n", pFirstHash.String())
-
-	err = application.Insert(*pContext, firstData)
+	err = application.Insert(*pContext, *pFirstHash, firstData)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -79,13 +76,13 @@ func TestApplication_Success(t *testing.T) {
 	}
 
 	secondData := []byte("this is some second data")
-	pSecondHash, err := hashAdapter.FromBytes(secondData)
+	pSecondHash, err := hashAdapter.FromBytes([]byte("this is the second key"))
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
 	}
 
-	err = application.Insert(*pContext, secondData)
+	err = application.Insert(*pContext, *pSecondHash, secondData)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return

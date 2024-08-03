@@ -3,7 +3,7 @@ package memories
 import (
 	"testing"
 
-	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
+	"github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions/results"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions/results/success"

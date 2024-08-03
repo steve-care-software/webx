@@ -1,6 +1,6 @@
 package fetches
 
-import "github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
+import "github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
 
 // NewBuilder creates a new builder
 func NewBuilder() Builder {

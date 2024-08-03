@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
+	"github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
 	"github.com/steve-care-software/webx/engine/states/domain/databases/commits/executions/chunks"
 )
 

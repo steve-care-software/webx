@@ -2,7 +2,7 @@ package applications
 
 import (
 	"github.com/steve-care-software/webx/engine/databases/entities/domain/entities"
-	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
+	"github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
 )
 
 // Builder represents the application builder

@@ -1,6 +1,6 @@
 package chunks
 
-import "github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
+import "github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
 
 type chunk struct {
 	hash        hash.Hash

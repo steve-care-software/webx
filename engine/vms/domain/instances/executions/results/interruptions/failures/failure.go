@@ -1,6 +1,6 @@
 package failures
 
-import "github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
+import "github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
 
 type failure struct {
 	hash            hash.Hash

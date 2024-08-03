@@ -16,7 +16,7 @@ import (
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 	infra_bytes "github.com/steve-care-software/webx/engine/databases/bytes/infrastructure/bytes"
-	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
+	"github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
 )
 
 type application struct {

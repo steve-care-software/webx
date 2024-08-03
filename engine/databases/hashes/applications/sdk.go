@@ -3,7 +3,7 @@ package applications
 import (
 	bytes_applications "github.com/steve-care-software/webx/engine/databases/bytes/applications"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
-	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
+	"github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
 	"github.com/steve-care-software/webx/engine/databases/hashes/domain/pointers"
 )
 
@@ -17,14 +17,12 @@ func NewApplication(
 	pointersBuilder := pointers.NewBuilder()
 	pointerBuilder := pointers.NewPointerBuilder()
 	delimiterBuilder := delimiters.NewDelimiterBuilder()
-	hashAdapter := hash.NewAdapter()
 	return createApplication(
 		bytesApp,
 		pointerAdapter,
 		pointersBuilder,
 		pointerBuilder,
 		delimiterBuilder,
-		hashAdapter,
 	)
 }
 
@@ -32,8 +30,7 @@ func NewApplication(
 type Application interface {
 	Begin(name string) (*uint, error)
 	Retrieve(context uint, hash hash.Hash) ([]byte, error)
-	RetrieveAll(context uint, hashes []hash.Hash) ([][]byte, error)
-	Insert(context uint, data []byte) error
+	Insert(context uint, hash hash.Hash, data []byte) error
 	Delete(context uint, hash hash.Hash) error
 	Commit(context uint) error
 	DeleteState(context uint, stateIndex uint) error

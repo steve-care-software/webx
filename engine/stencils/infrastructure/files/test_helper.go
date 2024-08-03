@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
+	"github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
 )
 
 func prepareFilePath(hashAdapter hash.Adapter, dbPath []string, basePath []string, endPath []string) (string, error) {

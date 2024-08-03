@@ -3,7 +3,7 @@ package validates
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
+	"github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
 	"github.com/steve-care-software/webx/engine/units/domain/identities/signers"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/validates"
 	"github.com/steve-care-software/webx/engine/vms/domain/stacks"

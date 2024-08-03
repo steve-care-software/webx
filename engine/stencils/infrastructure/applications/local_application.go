@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
+	"github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
 	db_applications "github.com/steve-care-software/webx/engine/states/applications"
 	"github.com/steve-care-software/webx/engine/stencils/applications"
 	applications_layers "github.com/steve-care-software/webx/engine/vms/applications/layers"
