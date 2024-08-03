@@ -60,13 +60,3 @@ type Execution interface {
 	HasInput() bool
 	Input() []byte
 }
-
-// Repository represents an executions repository
-type Repository interface {
-	RetrieveAll(dbPath []string, hashes []hash.Hash) (Executions, error)
-}
-
-// Service represents a service
-type Service interface {
-	Save(dbPath []string, ins Execution) error
-}

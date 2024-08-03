@@ -1,4 +1,4 @@
-package infrastructure
+package applications
 
 import (
 	"errors"
