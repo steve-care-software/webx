@@ -42,7 +42,7 @@ func (app *application) Execute(frame stacks.Frame, executable applications.Appl
 		path = append(path, *pStr)
 	}
 
-	nameVar := assignable.Name()
+	/*nameVar := assignable.Name()
 	name, err := frame.FetchString(nameVar)
 	if err != nil {
 		code := failures.CouldNotFetchStringFromFrame
@@ -67,5 +67,6 @@ func (app *application) Execute(frame stacks.Frame, executable applications.Appl
 		return nil, nil, err
 	}
 
-	return ins, nil, nil
+	return ins, nil, nil*/
+	return nil, nil, nil
 }

@@ -4,7 +4,6 @@ import (
 	"github.com/steve-care-software/webx/engine/stencils/applications"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/instructions/executions/merges"
 	"github.com/steve-care-software/webx/engine/vms/domain/stacks"
-	"github.com/steve-care-software/webx/engine/vms/domain/stacks/failures"
 )
 
 type application struct {
@@ -17,7 +16,7 @@ func createApplication() Application {
 
 // Execute executes the application
 func (app *application) Execute(frame stacks.Frame, executable applications.Application, assignment merges.Merge) (*uint, error) {
-	baseContextVar := assignment.Base()
+	/*baseContextVar := assignment.Base()
 	pBaseContext, err := frame.FetchUnsignedInt(baseContextVar)
 	if err != nil {
 		code := failures.CouldNotFetchUnsignedIntegerFromFrame
@@ -35,7 +34,7 @@ func (app *application) Execute(frame stacks.Frame, executable applications.Appl
 	if err != nil {
 		code := failures.CouldNotExecuteMErgeFromExecutable
 		return &code, err
-	}
+	}*/
 
 	return nil, nil
 }

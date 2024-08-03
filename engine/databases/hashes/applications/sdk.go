@@ -9,21 +9,26 @@ import (
 
 const contextIdentifierUndefinedPattern = "the context identifier (%d) does not exists"
 
-// NewApplication creates a new application
-func NewApplication(
-	bytesApp bytes_applications.Application,
+// NewBuilder creates a new application builder
+func NewBuilder(
 	pointerAdapter pointers.Adapter,
-) Application {
+) Builder {
 	pointersBuilder := pointers.NewBuilder()
 	pointerBuilder := pointers.NewPointerBuilder()
 	delimiterBuilder := delimiters.NewDelimiterBuilder()
-	return createApplication(
-		bytesApp,
+	return createBuilder(
 		pointerAdapter,
 		pointersBuilder,
 		pointerBuilder,
 		delimiterBuilder,
 	)
+}
+
+// Builder represents an application builder
+type Builder interface {
+	Create() Builder
+	WithBytes(bytesApp bytes_applications.Application) Builder
+	Now() (Application, error)
 }
 
 // Application represents an hash application

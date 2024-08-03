@@ -49,7 +49,7 @@ func (app *application) Execute(frame stacks.Frame, assignment executions.Execut
 	}
 
 	if content.IsRollback() {
-		contextVar := content.Rollback()
+		/*contextVar := content.Rollback()
 		pContext, err := frame.FetchUnsignedInt(contextVar)
 		if err != nil {
 			code := failures.CouldNotFetchUnsignedIntegerFromFrame
@@ -60,13 +60,13 @@ func (app *application) Execute(frame stacks.Frame, assignment executions.Execut
 		if err != nil {
 			code := failures.CouldNotExecuteRollbackFromExecutable
 			return &code, err
-		}
+		}*/
 
 		return nil, nil
 	}
 
 	if content.IsCancel() {
-		contextVar := content.Cancel()
+		/*contextVar := content.Cancel()
 		pContext, err := frame.FetchUnsignedInt(contextVar)
 		if err != nil {
 			code := failures.CouldNotFetchUnsignedIntegerFromFrame
@@ -77,7 +77,7 @@ func (app *application) Execute(frame stacks.Frame, assignment executions.Execut
 		if err != nil {
 			code := failures.CouldNotExecuteCancelFromExecutable
 			return &code, err
-		}
+		}*/
 
 		return nil, nil
 	}

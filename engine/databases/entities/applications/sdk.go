@@ -2,35 +2,37 @@ package applications
 
 import (
 	"github.com/steve-care-software/webx/engine/databases/entities/domain/entities"
+	hash_applications "github.com/steve-care-software/webx/engine/databases/hashes/applications"
 	"github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
 )
 
-// Builder represents the application builder
+// NewBuilder creates a new builder
+func NewBuilder(
+	entityAdapter entities.Adapter,
+) Builder {
+	return createBuilder(
+		entityAdapter,
+	)
+}
+
+// Builder represents an application builder
 type Builder interface {
 	Create() Builder
-	WithBasePath(basePath []string) Builder
-	WithNamespace(namespace string) Builder
+	WithHash(hashApp hash_applications.Application) Builder
 	Now() (Application, error)
 }
 
 // Application represents the database application
 type Application interface {
 	Begin(name string) (*uint, error)
-	//List(context uint, lister listers.Lister) ([]hash.Hash, error)
-	//Amount(context uint, keyname string) (*uint, error)
 	Retrieve(context uint, hash hash.Hash) (entities.Entity, error)
-	RetrieveAll(context uint, hashes []hash.Hash) ([]entities.Entity, error)
 	Insert(context uint, entity entities.Entity) error
-	InsertAll(context uint, entities []entities.Entity) error
 	Delete(context uint, hash hash.Hash) error
-	DeleteAll(context uint, hashes []hash.Hash) error
 	Commit(context uint) error
-	Rollback(context uint) error
-	RollbackTo(context uint, amount uint) error
-	RollFront(context uint) error
-	RollFrontTo(context uint, amount uint) error
-	States(context uint, includesDeleted bool) (*uint, error)
-	DeletedStates(context uint) (*uint, error)
-	Cancel(context uint) error
+	DeleteState(context uint, stateIndex uint) error
+	RecoverState(context uint, stateIndex uint) error
+	StatesAmount(context uint) (*uint, error)
+	DeletedStateIndexes(context uint) ([]uint, error)
+	Close(context uint) error
 	Purge(context uint) error
 }

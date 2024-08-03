@@ -27,10 +27,17 @@ func TestApplication_Success(t *testing.T) {
 		return
 	}
 
-	application := NewApplication(
-		bytesApp,
+	application, err := NewBuilder(
 		infra_bytes.NewPointerAdapter(),
-	)
+	).
+		Create().
+		WithBytes(bytesApp).
+		Now()
+
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
 
 	name := "someDatabase"
 	pContext, err := application.Begin(name)

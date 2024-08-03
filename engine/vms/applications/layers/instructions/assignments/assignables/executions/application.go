@@ -51,7 +51,7 @@ func (app *application) Execute(frame stacks.Frame, assignable instruction_execu
 	}
 
 	if content.IsBegin() {
-		pathVar := content.Begin()
+		/*pathVar := content.Begin()
 		retPath, err := frame.FetchList(pathVar)
 		if err != nil {
 			code := failures.CouldNotFetchListFromFrame
@@ -81,7 +81,8 @@ func (app *application) Execute(frame stacks.Frame, assignable instruction_execu
 			return nil, nil, err
 		}
 
-		return ins, nil, nil
+		return ins, nil, nil*/
+		return nil, nil, nil
 	}
 
 	if content.IsExecute() {
@@ -138,7 +139,7 @@ func (app *application) Execute(frame stacks.Frame, assignable instruction_execu
 		return ins, nil, nil
 	}
 
-	retPathList, err := retExecutable.List()
+	/*retPathList, err := retExecutable.List()
 	if err != nil {
 		code := failures.CouldNotExecuteListFromExecutable
 		return nil, &code, err
@@ -179,5 +180,6 @@ func (app *application) Execute(frame stacks.Frame, assignable instruction_execu
 		return nil, nil, err
 	}
 
-	return ins, nil, nil
+	return ins, nil, nil*/
+	return nil, nil, nil
 }
