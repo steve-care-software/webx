@@ -1,36 +1,26 @@
 package files
 
-import "github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
+import "github.com/steve-care-software/webx/engine/hashes/domain/hash"
 
 type file struct {
-	hash   hash.Hash
-	close  string
-	delete string
+	hash  hash.Hash
+	close string
 }
 
 func createFileWithClose(
 	hash hash.Hash,
 	close string,
 ) File {
-	return createFileInternally(hash, close, "")
-}
-
-func createFileWithDelete(
-	hash hash.Hash,
-	delete string,
-) File {
-	return createFileInternally(hash, "", delete)
+	return createFileInternally(hash, close)
 }
 
 func createFileInternally(
 	hash hash.Hash,
 	close string,
-	delete string,
 ) File {
 	out := file{
-		hash:   hash,
-		close:  close,
-		delete: delete,
+		hash:  hash,
+		close: close,
 	}
 
 	return &out
@@ -49,14 +39,4 @@ func (obj *file) IsClose() bool {
 // Close returns the close, if any
 func (obj *file) Close() string {
 	return obj.close
-}
-
-// IsDelete returns true if delete, false otherwise
-func (obj *file) IsDelete() bool {
-	return obj.delete != ""
-}
-
-// Delete returns the delete, if any
-func (obj *file) Delete() string {
-	return obj.delete
 }

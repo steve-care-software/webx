@@ -1,10 +1,10 @@
 package stacks
 
 import (
-	"github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
-	"github.com/steve-care-software/webx/engine/units/domain/identities/signers"
+	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances"
 	"github.com/steve-care-software/webx/engine/vms/domain/keys/encryptors"
+	"github.com/steve-care-software/webx/engine/vms/domain/signers"
 )
 
 // NewStackForTests creates a new stack for tests

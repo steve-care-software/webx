@@ -3,13 +3,12 @@ package files
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
+	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
 )
 
 type builder struct {
 	hashAdapter hash.Adapter
 	close       string
-	delete      string
 }
 
 func createBuilder(
@@ -18,7 +17,6 @@ func createBuilder(
 	out := builder{
 		hashAdapter: hashAdapter,
 		close:       "",
-		delete:      "",
 	}
 
 	return &out
@@ -37,23 +35,12 @@ func (app *builder) WithClose(close string) Builder {
 	return app
 }
 
-// WithDelete adds a delete to the builder
-func (app *builder) WithDelete(del string) Builder {
-	app.delete = del
-	return app
-}
-
 // Now builds a new File instance
 func (app *builder) Now() (File, error) {
 	data := [][]byte{}
 	if app.close != "" {
 		data = append(data, []byte("close"))
 		data = append(data, []byte(app.close))
-	}
-
-	if app.delete != "" {
-		data = append(data, []byte("delete"))
-		data = append(data, []byte(app.delete))
 	}
 
 	if len(data) != 2 {
@@ -65,9 +52,5 @@ func (app *builder) Now() (File, error) {
 		return nil, err
 	}
 
-	if app.close != "" {
-		return createFileWithClose(*pHash, app.close), nil
-	}
-
-	return createFileWithDelete(*pHash, app.delete), nil
+	return createFileWithClose(*pHash, app.close), nil
 }

@@ -1,6 +1,6 @@
 package encrypts
 
-import "github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
+import "github.com/steve-care-software/webx/engine/hashes/domain/hash"
 
 type encrypt struct {
 	hash     hash.Hash

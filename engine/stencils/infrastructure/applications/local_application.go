@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"time"
 
-	entities_applications "github.com/steve-care-software/webx/engine/databases/entities/applications"
-	"github.com/steve-care-software/webx/engine/databases/entities/domain/entities"
-	"github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
+	entities_applications "github.com/steve-care-software/webx/engine/entities/applications"
+	"github.com/steve-care-software/webx/engine/entities/domain/entities"
+	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
 	"github.com/steve-care-software/webx/engine/stencils/applications"
 	"github.com/steve-care-software/webx/engine/stencils/domain/sessions"
 	applications_vms "github.com/steve-care-software/webx/engine/vms/applications"

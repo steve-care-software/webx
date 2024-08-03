@@ -3,7 +3,7 @@ package assignments
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
+	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/instructions/assignments/assignables"
 )
 

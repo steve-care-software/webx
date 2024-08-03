@@ -9,13 +9,3 @@ func NewFileWithCloseForTests(close string) File {
 
 	return ins
 }
-
-// NewFileWithDeleteForTests creates a new file with delete
-func NewFileWithDeleteForTests(delete string) File {
-	ins, err := NewBuilder().Create().WithDelete(delete).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}

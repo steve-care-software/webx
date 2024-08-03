@@ -3,13 +3,13 @@ package votes
 import (
 	"testing"
 
-	"github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
-	"github.com/steve-care-software/webx/engine/units/domain/identities/signers"
+	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
 	application_creates "github.com/steve-care-software/webx/engine/vms/applications/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/creates"
 	application_validates "github.com/steve-care-software/webx/engine/vms/applications/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/validates"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/creates"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/validates"
+	"github.com/steve-care-software/webx/engine/vms/domain/signers"
 	"github.com/steve-care-software/webx/engine/vms/domain/stacks"
 )
 

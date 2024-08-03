@@ -1,6 +1,6 @@
 package files
 
-import "github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
+import "github.com/steve-care-software/webx/engine/hashes/domain/hash"
 
 // NewBuilder creates a new builder
 func NewBuilder() Builder {
@@ -14,7 +14,6 @@ func NewBuilder() Builder {
 type Builder interface {
 	Create() Builder
 	WithClose(close string) Builder
-	WithDelete(del string) Builder
 	Now() (File, error)
 }
 
@@ -23,6 +22,4 @@ type File interface {
 	Hash() hash.Hash
 	IsClose() bool
 	Close() string
-	IsDelete() bool
-	Delete() string
 }

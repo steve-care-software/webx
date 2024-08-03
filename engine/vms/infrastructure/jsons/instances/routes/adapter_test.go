@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
+	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/elements"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/omissions"

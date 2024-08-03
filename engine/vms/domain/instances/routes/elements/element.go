@@ -1,6 +1,6 @@
 package elements
 
-import "github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
+import "github.com/steve-care-software/webx/engine/hashes/domain/hash"
 
 type element struct {
 	hash  hash.Hash
