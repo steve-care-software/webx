@@ -1,7 +1,7 @@
 package pointers
 
 import (
-	bytes_pointers "github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 )
 
@@ -16,8 +16,8 @@ func NewPointersForTests(list []Pointer) Pointers {
 }
 
 // NewPointerForTests creates a new pointer for tests
-func NewPointerForTests(hash hash.Hash, pointer bytes_pointers.Pointer) Pointer {
-	ins, err := NewPointerBuilder().Create().WithHash(hash).WithPointer(pointer).Now()
+func NewPointerForTests(hash hash.Hash, delimiter delimiters.Delimiter) Pointer {
+	ins, err := NewPointerBuilder().Create().WithHash(hash).WithDelimiter(delimiter).Now()
 	if err != nil {
 		panic(err)
 	}

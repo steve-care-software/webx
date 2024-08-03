@@ -39,3 +39,18 @@ func (obj *pointers) Retrieve(hash hash.Hash) (Pointer, error) {
 	str := fmt.Sprintf("there is no Pointer that matches the requested hash: %s", keyname)
 	return nil, errors.New(str)
 }
+
+// RetrieveAll retrieves all pointers related to the hashes
+func (obj *pointers) RetrieveAll(hashes []hash.Hash) ([]Pointer, error) {
+	output := []Pointer{}
+	for _, oneHash := range hashes {
+		ins, err := obj.Retrieve(oneHash)
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, ins)
+	}
+
+	return output, nil
+}

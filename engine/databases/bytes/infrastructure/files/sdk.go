@@ -12,7 +12,7 @@ import (
 
 const amountOfBytesIntUint64 = 8
 
-const contentIdentifierUndefinedPattern = "the context identifier (%d) does not exists"
+const contextIdentifierUndefinedPattern = "the context identifier (%d) does not exists"
 
 // NewApplicationBuilder creates a new application builder
 func NewApplicationBuilder() applications.Builder {

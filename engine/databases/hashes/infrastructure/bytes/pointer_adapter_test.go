@@ -4,7 +4,6 @@ import (
 	"reflect"
 	"testing"
 
-	bytes_pointers "github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 	"github.com/steve-care-software/webx/engine/databases/hashes/domain/pointers"
@@ -19,10 +18,7 @@ func TestPointerAdapter_single_Success(t *testing.T) {
 
 	pointer := pointers.NewPointerForTests(
 		*pHash,
-		bytes_pointers.NewPointerForTests(
-			delimiters.NewDelimiterForTests(0, 12),
-			true,
-		),
+		delimiters.NewDelimiterForTests(0, 12),
 	)
 
 	adapter := NewPointerAdapter()
@@ -65,17 +61,11 @@ func TestPointerAdapter_multiple_Success(t *testing.T) {
 	pointers := pointers.NewPointersForTests([]pointers.Pointer{
 		pointers.NewPointerForTests(
 			*pFirstHash,
-			bytes_pointers.NewPointerForTests(
-				delimiters.NewDelimiterForTests(0, 12),
-				false,
-			),
+			delimiters.NewDelimiterForTests(0, 12),
 		),
 		pointers.NewPointerForTests(
 			*pSecondHash,
-			bytes_pointers.NewPointerForTests(
-				delimiters.NewDelimiterForTests(12, 33),
-				true,
-			),
+			delimiters.NewDelimiterForTests(12, 33),
 		),
 	})
 

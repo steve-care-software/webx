@@ -1,22 +1,22 @@
 package pointers
 
 import (
-	bytes_pointers "github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 )
 
 type pointer struct {
-	hash    hash.Hash
-	pointer bytes_pointers.Pointer
+	hash      hash.Hash
+	delimiter delimiters.Delimiter
 }
 
 func createPointer(
 	hash hash.Hash,
-	ptr bytes_pointers.Pointer,
+	delimiter delimiters.Delimiter,
 ) Pointer {
 	out := pointer{
-		hash:    hash,
-		pointer: ptr,
+		hash:      hash,
+		delimiter: delimiter,
 	}
 
 	return &out
@@ -27,7 +27,7 @@ func (obj *pointer) Hash() hash.Hash {
 	return obj.hash
 }
 
-// Pointer returns the pointer
-func (obj *pointer) Pointer() bytes_pointers.Pointer {
-	return obj.pointer
+// Delimiter returns the pointer
+func (obj *pointer) Delimiter() delimiters.Delimiter {
+	return obj.delimiter
 }

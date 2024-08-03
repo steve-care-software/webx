@@ -5,8 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 )
 
 func TestSingleTransaction_Success(t *testing.T) {
@@ -36,10 +34,9 @@ func TestSingleTransaction_Success(t *testing.T) {
 
 	// create an entry:
 	firstData := []byte("this is some data")
-	firstDelimiter := delimiters.NewDelimiterForTests(0, uint64(len(firstData)))
 
 	// insert the entry:
-	err = application.Insert(*pContext, firstData)
+	firstDelimiter, err := application.Insert(*pContext, firstData)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -54,13 +51,9 @@ func TestSingleTransaction_Success(t *testing.T) {
 
 	// create a second entry entry:
 	secondData := []byte("this is some other data")
-	secondDelimiter := delimiters.NewDelimiterForTests(
-		firstDelimiter.Index()+firstDelimiter.Length(),
-		uint64(len(secondData)),
-	)
 
 	// insert the second entry:
-	err = application.Insert(*pContext, secondData)
+	secondDelimiter, err := application.Insert(*pContext, secondData)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return

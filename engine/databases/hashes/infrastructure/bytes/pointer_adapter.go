@@ -4,30 +4,30 @@ import (
 	"errors"
 	"fmt"
 
-	bytes_pointers "github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 	infra_bytes "github.com/steve-care-software/webx/engine/databases/bytes/infrastructure/bytes"
 	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 	"github.com/steve-care-software/webx/engine/databases/hashes/domain/pointers"
 )
 
 type pointerAdapter struct {
-	hashAdapter         hash.Adapter
-	bytesPointerAdapter bytes_pointers.Adapter
-	builder             pointers.Builder
-	pointerBuilder      pointers.PointerBuilder
+	hashAdapter      hash.Adapter
+	delimiterAdapter delimiters.Adapter
+	builder          pointers.Builder
+	pointerBuilder   pointers.PointerBuilder
 }
 
 func createPointerAdapter(
 	hashAdapter hash.Adapter,
-	bytesPointerAdapter bytes_pointers.Adapter,
+	delimiterAdapter delimiters.Adapter,
 	builder pointers.Builder,
 	pointerBuilder pointers.PointerBuilder,
 ) pointers.Adapter {
 	out := pointerAdapter{
-		hashAdapter:         hashAdapter,
-		bytesPointerAdapter: bytesPointerAdapter,
-		builder:             builder,
-		pointerBuilder:      pointerBuilder,
+		hashAdapter:      hashAdapter,
+		delimiterAdapter: delimiterAdapter,
+		builder:          builder,
+		pointerBuilder:   pointerBuilder,
 	}
 
 	return &out
@@ -80,7 +80,7 @@ func (app *pointerAdapter) BytesToInstances(data []byte) (pointers.Pointers, []b
 // InstanceToBytes converts instance to bytes
 func (app *pointerAdapter) InstanceToBytes(ins pointers.Pointer) ([]byte, error) {
 	output := ins.Hash().Bytes()
-	retBytes, err := app.bytesPointerAdapter.InstanceToBytes(ins.Pointer())
+	retBytes, err := app.delimiterAdapter.InstanceToBytes(ins.Delimiter())
 	if err != nil {
 		return nil, err
 	}
@@ -100,12 +100,12 @@ func (app *pointerAdapter) BytesToInstance(data []byte) (pointers.Pointer, []byt
 		return nil, nil, err
 	}
 
-	retPointer, retRemaining, err := app.bytesPointerAdapter.BytesToInstance(data[hash.Size:])
+	retDelimiter, retRemaining, err := app.delimiterAdapter.BytesToInstance(data[hash.Size:])
 	if err != nil {
 		return nil, nil, err
 	}
 
-	pointer, err := app.pointerBuilder.Create().WithHash(*pHash).WithPointer(retPointer).Now()
+	pointer, err := app.pointerBuilder.Create().WithHash(*pHash).WithDelimiter(retDelimiter).Now()
 	if err != nil {
 		return nil, nil, err
 	}

@@ -9,12 +9,12 @@ import (
 // NewPointerAdapter creates a new pointer adapter
 func NewPointerAdapter() pointers.Adapter {
 	hashAdater := hash.NewAdapter()
-	bytesPointerAdapter := infra_bytes.NewPointerAdapter()
+	delimiterAdapter := infra_bytes.NewDelimiterAdapter()
 	builder := pointers.NewBuilder()
 	pointerBuilder := pointers.NewPointerBuilder()
 	return createPointerAdapter(
 		hashAdater,
-		bytesPointerAdapter,
+		delimiterAdapter,
 		builder,
 		pointerBuilder,
 	)

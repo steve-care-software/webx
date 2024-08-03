@@ -1,7 +1,7 @@
 package pointers
 
 import (
-	bytes_pointers "github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 )
 
@@ -34,18 +34,19 @@ type Builder interface {
 type Pointers interface {
 	List() []Pointer
 	Retrieve(hash hash.Hash) (Pointer, error)
+	RetrieveAll(hashes []hash.Hash) ([]Pointer, error)
 }
 
 // PointerBuilder represents a pointer builder
 type PointerBuilder interface {
 	Create() PointerBuilder
 	WithHash(hash hash.Hash) PointerBuilder
-	WithPointer(pointer bytes_pointers.Pointer) PointerBuilder
+	WithDelimiter(delimiter delimiters.Delimiter) PointerBuilder
 	Now() (Pointer, error)
 }
 
 // Pointer represents a pointer
 type Pointer interface {
 	Hash() hash.Hash
-	Pointer() bytes_pointers.Pointer
+	Delimiter() delimiters.Delimiter
 }

@@ -91,7 +91,7 @@ func (app *application) Retrieve(identifier uint, retrieval delimiters.Delimiter
 		return app.readEntry(pContext.pFile, *pContext.pDataIndex, pointer.Delimiter())
 	}
 
-	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
+	str := fmt.Sprintf(contextIdentifierUndefinedPattern, identifier)
 	return nil, errors.New(str)
 }
 
@@ -101,19 +101,16 @@ func (app *application) RetrieveAll(identifier uint, retrievals delimiters.Delim
 		return app.readEntries(pContext.pFile, *pContext.pDataIndex, retrievals)
 	}
 
-	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
+	str := fmt.Sprintf(contextIdentifierUndefinedPattern, identifier)
 	return nil, errors.New(str)
 }
 
 // Insert inserts an entry into a context
-func (app *application) Insert(identifier uint, data []byte) error {
+func (app *application) Insert(identifier uint, data []byte) (delimiters.Delimiter, error) {
 	if pContext, ok := app.contexts[identifier]; ok {
-		entries, err := app.mergeInsert(pContext.currentHeader, pContext.insertions, [][]byte{
-			data,
-		})
-
+		entries, delimiter, err := app.mergeInsert(pContext.currentHeader, pContext.insertions, data)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		app.contexts[identifier] = &context{
@@ -127,37 +124,11 @@ func (app *application) Insert(identifier uint, data []byte) error {
 			pLock:         pContext.pLock,
 		}
 
-		return nil
+		return delimiter, nil
 	}
 
-	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
-	return errors.New(str)
-}
-
-// InsertAll inserts multiple entries into a context
-func (app *application) InsertAll(identifier uint, data [][]byte) error {
-	if pContext, ok := app.contexts[identifier]; ok {
-		entries, err := app.mergeInsert(pContext.currentHeader, pContext.insertions, data)
-		if err != nil {
-			return err
-		}
-
-		app.contexts[identifier] = &context{
-			path:          pContext.path,
-			name:          pContext.name,
-			pDataIndex:    pContext.pDataIndex,
-			insertions:    entries,
-			currentHeader: pContext.currentHeader,
-			deletions:     pContext.deletions,
-			pFile:         pContext.pFile,
-			pLock:         pContext.pLock,
-		}
-
-		return nil
-	}
-
-	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
-	return errors.New(str)
+	str := fmt.Sprintf(contextIdentifierUndefinedPattern, identifier)
+	return nil, errors.New(str)
 }
 
 // Delete deletes an entry from a context
@@ -185,7 +156,7 @@ func (app *application) Delete(identifier uint, delete delimiters.Delimiter) err
 		return nil
 	}
 
-	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
+	str := fmt.Sprintf(contextIdentifierUndefinedPattern, identifier)
 	return errors.New(str)
 }
 
@@ -211,7 +182,7 @@ func (app *application) DeleteAll(identifier uint, deletes delimiters.Delimiters
 		return nil
 	}
 
-	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
+	str := fmt.Sprintf(contextIdentifierUndefinedPattern, identifier)
 	return errors.New(str)
 }
 
@@ -276,7 +247,7 @@ func (app *application) DeleteState(identifier uint, stateIndex uint) error {
 		return nil
 	}
 
-	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
+	str := fmt.Sprintf(contextIdentifierUndefinedPattern, identifier)
 	return errors.New(str)
 }
 
@@ -331,7 +302,7 @@ func (app *application) RecoverState(identifier uint, stateIndex uint) error {
 		return nil
 	}
 
-	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
+	str := fmt.Sprintf(contextIdentifierUndefinedPattern, identifier)
 	return errors.New(str)
 }
 
@@ -349,7 +320,7 @@ func (app *application) DeletedStateIndexes(identifier uint) ([]uint, error) {
 		return indexes, nil
 	}
 
-	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
+	str := fmt.Sprintf(contextIdentifierUndefinedPattern, identifier)
 	return nil, errors.New(str)
 }
 
@@ -361,7 +332,7 @@ func (app *application) StatesAmount(identifier uint) (*uint, error) {
 		return &amount, nil
 	}
 
-	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
+	str := fmt.Sprintf(contextIdentifierUndefinedPattern, identifier)
 	return nil, errors.New(str)
 }
 
@@ -370,13 +341,13 @@ func (app *application) Purge(context uint) error {
 	return nil
 }
 
-// Root returns the root of the current state, if any
-func (app *application) Root(identifier uint) (delimiters.Delimiter, error) {
+// States returns the current state
+func (app *application) States(identifier uint) (states.States, error) {
 	if pContext, ok := app.contexts[identifier]; ok {
-		return pContext.currentHeader.Root(), nil
+		return pContext.currentHeader, nil
 	}
 
-	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
+	str := fmt.Sprintf(contextIdentifierUndefinedPattern, identifier)
 	return nil, errors.New(str)
 }
 
@@ -397,7 +368,7 @@ func (app *application) Close(identifier uint) error {
 		return nil
 	}
 
-	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
+	str := fmt.Sprintf(contextIdentifierUndefinedPattern, identifier)
 	return errors.New(str)
 }
 
@@ -615,7 +586,7 @@ func (app *application) readBytes(file *os.File, index int64, length int64) ([]b
 	return buffer, nil
 }
 
-func (app *application) mergeInsert(states states.States, original entries.Entries, data [][]byte) (entries.Entries, error) {
+func (app *application) mergeInsert(states states.States, original entries.Entries, data []byte) (entries.Entries, delimiters.Delimiter, error) {
 	list := []entries.Entry{}
 	nextIndex := uint64(0)
 	if original != nil {
@@ -642,34 +613,35 @@ func (app *application) mergeInsert(states states.States, original entries.Entri
 		nextIndex = states.NextIndex()
 	}
 
-	newEntries := []entries.Entry{}
-	for _, oneData := range data {
-		length := uint64(len(oneData))
-		delimiter, err := app.delimiterBuilder.Create().
-			WithIndex(nextIndex).
-			WithLength(length).
-			Now()
+	length := uint64(len(data))
+	delimiter, err := app.delimiterBuilder.Create().
+		WithIndex(nextIndex).
+		WithLength(length).
+		Now()
 
-		if err != nil {
-			return nil, err
-		}
-
-		entry, err := app.entryBuilder.Create().
-			WithBytes(oneData).
-			WithDelimiter(delimiter).
-			Now()
-
-		if err != nil {
-			return nil, err
-		}
-
-		newEntries = append(newEntries, entry)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	list = append(list, newEntries...)
-	return app.entriesBuilder.Create().
+	entry, err := app.entryBuilder.Create().
+		WithBytes(data).
+		WithDelimiter(delimiter).
+		Now()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	list = append(list, entry)
+	retIns, err := app.entriesBuilder.Create().
 		WithList(list).
 		Now()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return retIns, delimiter, nil
 }
 
 func (app *application) mergeDelete(original delimiters.Delimiters, newEntries []delimiters.Delimiter) (delimiters.Delimiters, error) {
@@ -907,6 +879,6 @@ func (app *application) commit(identifier uint, root delimiters.Delimiter) error
 		return nil
 	}
 
-	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
+	str := fmt.Sprintf(contextIdentifierUndefinedPattern, identifier)
 	return errors.New(str)
 }

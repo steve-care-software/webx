@@ -1,6 +1,7 @@
 package applications
 
 import (
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 )
 
@@ -16,8 +17,7 @@ type Application interface {
 	Begin(name string) (*uint, error)
 	Retrieve(context uint, retrival delimiters.Delimiter) ([]byte, error)
 	RetrieveAll(context uint, retrievals delimiters.Delimiters) ([][]byte, error)
-	Insert(context uint, data []byte) error
-	InsertAll(context uint, data [][]byte) error
+	Insert(context uint, data []byte) (delimiters.Delimiter, error)
 	Delete(context uint, delete delimiters.Delimiter) error
 	DeleteAll(context uint, deletes delimiters.Delimiters) error
 	Commit(context uint) error
@@ -28,5 +28,5 @@ type Application interface {
 	DeletedStateIndexes(context uint) ([]uint, error)
 	Close(context uint) error
 	Purge(context uint) error
-	Root(context uint) (delimiters.Delimiter, error)
+	States(context uint) (states.States, error)
 }

@@ -3,19 +3,19 @@ package pointers
 import (
 	"errors"
 
-	bytes_pointers "github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 )
 
 type pointerBuilder struct {
-	hash    hash.Hash
-	pointer bytes_pointers.Pointer
+	hash      hash.Hash
+	delimiter delimiters.Delimiter
 }
 
 func createPointerBuilder() PointerBuilder {
 	out := pointerBuilder{
-		hash:    nil,
-		pointer: nil,
+		hash:      nil,
+		delimiter: nil,
 	}
 
 	return &out
@@ -32,9 +32,9 @@ func (app *pointerBuilder) WithHash(hash hash.Hash) PointerBuilder {
 	return app
 }
 
-// WithPointer adds a pointer to the builder
-func (app *pointerBuilder) WithPointer(pointer bytes_pointers.Pointer) PointerBuilder {
-	app.pointer = pointer
+// WithDelimiter adds a delimiter to the builder
+func (app *pointerBuilder) WithDelimiter(delimiter delimiters.Delimiter) PointerBuilder {
+	app.delimiter = delimiter
 	return app
 }
 
@@ -44,12 +44,12 @@ func (app *pointerBuilder) Now() (Pointer, error) {
 		return nil, errors.New("the hash is mandatory in order to build a Pointer instance")
 	}
 
-	if app.pointer == nil {
-		return nil, errors.New("the pointer is mandatory in order to build a Pointer instance")
+	if app.delimiter == nil {
+		return nil, errors.New("the delimiter is mandatory in order to build a Pointer instance")
 	}
 
 	return createPointer(
 		app.hash,
-		app.pointer,
+		app.delimiter,
 	), nil
 }
