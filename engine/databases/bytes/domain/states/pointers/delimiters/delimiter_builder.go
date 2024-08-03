@@ -36,11 +36,11 @@ func (app *delimiterBuilder) WithLength(length uint64) DelimiterBuilder {
 // Now builds a new Lister instance
 func (app *delimiterBuilder) Now() (Delimiter, error) {
 	if app.pIndex == nil {
-		return nil, errors.New("the index is mandatory in order to build a Lister instance")
+		return nil, errors.New("the index is mandatory in order to build a Delimiter instance")
 	}
 
 	if app.length == 0 {
-		return nil, errors.New("the length is mandatory in order to build a Lister instance")
+		return nil, errors.New("the length is mandatory in order to build a Delimiter instance")
 	}
 
 	return createDelimiter(

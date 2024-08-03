@@ -33,12 +33,16 @@ type Builder interface {
 // States represents a states
 type States interface {
 	List() []State
+	HasRoot() bool
+	Root() delimiters.Delimiter
+	NextIndex() uint64
 	Fetch(delimiter delimiters.Delimiter) (pointers.Pointer, error)
 }
 
 // StateBuilder represents a state builder
 type StateBuilder interface {
 	Create() StateBuilder
+	WithRoot(root delimiters.Delimiter) StateBuilder
 	WithPointers(pointers pointers.Pointers) StateBuilder
 	IsDeleted() StateBuilder
 	Now() (State, error)
@@ -47,6 +51,8 @@ type StateBuilder interface {
 // State represents an state
 type State interface {
 	IsDeleted() bool
+	HasRoot() bool
+	Root() delimiters.Delimiter
 	HasPointers() bool
 	Pointers() pointers.Pointers
 }

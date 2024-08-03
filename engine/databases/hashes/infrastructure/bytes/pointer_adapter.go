@@ -4,25 +4,30 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
+	bytes_pointers "github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
+	infra_bytes "github.com/steve-care-software/webx/engine/databases/bytes/infrastructure/bytes"
+	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
+	"github.com/steve-care-software/webx/engine/databases/hashes/domain/pointers"
 )
 
 type pointerAdapter struct {
-	delimiterAdapter delimiters.Adapter
-	builder          pointers.Builder
-	pointerBuilder   pointers.PointerBuilder
+	hashAdapter         hash.Adapter
+	bytesPointerAdapter bytes_pointers.Adapter
+	builder             pointers.Builder
+	pointerBuilder      pointers.PointerBuilder
 }
 
 func createPointerAdapter(
-	delimiterAdapter delimiters.Adapter,
+	hashAdapter hash.Adapter,
+	bytesPointerAdapter bytes_pointers.Adapter,
 	builder pointers.Builder,
 	pointerBuilder pointers.PointerBuilder,
 ) pointers.Adapter {
 	out := pointerAdapter{
-		delimiterAdapter: delimiterAdapter,
-		builder:          builder,
-		pointerBuilder:   pointerBuilder,
+		hashAdapter:         hashAdapter,
+		bytesPointerAdapter: bytesPointerAdapter,
+		builder:             builder,
+		pointerBuilder:      pointerBuilder,
 	}
 
 	return &out
@@ -41,13 +46,13 @@ func (app *pointerAdapter) InstancesToBytes(ins pointers.Pointers) ([]byte, erro
 		output = append(output, retBytes...)
 	}
 
-	lengthBytes := Uint64ToBytes(uint64(len(list)))
+	lengthBytes := infra_bytes.Uint64ToBytes(uint64(len(list)))
 	return append(lengthBytes, output...), nil
 }
 
 // BytesToInstances converts bytes to instances
 func (app *pointerAdapter) BytesToInstances(data []byte) (pointers.Pointers, []byte, error) {
-	amount, remaining, err := AmountReturnRemaining(data)
+	amount, remaining, err := infra_bytes.AmountReturnRemaining(data)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -74,50 +79,36 @@ func (app *pointerAdapter) BytesToInstances(data []byte) (pointers.Pointers, []b
 
 // InstanceToBytes converts instance to bytes
 func (app *pointerAdapter) InstanceToBytes(ins pointers.Pointer) ([]byte, error) {
-	retrievalBytes, err := app.delimiterAdapter.InstanceToBytes(ins.Delimiter())
+	output := ins.Hash().Bytes()
+	retBytes, err := app.bytesPointerAdapter.InstanceToBytes(ins.Pointer())
 	if err != nil {
 		return nil, err
 	}
 
-	output := []byte{
-		PointerFlag,
-		0, // 1 == true, 0 == false
-	}
-	if ins.IsDeleted() {
-		output[1] = 1
-	}
-
-	return append(output, retrievalBytes...), nil
+	return append(output, retBytes...), nil
 }
 
 // BytesToInstance converts bytes to instance
 func (app *pointerAdapter) BytesToInstance(data []byte) (pointers.Pointer, []byte, error) {
-	expectation := 2
-	if len(data) < expectation {
-		str := fmt.Sprintf("the data was expected to contain at least %d bytes, %d provided", expectation, len(data))
+	if len(data) < hash.Size {
+		str := fmt.Sprintf("the data was expected to contain at least %d bytes, %d bytes provided", hash.Size, len(data))
 		return nil, nil, errors.New(str)
 	}
 
-	flag := data[0]
-	if flag != PointerFlag {
-		return nil, nil, errors.New("the data does not represents a Pointer instance, invalid flag")
-	}
-
-	isDeletedByte := data[1]
-	builder := app.pointerBuilder.Create()
-	if isDeletedByte == 1 {
-		builder.IsDeleted()
-	}
-
-	retDelimiter, retRemaining, err := app.delimiterAdapter.BytesToInstance(data[2:])
+	pHash, err := app.hashAdapter.FromBytes(data[0:hash.Size])
 	if err != nil {
 		return nil, nil, err
 	}
 
-	ins, err := builder.WithDelimiter(retDelimiter).Now()
+	retPointer, retRemaining, err := app.bytesPointerAdapter.BytesToInstance(data[hash.Size:])
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return ins, retRemaining, nil
+	pointer, err := app.pointerBuilder.Create().WithHash(*pHash).WithPointer(retPointer).Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return pointer, retRemaining, nil
 }

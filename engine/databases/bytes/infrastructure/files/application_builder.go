@@ -19,6 +19,7 @@ type applicationBuilder struct {
 	pointersBuilder   pointers.Builder
 	pointerBuilder    pointers.PointerBuilder
 	entriesBuilder    entries.Builder
+	entryBuilder      entries.EntryBuilder
 	delimitersBuilder delimiters.Builder
 	delimiterBuilder  delimiters.DelimiterBuilder
 	basepath          []string
@@ -32,6 +33,7 @@ func createApplicationBuilder(
 	pointersBuilder pointers.Builder,
 	pointerBuilder pointers.PointerBuilder,
 	entriesBuilder entries.Builder,
+	entryBuilder entries.EntryBuilder,
 	delimitersBuilder delimiters.Builder,
 	delimiterBuilder delimiters.DelimiterBuilder,
 ) applications.Builder {
@@ -43,6 +45,7 @@ func createApplicationBuilder(
 		pointersBuilder:   pointersBuilder,
 		pointerBuilder:    pointerBuilder,
 		entriesBuilder:    entriesBuilder,
+		entryBuilder:      entryBuilder,
 		delimitersBuilder: delimitersBuilder,
 		delimiterBuilder:  delimiterBuilder,
 		basepath:          nil,
@@ -61,6 +64,7 @@ func (app *applicationBuilder) Create() applications.Builder {
 		app.pointersBuilder,
 		app.pointerBuilder,
 		app.entriesBuilder,
+		app.entryBuilder,
 		app.delimitersBuilder,
 		app.delimiterBuilder,
 	)
@@ -90,6 +94,7 @@ func (app *applicationBuilder) Now() (applications.Application, error) {
 		app.pointersBuilder,
 		app.pointerBuilder,
 		app.entriesBuilder,
+		app.entryBuilder,
 		app.delimitersBuilder,
 		app.delimiterBuilder,
 		app.basepath,

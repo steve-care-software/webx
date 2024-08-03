@@ -1,40 +1,52 @@
 package states
 
-import "github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
+import (
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
+)
 
 type state struct {
 	isDeleted bool
+	root      delimiters.Delimiter
 	pointers  pointers.Pointers
 }
 
-func createState() State {
-	return createStateInternally(false, nil)
+func createState(
+	isDeleted bool,
+) State {
+	return createStateInternally(isDeleted, nil, nil)
+}
+
+func createStateWithRoot(
+	isDeleted bool,
+	root delimiters.Delimiter,
+) State {
+	return createStateInternally(isDeleted, root, nil)
 }
 
 func createStateWithPointers(
+	isDeleted bool,
 	pointers pointers.Pointers,
 ) State {
-	return createStateInternally(false, pointers)
+	return createStateInternally(isDeleted, nil, pointers)
 }
 
-func createStateWithDeleted(
+func createStateWithRootAndPointers(
+	isDeleted bool,
+	root delimiters.Delimiter,
 	pointers pointers.Pointers,
 ) State {
-	return createStateInternally(true, pointers)
-}
-
-func createStateWithPointersAndDeleted(
-	pointers pointers.Pointers,
-) State {
-	return createStateInternally(true, pointers)
+	return createStateInternally(isDeleted, root, pointers)
 }
 
 func createStateInternally(
 	isDeleted bool,
+	root delimiters.Delimiter,
 	pointers pointers.Pointers,
 ) State {
 	out := state{
 		isDeleted: isDeleted,
+		root:      root,
 		pointers:  pointers,
 	}
 
@@ -44,6 +56,16 @@ func createStateInternally(
 // IsDeleted returns true if deleted, false otherwise
 func (obj *state) IsDeleted() bool {
 	return obj.isDeleted
+}
+
+// HasRoot returns true if there is a root, false otherwise
+func (obj *state) HasRoot() bool {
+	return obj.root != nil
+}
+
+// Root returns the root, if any
+func (obj *state) Root() delimiters.Delimiter {
+	return obj.root
 }
 
 // HasPointers returns true if there is pointers, false otherwise

@@ -23,6 +23,7 @@ func NewApplicationBuilder() applications.Builder {
 	pointersBuilder := pointers.NewBuilder()
 	pointerBuilder := pointers.NewPointerBuilder()
 	entriesBuilder := entries.NewBuilder()
+	entryBuilder := entries.NewEntryBuilder()
 	delimitersBuilder := delimiters.NewBuilder()
 	delimiterBuilder := delimiters.NewDelimiterBuilder()
 	return createApplicationBuilder(
@@ -33,6 +34,7 @@ func NewApplicationBuilder() applications.Builder {
 		pointersBuilder,
 		pointerBuilder,
 		entriesBuilder,
+		entryBuilder,
 		delimitersBuilder,
 		delimiterBuilder,
 	)

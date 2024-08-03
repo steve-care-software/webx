@@ -1,0 +1,21 @@
+package bytes
+
+import (
+	infra_bytes "github.com/steve-care-software/webx/engine/databases/bytes/infrastructure/bytes"
+	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
+	"github.com/steve-care-software/webx/engine/databases/hashes/domain/pointers"
+)
+
+// NewPointerAdapter creates a new pointer adapter
+func NewPointerAdapter() pointers.Adapter {
+	hashAdater := hash.NewAdapter()
+	bytesPointerAdapter := infra_bytes.NewPointerAdapter()
+	builder := pointers.NewBuilder()
+	pointerBuilder := pointers.NewPointerBuilder()
+	return createPointerAdapter(
+		hashAdater,
+		bytesPointerAdapter,
+		builder,
+		pointerBuilder,
+	)
+}

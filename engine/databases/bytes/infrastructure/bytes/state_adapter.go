@@ -6,23 +6,27 @@ import (
 
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states"
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 )
 
 type stateAdapter struct {
-	pointerAdapter pointers.Adapter
-	builder        states.Builder
-	stateBuilder   states.StateBuilder
+	pointerAdapter   pointers.Adapter
+	delimiterAdapter delimiters.Adapter
+	builder          states.Builder
+	stateBuilder     states.StateBuilder
 }
 
 func createStateAdapter(
 	pointerAdapter pointers.Adapter,
+	delimiterAdapter delimiters.Adapter,
 	builder states.Builder,
 	stateBuilder states.StateBuilder,
 ) states.Adapter {
 	out := stateAdapter{
-		pointerAdapter: pointerAdapter,
-		builder:        builder,
-		stateBuilder:   stateBuilder,
+		pointerAdapter:   pointerAdapter,
+		delimiterAdapter: delimiterAdapter,
+		builder:          builder,
+		stateBuilder:     stateBuilder,
 	}
 
 	return &out
@@ -47,7 +51,7 @@ func (app *stateAdapter) InstancesToBytes(ins states.States) ([]byte, error) {
 
 // BytesToInstances converts bytes to instances
 func (app *stateAdapter) BytesToInstances(data []byte) (states.States, []byte, error) {
-	amount, remaining, err := fetchAmountReturnRemaining(data)
+	amount, remaining, err := AmountReturnRemaining(data)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -74,14 +78,25 @@ func (app *stateAdapter) BytesToInstances(data []byte) (states.States, []byte, e
 
 // InstanceToBytes converts an instance to bytes
 func (app *stateAdapter) InstanceToBytes(ins states.State) ([]byte, error) {
-	// 1 == true, 0 == false
-	output := []byte{0}
+	output := []byte{
+		StateFlag,
+		0, // 1 == true, 0 == false
+	}
 	if ins.IsDeleted() {
-		output[0] = 1
+		output[1] = 1
 	}
 
 	if ins.HasPointers() {
 		retBytes, err := app.pointerAdapter.InstancesToBytes(ins.Pointers())
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, retBytes...)
+	}
+
+	if ins.HasRoot() {
+		retBytes, err := app.delimiterAdapter.InstanceToBytes(ins.Root())
 		if err != nil {
 			return nil, err
 		}
@@ -94,25 +109,39 @@ func (app *stateAdapter) InstanceToBytes(ins states.State) ([]byte, error) {
 
 // BytesToInstance converts bytes to instance
 func (app *stateAdapter) BytesToInstance(data []byte) (states.State, []byte, error) {
-	expectation := 1
+	expectation := 2
 	if len(data) < expectation {
 		str := fmt.Sprintf("the data was expected to contain at least %d bytes, %d provided", expectation, len(data))
 		return nil, nil, errors.New(str)
 	}
 
-	isDeletedByte := data[0]
+	flag := data[0]
+	if flag != StateFlag {
+		return nil, nil, errors.New("the data does not represents a State instance, invalid flag")
+	}
+
+	isDeletedByte := data[1]
 	builder := app.stateBuilder.Create()
 	if isDeletedByte == 1 {
 		builder.IsDeleted()
 	}
 
-	pointers, retRemaining, err := app.pointerAdapter.BytesToInstances(data[1:])
+	pointers, retRemaining, err := app.pointerAdapter.BytesToInstances(data[2:])
 	if err != nil {
-		retRemaining = data[1:]
+		retRemaining = data[2:]
 	}
 
 	if pointers != nil {
 		builder.WithPointers(pointers)
+	}
+
+	root, retRemainingAfterRoot, err := app.delimiterAdapter.BytesToInstance(retRemaining)
+	if err != nil {
+		retRemainingAfterRoot = retRemaining
+	}
+
+	if root != nil {
+		builder.WithRoot(root)
 	}
 
 	ins, err := builder.Now()
@@ -120,5 +149,5 @@ func (app *stateAdapter) BytesToInstance(data []byte) (states.State, []byte, err
 		return nil, nil, err
 	}
 
-	return ins, retRemaining, nil
+	return ins, retRemainingAfterRoot, nil
 }

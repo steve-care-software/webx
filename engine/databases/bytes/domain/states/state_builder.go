@@ -2,16 +2,19 @@ package states
 
 import (
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
+	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 )
 
 type stateBuilder struct {
 	isDeleted bool
+	root      delimiters.Delimiter
 	pointers  pointers.Pointers
 }
 
 func createStateBuilder() StateBuilder {
 	out := stateBuilder{
 		isDeleted: false,
+		root:      nil,
 		pointers:  nil,
 	}
 
@@ -21,6 +24,12 @@ func createStateBuilder() StateBuilder {
 // Create initializes the builder
 func (app *stateBuilder) Create() StateBuilder {
 	return createStateBuilder()
+}
+
+// WithRoot add root to the builder
+func (app *stateBuilder) WithRoot(root delimiters.Delimiter) StateBuilder {
+	app.root = root
+	return app
 }
 
 // WithPointers add pointers to the builder
@@ -37,17 +46,17 @@ func (app *stateBuilder) IsDeleted() StateBuilder {
 
 // Now builds a new State instance
 func (app *stateBuilder) Now() (State, error) {
-	if app.isDeleted && app.pointers != nil {
-		return createStateWithPointersAndDeleted(app.pointers), nil
+	if app.root != nil && app.pointers != nil {
+		return createStateWithRootAndPointers(app.isDeleted, app.root, app.pointers), nil
+	}
+
+	if app.root != nil {
+		return createStateWithRoot(app.isDeleted, app.root), nil
 	}
 
 	if app.pointers != nil {
-		return createStateWithPointers(app.pointers), nil
+		return createStateWithPointers(app.isDeleted, app.pointers), nil
 	}
 
-	if app.isDeleted {
-		return createStateWithDeleted(app.pointers), nil
-	}
-
-	return createState(), nil
+	return createState(app.isDeleted), nil
 }

@@ -27,6 +27,7 @@ type application struct {
 	pointersBuilder   pointers.Builder
 	pointerBuilder    pointers.PointerBuilder
 	entriesBuilder    entries.Builder
+	entryBuilder      entries.EntryBuilder
 	delimitersBuilder delimiters.Builder
 	delimiterBuilder  delimiters.DelimiterBuilder
 	basepath          []string
@@ -41,6 +42,7 @@ func createApplication(
 	pointersBuilder pointers.Builder,
 	pointerBuilder pointers.PointerBuilder,
 	entriesBuilder entries.Builder,
+	entryBuilder entries.EntryBuilder,
 	delimitersBuilder delimiters.Builder,
 	delimiterBuilder delimiters.DelimiterBuilder,
 	basepath []string,
@@ -53,6 +55,7 @@ func createApplication(
 		pointersBuilder:   pointersBuilder,
 		pointerBuilder:    pointerBuilder,
 		entriesBuilder:    entriesBuilder,
+		entryBuilder:      entryBuilder,
 		delimitersBuilder: delimitersBuilder,
 		delimiterBuilder:  delimiterBuilder,
 		basepath:          basepath,
@@ -103,10 +106,10 @@ func (app *application) RetrieveAll(identifier uint, retrievals delimiters.Delim
 }
 
 // Insert inserts an entry into a context
-func (app *application) Insert(identifier uint, entry entries.Entry) error {
+func (app *application) Insert(identifier uint, data []byte) error {
 	if pContext, ok := app.contexts[identifier]; ok {
-		entries, err := app.mergeInsert(pContext.insertions, []entries.Entry{
-			entry,
+		entries, err := app.mergeInsert(pContext.currentHeader, pContext.insertions, [][]byte{
+			data,
 		})
 
 		if err != nil {
@@ -132,9 +135,9 @@ func (app *application) Insert(identifier uint, entry entries.Entry) error {
 }
 
 // InsertAll inserts multiple entries into a context
-func (app *application) InsertAll(identifier uint, newEntries entries.Entries) error {
+func (app *application) InsertAll(identifier uint, data [][]byte) error {
 	if pContext, ok := app.contexts[identifier]; ok {
-		entries, err := app.mergeInsert(pContext.insertions, newEntries.List())
+		entries, err := app.mergeInsert(pContext.currentHeader, pContext.insertions, data)
 		if err != nil {
 			return err
 		}
@@ -214,108 +217,12 @@ func (app *application) DeleteAll(identifier uint, deletes delimiters.Delimiters
 
 // Commit commits a context
 func (app *application) Commit(identifier uint) error {
-	if pContext, ok := app.contexts[identifier]; ok {
-		// create the temporary file name:
-		value := strconv.Itoa(rand.Int())
-		pHash, err := app.hashAdapter.FromBytes([]byte(value))
-		if err != nil {
-			return err
-		}
+	return app.commit(identifier, nil)
+}
 
-		// create the destination path:
-		destinationPath := filepath.Join(append(pContext.path[:len(pContext.path)-1], pHash.String())...)
-
-		// create the temporary file:
-		destinationFile, err := os.Create(destinationPath)
-		if err != nil {
-			return err
-		}
-
-		// close the file, then cleanup:
-		defer destinationFile.Close()
-		defer os.Remove(destinationPath)
-
-		// update the header states:
-		updatedStates, err := app.updateStates(pContext.currentHeader, pContext.insertions, pContext.deletions)
-		if err != nil {
-			return err
-		}
-
-		// update the header states on file:
-		_, err = app.writeHeader(destinationFile, updatedStates)
-		if err != nil {
-			return err
-		}
-
-		// copy the existing data:
-		dataIndex := uint64(0)
-		if pContext.pDataIndex != nil {
-			dataIndex = *pContext.pDataIndex
-		}
-
-		_, err = pContext.pFile.Seek(int64(dataIndex), io.SeekStart)
-		if err != nil {
-			return err
-		}
-
-		_, err = destinationFile.Seek(0, io.SeekEnd)
-		if err != nil {
-			return err
-		}
-
-		buffer := make([]byte, 1024)
-		for {
-			amountRead, err := pContext.pFile.Read(buffer)
-			if err != nil && err != io.EOF {
-				return err
-			}
-
-			if amountRead == 0 {
-				break
-			}
-
-			amountWritten, err := destinationFile.Write(buffer[0:amountRead])
-			if err != nil {
-				return err
-			}
-
-			if amountRead != amountWritten {
-				str := fmt.Sprintf("there was an error while copying data, amount bytes read: %d, amount bytes written: %d", amountRead, amountWritten)
-				return errors.New(str)
-			}
-		}
-
-		// write the insertions:
-		if pContext.insertions != nil {
-			err = app.writeInsertions(destinationFile, pContext.insertions)
-			if err != nil {
-				return err
-			}
-		}
-
-		// replace the file:
-		originPath := filepath.Join(pContext.path...)
-		err = app.replaceFile(originPath, pContext.pFile, destinationFile)
-		if err != nil {
-			return err
-		}
-
-		// close the context and reopens it:
-		err = app.Close(identifier)
-		if err != nil {
-			return err
-		}
-
-		_, err = app.beginWithContext(identifier, pContext.name)
-		if err != nil {
-			return err
-		}
-
-		return nil
-	}
-
-	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
-	return errors.New(str)
+// CommitWithRoot represents a commit with root
+func (app *application) CommitWithRoot(identifier uint, root delimiters.Delimiter) error {
+	return app.commit(identifier, root)
 }
 
 // DeleteState deletes a states from the context by state index
@@ -337,6 +244,11 @@ func (app *application) DeleteState(identifier uint, stateIndex uint) error {
 		if currentState.HasPointers() {
 			pointers := currentState.Pointers()
 			stateBuilder.WithPointers(pointers)
+		}
+
+		if currentState.HasRoot() {
+			root := currentState.Root()
+			stateBuilder.WithRoot(root)
 		}
 
 		updatedState, err := stateBuilder.Now()
@@ -387,6 +299,11 @@ func (app *application) RecoverState(identifier uint, stateIndex uint) error {
 		if currentState.HasPointers() {
 			pointers := currentState.Pointers()
 			stateBuilder.WithPointers(pointers)
+		}
+
+		if currentState.HasRoot() {
+			root := currentState.Root()
+			stateBuilder.WithRoot(root)
 		}
 
 		updatedState, err := stateBuilder.Now()
@@ -451,6 +368,16 @@ func (app *application) StatesAmount(identifier uint) (*uint, error) {
 // Purge purges the previous states and only keep the latest one.  It also deletes previously deleted entries
 func (app *application) Purge(context uint) error {
 	return nil
+}
+
+// Root returns the root of the current state, if any
+func (app *application) Root(identifier uint) (delimiters.Delimiter, error) {
+	if pContext, ok := app.contexts[identifier]; ok {
+		return pContext.currentHeader.Root(), nil
+	}
+
+	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
+	return nil, errors.New(str)
 }
 
 // Close closes a context
@@ -688,10 +615,55 @@ func (app *application) readBytes(file *os.File, index int64, length int64) ([]b
 	return buffer, nil
 }
 
-func (app *application) mergeInsert(original entries.Entries, newEntries []entries.Entry) (entries.Entries, error) {
+func (app *application) mergeInsert(states states.States, original entries.Entries, data [][]byte) (entries.Entries, error) {
 	list := []entries.Entry{}
+	nextIndex := uint64(0)
 	if original != nil {
-		list = append(list, original.List()...)
+		var biggestDelimiter delimiters.Delimiter
+		originalList := original.List()
+		for _, oneEntry := range originalList {
+			delimiter := oneEntry.Delimiter()
+			if biggestDelimiter == nil {
+				biggestDelimiter = delimiter
+				continue
+			}
+
+			if biggestDelimiter.Index() < delimiter.Index() {
+				biggestDelimiter = delimiter
+				continue
+			}
+		}
+
+		nextIndex = biggestDelimiter.Index() + biggestDelimiter.Length()
+		list = append(list, originalList...)
+	}
+
+	if original == nil {
+		nextIndex = states.NextIndex()
+	}
+
+	newEntries := []entries.Entry{}
+	for _, oneData := range data {
+		length := uint64(len(oneData))
+		delimiter, err := app.delimiterBuilder.Create().
+			WithIndex(nextIndex).
+			WithLength(length).
+			Now()
+
+		if err != nil {
+			return nil, err
+		}
+
+		entry, err := app.entryBuilder.Create().
+			WithBytes(oneData).
+			WithDelimiter(delimiter).
+			Now()
+
+		if err != nil {
+			return nil, err
+		}
+
+		newEntries = append(newEntries, entry)
 	}
 
 	list = append(list, newEntries...)
@@ -712,7 +684,7 @@ func (app *application) mergeDelete(original delimiters.Delimiters, newEntries [
 		Now()
 }
 
-func (app *application) updateStates(statesIns states.States, insert entries.Entries, deletes delimiters.Delimiters) (states.States, error) {
+func (app *application) updateStates(statesIns states.States, insert entries.Entries, deletes delimiters.Delimiters, root delimiters.Delimiter) (states.States, error) {
 	if insert == nil && deletes == nil {
 		return statesIns, nil
 	}
@@ -733,7 +705,12 @@ func (app *application) updateStates(statesIns states.States, insert entries.Ent
 			return nil, err
 		}
 
-		newState, err := app.stateBuilder.Create().WithPointers(pointers).Now()
+		stateBuilder := app.stateBuilder.Create().WithPointers(pointers)
+		if root != nil {
+			stateBuilder.WithRoot(root)
+		}
+
+		newState, err := stateBuilder.Now()
 		if err != nil {
 			return nil, err
 		}
@@ -794,6 +771,11 @@ func (app *application) updateStatesWithDeletes(statesIns states.States, deletes
 				stateBuilder.WithPointers(pointers)
 			}
 
+			if oneState.HasRoot() {
+				root := oneState.Root()
+				stateBuilder.WithRoot(root)
+			}
+
 			updatedState, err := stateBuilder.Now()
 			if err != nil {
 				return nil, err
@@ -822,4 +804,109 @@ func (app *application) createPointers(entries entries.Entries) (pointers.Pointe
 	return app.pointersBuilder.Create().
 		WithList(pointersList).
 		Now()
+}
+
+func (app *application) commit(identifier uint, root delimiters.Delimiter) error {
+	if pContext, ok := app.contexts[identifier]; ok {
+		// create the temporary file name:
+		value := strconv.Itoa(rand.Int())
+		pHash, err := app.hashAdapter.FromBytes([]byte(value))
+		if err != nil {
+			return err
+		}
+
+		// create the destination path:
+		destinationPath := filepath.Join(append(pContext.path[:len(pContext.path)-1], pHash.String())...)
+
+		// create the temporary file:
+		destinationFile, err := os.Create(destinationPath)
+		if err != nil {
+			return err
+		}
+
+		// close the file, then cleanup:
+		defer destinationFile.Close()
+		defer os.Remove(destinationPath)
+
+		// update the header states:
+		updatedStates, err := app.updateStates(pContext.currentHeader, pContext.insertions, pContext.deletions, root)
+		if err != nil {
+			return err
+		}
+
+		// update the header states on file:
+		_, err = app.writeHeader(destinationFile, updatedStates)
+		if err != nil {
+			return err
+		}
+
+		// copy the existing data:
+		dataIndex := uint64(0)
+		if pContext.pDataIndex != nil {
+			dataIndex = *pContext.pDataIndex
+		}
+
+		_, err = pContext.pFile.Seek(int64(dataIndex), io.SeekStart)
+		if err != nil {
+			return err
+		}
+
+		_, err = destinationFile.Seek(0, io.SeekEnd)
+		if err != nil {
+			return err
+		}
+
+		buffer := make([]byte, 1024)
+		for {
+			amountRead, err := pContext.pFile.Read(buffer)
+			if err != nil && err != io.EOF {
+				return err
+			}
+
+			if amountRead == 0 {
+				break
+			}
+
+			amountWritten, err := destinationFile.Write(buffer[0:amountRead])
+			if err != nil {
+				return err
+			}
+
+			if amountRead != amountWritten {
+				str := fmt.Sprintf("there was an error while copying data, amount bytes read: %d, amount bytes written: %d", amountRead, amountWritten)
+				return errors.New(str)
+			}
+		}
+
+		// write the insertions:
+		if pContext.insertions != nil {
+			err = app.writeInsertions(destinationFile, pContext.insertions)
+			if err != nil {
+				return err
+			}
+		}
+
+		// replace the file:
+		originPath := filepath.Join(pContext.path...)
+		err = app.replaceFile(originPath, pContext.pFile, destinationFile)
+		if err != nil {
+			return err
+		}
+
+		// close the context and reopens it:
+		err = app.Close(identifier)
+		if err != nil {
+			return err
+		}
+
+		_, err = app.beginWithContext(identifier, pContext.name)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	str := fmt.Sprintf(contentIdentifierUndefinedPattern, identifier)
+	return errors.New(str)
 }

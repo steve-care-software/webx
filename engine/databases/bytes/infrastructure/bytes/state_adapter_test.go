@@ -174,6 +174,20 @@ func TestStateAdapter_multiple_Success(t *testing.T) {
 		states.NewStateForTests(
 			true,
 		),
+		states.NewStateWithRootForTests(
+			delimiters.NewDelimiterForTests(34, 55),
+			false,
+		),
+		states.NewStateWithRootAndPointersForTests(
+			delimiters.NewDelimiterForTests(34, 55),
+			pointers.NewPointersForTests([]pointers.Pointer{
+				pointers.NewPointerForTests(
+					delimiters.NewDelimiterForTests(1, 22),
+					false,
+				),
+			}),
+			true,
+		),
 	})
 
 	adapter := NewStateAdapter()

@@ -50,3 +50,51 @@ func (obj *states) Fetch(delimiter delimiters.Delimiter) (pointers.Pointer, erro
 
 	return nil, errors.New("there is no pointers related to the provided delimiter")
 }
+
+// NextIndex returns the next index
+func (obj *states) NextIndex() uint64 {
+	length := len(obj.list)
+	for i := 0; i < length; i++ {
+		index := length - 1 - i
+		currentState := obj.list[index]
+		if !currentState.HasPointers() {
+			continue
+		}
+
+		return currentState.Pointers().NextIndex()
+	}
+
+	return uint64(0)
+}
+
+// HasRoot returns true if there is a root, false otherwise
+func (obj *states) HasRoot() bool {
+	length := len(obj.list)
+	for i := 0; i < length; i++ {
+		index := length - 1 - i
+		currentState := obj.list[index]
+		if currentState.IsDeleted() {
+			continue
+		}
+
+		return currentState.HasRoot()
+	}
+
+	return false
+}
+
+// Root returns the root, if any
+func (obj *states) Root() delimiters.Delimiter {
+	length := len(obj.list)
+	for i := 0; i < length; i++ {
+		index := length - 1 - i
+		currentState := obj.list[index]
+		if currentState.IsDeleted() {
+			continue
+		}
+
+		return currentState.Root()
+	}
+
+	return nil
+}

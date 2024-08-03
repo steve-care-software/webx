@@ -2,7 +2,6 @@ package pointers
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
 )
@@ -38,52 +37,21 @@ func (obj *pointers) Fetch(delimiter delimiters.Delimiter) (Pointer, error) {
 	return nil, errors.New("there is no match for the provided delimiter")
 }
 
-// Subset returns a subset of the pointer's list
-func (obj *pointers) Subset(index uint64, length uint64) ([]Pointer, error) {
-	list := []Pointer{}
-	for _, onePointer := range obj.list {
-		if onePointer.IsDeleted() {
-			continue
-		}
-
-		list = append(list, onePointer)
-	}
-
-	listLength := uint64(len(list))
-	if index >= listLength {
-		str := fmt.Sprintf("the provided index (%d) is larger or equal to the non-deleted retrieval's list (length: %d)", index, listLength)
-		return nil, errors.New(str)
-	}
-
-	toIndex := index + listLength
-	if index >= listLength {
-		str := fmt.Sprintf("the provided index (%d) +length (%d) equals %d, which is larger than the non-deleted retrieval's list (length: %d)", index, length, toIndex, listLength)
-		return nil, errors.New(str)
-	}
-
-	subList := list[index:toIndex]
-	return subList, nil
-}
-
-// Search searches for the delimiters that are present in the search
-func (obj *pointers) Search(index uint64, length uint64) ([]delimiters.Delimiter, error) {
-	toIndex := index + length
-	list := []delimiters.Delimiter{}
+// NextIndex returns the next index
+func (obj *pointers) NextIndex() uint64 {
+	var delimiterWithBiggestIndex delimiters.Delimiter
 	for _, onePointer := range obj.list {
 		delimiter := onePointer.Delimiter()
-		delIndex := delimiter.Index()
-		if index <= delIndex && index < toIndex {
-			list = append(list, delimiter)
+		if delimiterWithBiggestIndex == nil {
+			delimiterWithBiggestIndex = delimiter
 			continue
 		}
 
-		break
+		index := delimiter.Index()
+		if index > delimiterWithBiggestIndex.Index() {
+			delimiterWithBiggestIndex = delimiter
+		}
 	}
 
-	if len(list) <= 0 {
-		str := fmt.Sprintf("there is no pointer list of the provided index (%d) and length (%d)", index, length)
-		return nil, errors.New(str)
-	}
-
-	return list, nil
+	return delimiterWithBiggestIndex.Index() + delimiterWithBiggestIndex.Length()
 }

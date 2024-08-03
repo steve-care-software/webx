@@ -1,10 +1,11 @@
 package pointers
 
 import (
-	"github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers/delimiters"
+	bytes_pointers "github.com/steve-care-software/webx/engine/databases/bytes/domain/states/pointers"
+	"github.com/steve-care-software/webx/engine/databases/entities/domain/hash"
 )
 
-// NewBuilder creates a new builder instance
+// NewBuilder creates a new builder for tests
 func NewBuilder() Builder {
 	return createBuilder()
 }
@@ -22,7 +23,7 @@ type Adapter interface {
 	BytesToInstance(data []byte) (Pointer, []byte, error)
 }
 
-// Builder represents the pointers builder
+// Builder represents a pointers builder
 type Builder interface {
 	Create() Builder
 	WithList(list []Pointer) Builder
@@ -32,20 +33,19 @@ type Builder interface {
 // Pointers represents pointers
 type Pointers interface {
 	List() []Pointer
-	NextIndex() uint64
-	Fetch(delimiter delimiters.Delimiter) (Pointer, error)
+	Retrieve(hash hash.Hash) (Pointer, error)
 }
 
 // PointerBuilder represents a pointer builder
 type PointerBuilder interface {
 	Create() PointerBuilder
-	WithDelimiter(delimiter delimiters.Delimiter) PointerBuilder
-	IsDeleted() PointerBuilder
+	WithHash(hash hash.Hash) PointerBuilder
+	WithPointer(pointer bytes_pointers.Pointer) PointerBuilder
 	Now() (Pointer, error)
 }
 
 // Pointer represents a pointer
 type Pointer interface {
-	Delimiter() delimiters.Delimiter
-	IsDeleted() bool
+	Hash() hash.Hash
+	Pointer() bytes_pointers.Pointer
 }
