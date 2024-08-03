@@ -24,7 +24,7 @@ func createApplication(
 // Execute executes the application
 func (app *application) Execute(frame stacks.Frame, executable applications.Application, assignable instruction_executes.Execute) (stacks.Assignable, *uint, error) {
 	contextVar := assignable.Context()
-	pContext, err := frame.FetchUnsignedInt(contextVar)
+	_, err := frame.FetchUnsignedInt(contextVar)
 	if err != nil {
 		code := failures.CouldNotFetchUnsignedIntegerFromFrame
 		return nil, &code, err
@@ -54,7 +54,7 @@ func (app *application) Execute(frame stacks.Frame, executable applications.Appl
 	input := assignable.Input()
 	assignableBuilder := app.assignableBuilder.Create()
 	if input.IsValue() {
-		valueVar := input.Value()
+		/*valueVar := input.Value()
 		inputBytes, err := frame.FetchBytes(valueVar)
 		if err != nil {
 			code := failures.CouldNotFetchBytesFromFrame
@@ -77,11 +77,11 @@ func (app *application) Execute(frame stacks.Frame, executable applications.Appl
 			}
 
 			assignableBuilder.WithBytes(retBytes)
-		}
+		}*/
 	}
 
 	if input.IsPath() {
-		pathVariable := input.Path()
+		/*pathVariable := input.Path()
 		retPath, err := frame.FetchList(pathVariable)
 		if err != nil {
 			code := failures.CouldNotFetchListFromFrame
@@ -116,7 +116,7 @@ func (app *application) Execute(frame stacks.Frame, executable applications.Appl
 			}
 
 			assignableBuilder.WithBytes(retBytes)
-		}
+		}*/
 	}
 
 	ins, err := assignableBuilder.Now()

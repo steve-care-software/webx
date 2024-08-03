@@ -32,7 +32,7 @@ func (app *application) Execute(frame stacks.Frame, assignment executions.Execut
 
 	content := assignment.Content()
 	if content.IsCommit() {
-		contextVar := content.Commit()
+		/*contextVar := content.Commit()
 		pContext, err := frame.FetchUnsignedInt(contextVar)
 		if err != nil {
 			code := failures.CouldNotFetchUnsignedIntegerFromFrame
@@ -43,7 +43,7 @@ func (app *application) Execute(frame stacks.Frame, assignment executions.Execut
 		if err != nil {
 			code := failures.CouldNotExecuteCommitFromExecutable
 			return &code, err
-		}
+		}*/
 
 		return nil, nil
 	}

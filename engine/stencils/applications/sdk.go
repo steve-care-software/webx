@@ -1,7 +1,8 @@
 package applications
 
 import (
-	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions"
+	"github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
+	"github.com/steve-care-software/webx/engine/stencils/domain/sessions"
 )
 
 // RemoteBuilder represents a remote application builder
@@ -20,19 +21,16 @@ type LocalBuilder interface {
 
 // Application represents an application
 type Application interface {
-	Begin(keyname string) (*uint, error)
-	Execute(context uint, input []byte) ([]byte, error)
-	ExecuteWithPath(context uint, inputPath []string) ([]byte, error)
-	ExecuteLayer(context uint, input []byte, layerPath []string) ([]byte, error)
-	ExecuteLayerWithPath(context uint, inputPath []string, layerPath []string) ([]byte, error)
-	RetrieveAll(context uint, index uint, length uint) (executions.Executions, error)
-	RetrieveAt(context uint, index uint) (executions.Execution, error)
-	Amount(context uint) (*uint, error)
-	Commit(context uint) error
-	DeleteState(context uint, stateIndex uint) error
-	RecoverState(context uint, stateIndex uint) error
-	StatesAmount(context uint) (*uint, error)
-	DeletedStateIndexes(context uint) ([]uint, error)
-	Close(context uint) error
-	Purge(context uint) error
+	Begin(keyname string) (hash.Hash, error)
+	Execute(identifier hash.Hash, input []byte) ([]byte, error)
+	Commit(identifier hash.Hash) error
+	Session(identifier hash.Hash) (sessions.Session, error)
+	Sessions() ([]hash.Hash, error)
+	Delete(identifier hash.Hash) error
+	DeleteState(identifier hash.Hash, stateIndex uint) error
+	RecoverState(identifier hash.Hash, stateIndex uint) error
+	StatesAmount(identifier hash.Hash) (*uint, error)
+	DeletedStateIndexes(identifier hash.Hash) ([]uint, error)
+	Close(identifier hash.Hash) error
+	Purge(identifier hash.Hash) error
 }

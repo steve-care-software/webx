@@ -96,7 +96,7 @@ func (app *application) Execute(frame stacks.Frame, assignable instruction_execu
 	}
 
 	if content.IsAmount() {
-		amount := content.Amount()
+		/*amount := content.Amount()
 		pContext, err := frame.FetchUnsignedInt(amount)
 		if err != nil {
 			code := failures.CouldNotFetchUnsignedIntegerFromFrame
@@ -114,11 +114,12 @@ func (app *application) Execute(frame stacks.Frame, assignable instruction_execu
 			return nil, nil, err
 		}
 
-		return ins, nil, nil
+		return ins, nil, nil*/
+		return nil, nil, nil
 	}
 
 	if content.IsHead() {
-		amount := content.Head()
+		/*amount := content.Head()
 		pContext, err := frame.FetchUnsignedInt(amount)
 		if err != nil {
 			code := failures.CouldNotFetchUnsignedIntegerFromFrame
@@ -136,7 +137,8 @@ func (app *application) Execute(frame stacks.Frame, assignable instruction_execu
 			return nil, nil, err
 		}
 
-		return ins, nil, nil
+		return ins, nil, nil*/
+		return nil, nil, nil
 	}
 
 	/*retPathList, err := retExecutable.List()

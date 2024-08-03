@@ -10,8 +10,8 @@ import (
 	entities_applications "github.com/steve-care-software/webx/engine/databases/entities/applications"
 	"github.com/steve-care-software/webx/engine/databases/entities/domain/entities"
 	"github.com/steve-care-software/webx/engine/databases/hashes/domain/hash"
-	"github.com/steve-care-software/webx/engine/databases/stencils/applications"
-	"github.com/steve-care-software/webx/engine/databases/stencils/domain/sessions"
+	"github.com/steve-care-software/webx/engine/stencils/applications"
+	"github.com/steve-care-software/webx/engine/stencils/domain/sessions"
 	applications_vms "github.com/steve-care-software/webx/engine/vms/applications"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions"
 )
