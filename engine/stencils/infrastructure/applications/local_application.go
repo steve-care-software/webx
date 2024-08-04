@@ -11,19 +11,17 @@ import (
 	"github.com/steve-care-software/webx/engine/entities/domain/entities"
 	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
 	"github.com/steve-care-software/webx/engine/stencils/applications"
-	"github.com/steve-care-software/webx/engine/stencils/domain/sessions"
 	applications_vms "github.com/steve-care-software/webx/engine/vms/applications"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions"
 )
 
 type localApplication struct {
-	entityApp      entities_applications.Application
-	containerApp   containers_applications.Application
-	vmApp          applications_vms.Application
-	entityAdapter  entities.Adapter
-	sessionBuilder sessions.Builder
-	hashAdapter    hash.Adapter
-	contexts       map[string]uint
+	entityApp     entities_applications.Application
+	containerApp  containers_applications.Application
+	vmApp         applications_vms.Application
+	entityAdapter entities.Adapter
+	hashAdapter   hash.Adapter
+	contexts      map[string]uint
 }
 
 func createLocalApplication(
@@ -31,17 +29,15 @@ func createLocalApplication(
 	containerApp containers_applications.Application,
 	vmApp applications_vms.Application,
 	entityAdapter entities.Adapter,
-	sessionBuilder sessions.Builder,
 	hashAdapter hash.Adapter,
 ) applications.Application {
 	out := localApplication{
-		entityApp:      entityApp,
-		containerApp:   containerApp,
-		vmApp:          vmApp,
-		entityAdapter:  entityAdapter,
-		sessionBuilder: sessionBuilder,
-		hashAdapter:    hashAdapter,
-		contexts:       map[string]uint{},
+		entityApp:     entityApp,
+		containerApp:  containerApp,
+		vmApp:         vmApp,
+		entityAdapter: entityAdapter,
+		hashAdapter:   hashAdapter,
+		contexts:      map[string]uint{},
 	}
 
 	return &out
