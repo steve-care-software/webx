@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	bytes_applications "github.com/steve-care-software/webx/engine/bytes/applications"
-	"github.com/steve-care-software/webx/engine/bytes/domain/states/pointers/delimiters"
+	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
 	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
 	"github.com/steve-care-software/webx/engine/hashes/domain/pointers"
 )

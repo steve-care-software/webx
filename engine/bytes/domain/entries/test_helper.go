@@ -1,7 +1,7 @@
 package entries
 
 import (
-	"github.com/steve-care-software/webx/engine/bytes/domain/states/pointers/delimiters"
+	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
 )
 
 // NewEntriesForTests creates new entries for tests

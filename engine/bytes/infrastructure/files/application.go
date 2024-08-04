@@ -11,10 +11,10 @@ import (
 
 	"github.com/juju/fslock"
 	"github.com/steve-care-software/webx/engine/bytes/applications"
+	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
 	"github.com/steve-care-software/webx/engine/bytes/domain/entries"
 	"github.com/steve-care-software/webx/engine/bytes/domain/states"
-	"github.com/steve-care-software/webx/engine/bytes/domain/states/pointers"
-	"github.com/steve-care-software/webx/engine/bytes/domain/states/pointers/delimiters"
+	"github.com/steve-care-software/webx/engine/bytes/domain/states/branches/layers/pointers"
 	infra_bytes "github.com/steve-care-software/webx/engine/bytes/infrastructure/bytes"
 	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
 )
