@@ -29,4 +29,15 @@ type Application interface {
 	Close(context uint) error
 	Purge(context uint) error
 	States(context uint) (states.States, error)
+	Switch(context uint, branchName string) error
+	Dive(context uint, childrenBranchName string) error
+	Climb(context uint) error
+	BranchNames(context uint) ([]string, error)
+	DeleteBranch(context uint) error
+	RecoverBranch(context uint, name string) error
+	DeletedBranchNames(context uint) ([]string, error)
+	LayerAmount(context uint) (*uint, error)
+	DeleteLayer(context uint, layerIndex uint) error
+	RecoverLayer(context uint, layerIndex uint) error
+	DeletedLayerIndexes(context uint) ([]uint, error)
 }

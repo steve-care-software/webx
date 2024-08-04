@@ -372,6 +372,61 @@ func (app *application) Close(identifier uint) error {
 	return errors.New(str)
 }
 
+// Switch switches to the provided branch name
+func (app *application) Switch(context uint, branchName string) error {
+	return nil
+}
+
+// Dive dives into a children's branch name
+func (app *application) Dive(context uint, childrenBranchName string) error {
+	return nil
+}
+
+// Climb climbs into the parent branch
+func (app *application) Climb(context uint) error {
+	return nil
+}
+
+// BranchNames returns the branch names
+func (app *application) BranchNames(context uint) ([]string, error) {
+	return nil, nil
+}
+
+// DeleteBranch deletes a branch
+func (app *application) DeleteBranch(context uint) error {
+	return nil
+}
+
+// RecoverBranch recovers a branch
+func (app *application) RecoverBranch(context uint, name string) error {
+	return nil
+}
+
+// DeletedBranchNames returns the deleted branch names
+func (app *application) DeletedBranchNames(context uint) ([]string, error) {
+	return nil, nil
+}
+
+// LayerAmount returns the layer amount
+func (app *application) LayerAmount(context uint) (*uint, error) {
+	return nil, nil
+}
+
+// DeleteLayer deletes a layer
+func (app *application) DeleteLayer(context uint, layerIndex uint) error {
+	return nil
+}
+
+// RecoverLayer recovers a layer
+func (app *application) RecoverLayer(context uint, layerIndex uint) error {
+	return nil
+}
+
+// DeletedLayerIndexes returns the deleted layer indexes
+func (app *application) DeletedLayerIndexes(context uint) ([]uint, error) {
+	return nil, nil
+}
+
 func (app *application) replaceFile(sourcePath string, pDestination *os.File, pSource *os.File) error {
 	// Seek the destination file to the beginning:
 	_, err := pSource.Seek(0, io.SeekStart)
