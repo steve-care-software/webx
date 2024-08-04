@@ -4,6 +4,14 @@ import (
 	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder represents a keyname builder
 type Builder interface {
 	Create() Builder
