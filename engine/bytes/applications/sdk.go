@@ -32,6 +32,7 @@ type Application interface {
 	Switch(context uint, branchName string) error
 	Dive(context uint, childrenBranchName string) error
 	Climb(context uint) error
+	Merge(context uint) error
 	BranchNames(context uint) ([]string, error)
 	DeleteBranch(context uint) error
 	RecoverBranch(context uint, name string) error

@@ -387,6 +387,11 @@ func (app *application) Climb(context uint) error {
 	return nil
 }
 
+// Merge merges the current branch to its parent branch
+func (app *application) Merge(context uint) error {
+	return nil
+}
+
 // BranchNames returns the branch names
 func (app *application) BranchNames(context uint) ([]string, error) {
 	return nil, nil
