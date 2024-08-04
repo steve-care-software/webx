@@ -30,6 +30,11 @@ func (app *application) Begin(name string) (*uint, error) {
 	return app.hashApp.Begin(name)
 }
 
+// Established returns true if the context exists, false otherwise
+func (app *application) Established(identifier uint) bool {
+	return app.hashApp.Established(identifier)
+}
+
 // Retrieve retrieves an entity by hash
 func (app *application) Retrieve(context uint, hash hash.Hash) (entities.Entity, error) {
 	bytes, err := app.hashApp.Retrieve(context, hash)
@@ -62,6 +67,7 @@ func (app *application) Insert(context uint, entity entities.Entity) error {
 			return app.Insert(context, casted)
 		}
 	}
+
 	return nil
 }
 

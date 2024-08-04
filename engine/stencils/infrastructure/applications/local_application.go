@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"math/rand"
 	"strconv"
-	"time"
 
+	containers_applications "github.com/steve-care-software/webx/engine/containers/applications"
 	entities_applications "github.com/steve-care-software/webx/engine/entities/applications"
 	"github.com/steve-care-software/webx/engine/entities/domain/entities"
 	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
@@ -18,6 +18,7 @@ import (
 
 type localApplication struct {
 	entityApp      entities_applications.Application
+	containerApp   containers_applications.Application
 	vmApp          applications_vms.Application
 	entityAdapter  entities.Adapter
 	sessionBuilder sessions.Builder
@@ -27,6 +28,7 @@ type localApplication struct {
 
 func createLocalApplication(
 	entityApp entities_applications.Application,
+	containerApp containers_applications.Application,
 	vmApp applications_vms.Application,
 	entityAdapter entities.Adapter,
 	sessionBuilder sessions.Builder,
@@ -34,6 +36,7 @@ func createLocalApplication(
 ) applications.Application {
 	out := localApplication{
 		entityApp:      entityApp,
+		containerApp:   containerApp,
 		vmApp:          vmApp,
 		entityAdapter:  entityAdapter,
 		sessionBuilder: sessionBuilder,
@@ -51,7 +54,11 @@ func (app *localApplication) Begin(keyname string) (hash.Hash, error) {
 		return nil, err
 	}
 
-	rand.Seed(time.Now().UnixNano())
+	if !app.containerApp.Established(*pContext) {
+		str := fmt.Sprintf("the container application was expected to be already established for context: %d", *pContext)
+		return nil, errors.New(str)
+	}
+
 	number := rand.Int()
 	pHash, err := app.hashAdapter.FromBytes([]byte(strconv.Itoa(number)))
 	if err != nil {
@@ -71,32 +78,18 @@ func (app *localApplication) Execute(identifier hash.Hash, input []byte) ([]byte
 			return nil, err
 		}
 
-		prevSession, err := app.retrieveSession(context, identifier)
-		if err != nil {
-			return nil, err
+		hashes := []hash.Hash{}
+		executionsList := executionsIns.List()
+		for _, oneExecution := range executionsList {
+			hashes = append(hashes, oneExecution.Hash())
+			err = app.entityApp.Insert(context, oneExecution)
+			if err != nil {
+				return nil, err
+			}
 		}
 
-		executionsList := []executions.Executions{}
-		if prevSession != nil {
-			executionsList = prevSession.Executions()
-		}
-
-		executionsList = append(executionsList, executionsIns)
-		updatedSession, err := app.sessionBuilder.Create().
-			WithExecutions(executionsList).
-			WithHash(identifier).
-			Now()
-
-		if err != nil {
-			return nil, err
-		}
-
-		err = app.entityApp.Delete(context, identifier)
-		if err != nil {
-			return nil, err
-		}
-
-		err = app.entityApp.Insert(context, updatedSession)
+		// insert the elements in the container:
+		err = app.containerApp.Insert(context, identifier.String(), hashes)
 		if err != nil {
 			return nil, err
 		}
@@ -111,27 +104,50 @@ func (app *localApplication) Execute(identifier hash.Hash, input []byte) ([]byte
 func (app *localApplication) Commit(identifier hash.Hash) error {
 	keyname := identifier.String()
 	if context, ok := app.contexts[keyname]; ok {
-		return app.entityApp.Commit(context)
+		err := app.entityApp.Commit(context)
+		if err != nil {
+			return err
+		}
+
+		if app.containerApp.Established(context) {
+			str := fmt.Sprintf("the container application was expected to NOT be established for context: %d", context)
+			return errors.New(str)
+		}
+
+		return nil
 	}
 
 	return errors.New(contextIdentifierUndefinedPattern)
 }
 
-// Session returns the session
-func (app *localApplication) Session(identifier hash.Hash) (sessions.Session, error) {
+// Executions retrieves the past executions of the identifier
+func (app *localApplication) Executions(identifier hash.Hash) ([]executions.Executions, error) {
 	keyname := identifier.String()
 	if context, ok := app.contexts[keyname]; ok {
-		retSession, err := app.entityApp.Retrieve(context, identifier)
+		// retrieve the container:
+		retContainer, err := app.containerApp.Retrieve(context, identifier.String())
 		if err != nil {
 			return nil, err
 		}
 
-		if casted, ok := retSession.(sessions.Session); ok {
-			return casted, nil
+		executionsList := []executions.Executions{}
+		elements := retContainer.Elements()
+		for _, oneHash := range elements {
+			retExecutions, err := app.entityApp.Retrieve(context, oneHash)
+			if err != nil {
+				return nil, err
+			}
+
+			if casted, ok := retExecutions.(executions.Executions); ok {
+				executionsList = append(executionsList, casted)
+				continue
+			}
+
+			str := fmt.Sprintf("the context (%d) is trying to retrieving a container (hash: %s) that was expected to contain an Executions instance (hash: %s), but the data could not be catsed properly", context, identifier.String(), oneHash.String())
+			return nil, errors.New(str)
 		}
 
-		str := fmt.Sprintf(notSessionErrPattern, identifier.String())
-		return nil, errors.New(str)
+		return executionsList, nil
 	}
 
 	return nil, errors.New(contextIdentifierUndefinedPattern)
@@ -211,7 +227,17 @@ func (app *localApplication) DeletedStateIndexes(identifier hash.Hash) ([]uint, 
 func (app *localApplication) Close(identifier hash.Hash) error {
 	keyname := identifier.String()
 	if context, ok := app.contexts[keyname]; ok {
-		return app.entityApp.Close(context)
+		err := app.entityApp.Close(context)
+		if err != nil {
+			return err
+		}
+
+		if app.containerApp.Established(context) {
+			str := fmt.Sprintf("the container application was expected to NOT be established for context: %d", context)
+			return errors.New(str)
+		}
+
+		return nil
 	}
 
 	return errors.New(contextIdentifierUndefinedPattern)
@@ -225,18 +251,4 @@ func (app *localApplication) Purge(identifier hash.Hash) error {
 	}
 
 	return errors.New(contextIdentifierUndefinedPattern)
-}
-
-func (app *localApplication) retrieveSession(context uint, identifier hash.Hash) (sessions.Session, error) {
-	instance, err := app.entityApp.Retrieve(context, identifier)
-	if err != nil {
-		return nil, nil
-	}
-
-	if casted, ok := instance.(sessions.Session); ok {
-		return casted, nil
-	}
-
-	str := fmt.Sprintf(notSessionErrPattern, identifier.String())
-	return nil, errors.New(str)
 }

@@ -34,6 +34,7 @@ type Builder interface {
 // Application represents an hash application
 type Application interface {
 	Begin(name string) (*uint, error)
+	Established(context uint) bool
 	Retrieve(context uint, hash hash.Hash) ([]byte, error)
 	Insert(context uint, hash hash.Hash, data []byte) error
 	Delete(context uint, hash hash.Hash) error

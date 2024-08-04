@@ -25,6 +25,7 @@ type Builder interface {
 // Application represents the database application
 type Application interface {
 	Begin(name string) (*uint, error)
+	Established(identifier uint) bool
 	Retrieve(context uint, hash hash.Hash) (entities.Entity, error)
 	Insert(context uint, entity entities.Entity) error
 	Delete(context uint, hash hash.Hash) error

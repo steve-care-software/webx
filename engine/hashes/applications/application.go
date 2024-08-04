@@ -72,6 +72,15 @@ func (app *application) Begin(name string) (*uint, error) {
 	return pContext, nil
 }
 
+// Established returns true if the context exists, false otherwise
+func (app *application) Established(identifier uint) bool {
+	if _, ok := app.contexts[identifier]; ok {
+		return true
+	}
+
+	return false
+}
+
 // Retrieve retrieves data from an hash
 func (app *application) Retrieve(identifier uint, hash hash.Hash) ([]byte, error) {
 	if pContext, ok := app.contexts[identifier]; ok {

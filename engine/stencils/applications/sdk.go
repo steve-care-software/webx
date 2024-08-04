@@ -2,7 +2,7 @@ package applications
 
 import (
 	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
-	"github.com/steve-care-software/webx/engine/stencils/domain/sessions"
+	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions"
 )
 
 // RemoteBuilder represents a remote application builder
@@ -24,7 +24,7 @@ type Application interface {
 	Begin(keyname string) (hash.Hash, error)
 	Execute(identifier hash.Hash, input []byte) ([]byte, error)
 	Commit(identifier hash.Hash) error
-	Session(identifier hash.Hash) (sessions.Session, error)
+	Executions(identifier hash.Hash) ([]executions.Executions, error)
 	Sessions() ([]hash.Hash, error)
 	Delete(identifier hash.Hash) error
 	DeleteState(identifier hash.Hash, stateIndex uint) error
