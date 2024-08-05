@@ -17,8 +17,8 @@ type Builder interface {
 type Application interface {
 	Begin(name string) (*uint, error)
 	Status(context uint) (status.Status, error)        // returns the status, which is the cursor without the lists
-	Records(context uint)                              // returns the recorded cursors
-	Erase(context uint, recordIdentifier uint) error   // erase a record using its identifier
+	Records(context uint) (status.Status, error)       // returns the recorded cursor status representations
+	Erase(context uint, recordIdentifier uint) error   // erase a cursor using its identifier
 	Record(context uint) (*uint, error)                // record the cursor and return its identifier
 	Replace(context uint, recordIdentifier uint) error // put the cursor to what the identifier was pointing to
 	Retrieve(context uint, name string, includesDeleted bool) (originals.Original, error)
