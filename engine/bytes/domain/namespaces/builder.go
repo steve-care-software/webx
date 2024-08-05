@@ -35,7 +35,6 @@ func (app *namespacesIns) Now() (Namespaces, error) {
 	}
 
 	deleted := []string{}
-	names := []string{}
 	activeList := []Namespace{}
 	mp := map[string]Namespace{}
 	for idx, oneIns := range app.list {
@@ -54,14 +53,12 @@ func (app *namespacesIns) Now() (Namespaces, error) {
 		}
 
 		mp[name] = oneIns
-		names = append(names, name)
 	}
 
 	return createNamespaces(
 		mp,
 		app.list,
 		activeList,
-		names,
 		deleted,
 	), nil
 }

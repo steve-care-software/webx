@@ -33,7 +33,6 @@ type Builder interface {
 type Namespaces interface {
 	List() []Namespace
 	ActiveList() []Namespace
-	Names() []string
 	DeletedNames() []string
 	Fetch(name string) (Namespace, error)
 	Index(name string) (*uint, error)

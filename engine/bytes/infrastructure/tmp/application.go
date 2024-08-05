@@ -62,10 +62,20 @@ func (app *application) Status(context uint) (string, error) {
 	return "", errors.New(str)
 }
 
-// Namespaces returns the namespaces
-func (app *application) Namespaces(context uint) ([]string, error) {
+// Namespace returns the namespace by name
+func (app *application) Namespace(context uint, name string) (namespaces.Namespace, error) {
 	if pContext, ok := app.contexts[context]; ok {
-		return pContext.namespaces.Names(), nil
+		return pContext.namespaces.Fetch(name)
+	}
+
+	str := fmt.Sprintf(contextIdentifierUndefinedPattern, context)
+	return nil, errors.New(str)
+}
+
+// Namespaces returns the namespaces
+func (app *application) Namespaces(context uint) (namespaces.Namespaces, error) {
+	if pContext, ok := app.contexts[context]; ok {
+		return pContext.namespaces, nil
 	}
 
 	str := fmt.Sprintf(contextIdentifierUndefinedPattern, context)

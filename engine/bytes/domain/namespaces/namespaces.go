@@ -9,7 +9,6 @@ type namespaces struct {
 	mp         map[string]Namespace
 	list       []Namespace
 	activeList []Namespace
-	names      []string
 	deleted    []string
 }
 
@@ -17,14 +16,12 @@ func createNamespaces(
 	mp map[string]Namespace,
 	list []Namespace,
 	activeList []Namespace,
-	names []string,
 	deleted []string,
 ) Namespaces {
 	out := namespaces{
 		mp:         mp,
 		list:       list,
 		activeList: activeList,
-		names:      names,
 		deleted:    deleted,
 	}
 
@@ -39,11 +36,6 @@ func (obj *namespaces) List() []Namespace {
 // ActiveList returns the list of active namespaces
 func (obj *namespaces) ActiveList() []Namespace {
 	return obj.activeList
-}
-
-// Names returns the names of the namespaces
-func (obj *namespaces) Names() []string {
-	return obj.names
 }
 
 // DeletedNames returns the deleted namespace names
