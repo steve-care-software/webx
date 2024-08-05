@@ -1,6 +1,7 @@
 package applications
 
 import (
+	"github.com/steve-care-software/webx/engine/bytes/domain/cursors/status"
 	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
 	"github.com/steve-care-software/webx/engine/bytes/domain/originals"
 )
@@ -15,7 +16,7 @@ type Builder interface {
 // Application represents the database application
 type Application interface {
 	Begin(name string) (*uint, error)
-	Status(context uint) (string, error)               // returns the status, which is the cursor without the lists
+	Status(context uint) (status.Status, error)        // returns the status, which is the cursor without the lists
 	Records(context uint)                              // returns the recorded cursors
 	Erase(context uint, recordIdentifier uint) error   // erase a record using its identifier
 	Record(context uint) (*uint, error)                // record the cursor and return its identifier
@@ -37,7 +38,7 @@ type Application interface {
 	MetaData(context uint) (delimiters.Delimiter, error)                       // returns the current branch meta data
 	Merge(context uint, deleteOriginal bool) error                             // merge the current branch into its parent and set its parent as the current branch
 	Commit(context uint) error
-	CommitWithMetaData(context uint, metaData delimiters.Delimiter) error
+	CommitWithMetaData(context uint, metaData []byte) error
 	Close(context uint) error
 
 	// data:
