@@ -104,6 +104,8 @@ type Application interface {
 	Delete(context uint, delete delimiters.Delimiter) error
 
 	// system:
+	Record(context uint) (*uint, error)
+	Replace(context uint, recordIdentifier uint) error
 	Commit(context uint) error
 	CommitWithMetaData(context uint, metaData delimiters.Delimiter) error
 	Close(context uint) error
