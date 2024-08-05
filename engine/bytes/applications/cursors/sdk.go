@@ -8,6 +8,7 @@ import (
 	"github.com/steve-care-software/webx/engine/bytes/domain/iterations"
 	"github.com/steve-care-software/webx/engine/bytes/domain/namespaces"
 	"github.com/steve-care-software/webx/engine/bytes/domain/originals"
+	"github.com/steve-care-software/webx/engine/bytes/domain/signers"
 	"github.com/steve-care-software/webx/engine/bytes/domain/versions"
 	"github.com/steve-care-software/webx/engine/bytes/domain/workspaces"
 )
@@ -16,6 +17,7 @@ import (
 type Builder interface {
 	Create() Builder
 	WithCursor(cursor cursors.Cursor) Builder
+	WithSigner(signer signers.Signer) Builder
 	Now() (Application, error)
 }
 
