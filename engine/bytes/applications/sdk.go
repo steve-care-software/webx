@@ -40,7 +40,7 @@ type Application interface {
 	Iterations(context uint) (iterations.Iterations, error)
 	DeletedIterations(context uint) ([]string, error)
 	SetIteration(context uint, name string) error
-	InsertIteration(context uint, name string, description string) error
+	InsertIteration(context uint, ins originals.Original) error
 	UpdateIteration(context uint, original string, updated originals.Original) error
 	DeleteIteration(context uint, name string) error
 	RecoverIteration(context uint, name string) error
@@ -53,7 +53,7 @@ type Application interface {
 	DeletedIterationDevelopments(context uint) ([]string, error)
 	SetIterationDevelopment(context uint, name string) error
 	MoveIterationDevelopmentIntoProduction(context uint, name string, devName string, deleteOriginal bool) error
-	InsertIterationDevelopment(context uint, name string, description string) error
+	InsertIterationDevelopment(context uint, ins originals.Original) error
 	UpdateIterationDevelopment(context uint, original string, updated originals.Original) error
 	DeleteIterationDevelopment(context uint, name string) error
 	RecoverIterationDevelopment(context uint, name string) error
@@ -65,7 +65,7 @@ type Application interface {
 	IterationProductions(context uint) (productions.Productions, error)
 	DeletedIterationProductions(context uint) ([]string, error)
 	SetIterationProduction(context uint, name string) error
-	InsertIterationProduction(context uint, name string, description string) error
+	InsertIterationProduction(context uint, ins originals.Original) error
 	UpdateIterationProduction(context uint, original string, updated originals.Original) error
 	DeleteIterationProduction(context uint, name string) error
 	RecoverIterationProduction(context uint, name string) error
@@ -79,7 +79,7 @@ type Application interface {
 	DeletedBranches(context uint) ([]string, error)
 	SetBranch(context uint, name string) error
 	MergeBranch(context uint, deleteOriginal bool) error
-	InsertBranch(context uint, name string, description string) error
+	InsertBranch(context uint, ins originals.Original) error
 	UpdateBranch(context uint, original string, updated originals.Original) error
 	DeleteBranch(context uint, name string) error
 	RecoverBranch(context uint, name string) error
@@ -91,7 +91,7 @@ type Application interface {
 	States(context uint) (states.States, error)
 	DeletedStates(context uint) ([]string, error)
 	SetState(context uint, name string) error
-	InsertState(context uint, name string, description string) error
+	InsertState(context uint, ins originals.Original) error
 	UpdateState(context uint, original string, updated originals.Original) error
 	DeleteState(context uint, name string) error
 	RecoverState(context uint, name string) error
