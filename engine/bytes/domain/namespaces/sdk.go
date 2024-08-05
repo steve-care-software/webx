@@ -17,9 +17,9 @@ const namespaceDoesNotExistsErrPattern = "the namespace (name: %s) does not exis
 // Adapter represents a namespace adapter
 type Adapter interface {
 	InstancesToBytes(ins Namespaces) ([]byte, error)
-	BytesToInstances(data []byte) (Namespaces, []byte, error)
+	BytesToInstances(data []byte) (Namespaces, error)
 	InstanceToBytes(ins Namespace) ([]byte, error)
-	BytesToInstance(data []byte) (Namespace, []byte, error)
+	BytesToInstance(data []byte) (Namespace, error)
 }
 
 // Builder represents a builder

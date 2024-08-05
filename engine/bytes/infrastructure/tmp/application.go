@@ -373,7 +373,7 @@ func (app *application) readNamespaces(pFile *os.File) (namespaces.Namespaces, *
 		return nil, nil, err
 	}
 
-	retIns, _, err := app.namespaceAdapter.BytesToInstances(namespaceBytes)
+	retIns, err := app.namespaceAdapter.BytesToInstances(namespaceBytes)
 	if err != nil {
 		return nil, nil, err
 	}

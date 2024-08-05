@@ -83,6 +83,7 @@ func (app *pointerAdapter) InstanceToBytes(ins pointers.Pointer) ([]byte, error)
 		PointerFlag,
 		0, // 1 == true, 0 == false
 	}
+
 	if ins.IsDeleted() {
 		output[1] = 1
 	}

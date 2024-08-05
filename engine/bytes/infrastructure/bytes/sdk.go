@@ -6,8 +6,8 @@ import (
 	"fmt"
 
 	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
+	"github.com/steve-care-software/webx/engine/bytes/domain/namespaces"
 	"github.com/steve-care-software/webx/engine/bytes/domain/pointers"
-	"github.com/steve-care-software/webx/engine/bytes/domain/states"
 )
 
 const (
@@ -17,24 +17,24 @@ const (
 	// represents the pointer flag
 	PointerFlag
 
-	// StateFlag represents the state flag
-	StateFlag
+	// NamespaceFlag represents the namespace flag
+	NamespaceFlag
 )
 
 // AmountOfBytesIntUint64 represents the amount of bytes a uint64 contains
 const AmountOfBytesIntUint64 = 8
 
-// NewStateAdapter creates a new state adapter
-func NewStateAdapter() states.Adapter {
-	pointerAdapter := NewPointerAdapter()
+const invalidDataPatternErr = "the data was expected to contain at least %d bytes, %d provided"
+
+// NewNamespaceAdapter creates a new namespace adapter
+func NewNamespaceAdapter() namespaces.Adapter {
 	delimiterAdapter := NewDelimiterAdapter()
-	builder := states.NewBuilder()
-	stateBuilder := states.NewStateBuilder()
-	return createStateAdapter(
-		pointerAdapter,
+	builder := namespaces.NewBuilder()
+	namespaceBuilder := namespaces.NewNamespaceBuilder()
+	return createNamespaceAdapter(
 		delimiterAdapter,
 		builder,
-		stateBuilder,
+		namespaceBuilder,
 	)
 }
 
