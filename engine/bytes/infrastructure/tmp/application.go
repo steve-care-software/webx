@@ -13,6 +13,7 @@ import (
 	"github.com/steve-care-software/webx/engine/bytes/applications"
 	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
 	"github.com/steve-care-software/webx/engine/bytes/domain/namespaces"
+	"github.com/steve-care-software/webx/engine/bytes/domain/namespaces/updates"
 	infra_bytes "github.com/steve-care-software/webx/engine/bytes/infrastructure/bytes"
 	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
 )
@@ -149,7 +150,7 @@ func (app *application) InsertNamespace(identifier uint, name string, descriptio
 }
 
 // UpdateNamespace updates a namespace
-func (app *application) UpdateNamespace(identifier uint, original string, updated string) error {
+func (app *application) UpdateNamespace(identifier uint, original string, updated updates.Update) error {
 	if pContext, ok := app.contexts[identifier]; ok {
 		originalNamespace, err := pContext.namespaces.Fetch(original)
 		if err != nil {
@@ -157,8 +158,8 @@ func (app *application) UpdateNamespace(identifier uint, original string, update
 		}
 
 		updatedNamespace, err := app.createNamespace(
-			updated,
-			originalNamespace.Description(),
+			updated.Name(),
+			updated.Description(),
 			originalNamespace.IsDeleted(),
 			originalNamespace.Iterations(),
 		)
@@ -182,8 +183,10 @@ func (app *application) UpdateNamespace(identifier uint, original string, update
 		}
 
 		currentnamespace := pContext.currentNamespace
-		if currentnamespace.Name() == original {
-			currentnamespace = updatedNamespace
+		if currentnamespace != nil {
+			if currentnamespace.Name() == original {
+				currentnamespace = updatedNamespace
+			}
 		}
 
 		app.contexts[identifier] = &context{

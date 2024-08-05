@@ -1,5 +1,7 @@
 package applications
 
+import "github.com/steve-care-software/webx/engine/bytes/domain/namespaces/updates"
+
 // Builder represents the application builder
 type Builder interface {
 	Create() Builder
@@ -17,7 +19,7 @@ type Application interface {
 	DeletedNamespaces(context uint) ([]string, error)
 	SetNamespace(context uint, name string) error
 	InsertNamespace(context uint, name string, description string) error
-	UpdateNamespace(context uint, original string, updated string) error
+	UpdateNamespace(context uint, original string, updated updates.Update) error
 	DeleteNamespace(context uint, name string) error
 	RecoverNamespace(context uint, name string) error
 	PurgeNamespace(context uint, name string) error

@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/steve-care-software/webx/engine/bytes/domain/namespaces/updates"
 	infra_bytes "github.com/steve-care-software/webx/engine/bytes/infrastructure/bytes"
 )
 
@@ -47,6 +48,41 @@ func TestApplication_Namespaces_Success(t *testing.T) {
 
 	// set the namespace:
 	err = application.SetNamespace(*pContext, firstName)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	// commit:
+	err = application.Commit(*pContext)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	// update the namespace:
+	firstUpdatedName := "firstUpdatedName"
+	updatedNamespace, err := updates.NewBuilder().Create().WithName(firstUpdatedName).Now()
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	err = application.UpdateNamespace(*pContext, firstName, updatedNamespace)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	// commit:
+	err = application.Commit(*pContext)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	// delete the namespace:
+	err = application.DeleteNamespace(*pContext, firstUpdatedName)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
