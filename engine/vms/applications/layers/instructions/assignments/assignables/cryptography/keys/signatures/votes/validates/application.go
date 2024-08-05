@@ -3,9 +3,9 @@ package validates
 import (
 	"errors"
 
+	"github.com/steve-care-software/webx/engine/bytes/domain/signers"
 	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/validates"
-	"github.com/steve-care-software/webx/engine/vms/domain/signers"
 	"github.com/steve-care-software/webx/engine/vms/domain/stacks"
 	"github.com/steve-care-software/webx/engine/vms/domain/stacks/failures"
 )

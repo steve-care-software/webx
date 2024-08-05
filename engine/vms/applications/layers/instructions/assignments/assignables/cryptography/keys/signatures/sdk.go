@@ -1,10 +1,10 @@
 package signatures
 
 import (
+	"github.com/steve-care-software/webx/engine/bytes/domain/signers"
 	"github.com/steve-care-software/webx/engine/vms/applications/layers/instructions/assignments/assignables/cryptography/keys/signatures/signs"
 	"github.com/steve-care-software/webx/engine/vms/applications/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/instructions/assignments/assignables/cryptography/keys/signatures"
-	"github.com/steve-care-software/webx/engine/vms/domain/signers"
 	"github.com/steve-care-software/webx/engine/vms/domain/stacks"
 )
 
