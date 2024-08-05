@@ -33,9 +33,9 @@ type Application interface {
 	Purge(context uint, name string) error
 	PurgeAll(context uint) error
 	Cleanup(context uint) error
-	MoveInProduction(context uint, name string, devName string, deleteOriginal bool) error // moves a development iteration to a production iteration inside the current iteration
-	MetaData(context uint) (delimiters.Delimiter, error)                                   // returns the current branch meta data
-	Merge(context uint, deleteOriginal bool) error                                         // merge the current branch into its parent and set its parent as the current branch
+	Move(context uint, name string, devName string, deleteOriginal bool) error // moves a development iteration to a production iteration inside the current iteration
+	MetaData(context uint) (delimiters.Delimiter, error)                       // returns the current branch meta data
+	Merge(context uint, deleteOriginal bool) error                             // merge the current branch into its parent and set its parent as the current branch
 	Commit(context uint) error
 	CommitWithMetaData(context uint, metaData delimiters.Delimiter) error
 	Close(context uint) error
