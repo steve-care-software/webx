@@ -16,11 +16,11 @@ type Builder interface {
 // Application represents the database application
 type Application interface {
 	Begin(name string) (*uint, error)
-	Status(context uint) (status.Status, error)        // returns the status, which is the cursor without the lists
-	Records(context uint) (status.Status, error)       // returns the recorded cursor status representations
-	Erase(context uint, recordIdentifier uint) error   // erase a cursor using its identifier
-	Record(context uint) (*uint, error)                // record the cursor and return its identifier
-	Replace(context uint, recordIdentifier uint) error // put the cursor to what the identifier was pointing to
+	Status(context uint) (status.Status, error)    // returns the status, which is the cursor without the lists
+	Records(context uint) (status.Statuses, error) // returns the recorded cursor status representations
+	Erase(context uint, cursorName string) error   // erase a cursor using its name
+	Record(context uint, name string) error        // record the cursor to this name
+	Replace(context uint, cursorName string) error // put the cursor to what the name was pointing to
 	Retrieve(context uint, name string, includesDeleted bool) (originals.Original, error)
 	RetrieveAll(context uint, includesDeleted bool) (originals.Originals, error)
 	Deleted(context uint) (originals.Originals, error)
