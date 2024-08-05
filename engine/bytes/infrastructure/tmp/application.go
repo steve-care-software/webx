@@ -13,8 +13,7 @@ import (
 	"github.com/steve-care-software/webx/engine/bytes/applications"
 	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
 	"github.com/steve-care-software/webx/engine/bytes/domain/namespaces"
-	namespace_originals "github.com/steve-care-software/webx/engine/bytes/domain/namespaces/originals"
-	"github.com/steve-care-software/webx/engine/bytes/domain/namespaces/updates"
+	"github.com/steve-care-software/webx/engine/bytes/domain/originals"
 	infra_bytes "github.com/steve-care-software/webx/engine/bytes/infrastructure/bytes"
 	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
 )
@@ -119,7 +118,7 @@ func (app *application) SetNamespace(identifier uint, name string) error {
 }
 
 // InsertNamespace inserts a namespace
-func (app *application) InsertNamespace(identifier uint, original namespace_originals.Original) error {
+func (app *application) InsertNamespace(identifier uint, original originals.Original) error {
 	if pContext, ok := app.contexts[identifier]; ok {
 		name := original.Name()
 		description := original.Description()
@@ -162,8 +161,8 @@ func (app *application) InsertNamespace(identifier uint, original namespace_orig
 	return errors.New(str)
 }
 
-// UpdateNamespace updates a namespace
-func (app *application) UpdateNamespace(identifier uint, original string, updated updates.Update) error {
+// OriginalNamespace updates a namespace
+func (app *application) OriginalNamespace(identifier uint, original string, updated originals.Original) error {
 	if pContext, ok := app.contexts[identifier]; ok {
 		originalNamespace, err := pContext.namespaces.Fetch(original)
 		if err != nil {

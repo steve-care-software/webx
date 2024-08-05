@@ -7,7 +7,7 @@ import (
 	"github.com/steve-care-software/webx/engine/bytes/domain/iterations/developments"
 	"github.com/steve-care-software/webx/engine/bytes/domain/iterations/productions"
 	"github.com/steve-care-software/webx/engine/bytes/domain/namespaces"
-	namespace_originals "github.com/steve-care-software/webx/engine/bytes/domain/namespaces/originals"
+	"github.com/steve-care-software/webx/engine/bytes/domain/originals"
 	"github.com/steve-care-software/webx/engine/bytes/domain/states"
 )
 
@@ -28,8 +28,8 @@ type Application interface {
 	Namespaces(context uint) (namespaces.Namespaces, error)
 	DeletedNamespaces(context uint) ([]string, error)
 	SetNamespace(context uint, name string) error
-	InsertNamespace(context uint, original namespace_originals.Original) error
-	UpdateNamespace(context uint, original string, updated namespace_originals.Original) error
+	InsertNamespace(context uint, original originals.Original) error
+	UpdateNamespace(context uint, original string, updated originals.Original) error
 	DeleteNamespace(context uint, name string) error
 	RecoverNamespace(context uint, name string) error
 	PurgeNamespace(context uint, name string) error
@@ -41,7 +41,7 @@ type Application interface {
 	DeletedIterations(context uint) ([]string, error)
 	SetIteration(context uint, name string) error
 	InsertIteration(context uint, name string, description string) error
-	UpdateIteration(context uint, original string, updated namespace_originals.Original) error
+	UpdateIteration(context uint, original string, updated originals.Original) error
 	DeleteIteration(context uint, name string) error
 	RecoverIteration(context uint, name string) error
 	PurgeIteration(context uint, name string) error
@@ -54,7 +54,7 @@ type Application interface {
 	SetIterationDevelopment(context uint, name string) error
 	MoveIterationDevelopmentIntoProduction(context uint, name string, devName string, deleteOriginal bool) error
 	InsertIterationDevelopment(context uint, name string, description string) error
-	UpdateIterationDevelopment(context uint, original string, updated namespace_originals.Original) error
+	UpdateIterationDevelopment(context uint, original string, updated originals.Original) error
 	DeleteIterationDevelopment(context uint, name string) error
 	RecoverIterationDevelopment(context uint, name string) error
 	PurgeIterationDevelopment(context uint, name string) error
@@ -66,7 +66,7 @@ type Application interface {
 	DeletedIterationProductions(context uint) ([]string, error)
 	SetIterationProduction(context uint, name string) error
 	InsertIterationProduction(context uint, name string, description string) error
-	UpdateIterationProduction(context uint, original string, updated namespace_originals.Original) error
+	UpdateIterationProduction(context uint, original string, updated originals.Original) error
 	DeleteIterationProduction(context uint, name string) error
 	RecoverIterationProduction(context uint, name string) error
 	PurgeIterationProduction(context uint, name string) error
@@ -75,11 +75,12 @@ type Application interface {
 	// branches:
 	Branch(context uint, name string) (branches.Branch, error)
 	Branches(context uint) (branches.Branches, error)
+	BranchMetaData(context uint) error
 	DeletedBranches(context uint) ([]string, error)
 	SetBranch(context uint, name string) error
 	MergeBranch(context uint, deleteOriginal bool) error
 	InsertBranch(context uint, name string, description string) error
-	UpdateBranch(context uint, original string, updated namespace_originals.Original) error
+	UpdateBranch(context uint, original string, updated originals.Original) error
 	DeleteBranch(context uint, name string) error
 	RecoverBranch(context uint, name string) error
 	PurgeBranch(context uint, name string) error
@@ -91,7 +92,7 @@ type Application interface {
 	DeletedStates(context uint) ([]string, error)
 	SetState(context uint, name string) error
 	InsertState(context uint, name string, description string) error
-	UpdateState(context uint, original string, updated namespace_originals.Original) error
+	UpdateState(context uint, original string, updated originals.Original) error
 	DeleteState(context uint, name string) error
 	RecoverState(context uint, name string) error
 	PurgeState(context uint, name string) error

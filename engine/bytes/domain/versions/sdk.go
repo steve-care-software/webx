@@ -26,7 +26,7 @@ type Versions interface {
 type VersionBuilder interface {
 	Create() VersionBuilder
 	WithName(name string) VersionBuilder
-	WithChangelog(changelog string) VersionBuilder
+	WithDescription(description string) VersionBuilder
 	IsDeleted() VersionBuilder
 	WithIterations(iterations delimiters.Delimiter) VersionBuilder
 	WithPrevious(previous Version) VersionBuilder
@@ -36,7 +36,7 @@ type VersionBuilder interface {
 // Version represents a version
 type Version interface {
 	Name() string
-	Changelog() string
+	Description() string
 	IsDeleted() bool
 	HasIterations() bool
 	Iterations() delimiters.Delimiter

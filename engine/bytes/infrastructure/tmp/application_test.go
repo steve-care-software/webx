@@ -5,8 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/steve-care-software/webx/engine/bytes/domain/namespaces/originals"
-	"github.com/steve-care-software/webx/engine/bytes/domain/namespaces/updates"
+	"github.com/steve-care-software/webx/engine/bytes/domain/originals"
 	infra_bytes "github.com/steve-care-software/webx/engine/bytes/infrastructure/bytes"
 )
 
@@ -67,7 +66,7 @@ func TestApplication_Namespaces_Success(t *testing.T) {
 
 	// update the namespace:
 	firstUpdatedName := "firstUpdatedName"
-	updatedNamespace, err := updates.NewBuilder().Create().WithName(firstUpdatedName).Now()
+	updatedNamespace, err := originals.NewBuilder().Create().WithName(firstUpdatedName).Now()
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
