@@ -2,7 +2,6 @@ package branches
 
 import (
 	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
-	"github.com/steve-care-software/webx/engine/bytes/domain/states/branches/layers"
 )
 
 // NewBranchBuilder creates a new branch builder
@@ -34,7 +33,8 @@ type Branches interface {
 type BranchBuilder interface {
 	Create() BranchBuilder
 	WithName(name string) BranchBuilder
-	WithLayers(layers layers.Layers) BranchBuilder
+	WithDescription(description string) BranchBuilder
+	WithStates(states delimiters.Delimiter) BranchBuilder
 	WithMetaData(metaData delimiters.Delimiter) BranchBuilder
 	WithChildren(children Branches) BranchBuilder
 	IsDeleted() BranchBuilder
@@ -44,9 +44,10 @@ type BranchBuilder interface {
 // Branch represents a branch
 type Branch interface {
 	Name() string
+	Description() string
 	IsDeleted() bool
-	HasLayers() bool
-	Layers() layers.Layers
+	HasStates() bool
+	States() delimiters.Delimiter
 	HasMetaData() bool
 	MetaData() delimiters.Delimiter
 	HasChildren() bool

@@ -4,24 +4,25 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
-	"github.com/steve-care-software/webx/engine/bytes/domain/states/branches/layers"
 )
 
 type branchBuilder struct {
-	name      string
-	isDeleted bool
-	layers    layers.Layers
-	metaData  delimiters.Delimiter
-	children  Branches
+	name        string
+	description string
+	isDeleted   bool
+	states      delimiters.Delimiter
+	metaData    delimiters.Delimiter
+	children    Branches
 }
 
 func createBranchBuilder() BranchBuilder {
 	out := branchBuilder{
-		name:      "",
-		isDeleted: false,
-		layers:    nil,
-		metaData:  nil,
-		children:  nil,
+		name:        "",
+		description: "",
+		isDeleted:   false,
+		states:      nil,
+		metaData:    nil,
+		children:    nil,
 	}
 
 	return &out
@@ -38,9 +39,15 @@ func (app *branchBuilder) WithName(name string) BranchBuilder {
 	return app
 }
 
-// WithLayers add layers to the builder
-func (app *branchBuilder) WithLayers(layers layers.Layers) BranchBuilder {
-	app.layers = layers
+// WithDescription adds a description to the builder
+func (app *branchBuilder) WithDescription(description string) BranchBuilder {
+	app.description = description
+	return app
+}
+
+// WithStates add states to the builder
+func (app *branchBuilder) WithStates(states delimiters.Delimiter) BranchBuilder {
+	app.states = states
 	return app
 }
 
@@ -68,30 +75,33 @@ func (app *branchBuilder) Now() (Branch, error) {
 		return nil, errors.New("the name is mandatory in order to build a branch instance")
 	}
 
-	if app.layers != nil && app.metaData != nil && app.children != nil {
-		return createBranchWithLayersAndMetaDataAndChildren(
+	if app.states != nil && app.metaData != nil && app.children != nil {
+		return createBranchWithStatesAndMetaDataAndChildren(
 			app.name,
+			app.description,
 			app.isDeleted,
-			app.layers,
+			app.states,
 			app.metaData,
 			app.children,
 		), nil
 	}
 
-	if app.layers != nil && app.children != nil {
-		return createBranchWithLayersAndChildren(
+	if app.states != nil && app.children != nil {
+		return createBranchWithStatesAndChildren(
 			app.name,
+			app.description,
 			app.isDeleted,
-			app.layers,
+			app.states,
 			app.children,
 		), nil
 	}
 
-	if app.layers != nil && app.metaData != nil {
-		return createBranchWithLayersAndMetaData(
+	if app.states != nil && app.metaData != nil {
+		return createBranchWithStatesAndMetaData(
 			app.name,
+			app.description,
 			app.isDeleted,
-			app.layers,
+			app.states,
 			app.metaData,
 		), nil
 	}
@@ -99,23 +109,26 @@ func (app *branchBuilder) Now() (Branch, error) {
 	if app.metaData != nil && app.children != nil {
 		return createBranchWithMetaDataAndChildren(
 			app.name,
+			app.description,
 			app.isDeleted,
 			app.metaData,
 			app.children,
 		), nil
 	}
 
-	if app.layers != nil {
-		return createBranchWithLayers(
+	if app.states != nil {
+		return createBranchWithStates(
 			app.name,
+			app.description,
 			app.isDeleted,
-			app.layers,
+			app.states,
 		), nil
 	}
 
 	if app.metaData != nil {
 		return createBranchWithMetaData(
 			app.name,
+			app.description,
 			app.isDeleted,
 			app.metaData,
 		), nil
@@ -124,10 +137,15 @@ func (app *branchBuilder) Now() (Branch, error) {
 	if app.children != nil {
 		return createBranchWithChildren(
 			app.name,
+			app.description,
 			app.isDeleted,
 			app.children,
 		), nil
 	}
 
-	return createBranch(app.name, app.isDeleted), nil
+	return createBranch(
+		app.name,
+		app.description,
+		app.isDeleted,
+	), nil
 }

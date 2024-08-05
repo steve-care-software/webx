@@ -1,8 +1,7 @@
 package states
 
 import (
-	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
-	"github.com/steve-care-software/webx/engine/bytes/domain/states/branches/layers/pointers"
+	"github.com/steve-care-software/webx/engine/bytes/domain/pointers"
 )
 
 // NewBuilder creates a new builder
@@ -15,7 +14,7 @@ func NewStateBuilder() StateBuilder {
 	return createStateBuilder()
 }
 
-// Adapter represents an state adapter
+// Adapter represents a state adapter
 type Adapter interface {
 	InstancesToBytes(ins States) ([]byte, error)
 	BytesToInstances(data []byte) (States, []byte, error)
@@ -30,29 +29,24 @@ type Builder interface {
 	Now() (States, error)
 }
 
-// States represents a states
+// States represents states
 type States interface {
 	List() []State
-	HasRoot() bool
-	Root() delimiters.Delimiter
-	NextIndex() uint64
-	Fetch(delimiter delimiters.Delimiter) (pointers.Pointer, error)
 }
 
 // StateBuilder represents a state builder
 type StateBuilder interface {
 	Create() StateBuilder
-	WithRoot(root delimiters.Delimiter) StateBuilder
+	WithMessage(message string) StateBuilder
 	WithPointers(pointers pointers.Pointers) StateBuilder
 	IsDeleted() StateBuilder
 	Now() (State, error)
 }
 
-// State represents an state
+// State represents a branch state
 type State interface {
+	Message() string
 	IsDeleted() bool
-	HasRoot() bool
-	Root() delimiters.Delimiter
 	HasPointers() bool
 	Pointers() pointers.Pointers
 }

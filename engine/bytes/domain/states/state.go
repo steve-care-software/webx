@@ -1,71 +1,50 @@
 package states
 
-import (
-	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
-	"github.com/steve-care-software/webx/engine/bytes/domain/states/branches/layers/pointers"
-)
+import "github.com/steve-care-software/webx/engine/bytes/domain/pointers"
 
 type state struct {
+	message   string
 	isDeleted bool
-	root      delimiters.Delimiter
 	pointers  pointers.Pointers
 }
 
 func createState(
+	message string,
 	isDeleted bool,
 ) State {
-	return createStateInternally(isDeleted, nil, nil)
-}
-
-func createStateWithRoot(
-	isDeleted bool,
-	root delimiters.Delimiter,
-) State {
-	return createStateInternally(isDeleted, root, nil)
+	return createStateInternally(message, isDeleted, nil)
 }
 
 func createStateWithPointers(
+	message string,
 	isDeleted bool,
 	pointers pointers.Pointers,
 ) State {
-	return createStateInternally(isDeleted, nil, pointers)
-}
-
-func createStateWithRootAndPointers(
-	isDeleted bool,
-	root delimiters.Delimiter,
-	pointers pointers.Pointers,
-) State {
-	return createStateInternally(isDeleted, root, pointers)
+	return createStateInternally(message, isDeleted, pointers)
 }
 
 func createStateInternally(
+	message string,
 	isDeleted bool,
-	root delimiters.Delimiter,
 	pointers pointers.Pointers,
 ) State {
 	out := state{
+		message:   message,
 		isDeleted: isDeleted,
-		root:      root,
 		pointers:  pointers,
 	}
 
 	return &out
 }
 
+// Message returns the message
+func (obj *state) Message() string {
+	return obj.message
+}
+
 // IsDeleted returns true if deleted, false otherwise
 func (obj *state) IsDeleted() bool {
 	return obj.isDeleted
-}
-
-// HasRoot returns true if there is a root, false otherwise
-func (obj *state) HasRoot() bool {
-	return obj.root != nil
-}
-
-// Root returns the root, if any
-func (obj *state) Root() delimiters.Delimiter {
-	return obj.root
 }
 
 // HasPointers returns true if there is pointers, false otherwise

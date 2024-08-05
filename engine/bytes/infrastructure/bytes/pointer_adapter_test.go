@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
-	"github.com/steve-care-software/webx/engine/bytes/domain/states/branches/layers/pointers"
+	"github.com/steve-care-software/webx/engine/bytes/domain/pointers"
 )
 
 func TestPointerAdapter_single_Success(t *testing.T) {

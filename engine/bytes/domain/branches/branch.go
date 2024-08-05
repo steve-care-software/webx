@@ -2,23 +2,25 @@ package branches
 
 import (
 	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
-	"github.com/steve-care-software/webx/engine/bytes/domain/states/branches/layers"
 )
 
 type branch struct {
-	name      string
-	isDeleted bool
-	layers    layers.Layers
-	metaData  delimiters.Delimiter
-	children  Branches
+	name        string
+	description string
+	isDeleted   bool
+	states      delimiters.Delimiter
+	metaData    delimiters.Delimiter
+	children    Branches
 }
 
 func createBranch(
 	name string,
+	description string,
 	isDeleted bool,
 ) Branch {
 	return createBranchInternally(
 		name,
+		description,
 		isDeleted,
 		nil,
 		nil,
@@ -26,15 +28,17 @@ func createBranch(
 	)
 }
 
-func createBranchWithLayers(
+func createBranchWithStates(
 	name string,
+	description string,
 	isDeleted bool,
-	layers layers.Layers,
+	states delimiters.Delimiter,
 ) Branch {
 	return createBranchInternally(
 		name,
+		description,
 		isDeleted,
-		layers,
+		states,
 		nil,
 		nil,
 	)
@@ -42,11 +46,13 @@ func createBranchWithLayers(
 
 func createBranchWithMetaData(
 	name string,
+	description string,
 	isDeleted bool,
 	metaData delimiters.Delimiter,
 ) Branch {
 	return createBranchInternally(
 		name,
+		description,
 		isDeleted,
 		nil,
 		metaData,
@@ -56,11 +62,13 @@ func createBranchWithMetaData(
 
 func createBranchWithChildren(
 	name string,
+	description string,
 	isDeleted bool,
 	children Branches,
 ) Branch {
 	return createBranchInternally(
 		name,
+		description,
 		isDeleted,
 		nil,
 		nil,
@@ -68,31 +76,35 @@ func createBranchWithChildren(
 	)
 }
 
-func createBranchWithLayersAndMetaData(
+func createBranchWithStatesAndMetaData(
 	name string,
+	description string,
 	isDeleted bool,
-	layers layers.Layers,
+	states delimiters.Delimiter,
 	metaData delimiters.Delimiter,
 ) Branch {
 	return createBranchInternally(
 		name,
+		description,
 		isDeleted,
-		layers,
+		states,
 		metaData,
 		nil,
 	)
 }
 
-func createBranchWithLayersAndChildren(
+func createBranchWithStatesAndChildren(
 	name string,
+	description string,
 	isDeleted bool,
-	layers layers.Layers,
+	states delimiters.Delimiter,
 	children Branches,
 ) Branch {
 	return createBranchInternally(
 		name,
+		description,
 		isDeleted,
-		layers,
+		states,
 		nil,
 		children,
 	)
@@ -100,12 +112,14 @@ func createBranchWithLayersAndChildren(
 
 func createBranchWithMetaDataAndChildren(
 	name string,
+	description string,
 	isDeleted bool,
 	metaData delimiters.Delimiter,
 	children Branches,
 ) Branch {
 	return createBranchInternally(
 		name,
+		description,
 		isDeleted,
 		nil,
 		metaData,
@@ -113,17 +127,19 @@ func createBranchWithMetaDataAndChildren(
 	)
 }
 
-func createBranchWithLayersAndMetaDataAndChildren(
+func createBranchWithStatesAndMetaDataAndChildren(
 	name string,
+	description string,
 	isDeleted bool,
-	layers layers.Layers,
+	states delimiters.Delimiter,
 	metaData delimiters.Delimiter,
 	children Branches,
 ) Branch {
 	return createBranchInternally(
 		name,
+		description,
 		isDeleted,
-		layers,
+		states,
 		metaData,
 		children,
 	)
@@ -131,17 +147,19 @@ func createBranchWithLayersAndMetaDataAndChildren(
 
 func createBranchInternally(
 	name string,
+	description string,
 	isDeleted bool,
-	layers layers.Layers,
+	states delimiters.Delimiter,
 	metaData delimiters.Delimiter,
 	children Branches,
 ) Branch {
 	out := branch{
-		name:      name,
-		isDeleted: isDeleted,
-		layers:    layers,
-		metaData:  metaData,
-		children:  children,
+		name:        name,
+		description: description,
+		isDeleted:   isDeleted,
+		states:      states,
+		metaData:    metaData,
+		children:    children,
 	}
 
 	return &out
@@ -152,19 +170,24 @@ func (obj *branch) Name() string {
 	return obj.name
 }
 
+// Description returns the description
+func (obj *branch) Description() string {
+	return obj.description
+}
+
 // IsDeleted returns true if deleted, false otherwise
 func (obj *branch) IsDeleted() bool {
 	return obj.isDeleted
 }
 
-// HasLayers returns true if there is layers, false otherwise
-func (obj *branch) HasLayers() bool {
-	return obj.layers != nil
+// HasStates returns true if there is states, false otherwise
+func (obj *branch) HasStates() bool {
+	return obj.states != nil
 }
 
-// Layers returns the layers, if any
-func (obj *branch) Layers() layers.Layers {
-	return obj.layers
+// States returns the states, if any
+func (obj *branch) States() delimiters.Delimiter {
+	return obj.states
 }
 
 // HasMetaData returns true if there is metaData, false otherwise

@@ -1,9 +1,6 @@
 package states
 
-import (
-	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
-	"github.com/steve-care-software/webx/engine/bytes/domain/states/branches/layers/pointers"
-)
+import "github.com/steve-care-software/webx/engine/bytes/domain/pointers"
 
 // NewStatesForTests creates a new states for tests
 func NewStatesForTests(list []State) States {
@@ -30,39 +27,8 @@ func NewStateForTests(isDeleted bool) State {
 	return ins
 }
 
-// NewStateWithRootForTests creates a new state with root for tests
-func NewStateWithRootForTests(root delimiters.Delimiter, isDeleted bool) State {
-	builder := NewStateBuilder().Create().WithRoot(root)
-	if isDeleted {
-		builder.IsDeleted()
-	}
-
-	ins, err := builder.Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewStateWithPointersForTests creates a new state with pointers for tests
-func NewStateWithPointersForTests(pointers pointers.Pointers, isDeleted bool) State {
+func NewStateWithPointersForTests(isDeleted bool, pointers pointers.Pointers) State {
 	builder := NewStateBuilder().Create().WithPointers(pointers)
-	if isDeleted {
-		builder.IsDeleted()
-	}
-
-	ins, err := builder.Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewStateWithRootAndPointersForTests creates a new state with root and pointers for tests
-func NewStateWithRootAndPointersForTests(root delimiters.Delimiter, pointers pointers.Pointers, isDeleted bool) State {
-	builder := NewStateBuilder().Create().WithRoot(root).WithPointers(pointers)
 	if isDeleted {
 		builder.IsDeleted()
 	}

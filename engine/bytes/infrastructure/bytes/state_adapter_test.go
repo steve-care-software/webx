@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
+	"github.com/steve-care-software/webx/engine/bytes/domain/pointers"
 	"github.com/steve-care-software/webx/engine/bytes/domain/states"
-	"github.com/steve-care-software/webx/engine/bytes/domain/states/branches/layers/pointers"
 )
 
 func TestStateAdapter_withPointers_single_Success(t *testing.T) {
