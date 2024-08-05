@@ -17,7 +17,7 @@ type Builder interface {
 // Application represents the cursor application
 type Application interface {
 	Cursor() cursors.Cursor            // returns the current cursor
-	Records() (status.Statuses, error) // returns the recorded cursor status representations
+	Records() (status.Statuses, error) // returns the recorded cursors
 	Erase(name string) error           // erase a cursor using its name
 	Record(name string) error          // record the cursor to this name
 	Replace(name string) error         // put the cursor to what the name was pointing to
