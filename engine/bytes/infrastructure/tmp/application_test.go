@@ -29,11 +29,33 @@ func TestApplication_Namespaces_Success(t *testing.T) {
 		return
 	}
 
-	pContext, err := application.Begin(dbName, "myNamespace")
+	// begin:
+	pContext, err := application.Begin(dbName)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
 	}
 
-	application.Close(*pContext)
+	// insert namespace:
+	firstName := "first"
+	firstDescription := "This is a description"
+	err = application.InsertNamespace(*pContext, firstName, firstDescription)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	// set the namespace:
+	err = application.SetNamespace(*pContext, firstName)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	// commit:
+	err = application.Commit(*pContext)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
 }

@@ -6,7 +6,6 @@ import (
 	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
 )
 
-const amountOfBytesIntUint64 = 8
 const contextIdentifierUndefinedPattern = "the context identifier (%d) does not exists"
 
 // NewApplicationBuilder creates a new application builder

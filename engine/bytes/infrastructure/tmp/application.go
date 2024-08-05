@@ -46,9 +46,9 @@ func createApplication(
 }
 
 // Begin begins a context on a database
-func (app *application) Begin(name string, namespace string) (*uint, error) {
+func (app *application) Begin(name string) (*uint, error) {
 	identifier := uint(len(app.contexts))
-	return app.beginWithContext(identifier, name, namespace)
+	return app.beginWithContext(identifier, name)
 }
 
 // Status returns the status, 0 = namespace
@@ -72,8 +72,13 @@ func (app *application) Namespaces(context uint) ([]string, error) {
 }
 
 // DeletedNamespaces returns the deleted namespaces
-func (app *application) DeletedNamespaces(context uint) ([]string, error) {
-	return nil, nil
+func (app *application) DeletedNamespaces(identifier uint) ([]string, error) {
+	if pContext, ok := app.contexts[identifier]; ok {
+		return pContext.namespaces.DeletedNames(), nil
+	}
+
+	str := fmt.Sprintf(contextIdentifierUndefinedPattern, identifier)
+	return nil, errors.New(str)
 }
 
 // SetNamespace sets the namespace
@@ -102,12 +107,22 @@ func (app *application) SetNamespace(identifier uint, name string) error {
 }
 
 // InsertNamespace inserts a namespace
-func (app *application) InsertNamespace(identifier uint, name string) error {
+func (app *application) InsertNamespace(identifier uint, name string, description string) error {
 	if pContext, ok := app.contexts[identifier]; ok {
-		namespacesList := pContext.namespaces.List()
-		newNamespace, err := app.namespaceBuilder.Create().WithName(name).Now()
+		newNamespace, err := app.createNamespace(
+			name,
+			description,
+			false,
+			nil,
+		)
+
 		if err != nil {
 			return err
+		}
+
+		namespacesList := []namespaces.Namespace{}
+		if pContext.namespaces != nil {
+			namespacesList = pContext.namespaces.List()
 		}
 
 		namespacesList = append(namespacesList, newNamespace)
@@ -141,13 +156,13 @@ func (app *application) UpdateNamespace(identifier uint, original string, update
 			return err
 		}
 
-		namespaceBuilder := app.namespaceBuilder.Create().WithName(updated)
-		if originalNamespace.HasIterations() {
-			iterations := originalNamespace.Iterations()
-			namespaceBuilder.WithIterations(iterations)
-		}
+		updatedNamespace, err := app.createNamespace(
+			updated,
+			originalNamespace.Description(),
+			originalNamespace.IsDeleted(),
+			originalNamespace.Iterations(),
+		)
 
-		updatedNamespace, err := namespaceBuilder.Now()
 		if err != nil {
 			return err
 		}
@@ -191,9 +206,124 @@ func (app *application) UpdateNamespace(identifier uint, original string, update
 // DeleteNamespace deletes a namespace
 func (app *application) DeleteNamespace(identifier uint, name string) error {
 	if pContext, ok := app.contexts[identifier]; ok {
+		if pContext.currentNamespace != nil {
+			currentnamespace := pContext.currentNamespace
+			if currentnamespace.Name() == name {
+				str := fmt.Sprintf("the namespace (%s) cannot be deleted because it is the current namespace", name)
+				return errors.New(str)
+			}
+		}
+
+		retNamespace, err := pContext.namespaces.Fetch(name)
+		if err != nil {
+			return err
+		}
+
+		if retNamespace.IsDeleted() {
+			str := fmt.Sprintf("the namespace (%s) has already been deleted", name)
+			return errors.New(str)
+		}
+
+		deletedNamespace, err := app.createNamespace(
+			retNamespace.Name(),
+			retNamespace.Description(),
+			true,
+			retNamespace.Iterations(),
+		)
+
+		if err != nil {
+			return err
+		}
+
+		pIndex, err := pContext.namespaces.Index(name)
+		if err != nil {
+			return err
+		}
+
+		index := *pIndex
+		namespacesList := pContext.namespaces.List()
+		namespacesList = append(namespacesList[:index], namespacesList[index+1:]...) // remove the old namespace
+		namespacesList = append(namespacesList[:index], deletedNamespace)            // add the deleted namespace
+		namespaces, err := app.namespacesBuilder.Create().WithList(namespacesList).Now()
+		if err != nil {
+			return err
+		}
+
+		app.contexts[identifier] = &context{
+			dbPath:              pContext.dbPath,
+			dbName:              pContext.dbName,
+			namespaces:          namespaces,
+			currentNamespace:    pContext.currentNamespace,
+			pNamespaceDataIndex: pContext.pNamespaceDataIndex,
+			pFile:               pContext.pFile,
+			pLock:               pContext.pLock,
+		}
+
+		return nil
+	}
+
+	str := fmt.Sprintf(contextIdentifierUndefinedPattern, identifier)
+	return errors.New(str)
+}
+
+// RecoverNamespace recovers namespaces
+func (app *application) RecoverNamespace(identifier uint, name string) error {
+	if pContext, ok := app.contexts[identifier]; ok {
+		currentnamespace := pContext.currentNamespace
+		currentName := currentnamespace.Name()
+		if !currentnamespace.IsDeleted() {
+			str := fmt.Sprintf("the namespace (%s) is already active", name)
+			return errors.New(str)
+		}
+
+		recoveredNamespace, err := app.createNamespace(
+			currentName,
+			currentnamespace.Description(),
+			true,
+			currentnamespace.Iterations(),
+		)
+
+		if err != nil {
+			return err
+		}
+
+		pIndex, err := pContext.namespaces.Index(name)
+		if err != nil {
+			return err
+		}
+
+		index := *pIndex
+		namespacesList := pContext.namespaces.List()
+		namespacesList = append(namespacesList[:index], namespacesList[index+1:]...) // remove the old namespace
+		namespacesList = append(namespacesList[:index], recoveredNamespace)          // add the recovered namespace
+		namespaces, err := app.namespacesBuilder.Create().WithList(namespacesList).Now()
+		if err != nil {
+			return err
+		}
+
+		app.contexts[identifier] = &context{
+			dbPath:              pContext.dbPath,
+			dbName:              pContext.dbName,
+			namespaces:          namespaces,
+			currentNamespace:    currentnamespace,
+			pNamespaceDataIndex: pContext.pNamespaceDataIndex,
+			pFile:               pContext.pFile,
+			pLock:               pContext.pLock,
+		}
+
+		return nil
+	}
+
+	str := fmt.Sprintf(contextIdentifierUndefinedPattern, identifier)
+	return errors.New(str)
+}
+
+// PurgeNamespace purges namespace by name
+func (app *application) PurgeNamespace(identifier uint, name string) error {
+	if pContext, ok := app.contexts[identifier]; ok {
 		currentnamespace := pContext.currentNamespace
 		if currentnamespace.Name() == name {
-			str := fmt.Sprintf("the namespace (%s) cannot be deleted because it is the current namespace", name)
+			str := fmt.Sprintf("the namespace (%s) cannot be purged because it is the current namespace", name)
 			return errors.New(str)
 		}
 
@@ -227,19 +357,35 @@ func (app *application) DeleteNamespace(identifier uint, name string) error {
 	return errors.New(str)
 }
 
-// RecoverNamespace recovers namespaces
-func (app *application) RecoverNamespace(context uint, name string) error {
-	return nil
-}
-
-// PurgeNamespace purges namespace by name
-func (app *application) PurgeNamespace(context uint, name string) error {
-	return nil
-}
-
 // PurgeNamespaces purges all deleted namespaces
-func (app *application) PurgeNamespaces(context uint) error {
-	return nil
+func (app *application) PurgeNamespaces(identifier uint) error {
+	if pContext, ok := app.contexts[identifier]; ok {
+		var namespaces namespaces.Namespaces
+		activeList := pContext.namespaces.ActiveList()
+		if len(activeList) > 0 {
+			retNamespaces, err := app.namespacesBuilder.Create().WithList(activeList).Now()
+			if err != nil {
+				return err
+			}
+
+			namespaces = retNamespaces
+		}
+
+		app.contexts[identifier] = &context{
+			dbPath:              pContext.dbPath,
+			dbName:              pContext.dbName,
+			namespaces:          namespaces,
+			currentNamespace:    pContext.currentNamespace,
+			pNamespaceDataIndex: pContext.pNamespaceDataIndex,
+			pFile:               pContext.pFile,
+			pLock:               pContext.pLock,
+		}
+
+		return nil
+	}
+
+	str := fmt.Sprintf(contextIdentifierUndefinedPattern, identifier)
+	return errors.New(str)
 }
 
 // Commit updates the database for the context
@@ -249,6 +395,11 @@ func (app *application) Commit(context uint) error {
 
 // Purge purges the database (deleted the deleted namespaes, states, branches and layers)
 func (app *application) Purge(context uint) error {
+	err := app.PurgeNamespaces(context)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -278,7 +429,7 @@ func (app *application) Close(identifier uint) error {
 	return errors.New(str)
 }
 
-func (app *application) beginWithContext(requestedContext uint, dbName string, namespace string) (*uint, error) {
+func (app *application) beginWithContext(requestedContext uint, dbName string) (*uint, error) {
 	fullPath := append(app.basepath, dbName)
 	filePath := filepath.Join(fullPath...)
 
@@ -316,34 +467,12 @@ func (app *application) beginWithContext(requestedContext uint, dbName string, n
 		pFile = pOpenFile
 	}
 
-	currentNamespaces, pDataIndex, err := app.readNamespaces(pFile)
-	if err != nil {
-		namespace, err := app.namespaceBuilder.Create().WithName(namespace).Now()
-		if err != nil {
-			return nil, err
-		}
-
-		namespacesIns, err := app.namespacesBuilder.Create().WithList([]namespaces.Namespace{
-			namespace,
-		}).Now()
-
-		if err != nil {
-			return nil, err
-		}
-
-		currentNamespaces = namespacesIns
-	}
-
-	currentNamespace, err := currentNamespaces.Fetch(namespace)
-	if err != nil {
-		return nil, err
-	}
-
+	currentNamespaces, pDataIndex, _ := app.readNamespaces(pFile)
 	app.contexts[requestedContext] = &context{
 		dbPath:              fullPath,
 		dbName:              dbName,
 		namespaces:          currentNamespaces,
-		currentNamespace:    currentNamespace,
+		currentNamespace:    nil,
 		pNamespaceDataIndex: pDataIndex,
 		pFile:               pFile,
 		pLock:               pLock,
@@ -359,7 +488,7 @@ func (app *application) readNamespaces(pFile *os.File) (namespaces.Namespaces, *
 	}
 
 	// read the first int64 of the file:
-	lengthBytes, err := app.readBytes(pFile, 0, amountOfBytesIntUint64)
+	lengthBytes, err := app.readBytes(pFile, 0, infra_bytes.AmountOfBytesIntUint64)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -368,7 +497,7 @@ func (app *application) readNamespaces(pFile *os.File) (namespaces.Namespaces, *
 	length := infra_bytes.BytesToUint64(lengthBytes)
 
 	// read the data:
-	namespaceBytes, err := app.readBytes(pFile, amountOfBytesIntUint64, int64(length))
+	namespaceBytes, err := app.readBytes(pFile, infra_bytes.AmountOfBytesIntUint64, int64(length))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -409,13 +538,15 @@ func (app *application) writeNamespaces(pFile *os.File, namespaces namespaces.Na
 		return err
 	}
 
-	amountWritten, err := pFile.Write(data)
+	dataSize := infra_bytes.Uint64ToBytes(uint64(len(data)))
+	toWrite := append(dataSize, data...)
+	amountWritten, err := pFile.Write(toWrite)
 	if err != nil {
 		return err
 	}
 
-	if len(data) != amountWritten {
-		str := fmt.Sprintf("expected to write %d length of data, %d actually written", len(data), amountWritten)
+	if len(toWrite) != amountWritten {
+		str := fmt.Sprintf("expected to write %d length of data, %d actually written", len(toWrite), amountWritten)
 		return errors.New(str)
 	}
 
@@ -444,7 +575,7 @@ func (app *application) commit(identifier uint, metaData delimiters.Delimiter) e
 		defer destinationFile.Close()
 		defer os.Remove(destinationPath)
 
-		// update the header states on file:
+		// update the namespaces on file:
 		err = app.writeNamespaces(destinationFile, pContext.namespaces)
 		if err != nil {
 			return err
@@ -488,14 +619,6 @@ func (app *application) commit(identifier uint, metaData delimiters.Delimiter) e
 			}
 		}
 
-		// write the insertions:
-		/*if pContext.insertions != nil {
-			err = app.writeInsertions(destinationFile, pContext.insertions)
-			if err != nil {
-				return err
-			}
-		}*/
-
 		// replace the file:
 		originPath := filepath.Join(pContext.dbPath...)
 		err = app.replaceFile(originPath, pContext.pFile, destinationFile)
@@ -509,7 +632,7 @@ func (app *application) commit(identifier uint, metaData delimiters.Delimiter) e
 			return err
 		}
 
-		_, err = app.beginWithContext(identifier, pContext.dbName, pContext.currentNamespace.Name())
+		_, err = app.beginWithContext(identifier, pContext.dbName)
 		if err != nil {
 			return err
 		}
@@ -540,4 +663,22 @@ func (app *application) replaceFile(sourcePath string, pDestination *os.File, pS
 	}
 
 	return nil
+}
+
+func (app *application) createNamespace(
+	name string,
+	description string,
+	isDeleted bool,
+	iterations delimiters.Delimiter,
+) (namespaces.Namespace, error) {
+	builder := app.namespaceBuilder.Create().WithName(name).WithDescription(description)
+	if isDeleted {
+		builder.IsDeleted()
+	}
+
+	if iterations != nil {
+		builder.WithIterations(iterations)
+	}
+
+	return builder.Now()
 }

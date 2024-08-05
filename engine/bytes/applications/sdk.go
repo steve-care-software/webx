@@ -9,14 +9,14 @@ type Builder interface {
 
 // Application represents the database application
 type Application interface {
-	Begin(name string, namespace string) (*uint, error)
+	Begin(name string) (*uint, error)
 	Status(context uint) (string, error)
 
 	// namespaces
 	Namespaces(context uint) ([]string, error)
 	DeletedNamespaces(context uint) ([]string, error)
 	SetNamespace(context uint, name string) error
-	InsertNamespace(context uint, name string) error
+	InsertNamespace(context uint, name string, description string) error
 	UpdateNamespace(context uint, original string, updated string) error
 	DeleteNamespace(context uint, name string) error
 	RecoverNamespace(context uint, name string) error

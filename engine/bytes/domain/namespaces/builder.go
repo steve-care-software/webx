@@ -34,13 +34,23 @@ func (app *namespacesIns) Now() (Namespaces, error) {
 		app.list = nil
 	}
 
+	deleted := []string{}
 	names := []string{}
+	activeList := []Namespace{}
 	mp := map[string]Namespace{}
 	for idx, oneIns := range app.list {
 		name := oneIns.Name()
 		if _, ok := mp[name]; ok {
 			str := fmt.Sprintf("thre namespace (%s) at index (%d) is a duplicate", name, idx)
 			return nil, errors.New(str)
+		}
+
+		if oneIns.IsDeleted() {
+			deleted = append(deleted, oneIns.Name())
+		}
+
+		if !oneIns.IsDeleted() {
+			activeList = append(activeList, oneIns)
 		}
 
 		mp[name] = oneIns
@@ -50,6 +60,8 @@ func (app *namespacesIns) Now() (Namespaces, error) {
 	return createNamespaces(
 		mp,
 		app.list,
+		activeList,
 		names,
+		deleted,
 	), nil
 }

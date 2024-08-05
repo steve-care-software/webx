@@ -56,6 +56,8 @@ func (app *namespaceAdapter) BytesToInstances(data []byte) (namespaces.Namespace
 			return nil, err
 		}
 
+		fmt.Printf("\n%d\n", bytesLength)
+
 		ins, err := app.BytesToInstance(retRemaining[:bytesLength])
 		if err != nil {
 			return nil, err

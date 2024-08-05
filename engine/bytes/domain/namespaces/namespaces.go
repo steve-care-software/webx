@@ -6,20 +6,26 @@ import (
 )
 
 type namespaces struct {
-	mp    map[string]Namespace
-	list  []Namespace
-	names []string
+	mp         map[string]Namespace
+	list       []Namespace
+	activeList []Namespace
+	names      []string
+	deleted    []string
 }
 
 func createNamespaces(
 	mp map[string]Namespace,
 	list []Namespace,
+	activeList []Namespace,
 	names []string,
+	deleted []string,
 ) Namespaces {
 	out := namespaces{
-		mp:    mp,
-		list:  list,
-		names: names,
+		mp:         mp,
+		list:       list,
+		activeList: activeList,
+		names:      names,
+		deleted:    deleted,
 	}
 
 	return &out
@@ -30,9 +36,19 @@ func (obj *namespaces) List() []Namespace {
 	return obj.list
 }
 
+// ActiveList returns the list of active namespaces
+func (obj *namespaces) ActiveList() []Namespace {
+	return obj.activeList
+}
+
 // Names returns the names of the namespaces
 func (obj *namespaces) Names() []string {
 	return obj.names
+}
+
+// DeletedNames returns the deleted namespace names
+func (obj *namespaces) DeletedNames() []string {
+	return obj.deleted
 }
 
 // Fetch fetches a namespace by name
