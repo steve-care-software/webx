@@ -13,6 +13,7 @@ import (
 	"github.com/steve-care-software/webx/engine/bytes/applications"
 	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
 	"github.com/steve-care-software/webx/engine/bytes/domain/namespaces"
+	namespace_originals "github.com/steve-care-software/webx/engine/bytes/domain/namespaces/originals"
 	"github.com/steve-care-software/webx/engine/bytes/domain/namespaces/updates"
 	infra_bytes "github.com/steve-care-software/webx/engine/bytes/infrastructure/bytes"
 	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
@@ -118,8 +119,10 @@ func (app *application) SetNamespace(identifier uint, name string) error {
 }
 
 // InsertNamespace inserts a namespace
-func (app *application) InsertNamespace(identifier uint, name string, description string) error {
+func (app *application) InsertNamespace(identifier uint, original namespace_originals.Original) error {
 	if pContext, ok := app.contexts[identifier]; ok {
+		name := original.Name()
+		description := original.Description()
 		newNamespace, err := app.createNamespace(
 			name,
 			description,

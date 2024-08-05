@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/steve-care-software/webx/engine/bytes/domain/namespaces/originals"
 	"github.com/steve-care-software/webx/engine/bytes/domain/namespaces/updates"
 	infra_bytes "github.com/steve-care-software/webx/engine/bytes/infrastructure/bytes"
 )
@@ -38,16 +39,20 @@ func TestApplication_Namespaces_Success(t *testing.T) {
 	}
 
 	// insert namespace:
-	firstName := "first"
-	firstDescription := "This is a description"
-	err = application.InsertNamespace(*pContext, firstName, firstDescription)
+	firstNamespace, err := originals.NewBuilder().Create().WithName("first").WithDescription("This is a description").Now()
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	err = application.InsertNamespace(*pContext, firstNamespace)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
 	}
 
 	// set the namespace:
-	err = application.SetNamespace(*pContext, firstName)
+	err = application.SetNamespace(*pContext, firstNamespace.Name())
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -68,7 +73,7 @@ func TestApplication_Namespaces_Success(t *testing.T) {
 		return
 	}
 
-	err = application.UpdateNamespace(*pContext, firstName, updatedNamespace)
+	err = application.UpdateNamespace(*pContext, firstNamespace.Name(), updatedNamespace)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return

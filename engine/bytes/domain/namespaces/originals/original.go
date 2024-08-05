@@ -1,15 +1,15 @@
-package updates
+package originals
 
-type update struct {
+type original struct {
 	name        string
 	description string
 }
 
-func createUpdate(
+func createOriginal(
 	name string,
 	description string,
-) Update {
-	out := update{
+) Original {
+	out := original{
 		name:        name,
 		description: description,
 	}
@@ -18,11 +18,11 @@ func createUpdate(
 }
 
 // Name returns the name
-func (obj *update) Name() string {
+func (obj *original) Name() string {
 	return obj.name
 }
 
 // Description returns the description
-func (obj *update) Description() string {
+func (obj *original) Description() string {
 	return obj.description
 }

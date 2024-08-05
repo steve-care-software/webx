@@ -1,4 +1,4 @@
-package updates
+package originals
 
 import "errors"
 
@@ -33,13 +33,13 @@ func (app *builder) WithDescription(description string) Builder {
 	return app
 }
 
-// Now builds a new Update instance
-func (app *builder) Now() (Update, error) {
+// Now builds a new Original instance
+func (app *builder) Now() (Original, error) {
 	if app.name == "" {
-		return nil, errors.New("the name is mandatory in order to build an Update instance")
+		return nil, errors.New("the name is mandatory in order to build an Original instance")
 	}
 
-	return createUpdate(
+	return createOriginal(
 		app.name,
 		app.description,
 	), nil

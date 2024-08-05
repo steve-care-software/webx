@@ -1,20 +1,20 @@
-package updates
+package originals
 
 // NewBuilder creates a new builder
 func NewBuilder() Builder {
 	return createBuilder()
 }
 
-// Builder represents an update builder
+// Builder represents an original builder
 type Builder interface {
 	Create() Builder
 	WithName(name string) Builder
 	WithDescription(description string) Builder
-	Now() (Update, error)
+	Now() (Original, error)
 }
 
-// Update represents an update namespace
-type Update interface {
+// Original represents an original namespace
+type Original interface {
 	Name() string
 	Description() string
 }
