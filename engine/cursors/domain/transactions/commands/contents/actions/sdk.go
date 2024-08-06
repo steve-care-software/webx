@@ -1,10 +1,10 @@
 package actions
 
 import (
-	"github.com/steve-care-software/webx/engine/cursors/domain/commands/contents/actions/datas"
-	"github.com/steve-care-software/webx/engine/cursors/domain/commands/contents/actions/moves"
-	"github.com/steve-care-software/webx/engine/cursors/domain/commands/contents/actions/updates"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/originals"
+	"github.com/steve-care-software/webx/engine/cursors/domain/transactions/commands/contents/actions/datas"
+	"github.com/steve-care-software/webx/engine/cursors/domain/transactions/commands/contents/actions/moves"
+	"github.com/steve-care-software/webx/engine/cursors/domain/transactions/commands/contents/actions/updates"
 )
 
 // Action represents an action

@@ -11,6 +11,7 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/states"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/versions"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/workspaces"
+	"github.com/steve-care-software/webx/engine/cursors/domain/transactions"
 )
 
 const (
@@ -83,4 +84,10 @@ type Application interface {
 	InsertData(delimiter delimiters.Delimiter) error
 	UpdateData(original delimiters.Delimiter, updated []byte) error
 	DeleteData(delete delimiters.Delimiter) error
+
+	// injects a transaction:
+	Transact(trx transactions.Transaction) error
+
+	// commit:
+	Commit() (transactions.Transaction, error)
 }
