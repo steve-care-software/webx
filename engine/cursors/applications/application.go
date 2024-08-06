@@ -6,6 +6,7 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/cursors"
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders"
+	loaders_namespace "github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces"
 	"github.com/steve-care-software/webx/engine/cursors/domain/records"
 	"github.com/steve-care-software/webx/engine/cursors/domain/signers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/branches"
@@ -19,15 +20,17 @@ import (
 )
 
 type application struct {
-	loaderFactory  loaders.Factory
-	loaderBuilder  loaders.Builder
-	recordsBuilder records.Builder
-	recordBuilder  records.RecordBuilder
-	cursorFactory  cursors.CursorFactory
-	cursorsBuilder cursors.Builder
-	cursorBuilder  cursors.CursorBuilder
-	currentCursor  cursors.Cursor
-	records        records.Records
+	loaderFactory          loaders.Factory
+	loaderBuilder          loaders.Builder
+	loaderNamespaceBuilder loaders_namespace.Builder
+	recordsBuilder         records.Builder
+	recordBuilder          records.RecordBuilder
+	cursorFactory          cursors.CursorFactory
+	cursorsBuilder         cursors.Builder
+	cursorBuilder          cursors.CursorBuilder
+	currentCursor          cursors.Cursor
+	currentLoader          loaders.Loader
+	records                records.Records
 }
 
 func createApplication(
@@ -38,6 +41,7 @@ func createApplication(
 	cursorFactory cursors.CursorFactory,
 	cursorsBuilder cursors.Builder,
 	cursorBuilder cursors.CursorBuilder,
+	initialLoader loaders.Loader,
 	initialCursor cursors.Cursor,
 ) Application {
 	out := application{
@@ -49,6 +53,7 @@ func createApplication(
 		cursorsBuilder: cursorsBuilder,
 		cursorBuilder:  cursorBuilder,
 		currentCursor:  initialCursor,
+		currentLoader:  initialLoader,
 		records:        nil,
 	}
 
@@ -148,6 +153,20 @@ func (app *application) MetaData() (delimiters.Delimiter, error) {
 
 // InstallHeader install the header
 func (app *application) InstallHeader(header headers.Header) error {
+	builder := app.loaderBuilder.Create()
+	if app.currentLoader != nil {
+		builder.WithInitialLoader(app.currentLoader)
+	}
+
+	if header.HasNamespaces() {
+		headerNamespaces := header.Namespaces()
+		namespace, err := app.loaderNamespaceBuilder.Create().WithAll(headerNamespaces).Now()
+		if err != nil {
+			return err
+		}
+
+		builder.WithNamespace(namespace)
+	}
 	return nil
 }
 

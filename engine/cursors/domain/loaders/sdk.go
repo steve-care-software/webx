@@ -10,7 +10,8 @@ type Factory interface {
 // Builder represents a loader builder
 type Builder interface {
 	Create() Builder
-	WithNamespace(namespace namespaces.Namespace)
+	WithNamespace(namespace namespaces.Namespace) Builder
+	WithInitialLoader(loader Loader) Builder
 	Now() (Loader, error)
 }
 
