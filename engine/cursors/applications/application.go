@@ -3,6 +3,7 @@ package applications
 import (
 	"errors"
 
+	applications_loaders "github.com/steve-care-software/webx/engine/cursors/applications/loaders"
 	"github.com/steve-care-software/webx/engine/cursors/domain/cursors"
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders"
@@ -20,6 +21,7 @@ import (
 )
 
 type application struct {
+	loaderApp              applications_loaders.Application
 	loaderFactory          loaders.Factory
 	loaderBuilder          loaders.Builder
 	loaderNamespaceBuilder loaders_namespace.Builder
@@ -34,6 +36,7 @@ type application struct {
 }
 
 func createApplication(
+	loaderApp applications_loaders.Application,
 	loaderFactory loaders.Factory,
 	loaderBuilder loaders.Builder,
 	recordsBuilder records.Builder,
@@ -45,6 +48,7 @@ func createApplication(
 	initialCursor cursors.Cursor,
 ) Application {
 	out := application{
+		loaderApp:      loaderApp,
 		loaderFactory:  loaderFactory,
 		loaderBuilder:  loaderBuilder,
 		recordsBuilder: recordsBuilder,
@@ -272,7 +276,13 @@ func (app *application) Set(name string) error {
 		return errors.New(noLoaderCreatedErr)
 	}
 
-	return app.currentLoader.Set(name)
+	loader, err := app.loaderApp.Set(name)
+	if err != nil {
+		return err
+	}
+
+	app.currentLoader = loader
+	return nil
 }
 
 // Down sets the cursor to this element (sub-element or 'down')
@@ -281,7 +291,13 @@ func (app *application) Down(name string) error {
 		return errors.New(noLoaderCreatedErr)
 	}
 
-	return app.currentLoader.Down(name)
+	loader, err := app.loaderApp.Down(name)
+	if err != nil {
+		return err
+	}
+
+	app.currentLoader = loader
+	return nil
 }
 
 // Climb sets the cursor to this element (parent-element or 'climb')
@@ -290,46 +306,132 @@ func (app *application) Climb(name string) error {
 		return errors.New(noLoaderCreatedErr)
 	}
 
-	return app.currentLoader.Climb(name)
+	loader, err := app.loaderApp.Climb(name)
+	if err != nil {
+		return err
+	}
+
+	app.currentLoader = loader
+	return nil
 }
 
 // Insert inserts an original
 func (app *application) Insert(original originals.Original) error {
+	if app.currentLoader == nil {
+		return errors.New(noLoaderCreatedErr)
+	}
+
+	loader, err := app.loaderApp.Insert(original)
+	if err != nil {
+		return err
+	}
+
+	app.currentLoader = loader
 	return nil
 }
 
 // Update updates an original
 func (app *application) Update(original string, updated originals.Original) error {
+	if app.currentLoader == nil {
+		return errors.New(noLoaderCreatedErr)
+	}
+
+	loader, err := app.loaderApp.Update(original, updated)
+	if err != nil {
+		return err
+	}
+
+	app.currentLoader = loader
 	return nil
 }
 
 // Delete deletes an original by name
 func (app *application) Delete(name string) error {
+	if app.currentLoader == nil {
+		return errors.New(noLoaderCreatedErr)
+	}
+
+	loader, err := app.loaderApp.Delete(name)
+	if err != nil {
+		return err
+	}
+
+	app.currentLoader = loader
 	return nil
 }
 
 // Recover recovers an original by name
 func (app *application) Recover(name string) error {
+	if app.currentLoader == nil {
+		return errors.New(noLoaderCreatedErr)
+	}
+
+	loader, err := app.loaderApp.Recover(name)
+	if err != nil {
+		return err
+	}
+
+	app.currentLoader = loader
 	return nil
 }
 
 // Purge purges by name
 func (app *application) Purge(name string) error {
+	if app.currentLoader == nil {
+		return errors.New(noLoaderCreatedErr)
+	}
+
+	loader, err := app.loaderApp.Purge(name)
+	if err != nil {
+		return err
+	}
+
+	app.currentLoader = loader
 	return nil
 }
 
 // PurgeAll purges all
 func (app *application) PurgeAll() error {
+	if app.currentLoader == nil {
+		return errors.New(noLoaderCreatedErr)
+	}
+
+	loader, err := app.loaderApp.PurgeAll()
+	if err != nil {
+		return err
+	}
+
+	app.currentLoader = loader
 	return nil
 }
 
 // Move moves a development iteration to a production iteration inside the current iteration
 func (app *application) Move(name string, devName string, deleteOriginal bool) error {
+	if app.currentLoader == nil {
+		return errors.New(noLoaderCreatedErr)
+	}
+
+	loader, err := app.loaderApp.Move(name, devName, deleteOriginal)
+	if err != nil {
+		return err
+	}
+
+	app.currentLoader = loader
 	return nil
 }
 
 // Merge merges the current branch to its parent
 func (app *application) Merge(deleteOriginal bool) error {
+	if app.currentLoader == nil {
+		return errors.New(noLoaderCreatedErr)
+	}
+
+	loader, err := app.loaderApp.Merge(deleteOriginal)
+	if err != nil {
+		return err
+	}
+
+	app.currentLoader = loader
 	return nil
 }
 
@@ -340,16 +442,46 @@ func (app *application) NextIndex() (*uint, error) {
 
 // InsertData inserts data to the current state
 func (app *application) InsertData(delimiter delimiters.Delimiter) error {
+	if app.currentLoader == nil {
+		return errors.New(noLoaderCreatedErr)
+	}
+
+	loader, err := app.loaderApp.InsertData(delimiter)
+	if err != nil {
+		return err
+	}
+
+	app.currentLoader = loader
 	return nil
 }
 
 // UpdateData updates data on the current state
 func (app *application) UpdateData(original delimiters.Delimiter, updated []byte) error {
+	if app.currentLoader == nil {
+		return errors.New(noLoaderCreatedErr)
+	}
+
+	loader, err := app.loaderApp.UpdateData(original, updated)
+	if err != nil {
+		return err
+	}
+
+	app.currentLoader = loader
 	return nil
 }
 
 // DeleteData deletes data from the current state
 func (app *application) DeleteData(delete delimiters.Delimiter) error {
+	if app.currentLoader == nil {
+		return errors.New(noLoaderCreatedErr)
+	}
+
+	loader, err := app.loaderApp.DeleteData(delete)
+	if err != nil {
+		return err
+	}
+
+	app.currentLoader = loader
 	return nil
 }
 

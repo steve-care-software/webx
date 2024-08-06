@@ -17,9 +17,6 @@ type Builder interface {
 
 // Loader represents a loader
 type Loader interface {
-	Set(name string) error
-	Down(name string) error
-	Climb(name string) error
 	HasIdentity() bool
 	//Identity() identities.Identity
 	HasNamespace() bool
