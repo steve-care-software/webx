@@ -3,7 +3,7 @@ package encryptors
 import (
 	"crypto/rsa"
 
-	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
+	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 )
 
 // NewAdapter creates a new adapter

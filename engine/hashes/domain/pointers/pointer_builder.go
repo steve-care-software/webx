@@ -3,8 +3,8 @@ package pointers
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
-	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
+	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
+	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
 )
 
 type pointerBuilder struct {

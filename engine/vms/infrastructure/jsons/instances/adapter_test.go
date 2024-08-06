@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
+	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions/results"

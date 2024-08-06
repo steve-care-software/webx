@@ -1,6 +1,6 @@
 package merges
 
-import "github.com/steve-care-software/webx/engine/hashes/domain/hash"
+import "github.com/steve-care-software/webx/engine/cursors/domain/hash"
 
 type merge struct {
 	hash hash.Hash

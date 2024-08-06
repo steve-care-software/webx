@@ -1,7 +1,7 @@
 package instances
 
 import (
-	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
+	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 )
 
 // Adapter represents the instance adapter

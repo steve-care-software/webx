@@ -3,9 +3,9 @@ package applications
 import (
 	"reflect"
 
+	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	"github.com/steve-care-software/webx/engine/entities/domain/entities"
 	hash_applications "github.com/steve-care-software/webx/engine/hashes/applications"
-	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
 )
 
 type application struct {

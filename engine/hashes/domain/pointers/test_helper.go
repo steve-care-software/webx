@@ -1,8 +1,8 @@
 package pointers
 
 import (
-	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
-	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
+	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
+	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
 )
 
 // NewPointersForTests creates a new pointers for tests

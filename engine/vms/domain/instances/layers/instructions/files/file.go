@@ -1,6 +1,6 @@
 package files
 
-import "github.com/steve-care-software/webx/engine/hashes/domain/hash"
+import "github.com/steve-care-software/webx/engine/cursors/domain/hash"
 
 type file struct {
 	hash  hash.Hash

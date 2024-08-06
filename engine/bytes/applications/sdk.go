@@ -2,8 +2,8 @@ package applications
 
 import (
 	"github.com/steve-care-software/webx/engine/bytes/domain/cursors/status"
-	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
-	"github.com/steve-care-software/webx/engine/bytes/domain/originals"
+	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
+	"github.com/steve-care-software/webx/engine/cursors/domain/storages/originals"
 )
 
 // Builder represents the application builder

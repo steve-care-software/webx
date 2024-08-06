@@ -5,7 +5,7 @@ import (
 
 	"github.com/steve-care-software/webx/engine/bytes/applications"
 	"github.com/steve-care-software/webx/engine/bytes/domain/namespaces"
-	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
+	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 )
 
 type applicationBuilder struct {

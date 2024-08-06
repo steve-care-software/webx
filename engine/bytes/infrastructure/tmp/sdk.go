@@ -3,7 +3,7 @@ package tmp
 import (
 	"github.com/steve-care-software/webx/engine/bytes/applications"
 	"github.com/steve-care-software/webx/engine/bytes/domain/namespaces"
-	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
+	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 )
 
 const contextIdentifierUndefinedPattern = "the context identifier (%d) does not exists"

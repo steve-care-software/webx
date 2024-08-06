@@ -1,6 +1,6 @@
 package states
 
-import "github.com/steve-care-software/webx/engine/bytes/domain/pointers"
+import "github.com/steve-care-software/webx/engine/cursors/domain/storages/pointers"
 
 type state struct {
 	message   string

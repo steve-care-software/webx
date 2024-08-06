@@ -3,7 +3,7 @@ package bytes
 import (
 	"bytes"
 
-	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
+	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	assignable_bytes "github.com/steve-care-software/webx/engine/vms/domain/instances/layers/instructions/assignments/assignables/bytes"
 	"github.com/steve-care-software/webx/engine/vms/domain/stacks"
 	"github.com/steve-care-software/webx/engine/vms/domain/stacks/failures"

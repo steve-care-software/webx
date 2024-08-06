@@ -1,6 +1,6 @@
 package namespaces
 
-import "github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
+import "github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
 
 // NewBuilder creates a new builder
 func NewBuilder() Builder {

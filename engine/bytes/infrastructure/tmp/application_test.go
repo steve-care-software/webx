@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/steve-care-software/webx/engine/bytes/domain/originals"
 	infra_bytes "github.com/steve-care-software/webx/engine/bytes/infrastructure/bytes"
+	"github.com/steve-care-software/webx/engine/cursors/domain/storages/originals"
 )
 
 func TestApplication_Namespaces_Success(t *testing.T) {

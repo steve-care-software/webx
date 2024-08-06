@@ -1,6 +1,6 @@
 package namespaces
 
-import "github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
+import "github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
 
 // NewNamespacesForTests creates a new namespaces for tests
 func NewNamespacesForTests(list []Namespace) Namespaces {

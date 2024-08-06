@@ -1,6 +1,6 @@
 package kinds
 
-import "github.com/steve-care-software/webx/engine/hashes/domain/hash"
+import "github.com/steve-care-software/webx/engine/cursors/domain/hash"
 
 type kind struct {
 	hash       hash.Hash

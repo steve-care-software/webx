@@ -1,7 +1,7 @@
 package executions
 
 import (
-	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
+	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions/results"
 	source_layers "github.com/steve-care-software/webx/engine/vms/domain/instances/layers"
 )

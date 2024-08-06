@@ -1,6 +1,6 @@
 package validates
 
-import "github.com/steve-care-software/webx/engine/hashes/domain/hash"
+import "github.com/steve-care-software/webx/engine/cursors/domain/hash"
 
 type validate struct {
 	hash      hash.Hash

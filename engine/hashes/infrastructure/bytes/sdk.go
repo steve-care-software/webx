@@ -2,7 +2,7 @@ package bytes
 
 import (
 	infra_bytes "github.com/steve-care-software/webx/engine/bytes/infrastructure/bytes"
-	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
+	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	"github.com/steve-care-software/webx/engine/hashes/domain/pointers"
 )
 

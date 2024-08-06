@@ -1,7 +1,7 @@
 package elements
 
 import (
-	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
+	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 )
 
 // NewBuilder creates a new elements builder

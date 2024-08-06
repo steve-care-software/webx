@@ -7,9 +7,9 @@ import (
 	"strconv"
 
 	containers_applications "github.com/steve-care-software/webx/engine/containers/applications"
+	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	entities_applications "github.com/steve-care-software/webx/engine/entities/applications"
 	"github.com/steve-care-software/webx/engine/entities/domain/entities"
-	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
 	"github.com/steve-care-software/webx/engine/stencils/applications"
 	applications_vms "github.com/steve-care-software/webx/engine/vms/applications"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/executions"

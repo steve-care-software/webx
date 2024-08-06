@@ -1,12 +1,17 @@
 package cursors
 
 import (
-	"github.com/steve-care-software/webx/engine/bytes/domain/branches"
-	"github.com/steve-care-software/webx/engine/bytes/domain/iterations"
 	"github.com/steve-care-software/webx/engine/bytes/domain/namespaces"
 	"github.com/steve-care-software/webx/engine/bytes/domain/states"
 	"github.com/steve-care-software/webx/engine/bytes/domain/versions"
+	"github.com/steve-care-software/webx/engine/cursors/domain/storages/branches"
+	"github.com/steve-care-software/webx/engine/cursors/domain/storages/iterations"
 )
+
+// Cursors represents a list of cursors
+type Cursors interface {
+	List() []Cursor
+}
 
 // Cursor represents a cursor
 type Cursor interface {

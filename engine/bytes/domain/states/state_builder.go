@@ -3,7 +3,7 @@ package states
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/engine/bytes/domain/pointers"
+	"github.com/steve-care-software/webx/engine/cursors/domain/storages/pointers"
 )
 
 type stateBuilder struct {

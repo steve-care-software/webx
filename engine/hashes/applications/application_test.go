@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	bytesdb_infra_files "github.com/steve-care-software/webx/engine/bytes/infrastructure/files"
-	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
+	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	infra_bytes "github.com/steve-care-software/webx/engine/hashes/infrastructure/bytes"
 )
 

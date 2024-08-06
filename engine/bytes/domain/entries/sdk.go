@@ -1,7 +1,7 @@
 package entries
 
 import (
-	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
+	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
 )
 
 // NewBuilder initializes the builder

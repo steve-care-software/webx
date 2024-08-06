@@ -1,6 +1,6 @@
 package versions
 
-import "github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
+import "github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
 
 // Adapter represents a version adapter
 type Adapter interface {

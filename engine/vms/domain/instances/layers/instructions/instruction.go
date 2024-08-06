@@ -1,7 +1,7 @@
 package instructions
 
 import (
-	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
+	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/instructions/assignments"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/instructions/executions"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/instructions/lists"

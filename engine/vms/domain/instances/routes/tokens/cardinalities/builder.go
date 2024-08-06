@@ -3,7 +3,7 @@ package cardinalities
 import (
 	"strconv"
 
-	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
+	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 )
 
 type builder struct {

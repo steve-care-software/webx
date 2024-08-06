@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
+	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
 )
 
 func TestDelimiterAdapter_single_Success(t *testing.T) {

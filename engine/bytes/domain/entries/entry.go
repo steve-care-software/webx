@@ -1,6 +1,6 @@
 package entries
 
-import "github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
+import "github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
 
 type entry struct {
 	delimiter delimiters.Delimiter

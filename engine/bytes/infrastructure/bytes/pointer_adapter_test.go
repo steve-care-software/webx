@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
-	"github.com/steve-care-software/webx/engine/bytes/domain/pointers"
+	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
+	"github.com/steve-care-software/webx/engine/cursors/domain/storages/pointers"
 )
 
 func TestPointerAdapter_single_Success(t *testing.T) {

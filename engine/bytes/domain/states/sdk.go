@@ -1,7 +1,7 @@
 package states
 
 import (
-	"github.com/steve-care-software/webx/engine/bytes/domain/pointers"
+	"github.com/steve-care-software/webx/engine/cursors/domain/storages/pointers"
 )
 
 // NewBuilder creates a new builder

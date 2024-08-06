@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
 	"github.com/steve-care-software/webx/engine/bytes/domain/namespaces"
+	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
 )
 
 func TestNamespaceAdapter_multiple_Success(t *testing.T) {

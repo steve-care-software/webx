@@ -3,7 +3,7 @@ package namespaces
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/engine/bytes/domain/delimiters"
+	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
 )
 
 type namespaceBuilder struct {

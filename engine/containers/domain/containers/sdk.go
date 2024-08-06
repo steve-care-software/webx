@@ -2,7 +2,7 @@ package containers
 
 import (
 	"github.com/steve-care-software/webx/engine/containers/domain/containers/keynames"
-	"github.com/steve-care-software/webx/engine/hashes/domain/hash"
+	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 )
 
 // Adapter represents the container adapter
