@@ -37,24 +37,37 @@ func (app *application) InsertData(pointers pointers.Pointers, data []byte) (poi
 	}
 
 	length := uint64(len(data))
-	delimiter, err := app.delimiterBuilder.WithIndex(uint64(*pNextIndex)).WithLength(length).Now()
+	delimiter, err := app.delimiterBuilder.Create().
+		WithIndex(uint64(*pNextIndex)).
+		WithLength(length).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
 
-	storagePointer, err := app.storagePointerBulder.Create().WithDelimiter(delimiter).Now()
+	storagePointer, err := app.storagePointerBulder.Create().
+		WithDelimiter(delimiter).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
 
-	pointer, err := app.pointerBuilder.Create().WithBytes(data).WithStorage(storagePointer).Now()
+	pointer, err := app.pointerBuilder.Create().
+		WithBytes(data).
+		WithStorage(storagePointer).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
 
 	list := pointers.List()
 	list = append(list, pointer)
-	return app.pointersBuilder.Create().WithList(list).Now()
+	return app.pointersBuilder.Create().
+		WithList(list).
+		Now()
 }
 
 // UpdateData updates data from the pointers
