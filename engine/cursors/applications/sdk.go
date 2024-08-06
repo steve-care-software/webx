@@ -27,8 +27,14 @@ const (
 
 // Application represents an application
 type Application interface {
-	Cursor() cursors.Cursor                  // returns the current cursor
-	Records() (cursors.Cursors, error)       // returns the recorded cursors
+	// cursors:
+	Cursor() (cursors.Cursor, error)   // returns the current cursor
+	Records() (cursors.Cursors, error) // returns the recorded cursors
+	Erase(name string) error           // erase a cursor using its name
+	Record(name string) error          // record the cursor to this name
+	Replace(name string) error         // put the cursor to what the name was pointing to
+
+	// metadata:
 	MetaData() (delimiters.Delimiter, error) // returns the current branch meta data
 
 	// install:
@@ -42,27 +48,26 @@ type Application interface {
 	// identitity:
 	Create(original originals.Original, password []byte) error
 	Authenticate(name string, password []byte) error
-	Password(newPassword []byte) error // update the password of the authenticated user
+	SetPassword(newPassword []byte) error // update the password of the authenticated user
 	Encrypt(message []byte) ([]byte, error)
 	Decrypt(cipher []byte) ([]byte, error)
 	Sign(message []byte) (signers.Signature, error)
-	VerifySignature(message []byte, sig signers.Signature) (bool, error)
-	Vote(data []byte, ring []signers.PublicKey) (signers.Vote, error)
-	VerifyVote(message []byte, vote signers.Vote, ring []hash.Hash) (bool, error)
+	ValidateSignature(message []byte, sig signers.Signature) (bool, error)
+	Vote(message []byte, ring []signers.PublicKey) (signers.Vote, error)
+	ValidateVote(message []byte, vote signers.Vote, ring []hash.Hash) (bool, error)
 
 	// currency:
-	Transfer(amount uint64, fees uint64) error
+	Transfer(toWallet hash.Hash, amount uint64, fees uint64) error
+	Lock(walletPassword []byte, toWallet hash.Hash, untilBlock uint64) error
+	Claim(lockPassword []byte, amount uint64, amountSeed []byte) error
 
 	// switch between namespace, identity and blockchain
 	Switch(flag uint8) error
 
 	// write generics:
-	Erase(name string) error   // erase a cursor using its name
-	Record(name string) error  // record the cursor to this name
-	Replace(name string) error // put the cursor to what the name was pointing to
-	Set(name string) error     // set the cursor to this element (horizontally)
-	Down(name string) error    // set the cursor to this element (sub-element or 'down')
-	Climb(name string) error   // set the cursor to this element (parent-element or 'climb')
+	Set(name string) error   // set the cursor to this element (horizontally)
+	Down(name string) error  // set the cursor to this element (sub-element or 'down')
+	Climb(name string) error // set the cursor to this element (parent-element or 'climb')
 	Insert(original originals.Original) error
 	Update(original string, updated originals.Original) error
 	Delete(name string) error
@@ -81,6 +86,6 @@ type Application interface {
 	// injects a transaction:
 	Transact(trx transactions.Transaction) error
 
-	// commit:
-	Commit() (transactions.Transaction, error)
+	// execute:
+	Execute() (transactions.Transaction, error)
 }
