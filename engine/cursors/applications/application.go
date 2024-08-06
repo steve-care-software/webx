@@ -1,8 +1,12 @@
 package applications
 
 import (
+	"errors"
+
 	"github.com/steve-care-software/webx/engine/cursors/domain/cursors"
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders"
+	"github.com/steve-care-software/webx/engine/cursors/domain/records"
 	"github.com/steve-care-software/webx/engine/cursors/domain/signers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/branches"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
@@ -15,35 +19,125 @@ import (
 )
 
 type application struct {
+	loaderFactory  loaders.Factory
+	loaderBuilder  loaders.Builder
+	recordsBuilder records.Builder
+	recordBuilder  records.RecordBuilder
+	cursorFactory  cursors.CursorFactory
+	cursorsBuilder cursors.Builder
+	cursorBuilder  cursors.CursorBuilder
+	currentCursor  cursors.Cursor
+	records        records.Records
 }
 
-func createApplication() Application {
-	out := application{}
+func createApplication(
+	loaderFactory loaders.Factory,
+	loaderBuilder loaders.Builder,
+	recordsBuilder records.Builder,
+	recordBuilder records.RecordBuilder,
+	cursorFactory cursors.CursorFactory,
+	cursorsBuilder cursors.Builder,
+	cursorBuilder cursors.CursorBuilder,
+	initialCursor cursors.Cursor,
+) Application {
+	out := application{
+		loaderFactory:  loaderFactory,
+		loaderBuilder:  loaderBuilder,
+		recordsBuilder: recordsBuilder,
+		recordBuilder:  recordBuilder,
+		cursorFactory:  cursorFactory,
+		cursorsBuilder: cursorsBuilder,
+		cursorBuilder:  cursorBuilder,
+		currentCursor:  initialCursor,
+		records:        nil,
+	}
+
 	return &out
 }
 
 // Cursor returns the current cursor
 func (app *application) Cursor() (cursors.Cursor, error) {
-	return nil, nil
+	return app.currentCursor, nil
 }
 
 // Records returns the recorded cursors
-func (app *application) Records() (cursors.Cursors, error) {
-	return nil, nil
+func (app *application) Records() (records.Records, error) {
+	if app.records != nil {
+		return app.records, nil
+	}
+
+	return nil, errors.New(zeroRecordErr)
 }
 
 // Erase erases a cursor using the provided name
 func (app *application) Erase(name string) error {
+	if app.records == nil {
+		return errors.New(zeroRecordErr)
+	}
+
+	list, err := app.records.FetchExceptName(name)
+	if err != nil {
+		return err
+	}
+
+	if len(list) <= 0 {
+		app.records = nil
+		return nil
+	}
+
+	updated, err := app.recordsBuilder.Create().WithList(list).Now()
+	if err != nil {
+		return err
+	}
+
+	app.records = updated
 	return nil
 }
 
 // Record records the current cursor to this name
 func (app *application) Record(name string) error {
+	record, err := app.recordBuilder.Create().
+		WithName(name).
+		WithCursor(app.currentCursor).
+		Now()
+
+	if err != nil {
+		return err
+	}
+
+	list := []records.Record{
+		record,
+	}
+
+	if app.records != nil {
+		currentList := app.records.List()
+		list = append(list, currentList...)
+	}
+
+	records, err := app.recordsBuilder.Create().
+		WithList(list).
+		Now()
+
+	if err != nil {
+		return err
+	}
+
+	app.records = records
 	return nil
 }
 
 // Replace replaces the current cursor by the stored cursor of the provided name
 func (app *application) Replace(name string) error {
+	if app.records == nil {
+		return errors.New(zeroRecordErr)
+	}
+
+	record, err := app.records.FetchByName(name)
+	if err != nil {
+		return err
+	}
+
+	app.currentCursor = record.Cursor()
 	return nil
 }
 

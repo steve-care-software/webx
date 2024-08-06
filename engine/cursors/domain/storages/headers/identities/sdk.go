@@ -13,8 +13,7 @@ type Identities interface {
 // Identity represents an identity
 type Identity interface {
 	Original() originals.Original
-	Signer() []byte
-	Encryptor() []byte
+	Keys() delimiters.Delimiter
 	HasWallets() bool
 	Wallets() delimiters.Delimiter
 }

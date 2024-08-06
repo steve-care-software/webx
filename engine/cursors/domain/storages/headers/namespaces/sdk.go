@@ -15,4 +15,6 @@ type Namespace interface {
 	Original() originals.Original
 	HasVersions() bool
 	Versions() delimiters.Delimiter
+	HasBlockchain() bool
+	Blockchain() delimiters.Delimiter
 }

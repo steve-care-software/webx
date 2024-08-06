@@ -3,6 +3,7 @@ package applications
 import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/cursors"
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
+	"github.com/steve-care-software/webx/engine/cursors/domain/records"
 	"github.com/steve-care-software/webx/engine/cursors/domain/signers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/branches"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
@@ -13,6 +14,8 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/workspaces"
 	"github.com/steve-care-software/webx/engine/cursors/domain/transactions"
 )
+
+const zeroRecordErr = "there are currently no record"
 
 const (
 	// NamespaceFlag represents the namespace flag
@@ -29,7 +32,7 @@ const (
 type Application interface {
 	// cursors:
 	Cursor() (cursors.Cursor, error)   // returns the current cursor
-	Records() (cursors.Cursors, error) // returns the recorded cursors
+	Records() (records.Records, error) // returns the recorded cursors
 	Erase(name string) error           // erase a cursor using its name
 	Record(name string) error          // record the cursor to this name
 	Replace(name string) error         // put the cursor to what the name was pointing to
