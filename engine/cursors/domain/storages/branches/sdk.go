@@ -31,7 +31,7 @@ type BranchBuilder interface {
 	WithOriginal(original originals.Original) BranchBuilder
 	WithStates(states delimiters.Delimiter) BranchBuilder
 	WithMetaData(metaData delimiters.Delimiter) BranchBuilder
-	WithChildren(children Branches) BranchBuilder
+	WithChildren(children delimiters.Delimiter) BranchBuilder
 	Now() (Branch, error)
 }
 
@@ -43,5 +43,5 @@ type Branch interface {
 	HasMetaData() bool
 	MetaData() delimiters.Delimiter
 	HasChildren() bool
-	Children() Branches
+	Children() delimiters.Delimiter
 }

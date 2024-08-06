@@ -16,5 +16,6 @@ type Builder interface {
 // Namespace represents a namespace
 type Namespace interface {
 	All() namespaces.Namespaces
+	HasCurrent() bool
 	Current() singles.Single
 }

@@ -30,7 +30,7 @@ type VersionBuilder interface {
 	Create() VersionBuilder
 	WithOriginal(original originals.Original) VersionBuilder
 	WithWorkspaces(workspaces delimiters.Delimiter) VersionBuilder
-	WithPrevious(previous Version) VersionBuilder
+	WithMaster(master delimiters.Delimiter) VersionBuilder
 	Now() (Version, error)
 }
 
@@ -39,6 +39,6 @@ type Version interface {
 	Original() originals.Original
 	HasWorkspaces() bool
 	Workspaces() delimiters.Delimiter
-	HasPrevious() bool
-	Previous() Version
+	HasMaster() bool
+	Master() delimiters.Delimiter
 }

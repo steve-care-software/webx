@@ -23,6 +23,7 @@ type Builder interface {
 // States represents states
 type States interface {
 	List() []State
+	FetchByName(name string) (State, error)
 }
 
 // StateBuilder represents a state builder

@@ -3,18 +3,26 @@ package originals
 type original struct {
 	name        string
 	description string
+	isDeleted   bool
 }
 
 func createOriginal(
 	name string,
 	description string,
+	isDeleted bool,
 ) Original {
 	out := original{
 		name:        name,
 		description: description,
+		isDeleted:   isDeleted,
 	}
 
 	return &out
+}
+
+// IsDeleted returns true if deleted, false otherwise
+func (obj *original) IsDeleted() bool {
+	return obj.isDeleted
 }
 
 // Name returns the name

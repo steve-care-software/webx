@@ -5,12 +5,14 @@ import "errors"
 type builder struct {
 	name        string
 	description string
+	isDeleted   bool
 }
 
 func createBuilder() Builder {
 	out := builder{
 		name:        "",
 		description: "",
+		isDeleted:   false,
 	}
 
 	return &out
@@ -19,6 +21,12 @@ func createBuilder() Builder {
 // Create initializes the builder
 func (app *builder) Create() Builder {
 	return createBuilder()
+}
+
+// IsDeleted flags the builder as deleted
+func (app *builder) IsDeleted() Builder {
+	app.isDeleted = true
+	return app
 }
 
 // WithName adds a name to the builder
@@ -42,5 +50,6 @@ func (app *builder) Now() (Original, error) {
 	return createOriginal(
 		app.name,
 		app.description,
+		app.isDeleted,
 	), nil
 }

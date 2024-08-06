@@ -16,6 +16,7 @@ type Builder interface {
 	Create() Builder
 	WithName(name string) Builder
 	WithDescription(description string) Builder
+	IsDeleted() Builder
 	Now() (Original, error)
 }
 
@@ -28,4 +29,5 @@ type Originals interface {
 type Original interface {
 	Name() string
 	Description() string
+	IsDeleted() bool
 }
