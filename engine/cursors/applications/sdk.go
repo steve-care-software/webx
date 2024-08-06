@@ -25,13 +25,6 @@ const (
 	BlockchainFlag
 )
 
-// Builder represents the application builder
-type Builder interface {
-	Create() Builder
-	WithSigner(signer signers.Signer) Builder
-	Now() (Application, error)
-}
-
 // Application represents an application
 type Application interface {
 	Cursor() cursors.Cursor                  // returns the current cursor
