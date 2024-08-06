@@ -26,6 +26,7 @@ type CursorFactory interface {
 // CursorBuilder represents a cursor builder
 type CursorBuilder interface {
 	Create() CursorBuilder
+	WithFlag(flag uint8) CursorBuilder
 	WithIdentity(identity identities.Identity) CursorBuilder
 	WIthNamespace(namespace namespaces.Namespace) CursorBuilder
 	WithBlockchain(blockchain blockchains.Blockchain) CursorBuilder
@@ -35,6 +36,7 @@ type CursorBuilder interface {
 
 // Cursor represents a cursor
 type Cursor interface {
+	Flag() uint8
 	HasIdentity() bool
 	Identity() identities.Identity
 	HasNamespace() bool

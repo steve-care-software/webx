@@ -16,6 +16,7 @@ import (
 )
 
 const zeroRecordErr = "there are currently no record"
+const noLoaderCreatedErr = "the loader has not been created yet"
 
 const (
 	// NamespaceFlag represents the namespace flag
@@ -64,8 +65,8 @@ type Application interface {
 	Lock(walletPassword []byte, toWallet hash.Hash, untilBlock uint64) error
 	Claim(lockPassword []byte, amount uint64, amountSeed []byte) error
 
-	// switch between namespace, identity and blockchain
-	Switch(flag uint8) error
+	// resets the cursor and set it at namespace, identity and blockchain
+	Reset(flag uint8) error
 
 	// write generics:
 	Set(name string) error   // set the cursor to this element (horizontally)

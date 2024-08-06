@@ -255,24 +255,42 @@ func (app *application) Claim(lockPassword []byte, amount uint64, amountSeed []b
 	return nil
 }
 
-// Switch switches the head cursor between namespace, identity and blockchain
-func (app *application) Switch(flag uint8) error {
+// Reset resets the cursor and set it at namespace, identity and blockchain
+func (app *application) Reset(flag uint8) error {
+	cursor, err := app.cursorBuilder.Create().WithFlag(flag).Now()
+	if err != nil {
+		return err
+	}
+
+	app.currentCursor = cursor
 	return nil
 }
 
 // Set sets the cursor to this element (horizontally)
 func (app *application) Set(name string) error {
-	return nil
+	if app.currentLoader == nil {
+		return errors.New(noLoaderCreatedErr)
+	}
+
+	return app.currentLoader.Set(name)
 }
 
 // Down sets the cursor to this element (sub-element or 'down')
 func (app *application) Down(name string) error {
-	return nil
+	if app.currentLoader == nil {
+		return errors.New(noLoaderCreatedErr)
+	}
+
+	return app.currentLoader.Down(name)
 }
 
 // Climb sets the cursor to this element (parent-element or 'climb')
 func (app *application) Climb(name string) error {
-	return nil
+	if app.currentLoader == nil {
+		return errors.New(noLoaderCreatedErr)
+	}
+
+	return app.currentLoader.Climb(name)
 }
 
 // Insert inserts an original
