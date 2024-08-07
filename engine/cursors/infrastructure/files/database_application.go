@@ -1,4 +1,4 @@
-package applications
+package files
 
 import (
 	"io"
@@ -10,19 +10,22 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
 )
 
-type fileApplication struct {
+type databaseApplication struct {
+	originalPath string
 	pOriginal    *os.File
 	pDestination *os.File
 	pLock        *fslock.Lock
 	cursor       uint64
 }
 
-func createFileApplication(
+func createDatabaseApplication(
+	originalPath string,
 	pOriginal *os.File,
 	pDestination *os.File,
 	pLock *fslock.Lock,
 ) databases.Application {
-	out := fileApplication{
+	out := databaseApplication{
+		originalPath: originalPath,
 		pOriginal:    pOriginal,
 		pDestination: pDestination,
 		pLock:        pLock,
@@ -33,52 +36,51 @@ func createFileApplication(
 }
 
 // Reset resets the application
-func (app *fileApplication) Reset() {
+func (app *databaseApplication) Reset() {
 	app.cursor = 0
 }
 
 // Read reads data from the file at the delimiter
-func (app *fileApplication) Read(delimiter delimiters.Delimiter) ([]byte, error) {
+func (app *databaseApplication) Read(delimiter delimiters.Delimiter) ([]byte, error) {
 	index := delimiter.Index()
 	length := delimiter.Length()
 	return app.read(index, length)
 }
 
 // CopyBeforeThenWrite copy data from the file before the index if needed, then write the provided data
-func (app *fileApplication) CopyBeforeThenWrite(index uint64, bytes []byte) error {
+func (app *databaseApplication) CopyBeforeThenWrite(startAtIndex uint64, index uint64, bytes []byte) error {
 	// copy the data if needed:
-	if app.cursor < index {
-		originalIndex := app.cursor
-		originalLength := index - originalIndex
-		amountLoops := int(math.Floor(float64(originalLength / readChunkSize)))
-		lastChkIndex := originalIndex
+	diff := index - startAtIndex
+	if diff > 0 {
+		amountLoops := int(diff / readChunkSize)
+		nextChkIndex := startAtIndex
 		for i := 0; i < amountLoops; i++ {
-			chkIndex := uint64((i * amountLoops)) + originalIndex
-			chk, err := app.read(uint64(chkIndex), readChunkSize)
+			chk, err := app.read(nextChkIndex, readChunkSize)
 			if err != nil {
 				return err
 			}
 
 			// write:
-			err = app.write(chkIndex, chk)
+			err = app.write(nextChkIndex, chk)
 			if err != nil {
 				return err
 			}
 
 			// set the last chunk index:
-			lastChkIndex = chkIndex
+			nextChkIndex += uint64(len(chk))
 		}
 
 		// write the last chunk if any
-		if lastChkIndex < originalIndex {
+		remaining := uint64(math.Mod(float64(diff), float64(readChunkSize)))
+		if remaining > 0 {
 			// read the last chunk:
-			lastChk, err := app.read(uint64(lastChkIndex), originalIndex-lastChkIndex)
+			lastChk, err := app.read(nextChkIndex, remaining)
 			if err != nil {
 				return err
 			}
 
 			// write it:
-			err = app.write(lastChkIndex, lastChk)
+			err = app.write(nextChkIndex, lastChk)
 			if err != nil {
 				return err
 			}
@@ -89,8 +91,18 @@ func (app *fileApplication) CopyBeforeThenWrite(index uint64, bytes []byte) erro
 	return app.write(index, bytes)
 }
 
+// CloseThenDeleteOriginal closes the files then deletes the original file
+func (app *databaseApplication) CloseThenDeleteOriginal() error {
+	err := app.Close()
+	if err != nil {
+		return err
+	}
+
+	return os.Remove(app.originalPath)
+}
+
 // Close closes the file
-func (app *fileApplication) Close() error {
+func (app *databaseApplication) Close() error {
 	if app.pLock != nil {
 		err := app.pLock.Unlock()
 		if err != nil {
@@ -115,7 +127,7 @@ func (app *fileApplication) Close() error {
 	return nil
 }
 
-func (app *fileApplication) read(index uint64, length uint64) ([]byte, error) {
+func (app *databaseApplication) read(index uint64, length uint64) ([]byte, error) {
 	// seek:
 	_, err := app.pOriginal.Seek(int64(index), io.SeekStart)
 	if err != nil {
@@ -132,7 +144,7 @@ func (app *fileApplication) read(index uint64, length uint64) ([]byte, error) {
 	return output, nil
 }
 
-func (app *fileApplication) write(index uint64, bytes []byte) error {
+func (app *databaseApplication) write(index uint64, bytes []byte) error {
 	// seek:
 	_, err := app.pDestination.Seek(int64(index), io.SeekStart)
 	if err != nil {
@@ -140,7 +152,7 @@ func (app *fileApplication) write(index uint64, bytes []byte) error {
 	}
 
 	// write:
-	_, err = app.pOriginal.Write(bytes)
+	_, err = app.pDestination.Write(bytes)
 	if err != nil {
 		return err
 	}

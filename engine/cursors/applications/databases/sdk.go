@@ -5,7 +5,8 @@ import "github.com/steve-care-software/webx/engine/cursors/domain/storages/delim
 // FileBuilder represents a file application builder
 type FileBuilder interface {
 	Create() FileBuilder
-	WithPath(path []string) FileBuilder
+	WithOriginal(original []string) FileBuilder
+	WithDestination(destination []string) FileBuilder
 	Now() (Application, error)
 }
 
@@ -13,6 +14,7 @@ type FileBuilder interface {
 type Application interface {
 	Reset()
 	Read(delimiter delimiters.Delimiter) ([]byte, error)
-	CopyBeforeThenWrite(index uint64, bytes []byte) error
+	CopyBeforeThenWrite(startAtIndex uint64, index uint64, bytes []byte) error
+	CloseThenDeleteOriginal() error
 	Close() error
 }

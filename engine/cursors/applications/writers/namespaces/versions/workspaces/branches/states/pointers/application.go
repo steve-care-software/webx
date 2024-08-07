@@ -20,13 +20,25 @@ func createApplication(
 }
 
 // Write writes the pointer
-func (app *application) Write(pointer pointers.Pointer) error {
-	storage := pointer.Storage()
-	if storage.IsDeleted() {
-		return nil
+func (app *application) Write(startAtIndex uint64, pointers pointers.Pointers) error {
+	cpyFromIndex := startAtIndex
+	list := pointers.List()
+	for _, onePointer := range list {
+		storage := onePointer.Storage()
+		if storage.IsDeleted() {
+			continue
+		}
+
+		delimiter := storage.Delimiter()
+		bytes := onePointer.Bytes()
+		index := storage.Delimiter().Index()
+		err := app.dbApp.CopyBeforeThenWrite(cpyFromIndex, index, bytes)
+		if err != nil {
+			return nil
+		}
+
+		cpyFromIndex = delimiter.Index() + delimiter.Length()
 	}
 
-	bytes := pointer.Bytes()
-	index := storage.Delimiter().Index()
-	return app.dbApp.CopyBeforeThenWrite(index, bytes)
+	return nil
 }

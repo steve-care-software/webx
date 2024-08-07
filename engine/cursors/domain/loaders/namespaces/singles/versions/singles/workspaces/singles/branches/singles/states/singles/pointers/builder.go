@@ -1,6 +1,9 @@
 package pointers
 
-import "errors"
+import (
+	"errors"
+	"sort"
+)
 
 type builder struct {
 	list []Pointer
@@ -37,23 +40,29 @@ func (app *builder) Now() (Pointers, error) {
 
 	// order by index
 	lastIndex := uint64(0)
+	indices := []int{}
 	orderedPointers := map[uint64]Pointer{}
 	for idx, onePointer := range app.list {
 		delimiter := onePointer.Storage().Delimiter()
 		index := delimiter.Index()
 		if idx <= 0 {
 			lastIndex = index
+			indices = append(indices, int(index))
 			orderedPointers[lastIndex] = onePointer
 			continue
 		}
 
 		orderedPointers[index] = onePointer
+		indices = append(indices, int(index))
 		lastIndex = index
 	}
 
+	length := len(indices)
+	sort.Ints(indices)
 	output := []Pointer{}
-	for _, onePointer := range orderedPointers {
-		output = append(output, onePointer)
+	for i := 0; i < length; i++ {
+		idx := uint64(indices[i])
+		output = append(output, orderedPointers[idx])
 	}
 
 	return createPointers(
