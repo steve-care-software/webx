@@ -72,10 +72,47 @@ func (app *application) InsertData(pointers pointers.Pointers, data []byte) (poi
 
 // UpdateData updates data from the pointers
 func (app *application) UpdateData(pointers pointers.Pointers, original delimiters.Delimiter, updated []byte) (pointers.Pointers, error) {
-	return nil, nil
+	// delete the original:
+	retPointers, err := app.DeleteData(pointers, original)
+	if err != nil {
+		return nil, err
+	}
+
+	// insert the updated
+	return app.InsertData(retPointers, updated)
 }
 
 // DeleteData deletes data from the pointers
 func (app *application) DeleteData(pointers pointers.Pointers, delete delimiters.Delimiter) (pointers.Pointers, error) {
-	return nil, nil
+	pOriginalIndex, err := pointers.FindIndex(delete)
+	if err != nil {
+		return nil, err
+	}
+
+	originalIndex := *pOriginalIndex
+	list := pointers.List()
+	original := list[originalIndex]
+	storagePointer, err := app.storagePointerBulder.Create().
+		WithDelimiter(delete).
+		IsDeleted().
+		Now()
+
+	if err != nil {
+		return nil, err
+	}
+
+	data := original.Bytes()
+	pointer, err := app.pointerBuilder.Create().
+		WithBytes(data).
+		WithStorage(storagePointer).
+		Now()
+
+	if err != nil {
+		return nil, err
+	}
+
+	list[originalIndex] = pointer
+	return app.pointersBuilder.Create().
+		WithList(list).
+		Now()
 }

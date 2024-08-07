@@ -1,6 +1,9 @@
 package pointers
 
-import "github.com/steve-care-software/webx/engine/cursors/domain/storages/pointers"
+import (
+	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
+	"github.com/steve-care-software/webx/engine/cursors/domain/storages/pointers"
+)
 
 // Builder represents a pointers builder
 type Builder interface {
@@ -13,6 +16,7 @@ type Builder interface {
 type Pointers interface {
 	List() []Pointer
 	NextIndex() (*uint, error)
+	FindIndex(delimiter delimiters.Delimiter) (*uint, error)
 }
 
 // PointerBuilder represents a pointer builder
