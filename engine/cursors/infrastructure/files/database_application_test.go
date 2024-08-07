@@ -10,8 +10,8 @@ import (
 	applications_loaders "github.com/steve-care-software/webx/engine/cursors/applications/loaders/namespaces/versions/workspaces/branches/states/pointers"
 	applications_writers "github.com/steve-care-software/webx/engine/cursors/applications/writers/namespaces/versions/workspaces/branches/states/pointers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces/singles/versions/singles/workspaces/singles/branches/singles/states/singles/pointers"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces/singles/versions/singles/workspaces/singles/branches/singles/states/singles/pointers/storages"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
-	storage_pointers "github.com/steve-care-software/webx/engine/cursors/domain/storages/pointers"
 )
 
 func TestApplication_withPointers_Success(t *testing.T) {
@@ -66,14 +66,14 @@ func TestApplication_withPointers_Success(t *testing.T) {
 	firstLength := uint64(len(firstData))
 	pointers := pointers.NewPointersForTests([]pointers.Pointer{
 		pointers.NewPointerForTests(
-			storage_pointers.NewPointerForTests(
+			storages.NewStorageForTests(
 				delimiters.NewDelimiterForTests(firstIndex, firstLength),
 				false,
 			),
 			[]byte(firstData),
 		),
 		pointers.NewPointerForTests(
-			storage_pointers.NewPointerForTests(
+			storages.NewStorageForTests(
 				delimiters.NewDelimiterForTests(firstIndex+firstLength, uint64(len(deletedData))),
 				true, // deleted
 			),

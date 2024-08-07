@@ -2,13 +2,13 @@ package pointers
 
 import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces/singles/versions/singles/workspaces/singles/branches/singles/states/singles/pointers"
+	storage_pointers "github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces/singles/versions/singles/workspaces/singles/branches/singles/states/singles/pointers/storages"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
-	storage_pointers "github.com/steve-care-software/webx/engine/cursors/domain/storages/pointers"
 )
 
 // NewApplication creates a new application for tests
 func NewApplication() Application {
-	storagePointerBulder := storage_pointers.NewPointerBuilder()
+	storagePointerBulder := storage_pointers.NewStorageBuilder()
 	pointersBuilder := pointers.NewBuilder()
 	pointerBuilder := pointers.NewPointerBuilder()
 	delimiterBuilder := delimiters.NewDelimiterBuilder()

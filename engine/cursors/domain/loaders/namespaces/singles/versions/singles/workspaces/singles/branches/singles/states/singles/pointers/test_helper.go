@@ -1,6 +1,6 @@
 package pointers
 
-import "github.com/steve-care-software/webx/engine/cursors/domain/storages/pointers"
+import "github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces/singles/versions/singles/workspaces/singles/branches/singles/states/singles/pointers/storages"
 
 // NewPointersForTests creates a new pointers for tests
 func NewPointersForTests(list []Pointer) Pointers {
@@ -13,7 +13,7 @@ func NewPointersForTests(list []Pointer) Pointers {
 }
 
 // NewPointerForTests creates a new pointer for tests
-func NewPointerForTests(storage pointers.Pointer, bytes []byte) Pointer {
+func NewPointerForTests(storage storages.Storage, bytes []byte) Pointer {
 	ins, err := NewPointerBuilder().Create().WithStorage(storage).WithBytes(bytes).Now()
 	if err != nil {
 		panic(err)

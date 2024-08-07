@@ -3,11 +3,11 @@ package pointers
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/pointers"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces/singles/versions/singles/workspaces/singles/branches/singles/states/singles/pointers/storages"
 )
 
 type pointerBuilder struct {
-	storage pointers.Pointer
+	storage storages.Storage
 	bytes   []byte
 }
 
@@ -26,7 +26,7 @@ func (app *pointerBuilder) Create() PointerBuilder {
 }
 
 // WithStorage adds a storage to the builder
-func (app *pointerBuilder) WithStorage(storage pointers.Pointer) PointerBuilder {
+func (app *pointerBuilder) WithStorage(storage storages.Storage) PointerBuilder {
 	app.storage = storage
 	return app
 }

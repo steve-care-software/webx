@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/pointers"
+	"github.com/steve-care-software/webx/engine/hashes/domain/pointers"
 )
 
 type pointerAdapter struct {

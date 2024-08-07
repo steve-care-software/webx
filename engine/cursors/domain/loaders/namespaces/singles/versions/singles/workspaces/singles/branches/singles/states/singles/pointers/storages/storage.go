@@ -1,29 +1,29 @@
-package pointers
+package storages
 
 import "github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
 
-type pointer struct {
+type storage struct {
 	delimiter delimiters.Delimiter
 	isDeleted bool
 }
 
-func createPointer(
+func createStorage(
 	delimiter delimiters.Delimiter,
-) Pointer {
-	return createPointerInternally(delimiter, false)
+) Storage {
+	return createStorageInternally(delimiter, false)
 }
 
-func createPointerWithDeleted(
+func createStorageWithDeleted(
 	delimiter delimiters.Delimiter,
-) Pointer {
-	return createPointerInternally(delimiter, true)
+) Storage {
+	return createStorageInternally(delimiter, true)
 }
 
-func createPointerInternally(
+func createStorageInternally(
 	delimiter delimiters.Delimiter,
 	isDeleted bool,
-) Pointer {
-	out := pointer{
+) Storage {
+	out := storage{
 		delimiter: delimiter,
 		isDeleted: isDeleted,
 	}
@@ -32,11 +32,11 @@ func createPointerInternally(
 }
 
 // Delimiter returns the delimiter
-func (obj *pointer) Delimiter() delimiters.Delimiter {
+func (obj *storage) Delimiter() delimiters.Delimiter {
 	return obj.delimiter
 }
 
 // IsDeleted returns true if deleted, false otherwise
-func (obj *pointer) IsDeleted() bool {
+func (obj *storage) IsDeleted() bool {
 	return obj.isDeleted
 }

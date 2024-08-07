@@ -2,19 +2,19 @@ package pointers
 
 import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces/singles/versions/singles/workspaces/singles/branches/singles/states/singles/pointers"
+	storage_pointers "github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces/singles/versions/singles/workspaces/singles/branches/singles/states/singles/pointers/storages"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
-	storage_pointers "github.com/steve-care-software/webx/engine/cursors/domain/storages/pointers"
 )
 
 type application struct {
-	storagePointerBulder storage_pointers.PointerBuilder
+	storagePointerBulder storage_pointers.StorageBuilder
 	pointersBuilder      pointers.Builder
 	pointerBuilder       pointers.PointerBuilder
 	delimiterBuilder     delimiters.DelimiterBuilder
 }
 
 func createApplication(
-	storagePointerBulder storage_pointers.PointerBuilder,
+	storagePointerBulder storage_pointers.StorageBuilder,
 	pointersBuilder pointers.Builder,
 	pointerBuilder pointers.PointerBuilder,
 	delimiterBuilder delimiters.DelimiterBuilder,

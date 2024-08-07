@@ -7,7 +7,7 @@ import (
 
 	"github.com/steve-care-software/webx/engine/bytes/domain/namespaces"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/pointers"
+	"github.com/steve-care-software/webx/engine/hashes/domain/pointers"
 )
 
 const (

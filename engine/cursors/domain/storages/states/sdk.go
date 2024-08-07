@@ -1,8 +1,8 @@
 package states
 
 import (
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces/singles/versions/singles/workspaces/singles/branches/singles/states/singles/pointers/storages"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/originals"
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/pointers"
 )
 
 // Adapter represents a state adapter
@@ -30,7 +30,7 @@ type States interface {
 type StateBuilder interface {
 	Create() StateBuilder
 	WithOriginal(original originals.Original) StateBuilder
-	WithPointers(pointers pointers.Pointers) StateBuilder
+	WithPointers(pointers storages.Storages) StateBuilder
 	Now() (State, error)
 }
 
@@ -38,5 +38,5 @@ type StateBuilder interface {
 type State interface {
 	Original() originals.Original
 	HasPointers() bool
-	Pointers() pointers.Pointers
+	Pointers() storages.Storages
 }
