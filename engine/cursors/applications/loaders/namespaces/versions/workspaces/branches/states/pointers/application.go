@@ -31,14 +31,10 @@ func createApplication(
 
 // InsertData inserts data to the pointers
 func (app *application) InsertData(pointers pointers.Pointers, data []byte) (pointers.Pointers, error) {
-	pNextIndex, err := pointers.NextIndex()
-	if err != nil {
-		return nil, err
-	}
-
+	index := pointers.NextIndex()
 	length := uint64(len(data))
 	delimiter, err := app.delimiterBuilder.Create().
-		WithIndex(uint64(*pNextIndex)).
+		WithIndex(uint64(index)).
 		WithLength(length).
 		Now()
 

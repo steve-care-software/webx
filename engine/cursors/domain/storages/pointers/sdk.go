@@ -32,8 +32,6 @@ type Builder interface {
 // Pointers represents pointers
 type Pointers interface {
 	List() []Pointer
-	NextIndex() uint64
-	Fetch(delimiter delimiters.Delimiter) (Pointer, error)
 }
 
 // PointerBuilder represents a pointer builder

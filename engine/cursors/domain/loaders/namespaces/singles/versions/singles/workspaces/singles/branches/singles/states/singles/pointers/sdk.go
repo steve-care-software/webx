@@ -5,6 +5,16 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/pointers"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewPointerBuilder creates a new pointer builder
+func NewPointerBuilder() PointerBuilder {
+	return createPointerBuilder()
+}
+
 // Builder represents a pointers builder
 type Builder interface {
 	Create() Builder
@@ -15,7 +25,7 @@ type Builder interface {
 // Pointers represents pointers
 type Pointers interface {
 	List() []Pointer
-	NextIndex() (*uint, error)
+	NextIndex() uint64
 	FindIndex(delimiter delimiters.Delimiter) (*uint, error)
 }
 
