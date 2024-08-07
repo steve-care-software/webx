@@ -11,6 +11,8 @@ const (
 	CurrentFlag
 )
 
+const readChunkSize = uint64(1024)
+
 // Application represents a file application
 type Application interface {
 	Open(path string) (*uint, error)

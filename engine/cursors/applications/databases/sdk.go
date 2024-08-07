@@ -11,6 +11,7 @@ type FileBuilder interface {
 
 // Application represents the database application
 type Application interface {
+	Reset()
 	Read(delimiter delimiters.Delimiter) ([]byte, error)
 	CopyBeforeThenWrite(index uint64, bytes []byte) error
 	Close() error
