@@ -1,6 +1,8 @@
 package loaders
 
-import "github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces"
+import (
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities"
+)
 
 // Factory represents a loader factory
 type Factory interface {
@@ -10,7 +12,7 @@ type Factory interface {
 // Builder represents a loader builder
 type Builder interface {
 	Create() Builder
-	WithNamespace(namespace namespaces.Namespace) Builder
+	WithIdentity(identity identities.Identity) Builder
 	WithInitialLoader(loader Loader) Builder
 	Now() (Loader, error)
 }
@@ -18,9 +20,6 @@ type Builder interface {
 // Loader represents a loader
 type Loader interface {
 	HasIdentity() bool
-	//Identity() identities.Identity
+	Identity() identities.Identity
 	HasNamespace() bool
-	Namespace() namespaces.Namespace
-	HasBlockchain() bool
-	//Blockchain() blockchains.Blockchain
 }

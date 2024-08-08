@@ -1,0 +1,21 @@
+package profiles
+
+// Adapter represents the profile adapter
+type Adapter interface {
+	ToBytes(ins Profile) ([]byte, error)
+	ToInstance(data []byte) (Profile, error)
+}
+
+// Builder represents the profile builder
+type Builder interface {
+	Create() Builder
+	WithName(name string) Builder
+	WithDescription(description string) Builder
+	Now() (Profile, error)
+}
+
+// Profile represents a profile
+type Profile interface {
+	Name() string
+	Description() string
+}

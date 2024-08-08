@@ -3,7 +3,7 @@ package signatures
 import (
 	"testing"
 
-	"github.com/steve-care-software/webx/engine/cursors/domain/signers"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/signers"
 	application_signs "github.com/steve-care-software/webx/engine/vms/applications/layers/instructions/assignments/assignables/cryptography/keys/signatures/signs"
 	application_signs_creates "github.com/steve-care-software/webx/engine/vms/applications/layers/instructions/assignments/assignables/cryptography/keys/signatures/signs/creates"
 	application_signs_validates "github.com/steve-care-software/webx/engine/vms/applications/layers/instructions/assignments/assignables/cryptography/keys/signatures/signs/validates"

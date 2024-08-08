@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
-	"github.com/steve-care-software/webx/engine/cursors/domain/signers"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/signers"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances/layers/instructions/assignments/assignables/cryptography/keys/signatures/votes/validates"
 	"github.com/steve-care-software/webx/engine/vms/domain/stacks"
 	"github.com/steve-care-software/webx/engine/vms/domain/stacks/failures"

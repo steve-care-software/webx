@@ -7,9 +7,10 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/cursors"
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/blockchains/blocks/transactions"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/signers"
 	loaders_namespace "github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces"
 	"github.com/steve-care-software/webx/engine/cursors/domain/records"
-	"github.com/steve-care-software/webx/engine/cursors/domain/signers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/branches"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/headers"
@@ -17,7 +18,6 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/states"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/versions"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/workspaces"
-	"github.com/steve-care-software/webx/engine/cursors/domain/transactions"
 )
 
 type application struct {
@@ -162,7 +162,7 @@ func (app *application) InstallHeader(header headers.Header) error {
 		builder.WithInitialLoader(app.currentLoader)
 	}
 
-	if header.HasNamespaces() {
+	/*if header.HasNamespaces() {
 		headerNamespaces := header.Namespaces()
 		namespace, err := app.loaderNamespaceBuilder.Create().WithAll(headerNamespaces).Now()
 		if err != nil {
@@ -170,7 +170,8 @@ func (app *application) InstallHeader(header headers.Header) error {
 		}
 
 		builder.WithNamespace(namespace)
-	}
+	}*/
+
 	return nil
 }
 

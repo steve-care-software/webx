@@ -2,9 +2,9 @@ package stacks
 
 import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
-	"github.com/steve-care-software/webx/engine/cursors/domain/signers"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/encryptors"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/signers"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances"
-	"github.com/steve-care-software/webx/engine/vms/domain/keys/encryptors"
 )
 
 // NewStackForTests creates a new stack for tests
