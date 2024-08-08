@@ -11,6 +11,7 @@ type Builder interface {
 	Create() Builder
 	WithName(name string) Builder
 	WithDescription(description string) Builder
+	WithNamespaces(namespaces []string) Builder
 	Now() (Profile, error)
 }
 
@@ -18,4 +19,6 @@ type Builder interface {
 type Profile interface {
 	Name() string
 	Description() string
+	HasNamespaces() bool
+	Namespaces() []string
 }

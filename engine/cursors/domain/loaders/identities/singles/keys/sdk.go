@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/encryptors"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/profiles"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/signers"
 )
 
@@ -30,7 +31,7 @@ type Keys interface {
 // KeyBuilder represents a key builder
 type KeyBuilder interface {
 	Create() KeyBuilder
-	WithName(name string) KeyBuilder
+	WithProfile(profile profiles.Profile) KeyBuilder
 	WithEncryptor(encryptor encryptors.Encryptor) KeyBuilder
 	WithSigner(signer signers.Signer) KeyBuilder
 	CreatedOn() time.Time
@@ -39,7 +40,7 @@ type KeyBuilder interface {
 
 // Key represents a key
 type Key interface {
-	Name() string
+	Profile() profiles.Profile
 	Encryptor() encryptors.Encryptor
 	Signer() signers.Signer
 	CreatedOn() time.Time
