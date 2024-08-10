@@ -3,37 +3,28 @@ package keys
 import (
 	"time"
 
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/keys/encryptors"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/keys/profiles"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/keys/signers"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/encryptors"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/signers"
 )
 
 type key struct {
-	profile   profiles.Profile
 	encryptor encryptors.Encryptor
 	signer    signers.Signer
 	createdOn time.Time
 }
 
 func createKey(
-	profile profiles.Profile,
 	encryptor encryptors.Encryptor,
 	signer signers.Signer,
 	createdOn time.Time,
 ) Key {
 	out := key{
-		profile:   profile,
 		encryptor: encryptor,
 		signer:    signer,
 		createdOn: createdOn,
 	}
 
 	return &out
-}
-
-// Profile returns the profile
-func (obj *key) Profile() profiles.Profile {
-	return obj.profile
 }
 
 // Encryptor returns the encryptor

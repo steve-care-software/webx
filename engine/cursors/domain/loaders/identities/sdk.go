@@ -1,7 +1,7 @@
 package identities
 
 import (
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/keys"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/storages"
 )
 
@@ -14,8 +14,8 @@ func NewBuilder() Builder {
 type Builder interface {
 	Create() Builder
 	WithAll(all storages.Storages) Builder
-	WithAuthenticated(authenticated keys.Keys) Builder
-	WithCurrent(current keys.Key) Builder
+	WithAuthenticated(authenticated singles.Singles) Builder
+	WithCurrent(current singles.Single) Builder
 	Now() (Identity, error)
 }
 
@@ -23,7 +23,7 @@ type Builder interface {
 type Identity interface {
 	All() storages.Storages
 	HasAuthenticated() bool
-	Authenticated() keys.Keys
+	Authenticated() singles.Singles
 	HasCurrent() bool
-	Current() keys.Key
+	Current() singles.Single
 }
