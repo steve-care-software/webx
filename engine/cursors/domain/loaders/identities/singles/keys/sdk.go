@@ -8,6 +8,16 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/signers"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewKeyBuilder creates a new key builder
+func NewKeyBuilder() KeyBuilder {
+	return createKeyBuilder()
+}
+
 // Adapter represents the keys adapter
 type Adapter interface {
 	InstancesToBytes(ins Keys) ([]byte, error)
@@ -34,7 +44,7 @@ type KeyBuilder interface {
 	WithProfile(profile profiles.Profile) KeyBuilder
 	WithEncryptor(encryptor encryptors.Encryptor) KeyBuilder
 	WithSigner(signer signers.Signer) KeyBuilder
-	CreatedOn() time.Time
+	CreatedOn(createdOn time.Time) KeyBuilder
 	Now() (Key, error)
 }
 
