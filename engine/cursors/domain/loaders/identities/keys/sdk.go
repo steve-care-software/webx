@@ -3,9 +3,9 @@ package keys
 import (
 	"time"
 
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/encryptors"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/profiles"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/signers"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/keys/encryptors"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/keys/profiles"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/keys/signers"
 )
 
 // NewBuilder creates a new builder

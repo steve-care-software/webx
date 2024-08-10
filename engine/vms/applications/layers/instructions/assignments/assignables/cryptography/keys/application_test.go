@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/encryptors"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/signers"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/keys/encryptors"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/keys/signers"
 	application_encryptions "github.com/steve-care-software/webx/engine/vms/applications/layers/instructions/assignments/assignables/cryptography/keys/encryptions"
 	application_decrypts "github.com/steve-care-software/webx/engine/vms/applications/layers/instructions/assignments/assignables/cryptography/keys/encryptions/decrypts"
 	application_encrypts "github.com/steve-care-software/webx/engine/vms/applications/layers/instructions/assignments/assignables/cryptography/keys/encryptions/encrypts"

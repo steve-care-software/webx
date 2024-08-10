@@ -6,8 +6,8 @@ import (
 	"os"
 
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/encryptors"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/signers"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/keys/encryptors"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/keys/signers"
 	"github.com/steve-care-software/webx/engine/stencils/applications"
 	"github.com/steve-care-software/webx/engine/vms/domain/instances"
 )
