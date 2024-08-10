@@ -1,5 +1,10 @@
 package profiles
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Adapter represents the profile adapter
 type Adapter interface {
 	ToBytes(ins Profile) ([]byte, error)
