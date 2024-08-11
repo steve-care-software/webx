@@ -6,17 +6,20 @@ import (
 )
 
 type storagesIns struct {
-	list []Storage
-	mp   map[string]Storage
+	list  []Storage
+	mp    map[string]Storage
+	names []string
 }
 
 func createStorages(
 	list []Storage,
 	mp map[string]Storage,
+	names []string,
 ) Storages {
 	out := storagesIns{
-		list: list,
-		mp:   mp,
+		list:  list,
+		mp:    mp,
+		names: names,
 	}
 
 	return &out
@@ -25,6 +28,11 @@ func createStorages(
 // List returns the list
 func (obj *storagesIns) List() []Storage {
 	return obj.list
+}
+
+// Names returns the names
+func (obj *storagesIns) Names() []string {
+	return obj.names
 }
 
 // Fetch fetches a stored identity by name

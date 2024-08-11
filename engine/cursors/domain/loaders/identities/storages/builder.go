@@ -37,11 +37,13 @@ func (app *builder) Now() (Storages, error) {
 		return nil, errors.New("there must be at least 1 Storage in order to build a Storages instance")
 	}
 
+	names := []string{}
 	mp := map[string]Storage{}
 	for _, oneStorage := range app.list {
 		name := oneStorage.Name()
 		mp[name] = oneStorage
+		names = append(names, name)
 	}
 
-	return createStorages(app.list, mp), nil
+	return createStorages(app.list, mp, names), nil
 }

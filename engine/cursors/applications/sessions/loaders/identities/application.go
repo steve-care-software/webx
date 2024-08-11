@@ -78,6 +78,13 @@ func createApplication(
 	return &out
 }
 
+// List returns the list of identity names
+func (app *application) List(
+	input loaders_identities.Identity,
+) []string {
+	return input.All().Names()
+}
+
 // Create creates an identity
 func (app *application) Create(
 	input loaders_identities.Identity,

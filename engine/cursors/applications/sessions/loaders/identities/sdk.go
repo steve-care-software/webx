@@ -57,6 +57,7 @@ func NewApplication(
 
 // Application represents the identity application
 type Application interface {
+	List(input loaders_identities.Identity) []string
 	Create(input loaders_identities.Identity, name string, description string, password []byte) (loaders_identities.Identity, error)
 	Authenticate(input loaders_identities.Identity, name string, password []byte) (loaders_identities.Identity, error)
 	SetPassword(input loaders_identities.Identity, newPassword []byte) (loaders_identities.Identity, error) // update the password of the authenticated user
