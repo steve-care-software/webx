@@ -4,6 +4,19 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities"
 )
 
+// NewFactory creates a new factory instance
+func NewFactory() Factory {
+	builder := NewBuilder()
+	return createFactory(
+		builder,
+	)
+}
+
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Factory represents a loader factory
 type Factory interface {
 	Create() (Loader, error)
@@ -13,7 +26,6 @@ type Factory interface {
 type Builder interface {
 	Create() Builder
 	WithIdentity(identity identities.Identity) Builder
-	WithInitialLoader(loader Loader) Builder
 	Now() (Loader, error)
 }
 
@@ -21,5 +33,4 @@ type Builder interface {
 type Loader interface {
 	HasIdentity() bool
 	Identity() identities.Identity
-	HasNamespace() bool
 }
