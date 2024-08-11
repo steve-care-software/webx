@@ -1,8 +1,8 @@
 package singles
 
 import (
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/profiles"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/profiles"
 )
 
 // NewBuilder creates a new builder

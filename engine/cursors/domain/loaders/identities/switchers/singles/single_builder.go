@@ -3,8 +3,8 @@ package singles
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/profiles"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/profiles"
 )
 
 type singleBuilder struct {

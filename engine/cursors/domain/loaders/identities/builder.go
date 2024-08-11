@@ -3,14 +3,14 @@ package identities
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/storages"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers"
 )
 
 type builder struct {
 	all           storages.Storages
-	authenticated singles.Singles
-	current       singles.Single
+	authenticated switchers.Switchers
+	current       switchers.Switcher
 }
 
 func createBuilder() Builder {
@@ -35,13 +35,13 @@ func (app *builder) WithAll(all storages.Storages) Builder {
 }
 
 // WithAuthenticated add authenticated keys to the builder
-func (app *builder) WithAuthenticated(authenticated singles.Singles) Builder {
+func (app *builder) WithAuthenticated(authenticated switchers.Switchers) Builder {
 	app.authenticated = authenticated
 	return app
 }
 
 // WithCurrent adds the current key to the builder
-func (app *builder) WithCurrent(current singles.Single) Builder {
+func (app *builder) WithCurrent(current switchers.Switcher) Builder {
 	app.current = current
 	return app
 }

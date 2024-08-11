@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/encryptors"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/signers"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys/encryptors"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys/signers"
 )
 
 type builder struct {

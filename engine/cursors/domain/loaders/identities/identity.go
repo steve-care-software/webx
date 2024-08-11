@@ -1,14 +1,14 @@
 package identities
 
 import (
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/storages"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers"
 )
 
 type identity struct {
 	all           storages.Storages
-	authenticated singles.Singles
-	current       singles.Single
+	authenticated switchers.Switchers
+	current       switchers.Switcher
 }
 
 func createIdentity(
@@ -19,23 +19,23 @@ func createIdentity(
 
 func createIdentityWithAuthenticated(
 	all storages.Storages,
-	authenticated singles.Singles,
+	authenticated switchers.Switchers,
 ) Identity {
 	return createIdentityInternally(all, authenticated, nil)
 }
 
 func createIdentityWithAuthenticatedAndCurrent(
 	all storages.Storages,
-	authenticated singles.Singles,
-	current singles.Single,
+	authenticated switchers.Switchers,
+	current switchers.Switcher,
 ) Identity {
 	return createIdentityInternally(all, authenticated, current)
 }
 
 func createIdentityInternally(
 	all storages.Storages,
-	authenticated singles.Singles,
-	current singles.Single,
+	authenticated switchers.Switchers,
+	current switchers.Switcher,
 ) Identity {
 	out := identity{
 		all:           all,
@@ -57,7 +57,7 @@ func (obj *identity) HasAuthenticated() bool {
 }
 
 // Authenticated returns the authenticated, if any
-func (obj *identity) Authenticated() singles.Singles {
+func (obj *identity) Authenticated() switchers.Switchers {
 	return obj.authenticated
 }
 
@@ -67,6 +67,6 @@ func (obj *identity) HasCurrent() bool {
 }
 
 // Current returns the current, if any
-func (obj *identity) Current() singles.Single {
+func (obj *identity) Current() switchers.Switcher {
 	return obj.current
 }
