@@ -207,7 +207,18 @@ func (app *application) SetPassword(input loaders_identities.Identity, newPasswo
 
 // SetUser sets the authenticated user
 func (app *application) SetUser(input loaders_identities.Identity, name string) (loaders_identities.Identity, error) {
-	return nil, nil
+	if input.HasAuthenticated() {
+		return nil, errors.New("there is no authenticated user")
+	}
+
+	authenticated := input.Authenticated()
+	current, err := authenticated.Fetch(name)
+	if err != nil {
+		return nil, err
+	}
+
+	all := input.All()
+	return app.builder.Create().WithAll(all).WithAuthenticated(authenticated).WithCurrent(current).Now()
 }
 
 // Follow follows a namespace using the current authenticated user
