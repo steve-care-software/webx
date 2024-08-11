@@ -1,9 +1,9 @@
-package applications
+package sessions
 
 import (
 	"errors"
 
-	applications_loaders "github.com/steve-care-software/webx/engine/cursors/applications/loaders"
+	applications_loaders "github.com/steve-care-software/webx/engine/cursors/applications/sessions/loaders"
 	"github.com/steve-care-software/webx/engine/cursors/domain/cursors"
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders"

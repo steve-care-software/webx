@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/juju/fslock"
-	"github.com/steve-care-software/webx/engine/cursors/applications/databases"
+	"github.com/steve-care-software/webx/engine/cursors/applications/sessions/databases"
 )
 
 type databaseApplicationBuilder struct {
