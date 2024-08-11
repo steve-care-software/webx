@@ -4,11 +4,12 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/updates"
 )
 
 type switcherBuilder struct {
 	original singles.Single
-	updated  singles.Single
+	updated  updates.Update
 }
 
 func createSwitcherBuilder() SwitcherBuilder {
@@ -32,7 +33,7 @@ func (app *switcherBuilder) WithOriginal(original singles.Single) SwitcherBuilde
 }
 
 // WithUpdated adds an updated to the builder
-func (app *switcherBuilder) WithUpdated(updated singles.Single) SwitcherBuilder {
+func (app *switcherBuilder) WithUpdated(updated updates.Update) SwitcherBuilder {
 	app.updated = updated
 	return app
 }

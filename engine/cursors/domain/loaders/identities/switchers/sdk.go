@@ -2,6 +2,7 @@ package switchers
 
 import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/updates"
 )
 
 // NewBuilder creates a new builder
@@ -30,7 +31,7 @@ type Switchers interface {
 type SwitcherBuilder interface {
 	Create() SwitcherBuilder
 	WithOriginal(original singles.Single) SwitcherBuilder
-	WithUpdated(updated singles.Single) SwitcherBuilder
+	WithUpdated(updated updates.Update) SwitcherBuilder
 	Now() (Switcher, error)
 }
 
@@ -40,5 +41,5 @@ type Switcher interface {
 	HasOriginal() bool
 	Original() singles.Single
 	HasUpdated() bool
-	Updated() singles.Single
+	Updated() updates.Update
 }

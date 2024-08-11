@@ -5,6 +5,7 @@ import (
 	"crypto/rsa"
 	"time"
 
+	"github.com/steve-care-software/webx/engine/cursors/applications/encryptions"
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	loaders_identities "github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers"
@@ -13,12 +14,16 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys/encryptors"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys/signers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/profiles"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/updates"
 )
 
 type application struct {
+	encryptionApp    encryptions.Application
 	builder          loaders_identities.Builder
 	switchersBuilder switchers.Builder
 	switcherBuilder  switchers.SwitcherBuilder
+	updateBuilder    updates.Builder
+	singlesAdapter   singles.Adapter
 	singlesBuilder   singles.Builder
 	singleBuilder    singles.SingleBuilder
 	profileBuilder   profiles.Builder
@@ -29,9 +34,12 @@ type application struct {
 }
 
 func createApplication(
+	encryptionApp encryptions.Application,
 	builder loaders_identities.Builder,
 	switchersBuilder switchers.Builder,
 	switcherBuilder switchers.SwitcherBuilder,
+	updateBuilder updates.Builder,
+	singlesAdapter singles.Adapter,
 	singlesBuilder singles.Builder,
 	singleBuilder singles.SingleBuilder,
 	profileBuilder profiles.Builder,
@@ -41,9 +49,12 @@ func createApplication(
 	bitsize int,
 ) Application {
 	out := application{
+		encryptionApp:    encryptionApp,
 		builder:          builder,
 		switchersBuilder: switchersBuilder,
 		switcherBuilder:  switcherBuilder,
+		updateBuilder:    updateBuilder,
+		singlesAdapter:   singlesAdapter,
 		singlesBuilder:   singlesBuilder,
 		singleBuilder:    singleBuilder,
 		profileBuilder:   profileBuilder,
@@ -92,7 +103,22 @@ func (app *application) Create(
 		return nil, err
 	}
 
-	switcher, err := app.switcherBuilder.Create().WithUpdated(single).Now()
+	singleBytes, err := app.singlesAdapter.ToBytes(single)
+	if err != nil {
+		return nil, err
+	}
+
+	cipher, err := app.encryptionApp.Encrypt(singleBytes, password)
+	if err != nil {
+		return nil, err
+	}
+
+	update, err := app.updateBuilder.WithSingle(single).WithBytes(cipher).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	switcher, err := app.switcherBuilder.Create().WithUpdated(update).Now()
 	if err != nil {
 		return nil, err
 	}

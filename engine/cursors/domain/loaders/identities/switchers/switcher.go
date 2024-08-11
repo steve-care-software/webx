@@ -1,15 +1,18 @@
 package switchers
 
-import "github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles"
+import (
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/updates"
+)
 
 type switcher struct {
 	original singles.Single
-	updated  singles.Single
+	updated  updates.Update
 }
 
 func createSwitcherWithOriginalAndUpdated(
 	original singles.Single,
-	updated singles.Single,
+	updated updates.Update,
 ) Switcher {
 	return createSwitcherInternally(original, updated)
 }
@@ -21,14 +24,14 @@ func createSwitcherWithOriginal(
 }
 
 func createSwitcherWithUpdated(
-	updated singles.Single,
+	updated updates.Update,
 ) Switcher {
 	return createSwitcherInternally(nil, updated)
 }
 
 func createSwitcherInternally(
 	original singles.Single,
-	updated singles.Single,
+	updated updates.Update,
 ) Switcher {
 	out := switcher{
 		original: original,
@@ -41,7 +44,7 @@ func createSwitcherInternally(
 // Current returns the current instance
 func (obj *switcher) Current() singles.Single {
 	if obj.HasUpdated() {
-		return obj.updated
+		return obj.updated.Single()
 	}
 
 	return obj.original
@@ -63,6 +66,6 @@ func (obj *switcher) HasUpdated() bool {
 }
 
 // Updated returns the updated, if any
-func (obj *switcher) Updated() singles.Single {
+func (obj *switcher) Updated() updates.Update {
 	return obj.updated
 }
