@@ -8,7 +8,7 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/blockchains/blocks/transactions"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/keys/signers"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/singles/keys/signers"
 	loaders_namespace "github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces"
 	"github.com/steve-care-software/webx/engine/cursors/domain/records"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/branches"
@@ -157,10 +157,10 @@ func (app *application) MetaData() (delimiters.Delimiter, error) {
 
 // InstallHeader install the header
 func (app *application) InstallHeader(header headers.Header) error {
-	builder := app.loaderBuilder.Create()
+	/*builder := app.loaderBuilder.Create()
 	if app.currentLoader != nil {
 		builder.WithInitialLoader(app.currentLoader)
-	}
+	}*/
 
 	/*if header.HasNamespaces() {
 		headerNamespaces := header.Namespaces()
