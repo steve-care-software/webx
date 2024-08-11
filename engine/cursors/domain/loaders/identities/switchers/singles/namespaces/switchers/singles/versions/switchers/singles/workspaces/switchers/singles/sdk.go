@@ -14,7 +14,7 @@ type Builder interface {
 	Now() (Single, error)
 }
 
-// Single represents a single version
+// Single represents a single workspace
 type Single interface {
 	Name() string
 	Description() string

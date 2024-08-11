@@ -8,7 +8,7 @@ import (
 
 	"github.com/steve-care-software/webx/engine/cursors/applications/encryptions"
 	"github.com/steve-care-software/webx/engine/cursors/applications/sessions/loaders/identities/namespaces"
-	storage_pointer_applications "github.com/steve-care-software/webx/engine/cursors/applications/sessions/loaders/namespaces/versions/workspaces/branches/states/pointers"
+	storage_pointer_applications "github.com/steve-care-software/webx/engine/cursors/applications/sessions/pointers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	loaders_identities "github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers"

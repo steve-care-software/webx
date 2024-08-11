@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/steve-care-software/webx/engine/cursors/applications/sessions/loaders/identities"
-	applications_loaders "github.com/steve-care-software/webx/engine/cursors/applications/sessions/loaders/namespaces/versions/workspaces/branches/states/pointers"
+	applications_loaders "github.com/steve-care-software/webx/engine/cursors/applications/sessions/pointers"
 	"github.com/steve-care-software/webx/engine/cursors/infrastructure/edwards25519"
 )
 

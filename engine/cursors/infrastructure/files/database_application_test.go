@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	applications_loaders "github.com/steve-care-software/webx/engine/cursors/applications/sessions/loaders/namespaces/versions/workspaces/branches/states/pointers"
+	applications_loaders "github.com/steve-care-software/webx/engine/cursors/applications/sessions/pointers"
 	applications_writers "github.com/steve-care-software/webx/engine/cursors/applications/sessions/writers/namespaces/versions/workspaces/branches/states/pointers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces/singles/versions/singles/workspaces/singles/branches/singles/states/singles/pointers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces/singles/versions/singles/workspaces/singles/branches/singles/states/singles/pointers/storages"

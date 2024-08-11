@@ -24,7 +24,7 @@ type StorageBuilder interface {
 	Now() (Storage, error)
 }
 
-// Storage represents a namespace storage
+// Storage represents a version storage
 type Storage interface {
 	Name() string
 	Pointer() storages.Storage

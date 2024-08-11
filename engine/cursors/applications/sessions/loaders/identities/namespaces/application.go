@@ -5,7 +5,7 @@ import (
 	"errors"
 	"math"
 
-	storage_pointer_applications "github.com/steve-care-software/webx/engine/cursors/applications/sessions/loaders/namespaces/versions/workspaces/branches/states/pointers"
+	storage_pointer_applications "github.com/steve-care-software/webx/engine/cursors/applications/sessions/pointers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/namespaces"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/namespaces/storages"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/namespaces/switchers"
