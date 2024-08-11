@@ -5,7 +5,10 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
 )
 
-const neverBeenComittedErrPattern = "the state (index; %d) cannot be deleted because it has never been committed yet"
+const cannotBeDeletedNeverCommitedBeforeErrPattern = "the state (index; %d) cannot be deleted because it has never been committed yet"
+const stateAlreadyDeletedErrPattern = "the state (index: %d) has already been deleted"
+const cannotBeRecoveredNeverCommitedBeforeErrPattern = "the state (index; %d) cannot be recovered because it has never been committed yet"
+const stateNotDeletedErrPattern = "the state (index: %d) cannot be recovered because it has not been deleted"
 
 // Builder represents the application builder
 type Builder interface {
@@ -18,7 +21,7 @@ type Builder interface {
 type Application interface {
 	List(input states.States) []string
 	Delete(input states.States, index uint64, message string) (states.States, error)
-	Recover(input states.States, index uint64) (states.States, error)
+	Recover(input states.States, index uint64, message string) (states.States, error)
 
 	// data
 	InsertData(input states.States, data []byte) (states.States, error)

@@ -55,8 +55,13 @@ func (app *application) Delete(input states.States, index uint64, message string
 		return nil, err
 	}
 
+	if toDelState.Current().IsDeleted() {
+		str := fmt.Sprintf(stateAlreadyDeletedErrPattern, index)
+		return nil, errors.New(str)
+	}
+
 	if !toDelState.HasOriginal() {
-		str := fmt.Sprintf(neverBeenComittedErrPattern, index)
+		str := fmt.Sprintf(cannotBeDeletedNeverCommitedBeforeErrPattern, index)
 		return nil, errors.New(str)
 	}
 
@@ -72,39 +77,49 @@ func (app *application) Delete(input states.States, index uint64, message string
 		return nil, err
 	}
 
-	bytes, err := app.singleAdapter.ToBytes(updatedSingle)
-	if err != nil {
-		return nil, err
-	}
-
-	update, err := app.updateBuilder.Create().
-		WithSingle(updatedSingle).
-		WithBytes(bytes).
-		Now()
-
-	if err != nil {
-		return nil, err
-	}
-
-	updatedState, err := app.stateBuilder.Create().
-		WithOriginal(toDelSingle).
-		WithUpdated(update).
-		Now()
-
-	if err != nil {
-		return nil, err
-	}
-
-	list := input.List()
-	list[index] = updatedState
-	return app.statesBuilder.Create().
-		WithList(list).
-		Now()
+	return app.updateSingleAtIndex(
+		input,
+		index,
+		toDelSingle,
+		updatedSingle,
+	)
 }
 
 // Recover recovers a state
-func (app *application) Recover(input states.States, index uint64) (states.States, error) {
-	return nil, nil
+func (app *application) Recover(input states.States, index uint64, message string) (states.States, error) {
+	toRecoverState, err := input.Fetch(index)
+	if err != nil {
+		return nil, err
+	}
+
+	if toRecoverState.Current().IsDeleted() {
+		str := fmt.Sprintf(stateNotDeletedErrPattern, index)
+		return nil, errors.New(str)
+	}
+
+	if !toRecoverState.HasOriginal() {
+		str := fmt.Sprintf(cannotBeRecoveredNeverCommitedBeforeErrPattern, index)
+		return nil, errors.New(str)
+	}
+
+	toRecoverSingle := toRecoverState.Original()
+	updatedSingleBuilder := app.singleBuilder.Create().WithMessage(message)
+	if toRecoverSingle.HasPointers() {
+		pointers := toRecoverSingle.Pointers()
+		updatedSingleBuilder.WithPointers(pointers)
+	}
+
+	updatedSingle, err := updatedSingleBuilder.Now()
+	if err != nil {
+		return nil, err
+	}
+
+	return app.updateSingleAtIndex(
+		input,
+		index,
+		toRecoverSingle,
+		updatedSingle,
+	)
 }
 
 // InsertData inserts data
@@ -125,4 +140,35 @@ func (app *application) DeleteData(input states.States, delete delimiters.Delimi
 // Commit commits data
 func (app *application) Commit(input states.States, message string) (states.States, error) {
 	return nil, nil
+}
+
+func (app *application) updateSingleAtIndex(input states.States, index uint64, original singles.Single, updatedSingle singles.Single) (states.States, error) {
+	bytes, err := app.singleAdapter.ToBytes(updatedSingle)
+	if err != nil {
+		return nil, err
+	}
+
+	update, err := app.updateBuilder.Create().
+		WithSingle(updatedSingle).
+		WithBytes(bytes).
+		Now()
+
+	if err != nil {
+		return nil, err
+	}
+
+	updatedState, err := app.stateBuilder.Create().
+		WithOriginal(original).
+		WithUpdated(update).
+		Now()
+
+	if err != nil {
+		return nil, err
+	}
+
+	list := input.List()
+	list[index] = updatedState
+	return app.statesBuilder.Create().
+		WithList(list).
+		Now()
 }
