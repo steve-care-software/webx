@@ -163,8 +163,14 @@ func (app *application) Authenticate(input loaders_identities.Identity, name str
 		return nil, err
 	}
 
+	// decrypt the bytes:
+	decrypted, err := app.encryptionApp.Decrypt(pointer.Bytes(), password)
+	if err != nil {
+		return nil, err
+	}
+
 	// convert the data to a single instance:
-	single, err := app.singlesAdapter.ToInstance(pointer.Bytes())
+	single, err := app.singlesAdapter.ToInstance(decrypted)
 	if err != nil {
 		return nil, err
 	}
