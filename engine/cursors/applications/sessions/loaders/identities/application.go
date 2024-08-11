@@ -182,7 +182,7 @@ func (app *application) Authenticate(input loaders_identities.Identity, name str
 // SetPassword changes the password of the current authenticated user
 func (app *application) SetPassword(input loaders_identities.Identity, newPassword []byte) (loaders_identities.Identity, error) {
 	if !input.HasCurrent() {
-		return nil, errors.New("there is no authenticated current user")
+		return nil, errors.New(noCurrentUserErr)
 	}
 
 	switcher := input.Current()
@@ -222,8 +222,34 @@ func (app *application) SetUser(input loaders_identities.Identity, name string) 
 }
 
 // Follow follows a namespace using the current authenticated user
-func (app *application) Follow(input loaders_identities.Identity, namespace string) (loaders_identities.Identity, error) {
-	return nil, nil
+func (app *application) Follow(input loaders_identities.Identity, namespace string, password []byte) (loaders_identities.Identity, error) {
+	if !input.HasCurrent() {
+		return nil, errors.New(noCurrentUserErr)
+	}
+
+	switcher := input.Current()
+	if switcher.HasOriginal() {
+		return nil, errors.New("the current switcher does not contain an original identity and therefore cannot be updated yet")
+	}
+
+	single := switcher.Current()
+	profile := single.Profile()
+	name := profile.Name()
+	description := profile.Description()
+	namespaces := []string{}
+	if profile.HasNamespaces() {
+		namespaces = profile.Namespaces()
+	}
+
+	namespaces = append(namespaces, namespace)
+	key := single.Key()
+	original := switcher.Original()
+	updatedSwitcher, err := app.updateProfileInSwitcher(name, description, password, namespaces, key, original)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.updateSwitcher(input, updatedSwitcher)
 }
 
 // Encrypt encrypts data using the current authenticated user
@@ -265,6 +291,13 @@ func (app *application) updateAuthenticated(
 		return nil, err
 	}
 
+	return app.updateSwitcher(input, switcher)
+}
+
+func (app *application) updateSwitcher(
+	input loaders_identities.Identity,
+	switcher switchers.Switcher,
+) (loaders_identities.Identity, error) {
 	currentSwitchers := []switchers.Switcher{}
 	if input.HasAuthenticated() {
 		authenticated := input.Authenticated()
@@ -285,4 +318,45 @@ func (app *application) updateAuthenticated(
 	}
 
 	return builder.Now()
+}
+
+func (app *application) updateProfileInSwitcher(
+	name string,
+	description string,
+	password []byte,
+	namespaces []string,
+	key keys.Key,
+	original singles.Single,
+) (switchers.Switcher, error) {
+	profileBuilder := app.profileBuilder.Create().WithName(name).WithDescription(description)
+	if len(namespaces) > 0 {
+		profileBuilder.WithNamespaces(namespaces)
+	}
+
+	profile, err := profileBuilder.Now()
+	if err != nil {
+		return nil, err
+	}
+
+	single, err := app.singleBuilder.Create().WithProfile(profile).WithKey(key).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	singleBytes, err := app.singlesAdapter.ToBytes(single)
+	if err != nil {
+		return nil, err
+	}
+
+	cipher, err := app.encryptionApp.Encrypt(singleBytes, password)
+	if err != nil {
+		return nil, err
+	}
+
+	update, err := app.updateBuilder.WithSingle(single).WithBytes(cipher).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	return app.switcherBuilder.Create().WithOriginal(original).WithUpdated(update).Now()
 }

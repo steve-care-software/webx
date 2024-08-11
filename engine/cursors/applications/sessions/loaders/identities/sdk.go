@@ -14,6 +14,8 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/updates"
 )
 
+const noCurrentUserErr = "there is no authenticated current user"
+
 // NewApplication creates a new application
 func NewApplication(
 	encryptionApp encryptions.Application,
@@ -55,7 +57,7 @@ type Application interface {
 	Authenticate(input loaders_identities.Identity, name string, password []byte) (loaders_identities.Identity, error)
 	SetPassword(input loaders_identities.Identity, newPassword []byte) (loaders_identities.Identity, error) // update the password of the authenticated user
 	SetUser(input loaders_identities.Identity, name string) (loaders_identities.Identity, error)
-	Follow(input loaders_identities.Identity, namespace string) (loaders_identities.Identity, error)
+	Follow(input loaders_identities.Identity, namespace string, password []byte) (loaders_identities.Identity, error)
 
 	// actions:
 	Encrypt(input loaders_identities.Identity, message []byte) ([]byte, error)
