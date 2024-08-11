@@ -3,6 +3,7 @@ package identities
 import (
 	"crypto/rand"
 	"crypto/rsa"
+	"errors"
 	"time"
 
 	"github.com/steve-care-software/webx/engine/cursors/applications/encryptions"
@@ -122,31 +123,7 @@ func (app *application) Create(
 		return nil, err
 	}
 
-	switcher, err := app.switcherBuilder.Create().WithUpdated(update).Now()
-	if err != nil {
-		return nil, err
-	}
-
-	currentSwitchers := []switchers.Switcher{}
-	if input.HasAuthenticated() {
-		authenticated := input.Authenticated()
-		currentSwitchers = authenticated.List()
-	}
-
-	currentSwitchers = append(currentSwitchers, switcher)
-	switchers, err := app.switchersBuilder.Create().WithList(currentSwitchers).Now()
-	if err != nil {
-		return nil, err
-	}
-
-	all := input.All()
-	builder := app.builder.Create().WithAll(all).WithAuthenticated(switchers)
-	if input.HasCurrent() {
-		current := input.Current()
-		builder.WithCurrent(current)
-	}
-
-	return builder.Now()
+	return app.updateAuthenticated(input, update)
 }
 
 // Authenticate authenticates
@@ -204,7 +181,28 @@ func (app *application) Authenticate(input loaders_identities.Identity, name str
 
 // SetPassword changes the password of the current authenticated user
 func (app *application) SetPassword(input loaders_identities.Identity, newPassword []byte) (loaders_identities.Identity, error) {
-	return nil, nil
+	if !input.HasCurrent() {
+		return nil, errors.New("there is no authenticated current user")
+	}
+
+	switcher := input.Current()
+	single := switcher.Current()
+	singleBytes, err := app.singlesAdapter.ToBytes(single)
+	if err != nil {
+		return nil, err
+	}
+
+	cipher, err := app.encryptionApp.Encrypt(singleBytes, newPassword)
+	if err != nil {
+		return nil, err
+	}
+
+	update, err := app.updateBuilder.Create().WithSingle(single).WithBytes(cipher).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	return app.updateAuthenticated(input, update)
 }
 
 // SetUser sets the authenticated user
@@ -245,4 +243,35 @@ func (app *application) Vote(input loaders_identities.Identity, message []byte, 
 // ValidateVote validates a vote
 func (app *application) ValidateVote(input loaders_identities.Identity, message []byte, vote signers.Vote, ring []hash.Hash) (bool, error) {
 	return false, nil
+}
+
+func (app *application) updateAuthenticated(
+	input loaders_identities.Identity,
+	update updates.Update,
+) (loaders_identities.Identity, error) {
+	switcher, err := app.switcherBuilder.Create().WithUpdated(update).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	currentSwitchers := []switchers.Switcher{}
+	if input.HasAuthenticated() {
+		authenticated := input.Authenticated()
+		currentSwitchers = authenticated.List()
+	}
+
+	currentSwitchers = append(currentSwitchers, switcher)
+	switchers, err := app.switchersBuilder.Create().WithList(currentSwitchers).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	all := input.All()
+	builder := app.builder.Create().WithAll(all).WithAuthenticated(switchers)
+	if input.HasCurrent() {
+		current := input.Current()
+		builder.WithCurrent(current)
+	}
+
+	return builder.Now()
 }
