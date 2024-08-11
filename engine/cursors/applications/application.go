@@ -11,13 +11,8 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys/signers"
 	loaders_namespace "github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces"
 	"github.com/steve-care-software/webx/engine/cursors/domain/records"
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/branches"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/headers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/originals"
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/states"
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/versions"
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/workspaces"
 )
 
 type application struct {
@@ -62,6 +57,11 @@ func createApplication(
 	}
 
 	return &out
+}
+
+// Begin begins a context
+func (app *application) Begin(name string) error {
+	return nil
 }
 
 // Cursor returns the current cursor
@@ -150,58 +150,8 @@ func (app *application) Replace(name string) error {
 	return nil
 }
 
-// MetaData returns the current branch's metaData
-func (app *application) MetaData() (delimiters.Delimiter, error) {
-	return nil, nil
-}
-
-// InstallHeader install the header
-func (app *application) InstallHeader(header headers.Header) error {
-	/*builder := app.loaderBuilder.Create()
-	if app.currentLoader != nil {
-		builder.WithInitialLoader(app.currentLoader)
-	}*/
-
-	/*if header.HasNamespaces() {
-		headerNamespaces := header.Namespaces()
-		namespace, err := app.loaderNamespaceBuilder.Create().WithAll(headerNamespaces).Now()
-		if err != nil {
-			return err
-		}
-
-		builder.WithNamespace(namespace)
-	}*/
-
-	return nil
-}
-
-// InstallVersions installs versions
-func (app *application) InstallVersions(versions versions.Versions) error {
-	return nil
-}
-
-// InstallWorkspaces installs workspaces
-func (app *application) InstallWorkspaces(workspaces workspaces.Workspaces) error {
-	return nil
-}
-
-// InstallRootBranch installs the root branch
-func (app *application) InstallRootBranch(rootBRanch branches.Branch) error {
-	return nil
-}
-
-// InstallBranches installs branches
-func (app *application) InstallBranches(branches branches.Branches) error {
-	return nil
-}
-
-// InstallStates installs states
-func (app *application) InstallStates(states states.States) error {
-	return nil
-}
-
 // Create creates an identity
-func (app *application) Create(original originals.Original, password []byte) error {
+func (app *application) Create(name string, description string, password []byte) error {
 	return nil
 }
 
@@ -434,11 +384,6 @@ func (app *application) Merge(deleteOriginal bool) error {
 
 	app.currentLoader = loader
 	return nil
-}
-
-// NextIndex returns the next index of data
-func (app *application) NextIndex() (*uint, error) {
-	return nil, nil
 }
 
 // InsertData inserts data to the current state

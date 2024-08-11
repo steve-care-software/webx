@@ -6,13 +6,8 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/blockchains/blocks/transactions"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys/signers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/records"
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/branches"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/headers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/originals"
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/states"
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/versions"
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/workspaces"
 )
 
 const zeroRecordErr = "there are currently no record"
@@ -38,19 +33,8 @@ type Application interface {
 	Record(name string) error          // record the cursor to this name
 	Replace(name string) error         // put the cursor to what the name was pointing to
 
-	// metadata:
-	MetaData() (delimiters.Delimiter, error) // returns the current branch meta data
-
-	// install:
-	InstallHeader(header headers.Header) error
-	InstallVersions(versions versions.Versions) error
-	InstallWorkspaces(workspaces workspaces.Workspaces) error
-	InstallRootBranch(rootBRanch branches.Branch) error
-	InstallBranches(branches branches.Branches) error
-	InstallStates(states states.States) error
-
 	// identitity:
-	Create(original originals.Original, password []byte) error
+	Create(name string, description string, password []byte) error
 	Authenticate(name string, password []byte) error
 	SetPassword(newPassword []byte) error // update the password of the authenticated user
 	Encrypt(message []byte) ([]byte, error)
@@ -82,7 +66,6 @@ type Application interface {
 	Merge(deleteOriginal bool) error
 
 	// data:
-	NextIndex() (*uint, error) // returns the next index for data
 	InsertData(delimiter delimiters.Delimiter) error
 	UpdateData(original delimiters.Delimiter, updated []byte) error
 	DeleteData(delete delimiters.Delimiter) error
