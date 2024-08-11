@@ -31,6 +31,7 @@ type Builder interface {
 
 // Loader represents a loader
 type Loader interface {
+	NextIndex() (*uint64, error)
 	HasIdentity() bool
 	Identity() identities.Identity
 }

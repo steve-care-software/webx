@@ -2,6 +2,7 @@ package singles
 
 import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/namespaces"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/profiles"
 )
 
@@ -38,6 +39,7 @@ type SingleBuilder interface {
 	Create() SingleBuilder
 	WithProfile(profile profiles.Profile) SingleBuilder
 	WithKey(key keys.Key) SingleBuilder
+	WithNamespaces(namespaces namespaces.Namespaces) SingleBuilder
 	Now() (Single, error)
 }
 
@@ -45,4 +47,6 @@ type SingleBuilder interface {
 type Single interface {
 	Profile() profiles.Profile
 	Key() keys.Key
+	HasNamespaces() bool
+	Namespaces() namespaces.Namespaces
 }

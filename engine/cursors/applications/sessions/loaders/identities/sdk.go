@@ -2,6 +2,7 @@ package identities
 
 import (
 	"github.com/steve-care-software/webx/engine/cursors/applications/encryptions"
+	"github.com/steve-care-software/webx/engine/cursors/applications/sessions/loaders/identities/namespaces"
 	storage_pointer_applications "github.com/steve-care-software/webx/engine/cursors/applications/sessions/loaders/namespaces/versions/workspaces/branches/states/pointers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	loaders_identities "github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities"
@@ -71,4 +72,9 @@ type Application interface {
 	ValidateSignature(input loaders_identities.Identity, message []byte, sig signers.Signature) (bool, error)
 	Vote(input loaders_identities.Identity, message []byte, ring []signers.PublicKey) (signers.Vote, error)
 	ValidateVote(input loaders_identities.Identity, message []byte, vote signers.Vote, ring []hash.Hash) (bool, error)
+
+	// namespaces
+	Namespaces(input loaders_identities.Identity) ([]string, error)
+	Namespace(input loaders_identities.Identity, name string) error
+	Dive(input loaders_identities.Identity) (namespaces.Application, error)
 }

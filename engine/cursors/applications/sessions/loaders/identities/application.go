@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/steve-care-software/webx/engine/cursors/applications/encryptions"
+	"github.com/steve-care-software/webx/engine/cursors/applications/sessions/loaders/identities/namespaces"
 	storage_pointer_applications "github.com/steve-care-software/webx/engine/cursors/applications/sessions/loaders/namespaces/versions/workspaces/branches/states/pointers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	loaders_identities "github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities"
@@ -357,6 +358,30 @@ func (app *application) ValidateVote(input loaders_identities.Identity, message 
 
 	ring = append(ring, *pHash)
 	return app.voteAdapter.ToVerification(vote, string(message), ring)
+}
+
+// Namespaces returns the list of namespaces of our current authenticated user
+func (app *application) Namespaces(input loaders_identities.Identity) ([]string, error) {
+	if !input.HasCurrent() {
+		return nil, errors.New(noCurrentUserErr)
+	}
+
+	identity := input.Current().Current()
+	if !identity.HasNamespaces() {
+
+	}
+
+	return nil, nil
+}
+
+// Namespace sets the current namespace of our current authenticated user
+func (app *application) Namespace(input loaders_identities.Identity, name string) error {
+	return nil
+}
+
+// Dive dives into the namespace of our current authenticated user
+func (app *application) Dive(input loaders_identities.Identity) (namespaces.Application, error) {
+	return nil, nil
 }
 
 func (app *application) updateAuthenticated(

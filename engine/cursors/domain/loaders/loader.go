@@ -26,6 +26,11 @@ func createLoaderInternally(
 	return &out
 }
 
+// NextIndex returns the next pointer index
+func (obj *loader) NextIndex() (*uint64, error) {
+	return nil, nil
+}
+
 // HasIdentity returns true if there is an identity, false otherwise
 func (obj *loader) HasIdentity() bool {
 	return obj.identity != nil
