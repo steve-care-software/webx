@@ -13,6 +13,7 @@ type Builder interface {
 type Storages interface {
 	List() []Storage
 	Names() []string
+	Fetch(name string) (Storage, error)
 }
 
 // StorageBuilder represents a storage builder

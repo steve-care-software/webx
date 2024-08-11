@@ -8,6 +8,8 @@ const noLoadedNamespaceErr = "the current user does not have any loaded namespac
 
 // Application represents a namespace application
 type Application interface {
+	List(input namespaces.Namespace) []string
+	Load(input namespaces.Namespace, name string) (namespaces.Namespace, error)
 	Loaded(input namespaces.Namespace) ([]string, error)
 	Create(
 		input namespaces.Namespace,

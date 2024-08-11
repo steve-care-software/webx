@@ -5,6 +5,7 @@ import (
 	"errors"
 	"math"
 
+	storage_pointer_applications "github.com/steve-care-software/webx/engine/cursors/applications/sessions/loaders/namespaces/versions/workspaces/branches/states/pointers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/namespaces"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/namespaces/storages"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/namespaces/switchers"
@@ -18,6 +19,7 @@ import (
 )
 
 type application struct {
+	storagePointerApplication storage_pointer_applications.Application
 	builder                   namespaces.Builder
 	namespaceBuilder          namespaces.NamespaceBuilder
 	namespaceSwitchersBuilder namespace_switchers.Builder
@@ -34,6 +36,7 @@ type application struct {
 }
 
 func createApplication(
+	storagePointerApplication storage_pointer_applications.Application,
 	builder namespaces.Builder,
 	namespaceBuilder namespaces.NamespaceBuilder,
 	namespaceSwitchersBuilder namespace_switchers.Builder,
@@ -49,6 +52,7 @@ func createApplication(
 	purseBuilder purses.PurseBuilder,
 ) Application {
 	out := application{
+		storagePointerApplication: storagePointerApplication,
 		builder:                   builder,
 		namespaceBuilder:          namespaceBuilder,
 		namespaceSwitchersBuilder: namespaceSwitchersBuilder,
@@ -65,6 +69,38 @@ func createApplication(
 	}
 
 	return &out
+}
+
+// List returns the list of namespaces we can load
+func (app *application) List(input namespaces.Namespace) []string {
+	return input.All().Names()
+}
+
+// Load loads a namespace
+func (app *application) Load(input namespaces.Namespace, name string) (namespaces.Namespace, error) {
+	storage, err := input.All().Fetch(name)
+	if err != nil {
+		return nil, err
+	}
+
+	storedPointer := storage.Pointer()
+	pointer, err := app.storagePointerApplication.Retrieve(storedPointer)
+	if err != nil {
+		return nil, err
+	}
+
+	data := pointer.Bytes()
+	single, err := app.namespaceSingleAdapter.ToInstance(data)
+	if err != nil {
+		return nil, err
+	}
+
+	switcher, err := app.namespaceSwitcherBuilder.Create().WithOriginal(single).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	return app.updateLoaded(input, switcher)
 }
 
 // Loaded returns the loaded namespaces
@@ -126,6 +162,18 @@ func (app *application) Create(
 		return nil, err
 	}
 
+	return app.updateLoaded(input, switcher)
+}
+
+// Set sets the current namespace
+func (app *application) Set(input namespaces.Namespace, name string) (namespaces.Namespace, error) {
+	return nil, nil
+}
+
+func (app *application) updateLoaded(
+	input namespaces.Namespace,
+	switcher switchers.Switcher,
+) (namespaces.Namespace, error) {
 	loaded := []switchers.Switcher{}
 	if input.HasLoaded() {
 		loaded = append(loaded, input.Loaded().List()...)
@@ -145,11 +193,6 @@ func (app *application) Create(
 	}
 
 	return builder.Now()
-}
-
-// Set sets the current namespace
-func (app *application) Set(input namespaces.Namespace, name string) (namespaces.Namespace, error) {
-	return nil, nil
 }
 
 func (app *application) createBlockchain(
