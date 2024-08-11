@@ -254,12 +254,22 @@ func (app *application) Follow(input loaders_identities.Identity, namespace stri
 
 // Encrypt encrypts data using the current authenticated user
 func (app *application) Encrypt(input loaders_identities.Identity, message []byte) ([]byte, error) {
-	return nil, nil
+	if !input.HasCurrent() {
+		return nil, errors.New(noCurrentUserErr)
+	}
+
+	encryptor := input.Current().Current().Key().Encryptor()
+	return encryptor.Public().Encrypt(message)
 }
 
 // Decrypt decrypts data using the current authenticated user
 func (app *application) Decrypt(input loaders_identities.Identity, cipher []byte) ([]byte, error) {
-	return nil, nil
+	if !input.HasCurrent() {
+		return nil, errors.New(noCurrentUserErr)
+	}
+
+	encryptor := input.Current().Current().Key().Encryptor()
+	return encryptor.Decrypt(cipher)
 }
 
 // Sign signs data using the current authenticated user
