@@ -23,6 +23,8 @@ func NewApplication(
 	singlesAdapter singles.Adapter,
 	bitsize int,
 ) Application {
+	voteAdapter := signers.NewVoteAdapter()
+	hashAdapter := hash.NewAdapter()
 	builder := loaders_identities.NewBuilder()
 	switchersBuilder := switchers.NewBuilder()
 	switcherBuilder := switchers.NewSwitcherBuilder()
@@ -36,6 +38,8 @@ func NewApplication(
 	return createApplication(
 		encryptionApp,
 		storagePointerApplication,
+		hashAdapter,
+		voteAdapter,
 		builder,
 		switchersBuilder,
 		switcherBuilder,

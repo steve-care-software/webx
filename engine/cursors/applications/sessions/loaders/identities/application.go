@@ -22,6 +22,8 @@ import (
 type application struct {
 	encryptionApp             encryptions.Application
 	storagePointerApplication storage_pointer_applications.Application
+	hashAdapter               hash.Adapter
+	voteAdapter               signers.VoteAdapter
 	builder                   loaders_identities.Builder
 	switchersBuilder          switchers.Builder
 	switcherBuilder           switchers.SwitcherBuilder
@@ -39,6 +41,8 @@ type application struct {
 func createApplication(
 	encryptionApp encryptions.Application,
 	storagePointerApplication storage_pointer_applications.Application,
+	hashAdapter hash.Adapter,
+	voteAdapter signers.VoteAdapter,
 	builder loaders_identities.Builder,
 	switchersBuilder switchers.Builder,
 	switcherBuilder switchers.SwitcherBuilder,
@@ -55,6 +59,8 @@ func createApplication(
 	out := application{
 		encryptionApp:             encryptionApp,
 		storagePointerApplication: storagePointerApplication,
+		hashAdapter:               hashAdapter,
+		voteAdapter:               voteAdapter,
 		builder:                   builder,
 		switchersBuilder:          switchersBuilder,
 		switcherBuilder:           switcherBuilder,
@@ -284,7 +290,12 @@ func (app *application) Sign(input loaders_identities.Identity, message []byte) 
 
 // ValidateSignature validates a signature
 func (app *application) ValidateSignature(input loaders_identities.Identity, message []byte, sig signers.Signature) (bool, error) {
-	return false, nil
+	if !input.HasCurrent() {
+		return false, errors.New(noCurrentUserErr)
+	}
+
+	expectedPubKey := input.Current().Current().Key().Signer().PublicKey()
+	return sig.PublicKey(string(message)).Equals(expectedPubKey), nil
 }
 
 // Vote votes on a message using the current authenticated user
@@ -299,7 +310,18 @@ func (app *application) Vote(input loaders_identities.Identity, message []byte, 
 
 // ValidateVote validates a vote
 func (app *application) ValidateVote(input loaders_identities.Identity, message []byte, vote signers.Vote, ring []hash.Hash) (bool, error) {
-	return false, nil
+	if !input.HasCurrent() {
+		return false, errors.New(noCurrentUserErr)
+	}
+
+	currentPubKeyBytes := []byte(input.Current().Current().Key().Signer().PublicKey().String())
+	pHash, err := app.hashAdapter.FromBytes(currentPubKeyBytes)
+	if err != nil {
+		return false, err
+	}
+
+	ring = append(ring, *pHash)
+	return app.voteAdapter.ToVerification(vote, string(message), ring)
 }
 
 func (app *application) updateAuthenticated(
