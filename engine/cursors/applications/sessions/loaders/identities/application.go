@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/steve-care-software/webx/engine/cursors/applications/encryptions"
+	storage_pointer_applications "github.com/steve-care-software/webx/engine/cursors/applications/sessions/loaders/namespaces/versions/workspaces/branches/states/pointers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	loaders_identities "github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers"
@@ -18,23 +19,25 @@ import (
 )
 
 type application struct {
-	encryptionApp    encryptions.Application
-	builder          loaders_identities.Builder
-	switchersBuilder switchers.Builder
-	switcherBuilder  switchers.SwitcherBuilder
-	updateBuilder    updates.Builder
-	singlesAdapter   singles.Adapter
-	singlesBuilder   singles.Builder
-	singleBuilder    singles.SingleBuilder
-	profileBuilder   profiles.Builder
-	keyBuilder       keys.Builder
-	encryptorBuilder encryptors.Builder
-	signerFactory    signers.Factory
-	bitsize          int
+	encryptionApp             encryptions.Application
+	storagePointerApplication storage_pointer_applications.Application
+	builder                   loaders_identities.Builder
+	switchersBuilder          switchers.Builder
+	switcherBuilder           switchers.SwitcherBuilder
+	updateBuilder             updates.Builder
+	singlesAdapter            singles.Adapter
+	singlesBuilder            singles.Builder
+	singleBuilder             singles.SingleBuilder
+	profileBuilder            profiles.Builder
+	keyBuilder                keys.Builder
+	encryptorBuilder          encryptors.Builder
+	signerFactory             signers.Factory
+	bitsize                   int
 }
 
 func createApplication(
 	encryptionApp encryptions.Application,
+	storagePointerApplication storage_pointer_applications.Application,
 	builder loaders_identities.Builder,
 	switchersBuilder switchers.Builder,
 	switcherBuilder switchers.SwitcherBuilder,
@@ -49,19 +52,20 @@ func createApplication(
 	bitsize int,
 ) Application {
 	out := application{
-		encryptionApp:    encryptionApp,
-		builder:          builder,
-		switchersBuilder: switchersBuilder,
-		switcherBuilder:  switcherBuilder,
-		updateBuilder:    updateBuilder,
-		singlesAdapter:   singlesAdapter,
-		singlesBuilder:   singlesBuilder,
-		singleBuilder:    singleBuilder,
-		profileBuilder:   profileBuilder,
-		keyBuilder:       keyBuilder,
-		encryptorBuilder: encryptorBuilder,
-		signerFactory:    signerFactory,
-		bitsize:          bitsize,
+		encryptionApp:             encryptionApp,
+		storagePointerApplication: storagePointerApplication,
+		builder:                   builder,
+		switchersBuilder:          switchersBuilder,
+		switcherBuilder:           switcherBuilder,
+		updateBuilder:             updateBuilder,
+		singlesAdapter:            singlesAdapter,
+		singlesBuilder:            singlesBuilder,
+		singleBuilder:             singleBuilder,
+		profileBuilder:            profileBuilder,
+		keyBuilder:                keyBuilder,
+		encryptorBuilder:          encryptorBuilder,
+		signerFactory:             signerFactory,
+		bitsize:                   bitsize,
 	}
 
 	return &out
@@ -147,7 +151,49 @@ func (app *application) Create(
 
 // Authenticate authenticates
 func (app *application) Authenticate(input loaders_identities.Identity, name string, password []byte) (loaders_identities.Identity, error) {
-	return nil, nil
+	// fetch the identity from the all list:
+	storedIdentity, err := input.All().Fetch(name)
+	if err != nil {
+		return nil, err
+	}
+
+	// fetch the data from the pointer in the database:
+	pointer, err := app.storagePointerApplication.Retrieve(storedIdentity.Pointer())
+	if err != nil {
+		return nil, err
+	}
+
+	// convert the data to a single instance:
+	single, err := app.singlesAdapter.ToInstance(pointer.Bytes())
+	if err != nil {
+		return nil, err
+	}
+
+	// create a switcher with the single as its original:
+	switcher, err := app.switcherBuilder.Create().WithOriginal(single).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	// add the switcher to the list of authenticated user:
+	currentAuthenticated := []switchers.Switcher{}
+	if input.HasAuthenticated() {
+		currentAuthenticated = input.Authenticated().List()
+	}
+
+	currentAuthenticated = append(currentAuthenticated, switcher)
+	authenticated, err := app.switchersBuilder.Create().WithList(currentAuthenticated).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	all := input.All()
+	builder := app.builder.Create().WithAll(all).WithAuthenticated(authenticated)
+	if input.HasCurrent() {
+		builder.WithCurrent(input.Current())
+	}
+
+	return builder.Now()
 }
 
 // SetPassword changes the password of the current authenticated user

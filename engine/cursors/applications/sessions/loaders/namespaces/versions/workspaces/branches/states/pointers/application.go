@@ -29,6 +29,11 @@ func createApplication(
 	return &out
 }
 
+// Retrieve retrieves a pointer from the database
+func (app *application) Retrieve(storage storage_pointers.Storage) (pointers.Pointer, error) {
+	return nil, nil
+}
+
 // InsertData inserts data to the pointers
 func (app *application) InsertData(pointers pointers.Pointers, data []byte) (pointers.Pointers, error) {
 	index := pointers.NextIndex()

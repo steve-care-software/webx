@@ -37,5 +37,11 @@ func (app *builder) Now() (Switchers, error) {
 		return nil, errors.New("there must be at least 1 Switcher in order to build a Switchers instance")
 	}
 
-	return createSwitchers(app.list), nil
+	mp := map[string]Switcher{}
+	for _, oneSwitcher := range app.list {
+		name := oneSwitcher.Current().Profile().Name()
+		mp[name] = oneSwitcher
+	}
+
+	return createSwitchers(app.list, mp), nil
 }

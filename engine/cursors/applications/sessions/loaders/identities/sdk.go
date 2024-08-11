@@ -2,6 +2,7 @@ package identities
 
 import (
 	"github.com/steve-care-software/webx/engine/cursors/applications/encryptions"
+	storage_pointer_applications "github.com/steve-care-software/webx/engine/cursors/applications/sessions/loaders/namespaces/versions/workspaces/branches/states/pointers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	loaders_identities "github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers"
@@ -16,6 +17,7 @@ import (
 // NewApplication creates a new application
 func NewApplication(
 	encryptionApp encryptions.Application,
+	storagePointerApplication storage_pointer_applications.Application,
 	singlesAdapter singles.Adapter,
 	bitsize int,
 ) Application {
@@ -31,6 +33,7 @@ func NewApplication(
 	signerFactory := signers.NewFactory()
 	return createApplication(
 		encryptionApp,
+		storagePointerApplication,
 		builder,
 		switchersBuilder,
 		switcherBuilder,

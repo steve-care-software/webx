@@ -22,6 +22,7 @@ func NewApplication() Application {
 
 // Application represents the pointer application
 type Application interface {
+	Retrieve(storage storage_pointers.Storage) (pointers.Pointer, error)
 	InsertData(pointers pointers.Pointers, data []byte) (pointers.Pointers, error)
 	UpdateData(pointers pointers.Pointers, original delimiters.Delimiter, updated []byte) (pointers.Pointers, error)
 	DeleteData(pointers pointers.Pointers, delete delimiters.Delimiter) (pointers.Pointers, error)

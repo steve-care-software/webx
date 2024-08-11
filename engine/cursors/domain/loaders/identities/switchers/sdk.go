@@ -25,6 +25,7 @@ type Builder interface {
 // Switchers represents switchers
 type Switchers interface {
 	List() []Switcher
+	Fetch(name string) (Switcher, error)
 }
 
 // SwitcherBuilder represents a switcher builder
