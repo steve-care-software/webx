@@ -274,7 +274,12 @@ func (app *application) Decrypt(input loaders_identities.Identity, cipher []byte
 
 // Sign signs data using the current authenticated user
 func (app *application) Sign(input loaders_identities.Identity, message []byte) (signers.Signature, error) {
-	return nil, nil
+	if !input.HasCurrent() {
+		return nil, errors.New(noCurrentUserErr)
+	}
+
+	signer := input.Current().Current().Key().Signer()
+	return signer.Sign(string(message))
 }
 
 // ValidateSignature validates a signature
@@ -284,7 +289,12 @@ func (app *application) ValidateSignature(input loaders_identities.Identity, mes
 
 // Vote votes on a message using the current authenticated user
 func (app *application) Vote(input loaders_identities.Identity, message []byte, ring []signers.PublicKey) (signers.Vote, error) {
-	return nil, nil
+	if !input.HasCurrent() {
+		return nil, errors.New(noCurrentUserErr)
+	}
+
+	signer := input.Current().Current().Key().Signer()
+	return signer.Vote(string(message), ring)
 }
 
 // ValidateVote validates a vote
