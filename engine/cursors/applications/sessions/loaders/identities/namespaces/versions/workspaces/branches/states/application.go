@@ -80,7 +80,10 @@ func (app *application) Delete(input states.States, index uint64, message string
 	}
 
 	toDelSingle := toDelState.Original()
-	updatedSingleBuilder := app.singleBuilder.Create().IsDeleted().WithMessage(message)
+	updatedSingleBuilder := app.singleBuilder.Create().
+		IsDeleted().
+		WithMessage(message)
+
 	if toDelSingle.HasPointers() {
 		pointers := toDelSingle.Pointers()
 		updatedSingleBuilder.WithPointers(pointers)
@@ -150,28 +153,46 @@ func (app *application) InsertData(input states.States, message string, data []b
 	}
 
 	length := uint64(len(data))
-	delimiter, err := app.delimiterBuilder.Create().WithIndex(app.nextIndex).WithLength(length).Now()
+	delimiter, err := app.delimiterBuilder.Create().
+		WithIndex(app.nextIndex).
+		WithLength(length).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
 
-	storagePointer, err := app.storagePointerBuilder.Create().WithDelimiter(delimiter).Now()
+	storagePointer, err := app.storagePointerBuilder.Create().
+		WithDelimiter(delimiter).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
 
-	pointer, err := app.pointerBuilder.Create().WithStorage(storagePointer).WithBytes(data).Now()
+	pointer, err := app.pointerBuilder.Create().
+		WithStorage(storagePointer).
+		WithBytes(data).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
 
 	pointersList = append(pointersList, pointer)
-	pointers, err := app.pointersBuilder.Create().WithList(pointersList).Now()
+	pointers, err := app.pointersBuilder.Create().
+		WithList(pointersList).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
 
-	single, err := app.singleBuilder.Create().WithMessage(message).WithPointers(pointers).Now()
+	single, err := app.singleBuilder.Create().
+		WithMessage(message).
+		WithPointers(pointers).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
