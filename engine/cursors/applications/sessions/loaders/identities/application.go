@@ -93,23 +93,40 @@ func (app *application) Create(
 		return nil, err
 	}
 
-	encryptor, err := app.encryptorBuilder.Create().WithBitRate(app.bitsize).WithPK(*pKey).Now()
+	encryptor, err := app.encryptorBuilder.Create().
+		WithBitRate(app.bitsize).
+		WithPK(*pKey).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
 
 	createdOn := time.Now().UTC()
-	key, err := app.keyBuilder.Create().WithSigner(signer).WithEncryptor(encryptor).CreatedOn(createdOn).Now()
+	key, err := app.keyBuilder.Create().
+		WithSigner(signer).
+		WithEncryptor(encryptor).
+		CreatedOn(createdOn).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
 
-	profile, err := app.profileBuilder.Create().WithName(name).WithDescription(description).Now()
+	profile, err := app.profileBuilder.Create().
+		WithName(name).
+		WithDescription(description).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
 
-	single, err := app.singleBuilder.Create().WithProfile(profile).WithKey(key).Now()
+	single, err := app.singleBuilder.Create().
+		WithProfile(profile).
+		WithKey(key).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
@@ -177,7 +194,10 @@ func (app *application) Authenticate(input loaders_identities.Identity, name str
 	}
 
 	all := input.All()
-	builder := app.builder.Create().WithAll(all).WithAuthenticated(authenticated)
+	builder := app.builder.Create().
+		WithAll(all).
+		WithAuthenticated(authenticated)
+
 	if input.HasCurrent() {
 		builder.WithCurrent(input.Current())
 	}
@@ -203,7 +223,11 @@ func (app *application) SetPassword(input loaders_identities.Identity, newPasswo
 		return nil, err
 	}
 
-	update, err := app.updateBuilder.Create().WithSingle(single).WithBytes(cipher).Now()
+	update, err := app.updateBuilder.Create().
+		WithSingle(single).
+		WithBytes(cipher).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
@@ -224,7 +248,11 @@ func (app *application) SetUser(input loaders_identities.Identity, name string) 
 	}
 
 	all := input.All()
-	return app.builder.Create().WithAll(all).WithAuthenticated(authenticated).WithCurrent(current).Now()
+	return app.builder.Create().
+		WithAll(all).
+		WithAuthenticated(authenticated).
+		WithCurrent(current).
+		Now()
 }
 
 // Follow follows a namespace using the current authenticated user
@@ -328,7 +356,10 @@ func (app *application) updateAuthenticated(
 	input loaders_identities.Identity,
 	update updates.Update,
 ) (loaders_identities.Identity, error) {
-	switcher, err := app.switcherBuilder.Create().WithUpdated(update).Now()
+	switcher, err := app.switcherBuilder.Create().
+		WithUpdated(update).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
@@ -347,13 +378,19 @@ func (app *application) updateSwitcher(
 	}
 
 	currentSwitchers = append(currentSwitchers, switcher)
-	switchers, err := app.switchersBuilder.Create().WithList(currentSwitchers).Now()
+	switchers, err := app.switchersBuilder.Create().
+		WithList(currentSwitchers).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
 
 	all := input.All()
-	builder := app.builder.Create().WithAll(all).WithAuthenticated(switchers)
+	builder := app.builder.Create().
+		WithAll(all).
+		WithAuthenticated(switchers)
+
 	if input.HasCurrent() {
 		current := input.Current()
 		builder.WithCurrent(current)
@@ -370,7 +407,10 @@ func (app *application) updateProfileInSwitcher(
 	key keys.Key,
 	original singles.Single,
 ) (switchers.Switcher, error) {
-	profileBuilder := app.profileBuilder.Create().WithName(name).WithDescription(description)
+	profileBuilder := app.profileBuilder.Create().
+		WithName(name).
+		WithDescription(description)
+
 	if len(namespaces) > 0 {
 		profileBuilder.WithNamespaces(namespaces)
 	}
@@ -380,7 +420,11 @@ func (app *application) updateProfileInSwitcher(
 		return nil, err
 	}
 
-	single, err := app.singleBuilder.Create().WithProfile(profile).WithKey(key).Now()
+	single, err := app.singleBuilder.Create().
+		WithProfile(profile).
+		WithKey(key).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
@@ -395,10 +439,17 @@ func (app *application) updateProfileInSwitcher(
 		return nil, err
 	}
 
-	update, err := app.updateBuilder.WithSingle(single).WithBytes(cipher).Now()
+	update, err := app.updateBuilder.Create().
+		WithSingle(single).
+		WithBytes(cipher).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
 
-	return app.switcherBuilder.Create().WithOriginal(original).WithUpdated(update).Now()
+	return app.switcherBuilder.Create().
+		WithOriginal(original).
+		WithUpdated(update).
+		Now()
 }
