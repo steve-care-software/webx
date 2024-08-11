@@ -24,7 +24,7 @@ type Application interface {
 	Recover(input states.States, index uint64, message string) (states.States, error)
 
 	// data
-	InsertData(input states.States, data []byte) (states.States, error)
+	InsertData(input states.States, message string, data []byte) (states.States, error)
 	UpdateData(input states.States, original delimiters.Delimiter, updated []byte) (states.States, error)
 	DeleteData(input states.States, delete delimiters.Delimiter) (states.States, error)
 

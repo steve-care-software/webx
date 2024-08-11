@@ -17,6 +17,7 @@ type States interface {
 	List() []State
 	Messages() []string
 	Fetch(index uint64) (State, error)
+	LastActive() (State, error)
 }
 
 // StateBuilder represents a state builder
