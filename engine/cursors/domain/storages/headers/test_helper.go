@@ -1,19 +1,9 @@
 package headers
 
-import "github.com/steve-care-software/webx/engine/hashes/domain/pointers"
-
-// NewHeaderForTests creates a new header for tests
-func NewHeaderForTests() Header {
-	ins, err := NewBuilder().Create().Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
+import "github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces/singles/versions/singles/workspaces/singles/branches/singles/states/singles/pointers/storages"
 
 // NewHeaderWithIdentitiesForTests creates a new header with identities for tests
-func NewHeaderWithIdentitiesForTests(identities pointers.Pointer) Header {
+func NewHeaderWithIdentitiesForTests(identities storages.Storage) Header {
 	ins, err := NewBuilder().Create().WithIdentities(identities).Now()
 	if err != nil {
 		panic(err)

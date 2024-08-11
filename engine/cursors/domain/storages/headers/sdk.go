@@ -1,7 +1,7 @@
 package headers
 
 import (
-	"github.com/steve-care-software/webx/engine/hashes/domain/pointers"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces/singles/versions/singles/workspaces/singles/branches/singles/states/singles/pointers/storages"
 )
 
 // NewBuilder creates a new builder
@@ -18,12 +18,12 @@ type Adapter interface {
 // Builder represents the header builder
 type Builder interface {
 	Create() Builder
-	WithIdentities(identities pointers.Pointer) Builder
+	WithIdentities(identities storages.Storage) Builder
 	Now() (Header, error)
 }
 
 // Header represents an header
 type Header interface {
 	HasIdentities() bool
-	Identities() pointers.Pointer
+	Identities() storages.Storage
 }

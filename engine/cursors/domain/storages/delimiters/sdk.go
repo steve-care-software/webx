@@ -13,9 +13,9 @@ func NewDelimiterBuilder() DelimiterBuilder {
 // Adapter represents a delimiter adapter
 type Adapter interface {
 	InstancesToBytes(ins Delimiters) ([]byte, error)
-	BytesToInstances(data []byte) (Delimiters, []byte, error)
+	BytesToInstances(data []byte) (Delimiters, error)
 	InstanceToBytes(ins Delimiter) ([]byte, error)
-	BytesToInstance(data []byte) (Delimiter, []byte, error)
+	BytesToInstance(data []byte) (Delimiter, error)
 }
 
 // Builder represents the delimiters builder

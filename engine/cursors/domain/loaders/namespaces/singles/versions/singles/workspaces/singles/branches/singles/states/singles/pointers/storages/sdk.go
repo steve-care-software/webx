@@ -17,9 +17,9 @@ func NewStorageBuilder() StorageBuilder {
 // Adapter represents a storages adapter
 type Adapter interface {
 	InstancesToBytes(ins Storages) ([]byte, error)
-	BytesToInstances(data []byte) (Storages, []byte, error)
+	BytesToInstances(data []byte) (Storages, error)
 	InstanceToBytes(ins Storage) ([]byte, error)
-	BytesToInstance(data []byte) (Storage, []byte, error)
+	BytesToInstance(data []byte) (Storage, error)
 }
 
 // Builder represents the storages builder

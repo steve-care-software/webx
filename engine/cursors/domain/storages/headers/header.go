@@ -1,19 +1,19 @@
 package headers
 
-import "github.com/steve-care-software/webx/engine/hashes/domain/pointers"
+import "github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces/singles/versions/singles/workspaces/singles/branches/singles/states/singles/pointers/storages"
 
 type header struct {
-	identities pointers.Pointer
+	identities storages.Storage
 }
 
 func createHeaderWithIdentities(
-	identities pointers.Pointer,
+	identities storages.Storage,
 ) Header {
 	return createHeaderInternally(identities)
 }
 
 func createHeaderInternally(
-	identities pointers.Pointer,
+	identities storages.Storage,
 ) Header {
 	out := header{
 		identities: identities,
@@ -28,6 +28,6 @@ func (obj *header) HasIdentities() bool {
 }
 
 // Identities returns the identities, if any
-func (obj *header) Identities() pointers.Pointer {
+func (obj *header) Identities() storages.Storage {
 	return obj.identities
 }
