@@ -1,10 +1,5 @@
 package singles
 
-import (
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/namespaces/switchers/singles/blockchains"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/namespaces/switchers/singles/versions"
-)
-
 // Adapter represents a single adapter
 type Adapter interface {
 	ToBytes(ins Single) ([]byte, error)
@@ -16,7 +11,6 @@ type Builder interface {
 	Create() Builder
 	WithName(name string) Builder
 	WithDescription(description string) Builder
-	WithBlockchain(blockchain blockchains.Blockchain) Builder
 	Now() (Single, error)
 }
 
@@ -24,7 +18,4 @@ type Builder interface {
 type Single interface {
 	Name() string
 	Description() string
-	Blockchain() blockchains.Blockchain
-	HasVersions() bool
-	Versions() versions.Version
 }

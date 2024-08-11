@@ -1,8 +1,8 @@
 package switchers
 
 import (
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/namespaces/switchers/singles"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/namespaces/switchers/updates"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/namespaces/switchers/singles/versions/switchers/singles"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/namespaces/switchers/singles/versions/switchers/updates"
 )
 
 // Builder represents a switchers builder
@@ -27,7 +27,7 @@ type SwitcherBuilder interface {
 	Now() (Switcher, error)
 }
 
-// Switcher represents a namespace switcher
+// Switcher represents a version switcher
 type Switcher interface {
 	Current() singles.Single
 	HasOriginal() bool
