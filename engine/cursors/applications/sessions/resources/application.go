@@ -56,12 +56,18 @@ func createApplication(
 func (app *application) Insert(input resources.Resource, data []byte, blacklist []hash.Hash, whitelist []hash.Hash) (resources.Resource, error) {
 	nextIndex := input.All().NextIndex()
 	length := uint64(len(data))
-	delimiter, err := app.delimiterBuilder.Create().WithIndex(nextIndex).WithLength(length).Now()
+	delimiter, err := app.delimiterBuilder.Create().
+		WithIndex(nextIndex).
+		WithLength(length).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
 
-	storageBuilder := app.storageBuilder.Create().WithDelimiter(delimiter)
+	storageBuilder := app.storageBuilder.Create().
+		WithDelimiter(delimiter)
+
 	if blacklist != nil {
 		storageBuilder.WithBlacklist(blacklist)
 	}
@@ -75,7 +81,10 @@ func (app *application) Insert(input resources.Resource, data []byte, blacklist 
 		return nil, err
 	}
 
-	switcher, err := app.switcherBuilder.Create().WithUpdated(storage).Now()
+	switcher, err := app.switcherBuilder.Create().
+		WithUpdated(storage).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
@@ -96,12 +105,19 @@ func (app *application) Load(input resources.Resource, delimiterIndex uint64) (r
 		return nil, err
 	}
 
-	single, err := app.singleBuiler.Create().WithStorage(storage).WithBytes(retBytes).Now()
+	single, err := app.singleBuiler.Create().
+		WithStorage(storage).
+		WithBytes(retBytes).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
 
-	switcher, err := app.switcherBuilder.Create().WithOriginal(single).Now()
+	switcher, err := app.switcherBuilder.Create().
+		WithOriginal(single).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +138,11 @@ func (app *application) Select(input resources.Resource, delimiterIndex uint64) 
 	}
 
 	all := input.All()
-	return app.builder.Create().WithAll(all).WithCurrent(current).WithLoaded(loaded).Now()
+	return app.builder.Create().
+		WithAll(all).
+		WithCurrent(current).
+		WithLoaded(loaded).
+		Now()
 }
 
 // Delete deletes the selected resource
@@ -144,7 +164,10 @@ func (app *application) Delete(input resources.Resource, vote signers.Vote) (res
 		return nil, err
 	}
 
-	updatedStorageBuilder := app.storageBuilder.Create().IsDeleted().WithDelimiter(delimiter)
+	updatedStorageBuilder := app.storageBuilder.Create().
+		IsDeleted().
+		WithDelimiter(delimiter)
+
 	if storage.HasWhitelist() {
 		whitelist := storage.Whitelist()
 		isApproved, err := app.voteAdapter.ToVerification(vote, pHash.String(), whitelist)
@@ -178,7 +201,10 @@ func (app *application) Delete(input resources.Resource, vote signers.Vote) (res
 		return nil, err
 	}
 
-	switcher, err := app.switcherBuilder.Create().WithDeleted(updatedStorage).Now()
+	switcher, err := app.switcherBuilder.Create().
+		WithDeleted(updatedStorage).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
@@ -308,13 +334,19 @@ func (app *application) updateStorageInResource(input resources.Resource, switch
 	}
 
 	loadedList = append(loadedList, switcher)
-	loaded, err := app.switchersBuilder.Create().WithList(loadedList).Now()
+	loaded, err := app.switchersBuilder.Create().
+		WithList(loadedList).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
 
 	all := input.All()
-	builder := app.builder.Create().WithAll(all).WithLoaded(loaded)
+	builder := app.builder.Create().
+		WithAll(all).
+		WithLoaded(loaded)
+
 	if input.HasCurrent() {
 		current := input.Current()
 		builder.WithCurrent(current)
@@ -330,13 +362,19 @@ func (app *application) loadSwitcherInResource(input resources.Resource, switche
 	}
 
 	loadedList = append(loadedList, switcher)
-	loaded, err := app.switchersBuilder.Create().WithList(loadedList).Now()
+	loaded, err := app.switchersBuilder.Create().
+		WithList(loadedList).
+		Now()
+
 	if err != nil {
 		return nil, err
 	}
 
 	all := input.All()
-	builder := app.builder.Create().WithAll(all).WithLoaded(loaded)
+	builder := app.builder.Create().
+		WithAll(all).
+		WithLoaded(loaded)
+
 	if input.HasCurrent() {
 		current := input.Current()
 		builder.WithCurrent(current)
