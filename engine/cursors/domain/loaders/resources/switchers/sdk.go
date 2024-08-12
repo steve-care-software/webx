@@ -17,7 +17,7 @@ type Builder interface {
 // Switchers represents switchers
 type Switchers interface {
 	List() []Switcher
-	FetchByDelimiterIndex(delIndex uint64) (Switcher, error)
+	FetchByName(name string) (Switcher, error)
 }
 
 // SwitcherBuilder represents a switcher builder

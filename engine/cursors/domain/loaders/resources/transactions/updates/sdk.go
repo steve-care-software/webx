@@ -15,6 +15,7 @@ type Update interface {
 // Content represents an update content
 type Content interface {
 	Hash() hash.Hash
+	Name() string
 	DelimiterIndex() uint64
 	HasBlacklistAddition() bool
 	BlacklistAddition() []hash.Hash

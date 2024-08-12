@@ -24,8 +24,8 @@ type Builder interface {
 // Application represents a resource application
 type Application interface {
 	Insert(input resources.Resource, insert inserts.Insert) (resources.Resource, error)
-	Load(input resources.Resource, delimiterIndex uint64) (resources.Resource, error)
-	Select(input resources.Resource, delimiterIndex uint64) (resources.Resource, error)
+	Load(input resources.Resource, name string) (resources.Resource, error)
+	Select(input resources.Resource, name string) (resources.Resource, error)
 	Delete(input resources.Resource, delete deletes.Delete) (resources.Resource, error)
 	Retrieve(input resources.Resource) (singles.Single, error)
 	Update(input resources.Resource, update updates.Update) (resources.Resource, error)

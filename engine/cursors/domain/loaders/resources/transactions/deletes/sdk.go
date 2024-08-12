@@ -8,6 +8,6 @@ import (
 // Delete represents a delete transaction
 type Delete interface {
 	Hash() hash.Hash
-	DelimiterIndex() uint64
+	Name() string
 	Vote() signers.Vote
 }

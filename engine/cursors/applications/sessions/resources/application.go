@@ -76,8 +76,8 @@ func (app *application) Insert(input resources.Resource, insert inserts.Insert) 
 }
 
 // Load loads a resource
-func (app *application) Load(input resources.Resource, delimiterIndex uint64) (resources.Resource, error) {
-	storage, err := input.All().FetchByDelimiterIndex(delimiterIndex)
+func (app *application) Load(input resources.Resource, name string) (resources.Resource, error) {
+	storage, err := input.All().FetchByName(name)
 	if err != nil {
 		return nil, err
 	}
@@ -109,13 +109,13 @@ func (app *application) Load(input resources.Resource, delimiterIndex uint64) (r
 }
 
 // Select selects a loaded resource
-func (app *application) Select(input resources.Resource, delimiterIndex uint64) (resources.Resource, error) {
+func (app *application) Select(input resources.Resource, name string) (resources.Resource, error) {
 	if !input.HasLoaded() {
 		return nil, errors.New(noLoadedResourceErr)
 	}
 
 	loaded := input.Loaded()
-	current, err := loaded.FetchByDelimiterIndex(delimiterIndex)
+	current, err := loaded.FetchByName(name)
 	if err != nil {
 		return nil, err
 	}
@@ -321,7 +321,7 @@ func (app *application) insert(input resources.Resource, insert inserts.Insert) 
 
 func (app *application) update(input resources.Resource, update updates.Update) (singles.Single, error) {
 	content := update.Content()
-	retResource, err := app.Select(input, content.DelimiterIndex())
+	retResource, err := app.Select(input, content.Name())
 	if err != nil {
 		return nil, err
 	}
@@ -382,7 +382,7 @@ func (app *application) update(input resources.Resource, update updates.Update) 
 }
 
 func (app *application) delete(input resources.Resource, delete deletes.Delete) (singles.Single, error) {
-	retResource, err := app.Select(input, delete.DelimiterIndex())
+	retResource, err := app.Select(input, delete.Name())
 	if err != nil {
 		return nil, err
 	}

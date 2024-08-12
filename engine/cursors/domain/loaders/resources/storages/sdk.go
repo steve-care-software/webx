@@ -23,13 +23,14 @@ type Builder interface {
 // Storages represents storages
 type Storages interface {
 	List() []Storage
-	FetchByDelimiterIndex(index uint64) (Storage, error)
+	FetchByName(name string) (Storage, error)
 	NextIndex() uint64
 }
 
 // StorageBuilder represents the storage builder
 type StorageBuilder interface {
 	Create() StorageBuilder
+	WithName(name string) StorageBuilder
 	WithDelimiter(delimiter delimiters.Delimiter) StorageBuilder
 	WithWhitelist(whitelist []hash.Hash) StorageBuilder
 	WithBlacklist(blacklist []hash.Hash) StorageBuilder
@@ -39,6 +40,7 @@ type StorageBuilder interface {
 
 // Storage represents the storage resource
 type Storage interface {
+	Name() string
 	Delimiter() delimiters.Delimiter
 	IsDeleted() bool
 	HasWhitelist() bool

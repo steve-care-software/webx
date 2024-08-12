@@ -7,6 +7,7 @@ import (
 // Insert represents an insert
 type Insert interface {
 	Hash() hash.Hash
+	Name() string
 	Bytes() []byte
 	HasBlacklist() bool
 	Blacklist() []hash.Hash
