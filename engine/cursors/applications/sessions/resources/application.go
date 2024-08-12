@@ -19,15 +19,17 @@ import (
 )
 
 type application struct {
-	dbApp            databases.Application
-	builder          resources.Builder
-	storageBuilder   storages.StorageBuilder
-	switchersBuilder switchers.Builder
-	switcherBuilder  switchers.SwitcherBuilder
-	singleBuiler     singles.Builder
-	delimiterBuilder delimiters.DelimiterBuilder
-	voteAdapter      signers.VoteAdapter
-	hashAdapter      hash.Adapter
+	dbApp               databases.Application
+	builder             resources.Builder
+	storageBuilder      storages.StorageBuilder
+	switchersBuilder    switchers.Builder
+	switcherBuilder     switchers.SwitcherBuilder
+	singleBuiler        singles.Builder
+	delimiterBuilder    delimiters.DelimiterBuilder
+	transactionsBuilder transactions.Builder
+	transactionBuilder  transactions.TransactionBuilder
+	voteAdapter         signers.VoteAdapter
+	hashAdapter         hash.Adapter
 }
 
 func createApplication(
@@ -38,19 +40,23 @@ func createApplication(
 	switcherBuilder switchers.SwitcherBuilder,
 	singleBuiler singles.Builder,
 	delimiterBuilder delimiters.DelimiterBuilder,
+	transactionsBuilder transactions.Builder,
+	transactionBuilder transactions.TransactionBuilder,
 	voteAdapter signers.VoteAdapter,
 	hashAdapter hash.Adapter,
 ) Application {
 	out := application{
-		dbApp:            dbApp,
-		builder:          builder,
-		storageBuilder:   storageBuilder,
-		switchersBuilder: switchersBuilder,
-		switcherBuilder:  switcherBuilder,
-		singleBuiler:     singleBuiler,
-		delimiterBuilder: delimiterBuilder,
-		voteAdapter:      voteAdapter,
-		hashAdapter:      hashAdapter,
+		dbApp:               dbApp,
+		builder:             builder,
+		storageBuilder:      storageBuilder,
+		switchersBuilder:    switchersBuilder,
+		switcherBuilder:     switcherBuilder,
+		singleBuiler:        singleBuiler,
+		delimiterBuilder:    delimiterBuilder,
+		transactionsBuilder: transactionsBuilder,
+		transactionBuilder:  transactionBuilder,
+		voteAdapter:         voteAdapter,
+		hashAdapter:         hashAdapter,
 	}
 
 	return &out
@@ -58,36 +64,8 @@ func createApplication(
 
 // Insert inserts a resource
 func (app *application) Insert(input resources.Resource, insert inserts.Insert) (resources.Resource, error) {
-	data := insert.Bytes()
-	nextIndex := input.All().NextIndex()
-	length := uint64(len(data))
-	delimiter, err := app.delimiterBuilder.Create().
-		WithIndex(nextIndex).
-		WithLength(length).
-		Now()
-
-	if err != nil {
-		return nil, err
-	}
-
-	storageBuilder := app.storageBuilder.Create().
-		WithDelimiter(delimiter)
-
-	if insert.HasBlacklist() {
-		storageBuilder.WithBlacklist(insert.Blacklist())
-	}
-
-	if insert.HasWhitelist() {
-		storageBuilder.WithBlacklist(insert.Whitelist())
-	}
-
-	storage, err := storageBuilder.Now()
-	if err != nil {
-		return nil, err
-	}
-
 	switcher, err := app.switcherBuilder.Create().
-		WithUpdated(storage).
+		WithInsert(insert).
 		Now()
 
 	if err != nil {
@@ -152,46 +130,8 @@ func (app *application) Select(input resources.Resource, delimiterIndex uint64) 
 
 // Delete deletes the selected resource
 func (app *application) Delete(input resources.Resource, delete deletes.Delete) (resources.Resource, error) {
-	retResource, err := app.Select(input, delete.DelimiterIndex())
-	if err != nil {
-		return nil, err
-	}
-
-	storage := retResource.Current().Original().Storage()
-	delimiter := storage.Delimiter()
-	delimiterIndex := delimiter.Index()
-	pHash, err := app.hashAdapter.FromBytes([]byte(strconv.Itoa(int(delimiterIndex))))
-	if err != nil {
-		return nil, err
-	}
-
-	vote := delete.Vote()
-	err = app.validate(*pHash, vote, storage.Blacklist(), storage.Whitelist())
-	if err != nil {
-		return nil, err
-	}
-
-	updatedStorageBuilder := app.storageBuilder.Create().
-		IsDeleted().
-		WithDelimiter(delimiter)
-
-	if storage.HasWhitelist() {
-		whitelist := storage.Whitelist()
-		updatedStorageBuilder.WithWhitelist(whitelist)
-	}
-
-	if storage.HasBlacklist() {
-		blacklist := storage.Blacklist()
-		updatedStorageBuilder.WithBlacklist(blacklist)
-	}
-
-	updatedStorage, err := updatedStorageBuilder.Now()
-	if err != nil {
-		return nil, err
-	}
-
 	switcher, err := app.switcherBuilder.Create().
-		WithDeleted(updatedStorage).
+		WithDelete(delete).
 		Now()
 
 	if err != nil {
@@ -212,13 +152,182 @@ func (app *application) Retrieve(input resources.Resource) (singles.Single, erro
 
 // Update updates the blacklist and whitelist of our resource
 func (app *application) Update(input resources.Resource, update updates.Update) (resources.Resource, error) {
+	switcher, err := app.switcherBuilder.Create().WithUpdate(update).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	return app.updateStorageInResource(input, switcher)
+}
+
+// Commit commits the resource and returns the transactions
+func (app *application) Commit(input resources.Resource) (transactions.Transactions, error) {
+	if !input.HasLoaded() {
+		return nil, nil // nothing to commit
+	}
+
+	trxList := []transactions.Transaction{}
+	singlesList := []singles.Single{}
+	loaded := input.Loaded().List()
+	for _, oneLoaded := range loaded {
+		trxBuilder := app.transactionBuilder.Create()
+		if oneLoaded.HasInsert() {
+			insert := oneLoaded.Insert()
+			retSingle, err := app.insert(input, insert)
+			if err != nil {
+				return nil, err
+			}
+
+			singlesList = append(singlesList, retSingle)
+			trxBuilder.WithInsert(insert)
+		}
+
+		if oneLoaded.HasUpdate() {
+			update := oneLoaded.Update()
+			retSingle, err := app.update(input, update)
+			if err != nil {
+				return nil, err
+			}
+
+			singlesList = append(singlesList, retSingle)
+			trxBuilder.WithUpdate(update)
+		}
+
+		if oneLoaded.HasDelete() {
+			delete := oneLoaded.Delete()
+			retSingle, err := app.delete(input, delete)
+			if err != nil {
+				return nil, err
+			}
+
+			singlesList = append(singlesList, retSingle)
+			trxBuilder.WithDelete(delete)
+		}
+
+		trx, err := trxBuilder.Now()
+		if err != nil {
+			return nil, err
+		}
+
+		trxList = append(trxList, trx)
+	}
+
+	nextIndex := input.All().NextIndex()
+	err := app.write(nextIndex, singlesList)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.transactionsBuilder.Create().
+		WithList(trxList).
+		Now()
+}
+
+func (app *application) write(startAtIndex uint64, singles []singles.Single) error {
+	cpyFromIndex := startAtIndex
+	for _, oneResource := range singles {
+		storage := oneResource.Storage()
+		if storage.IsDeleted() {
+			continue
+		}
+
+		delimiter := storage.Delimiter()
+		bytes := oneResource.Bytes()
+		index := storage.Delimiter().Index()
+		err := app.dbApp.CopyBeforeThenWrite(cpyFromIndex, index, bytes)
+		if err != nil {
+			return nil
+		}
+
+		cpyFromIndex = delimiter.Index() + delimiter.Length()
+	}
+
+	return nil
+}
+
+// Transact execute transactions
+func (app *application) Transact(input resources.Resource, trx transactions.Transactions) error {
+	lastRet := input
+	list := trx.List()
+	for _, oneTrx := range list {
+		if oneTrx.IsInsert() {
+			insert := oneTrx.Insert()
+			retRes, err := app.Insert(lastRet, insert)
+			if err != nil {
+				return err
+			}
+
+			lastRet = retRes
+			continue
+		}
+
+		if oneTrx.IsUpdate() {
+			update := oneTrx.Update()
+			retRes, err := app.Update(lastRet, update)
+			if err != nil {
+				return err
+			}
+
+			lastRet = retRes
+			continue
+		}
+
+		delete := oneTrx.Delete()
+		retRes, err := app.Delete(lastRet, delete)
+		if err != nil {
+			return err
+		}
+
+		lastRet = retRes
+	}
+
+	return nil
+}
+
+func (app *application) insert(input resources.Resource, insert inserts.Insert) (singles.Single, error) {
+	data := insert.Bytes()
+	nextIndex := input.All().NextIndex()
+	length := uint64(len(data))
+	delimiter, err := app.delimiterBuilder.Create().
+		WithIndex(nextIndex).
+		WithLength(length).
+		Now()
+
+	if err != nil {
+		return nil, err
+	}
+
+	storageBuilder := app.storageBuilder.Create().
+		WithDelimiter(delimiter)
+
+	if insert.HasBlacklist() {
+		storageBuilder.WithBlacklist(insert.Blacklist())
+	}
+
+	if insert.HasWhitelist() {
+		storageBuilder.WithBlacklist(insert.Whitelist())
+	}
+
+	storage, err := storageBuilder.Now()
+	if err != nil {
+		return nil, err
+	}
+
+	return app.singleBuiler.Create().
+		WithBytes(data).
+		WithStorage(storage).
+		Now()
+}
+
+func (app *application) update(input resources.Resource, update updates.Update) (singles.Single, error) {
 	content := update.Content()
 	retResource, err := app.Select(input, content.DelimiterIndex())
 	if err != nil {
 		return nil, err
 	}
 
-	storage := retResource.Current().Current().Storage()
+	single := retResource.Current().Current()
+	storage := single.Storage()
 	err = app.validate(
 		content.Hash(),
 		update.Vote(),
@@ -265,56 +374,58 @@ func (app *application) Update(input resources.Resource, update updates.Update) 
 		return nil, err
 	}
 
-	switcher, err := app.switcherBuilder.Create().WithUpdated(updatedStorage).Now()
+	data := single.Bytes()
+	return app.singleBuiler.Create().
+		WithBytes(data).
+		WithStorage(updatedStorage).
+		Now()
+}
+
+func (app *application) delete(input resources.Resource, delete deletes.Delete) (singles.Single, error) {
+	retResource, err := app.Select(input, delete.DelimiterIndex())
 	if err != nil {
 		return nil, err
 	}
 
-	return app.updateStorageInResource(input, switcher)
-}
-
-// Commit commits the resource
-func (app *application) Commit(input resources.Resource) error {
-	return nil
-}
-
-// Transact execute transactions
-func (app *application) Transact(input resources.Resource, trx transactions.Transactions) error {
-	lastRet := input
-	list := trx.List()
-	for _, oneTrx := range list {
-		if oneTrx.IsInsert() {
-			insert := oneTrx.Insert()
-			retRes, err := app.Insert(lastRet, insert)
-			if err != nil {
-				return err
-			}
-
-			lastRet = retRes
-			continue
-		}
-
-		if oneTrx.IsUpdate() {
-			update := oneTrx.Update()
-			retRes, err := app.Update(lastRet, update)
-			if err != nil {
-				return err
-			}
-
-			lastRet = retRes
-			continue
-		}
-
-		delete := oneTrx.Delete()
-		retRes, err := app.Delete(lastRet, delete)
-		if err != nil {
-			return err
-		}
-
-		lastRet = retRes
+	single := retResource.Current().Original()
+	storage := single.Storage()
+	delimiter := storage.Delimiter()
+	delimiterIndex := delimiter.Index()
+	pHash, err := app.hashAdapter.FromBytes([]byte(strconv.Itoa(int(delimiterIndex))))
+	if err != nil {
+		return nil, err
 	}
 
-	return nil
+	vote := delete.Vote()
+	err = app.validate(*pHash, vote, storage.Blacklist(), storage.Whitelist())
+	if err != nil {
+		return nil, err
+	}
+
+	updatedStorageBuilder := app.storageBuilder.Create().
+		IsDeleted().
+		WithDelimiter(delimiter)
+
+	if storage.HasWhitelist() {
+		whitelist := storage.Whitelist()
+		updatedStorageBuilder.WithWhitelist(whitelist)
+	}
+
+	if storage.HasBlacklist() {
+		blacklist := storage.Blacklist()
+		updatedStorageBuilder.WithBlacklist(blacklist)
+	}
+
+	updatedStorage, err := updatedStorageBuilder.Now()
+	if err != nil {
+		return nil, err
+	}
+
+	data := single.Bytes()
+	return app.singleBuiler.Create().
+		WithBytes(data).
+		WithStorage(updatedStorage).
+		Now()
 }
 
 func (app *application) validate(

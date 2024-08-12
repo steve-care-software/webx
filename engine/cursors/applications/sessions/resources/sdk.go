@@ -29,6 +29,6 @@ type Application interface {
 	Delete(input resources.Resource, delete deletes.Delete) (resources.Resource, error)
 	Retrieve(input resources.Resource) (singles.Single, error)
 	Update(input resources.Resource, update updates.Update) (resources.Resource, error)
-	Commit(input resources.Resource) error
+	Commit(input resources.Resource) (transactions.Transactions, error)
 	Transact(input resources.Resource, trx transactions.Transactions) error
 }
