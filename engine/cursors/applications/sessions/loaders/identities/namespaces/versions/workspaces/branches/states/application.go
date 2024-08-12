@@ -84,9 +84,15 @@ func (app *application) Delete(input states.States, index uint64, message string
 		IsDeleted().
 		WithMessage(message)
 
-	if toDelSingle.HasPointers() {
-		pointers := toDelSingle.Pointers()
-		updatedSingleBuilder.WithPointers(pointers)
+	current := toDelState.Current()
+	if current.HasPointers() {
+		inPointers := toDelState.Current().Pointers()
+		retPointers, err := app.pointerApp.DeleteData(inPointers, index)
+		if err != nil {
+			return nil, err
+		}
+
+		updatedSingleBuilder.WithPointers(retPointers)
 	}
 
 	updatedSingle, err := updatedSingleBuilder.Now()
@@ -147,50 +153,15 @@ func (app *application) InsertData(input states.States, message string, data []b
 	}
 
 	current := lastState.Current()
-	pointersList := []pointers.Pointer{}
-	if current.HasPointers() {
-		pointersList = current.Pointers().List()
-	}
-
-	length := uint64(len(data))
-	delimiter, err := app.delimiterBuilder.Create().
-		WithIndex(app.nextIndex).
-		WithLength(length).
-		Now()
-
-	if err != nil {
-		return nil, err
-	}
-
-	storagePointer, err := app.storagePointerBuilder.Create().
-		WithDelimiter(delimiter).
-		Now()
-
-	if err != nil {
-		return nil, err
-	}
-
-	pointer, err := app.pointerBuilder.Create().
-		WithStorage(storagePointer).
-		WithBytes(data).
-		Now()
-
-	if err != nil {
-		return nil, err
-	}
-
-	pointersList = append(pointersList, pointer)
-	pointers, err := app.pointersBuilder.Create().
-		WithList(pointersList).
-		Now()
-
+	inPointers := current.Pointers()
+	retPointers, err := app.pointerApp.InsertData(inPointers, data)
 	if err != nil {
 		return nil, err
 	}
 
 	single, err := app.singleBuilder.Create().
 		WithMessage(message).
-		WithPointers(pointers).
+		WithPointers(retPointers).
 		Now()
 
 	if err != nil {
@@ -202,6 +173,13 @@ func (app *application) InsertData(input states.States, message string, data []b
 
 // UpdateData updates data
 func (app *application) UpdateData(input states.States, original delimiters.Delimiter, updated []byte) (states.States, error) {
+	/*lastState, err := input.LastActive()
+	if err != nil {
+		return nil, err
+	}
+
+	current := lastState.Current()*/
+
 	return nil, nil
 }
 
