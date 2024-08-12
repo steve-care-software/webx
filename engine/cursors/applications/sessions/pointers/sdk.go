@@ -7,6 +7,7 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
 )
 
+const pointerIsDeletedErrPattern = "the pointer (index: %d, length: %d) has been deleted"
 const pointerAlreadyDeletedErrPattern = "the pointer (index: %d) has already been deleted"
 
 // NewApplication creates a new application for tests

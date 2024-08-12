@@ -41,7 +41,21 @@ func createApplication(
 
 // Retrieve retrieves a pointer from the database
 func (app *application) Retrieve(storage storage_pointers.Storage) (pointers.Pointer, error) {
-	return nil, nil
+	delimiter := storage.Delimiter()
+	if storage.IsDeleted() {
+		str := fmt.Sprintf(pointerIsDeletedErrPattern, delimiter.Index(), delimiter.Length())
+		return nil, errors.New(str)
+	}
+
+	retBytes, err := app.dbApp.Read(delimiter)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.pointerBuilder.Create().
+		WithStorage(storage).
+		WithBytes(retBytes).
+		Now()
 }
 
 // InsertData inserts data to the pointers
