@@ -1,6 +1,6 @@
 package databases
 
-import "github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
+import "github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/storages/delimiters"
 
 // FileBuilder represents a file application builder
 type FileBuilder interface {

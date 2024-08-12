@@ -8,13 +8,13 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys/signers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/storages"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/storages/delimiters"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/switchers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/switchers/singles"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions/deletes"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions/inserts"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions/updates"
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
 )
 
 type application struct {

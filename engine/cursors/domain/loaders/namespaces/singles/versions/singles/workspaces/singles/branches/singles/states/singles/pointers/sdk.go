@@ -2,7 +2,7 @@ package pointers
 
 import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces/singles/versions/singles/workspaces/singles/branches/singles/states/singles/pointers/storages"
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/storages/delimiters"
 )
 
 // NewBuilder creates a new builder

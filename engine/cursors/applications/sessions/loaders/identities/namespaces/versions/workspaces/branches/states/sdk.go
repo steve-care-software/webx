@@ -2,7 +2,7 @@ package states
 
 import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/namespaces/switchers/singles/versions/switchers/singles/workspaces/switchers/singles/branches/switchers/singles/states"
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/storages/delimiters"
 )
 
 const cannotBeDeletedNeverCommitedBeforeErrPattern = "the state (index; %d) cannot be deleted because it has never been committed yet"

@@ -1,7 +1,7 @@
 package storages
 
 import (
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/storages/delimiters"
 )
 
 // NewStoragesForTests creates a new storages for tests

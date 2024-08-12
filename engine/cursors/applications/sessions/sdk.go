@@ -5,8 +5,8 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/blockchains/blocks/transactions"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys/signers"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/storages/delimiters"
 	"github.com/steve-care-software/webx/engine/cursors/domain/records"
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/originals"
 )
 

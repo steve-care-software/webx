@@ -10,8 +10,8 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/blockchains/blocks/transactions"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys/signers"
 	loaders_namespace "github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/storages/delimiters"
 	"github.com/steve-care-software/webx/engine/cursors/domain/records"
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/originals"
 )
 

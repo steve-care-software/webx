@@ -7,7 +7,7 @@ import (
 
 	"github.com/juju/fslock"
 	"github.com/steve-care-software/webx/engine/cursors/applications/sessions/databases"
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/storages/delimiters"
 )
 
 type databaseApplication struct {

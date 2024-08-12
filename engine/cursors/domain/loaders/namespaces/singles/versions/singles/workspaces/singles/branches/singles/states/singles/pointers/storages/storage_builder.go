@@ -3,7 +3,7 @@ package storages
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/storages/delimiters"
 )
 
 type storageBuilder struct {

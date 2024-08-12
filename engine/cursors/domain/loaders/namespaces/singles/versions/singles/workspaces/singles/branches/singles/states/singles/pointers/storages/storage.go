@@ -1,6 +1,6 @@
 package storages
 
-import "github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
+import "github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/storages/delimiters"
 
 type storage struct {
 	delimiter delimiters.Delimiter

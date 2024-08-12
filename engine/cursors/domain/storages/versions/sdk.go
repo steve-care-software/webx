@@ -1,7 +1,7 @@
 package versions
 
 import (
-	"github.com/steve-care-software/webx/engine/cursors/domain/storages/delimiters"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/storages/delimiters"
 	"github.com/steve-care-software/webx/engine/cursors/domain/storages/originals"
 )
 
