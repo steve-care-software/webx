@@ -80,21 +80,44 @@ func (app *voteAdapter) ToVerification(sig Vote, msg string, pubKeyHashes []hash
 		return false, errors.New("the signature could not be validated against the message")
 	}
 
-	ringPubKeys := sig.Ring()
-	if len(pubKeyHashes) != len(ringPubKeys) {
-		str := fmt.Sprintf("the length of the given hashes (%d) do not match the length of the signature's []PublicKey (%d)", len(pubKeyHashes), len(ringPubKeys))
+	ring := sig.Ring()
+	filteredHashedKeys := []hash.Hash{}
+	for _, onePubKeyHash := range pubKeyHashes {
+
+		isValid := false
+		for _, oneRing := range ring {
+			pHash, err := app.hashAdapter.FromString(oneRing.String())
+			if err != nil {
+				return false, err
+			}
+
+			if pHash.Compare(onePubKeyHash) {
+				isValid = true
+				break
+			}
+		}
+
+		if !isValid {
+			continue
+		}
+
+		filteredHashedKeys = append(filteredHashedKeys, onePubKeyHash)
+	}
+
+	if len(filteredHashedKeys) != len(ring) {
+		str := fmt.Sprintf("the length of the given hashes (%d) do not match the length of the signature's []PublicKey (%d)", len(filteredHashedKeys), len(ring))
 		return false, errors.New(str)
 	}
 
-	for index, oneRingPubKey := range ringPubKeys {
+	for index, oneRingPubKey := range filteredHashedKeys {
 		ringPubKeyHash, err := app.hashAdapter.FromString(oneRingPubKey.String())
 		if err != nil {
 			str := fmt.Sprintf("there was an error while hashing a ring PublicKey: %s", err.Error())
 			return false, errors.New(str)
 		}
 
-		if !ringPubKeyHash.Compare(pubKeyHashes[index]) {
-			str := fmt.Sprintf("the ring PublicKey hash (hash: %s, index: %d) do not match the given PublicKey hash (%s)", ringPubKeyHash.String(), index, pubKeyHashes[index].String())
+		if !ringPubKeyHash.Compare(filteredHashedKeys[index]) {
+			str := fmt.Sprintf("the ring PublicKey hash (hash: %s, index: %d) do not match the given PublicKey hash (%s)", ringPubKeyHash.String(), index, filteredHashedKeys[index].String())
 			return false, errors.New(str)
 		}
 	}

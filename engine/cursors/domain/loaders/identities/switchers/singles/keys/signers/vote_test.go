@@ -25,6 +25,11 @@ func TestVote_Success(t *testing.T) {
 		ringPubKeyHashes = append(ringPubKeyHashes, *hsh)
 	}
 
+	// add an additional hash to the rin pub key hash:
+	thirdPK := NewFactory().Create()
+	pHash, _ := hashAdapter.FromString(thirdPK.PublicKey().String())
+	ringPubKeyHashes = append(ringPubKeyHashes, *pHash)
+
 	firstRing, err := pk.Vote(msg, ringPubKeys)
 	if err != nil {
 		t.Errorf("the returned error was expected to be nil, error returned; %s", err.Error())

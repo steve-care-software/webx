@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/webx/engine/cursors/applications/sessions/databases"
+	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys/signers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/storages"
@@ -24,6 +25,7 @@ type builder struct {
 	transactionBuilder  transactions.TransactionBuilder
 	voteAdapter         signers.VoteAdapter
 	dbApp               databases.Application
+	hashAdapter         hash.Adapter
 }
 
 func createBuilder(
@@ -36,6 +38,7 @@ func createBuilder(
 	transactionsBuilder transactions.Builder,
 	transactionBuilder transactions.TransactionBuilder,
 	voteAdapter signers.VoteAdapter,
+	hashAdapter hash.Adapter,
 ) Builder {
 	out := builder{
 		builder:             builderIns,
@@ -47,6 +50,7 @@ func createBuilder(
 		transactionsBuilder: transactionsBuilder,
 		transactionBuilder:  transactionBuilder,
 		voteAdapter:         voteAdapter,
+		hashAdapter:         hashAdapter,
 	}
 
 	return &out
@@ -64,6 +68,7 @@ func (app *builder) Create() Builder {
 		app.transactionsBuilder,
 		app.transactionBuilder,
 		app.voteAdapter,
+		app.hashAdapter,
 	)
 }
 
@@ -90,5 +95,6 @@ func (app *builder) Now() (Application, error) {
 		app.transactionsBuilder,
 		app.transactionBuilder,
 		app.voteAdapter,
+		app.hashAdapter,
 	), nil
 }
