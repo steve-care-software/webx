@@ -5,7 +5,7 @@ import (
 
 	"github.com/steve-care-software/webx/engine/cursors/applications/sessions/databases"
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys/signers"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/keys/signers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/storages"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/storages/delimiters"

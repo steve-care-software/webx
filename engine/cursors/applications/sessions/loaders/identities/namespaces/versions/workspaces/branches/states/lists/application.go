@@ -4,9 +4,9 @@ import (
 	"errors"
 
 	resource_applications "github.com/steve-care-software/webx/engine/cursors/applications/sessions/resources"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys/signers"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/namespaces/switchers/singles/versions/switchers/singles/workspaces/switchers/singles/branches/switchers/singles/states/singles/lists"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/namespaces/switchers/singles/versions/switchers/singles/workspaces/switchers/singles/branches/switchers/singles/states/singles/lists/creates"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/keys/signers"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/namespaces/versions/workspaces/branches/states/lists"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/namespaces/versions/workspaces/branches/states/lists/creates"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/switchers/singles"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions"
@@ -47,7 +47,7 @@ func (app *application) Create(input resources.Resource, create creates.Create) 
 		return nil, err
 	}
 
-	name := list.Name()
+	name := create.Name()
 	whitelist := create.Whitelist()
 	insert, err := app.insertBuilder.Create().
 		WithName(name).
@@ -91,13 +91,10 @@ func (app *application) Insert(input resources.Resource, values []string) (resou
 
 	resources := []string{}
 	if list.HasResources() {
-		resources = list.Resources()
+		resources = list.Resources().List()
 	}
 
-	name := list.Name()
-	builder := app.builder.
-		WithName(name)
-
+	builder := app.builder.Create()
 	if list.IsUnique() {
 		builder.IsUnique()
 	}
@@ -117,7 +114,6 @@ func (app *application) Insert(input resources.Resource, values []string) (resou
 	}
 
 	update, err := app.updateBuilder.Create().
-		WithName(name).
 		WithSigner(app.signer).
 		WithData(updatedBytes).
 		Now()

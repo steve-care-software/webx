@@ -1,29 +1,42 @@
 package identities
 
 import (
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/storages"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/keys"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/namespaces"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/profiles"
 )
 
-// NewBuilder creates a new builder for tests
-func NewBuilder() Builder {
-	return createBuilder()
+// Adapter represents the identity adapter
+type Adapter interface {
+	ToBytes(ins Identity) ([]byte, error)
+	ToInstance(data []byte) (Identity, error)
 }
 
-// Builder represents the identity builder
+// Builder represents a identitys builder
 type Builder interface {
 	Create() Builder
-	WithAll(all storages.Storages) Builder
-	WithAuthenticated(authenticated switchers.Switchers) Builder
-	WithCurrent(current switchers.Switcher) Builder
+	WithList(list []Identity) Builder
+	Now() (Identitys, error)
+}
+
+// Identitys represents identitys
+type Identitys interface {
+	List() []Identity
+}
+
+// IdentityBuilder represents a identity builder
+type IdentityBuilder interface {
+	Create() IdentityBuilder
+	WithProfile(profile profiles.Profile) IdentityBuilder
+	WithKey(key keys.Key) IdentityBuilder
+	WithNamespaces(namespaces namespaces.Namespaces) IdentityBuilder
 	Now() (Identity, error)
 }
 
-// Identity represents an identity
+// Identity represents a identity identity
 type Identity interface {
-	All() storages.Storages
-	HasAuthenticated() bool
-	Authenticated() switchers.Switchers
-	HasCurrent() bool
-	Current() switchers.Switcher
+	Profile() profiles.Profile
+	Key() keys.Key
+	HasNamespaces() bool
+	Namespaces() namespaces.Namespaces
 }

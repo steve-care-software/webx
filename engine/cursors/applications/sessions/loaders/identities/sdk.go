@@ -1,64 +1,10 @@
 package identities
 
-import (
-	"github.com/steve-care-software/webx/engine/cursors/applications/encryptions"
-	"github.com/steve-care-software/webx/engine/cursors/applications/sessions/loaders/identities/namespaces"
-	storage_pointer_applications "github.com/steve-care-software/webx/engine/cursors/applications/sessions/pointers"
-	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
-	loaders_identities "github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys/encryptors"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys/signers"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/profiles"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/updates"
-)
-
 const noCurrentUserErr = "there is no authenticated current user"
-
-// NewApplication creates a new application
-func NewApplication(
-	encryptionApp encryptions.Application,
-	storagePointerApplication storage_pointer_applications.Application,
-	singlesAdapter singles.Adapter,
-	bitsize int,
-) Application {
-	voteAdapter := signers.NewVoteAdapter()
-	hashAdapter := hash.NewAdapter()
-	builder := loaders_identities.NewBuilder()
-	switchersBuilder := switchers.NewBuilder()
-	switcherBuilder := switchers.NewSwitcherBuilder()
-	updateBuilder := updates.NewBuilder()
-	singlesBuilder := singles.NewBuilder()
-	singleBuilder := singles.NewSingleBuilder()
-	profileBuilder := profiles.NewBuilder()
-	keyBuilder := keys.NewBuilder()
-	encryptorBuilder := encryptors.NewBuilder()
-	signerFactory := signers.NewFactory()
-	return createApplication(
-		encryptionApp,
-		storagePointerApplication,
-		hashAdapter,
-		voteAdapter,
-		builder,
-		switchersBuilder,
-		switcherBuilder,
-		updateBuilder,
-		singlesAdapter,
-		singlesBuilder,
-		singleBuilder,
-		profileBuilder,
-		keyBuilder,
-		encryptorBuilder,
-		signerFactory,
-		bitsize,
-	)
-}
 
 // Application represents the identity application
 type Application interface {
-	List(input loaders_identities.Identity) []string
+	/*List(input loaders_identities.Identity) []string
 	Create(input loaders_identities.Identity, name string, description string, password []byte) (loaders_identities.Identity, error)
 	Authenticate(input loaders_identities.Identity, name string, password []byte) (loaders_identities.Identity, error)
 	SetPassword(input loaders_identities.Identity, newPassword []byte) (loaders_identities.Identity, error) // update the password of the authenticated user
@@ -76,5 +22,5 @@ type Application interface {
 	// namespaces
 	Namespaces(input loaders_identities.Identity) ([]string, error)
 	Namespace(input loaders_identities.Identity, name string) error
-	Dive(input loaders_identities.Identity) (namespaces.Application, error)
+	Dive(input loaders_identities.Identity) (namespaces.Application, error)*/
 }

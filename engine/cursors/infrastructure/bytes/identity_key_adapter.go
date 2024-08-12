@@ -1,8 +1,8 @@
 package bytes
 
 import (
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/keys/signers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys/signers"
 )
 
 type identityKeyAdapter struct {

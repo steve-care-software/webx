@@ -2,7 +2,7 @@ package updates
 
 import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys/signers"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/keys/signers"
 )
 
 // Builder represents an update builder

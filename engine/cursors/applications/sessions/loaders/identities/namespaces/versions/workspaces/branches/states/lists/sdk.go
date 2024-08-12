@@ -1,7 +1,7 @@
 package lists
 
 import (
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/namespaces/switchers/singles/versions/switchers/singles/workspaces/switchers/singles/branches/switchers/singles/states/singles/lists/creates"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/namespaces/versions/workspaces/branches/states/lists/creates"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/switchers/singles"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions"
