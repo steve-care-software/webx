@@ -28,7 +28,6 @@ type application struct {
 	transactionsBuilder transactions.Builder
 	transactionBuilder  transactions.TransactionBuilder
 	voteAdapter         signers.VoteAdapter
-	hashAdapter         hash.Adapter
 }
 
 func createApplication(
@@ -42,7 +41,6 @@ func createApplication(
 	transactionsBuilder transactions.Builder,
 	transactionBuilder transactions.TransactionBuilder,
 	voteAdapter signers.VoteAdapter,
-	hashAdapter hash.Adapter,
 ) Application {
 	out := application{
 		dbApp:               dbApp,
@@ -55,7 +53,6 @@ func createApplication(
 		transactionsBuilder: transactionsBuilder,
 		transactionBuilder:  transactionBuilder,
 		voteAdapter:         voteAdapter,
-		hashAdapter:         hashAdapter,
 	}
 
 	return &out
