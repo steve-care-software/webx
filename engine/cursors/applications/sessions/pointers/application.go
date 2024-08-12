@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/steve-care-software/webx/engine/cursors/applications/sessions/databases"
+	"github.com/steve-care-software/webx/engine/cursors/applications/sessions/resources/databases"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces/singles/versions/singles/workspaces/singles/branches/singles/states/singles/pointers"
 	storage_pointers "github.com/steve-care-software/webx/engine/cursors/domain/loaders/namespaces/singles/versions/singles/workspaces/singles/branches/singles/states/singles/pointers/storages"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/storages/delimiters"

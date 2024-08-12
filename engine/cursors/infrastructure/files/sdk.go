@@ -1,6 +1,6 @@
 package files
 
-import "github.com/steve-care-software/webx/engine/cursors/applications/sessions/databases"
+import "github.com/steve-care-software/webx/engine/cursors/applications/sessions/resources/databases"
 
 const (
 	// BeginFlag represents the begin flag

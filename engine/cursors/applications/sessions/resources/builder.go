@@ -3,7 +3,7 @@ package resources
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/engine/cursors/applications/sessions/databases"
+	"github.com/steve-care-software/webx/engine/cursors/applications/sessions/resources/databases"
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/keys/signers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources"

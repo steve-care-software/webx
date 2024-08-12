@@ -1,7 +1,7 @@
 package resources
 
 import (
-	"github.com/steve-care-software/webx/engine/cursors/applications/sessions/databases"
+	"github.com/steve-care-software/webx/engine/cursors/applications/sessions/resources/databases"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/switchers/singles"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions"
