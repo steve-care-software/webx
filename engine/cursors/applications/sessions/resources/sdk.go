@@ -2,10 +2,11 @@ package resources
 
 import (
 	"github.com/steve-care-software/webx/engine/cursors/applications/sessions/databases"
-	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/switchers/singles/keys/signers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/switchers/singles"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions/deletes"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions/inserts"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions/updates"
 )
 
 const noLoadedResourceErr = "There is no loaded resource"
@@ -21,17 +22,11 @@ type Builder interface {
 
 // Application represents a resource application
 type Application interface {
-	Insert(input resources.Resource, data []byte, blacklist []hash.Hash, whitelist []hash.Hash) (resources.Resource, error)
+	Insert(input resources.Resource, insert inserts.Insert) (resources.Resource, error)
 	Load(input resources.Resource, delimiterIndex uint64) (resources.Resource, error)
 	Select(input resources.Resource, delimiterIndex uint64) (resources.Resource, error)
-	Delete(input resources.Resource, vote signers.Vote) (resources.Resource, error)
+	Delete(input resources.Resource, delete deletes.Delete) (resources.Resource, error)
 	Retrieve(input resources.Resource) (singles.Single, error)
-	Update(
-		input resources.Resource,
-		addToBlacklist []hash.Hash,
-		removeFromBlacklist []hash.Hash,
-		addToWhitelist []hash.Hash,
-		removeFromWhitelist []hash.Hash,
-	) (resources.Resource, error)
+	Update(input resources.Resource, update updates.Update) (resources.Resource, error)
 	Commit(input resources.Resource) error
 }
