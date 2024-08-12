@@ -143,6 +143,10 @@ func (app *application) DeleteData(pointers pointers.Pointers, index uint64) (po
 		Now()
 }
 
+/*
+	We must keep track of what we insert, update and delete using a switcher
+*/
+
 // Commit commits the data
 func (app *application) Commit(pointers pointers.Pointers) error {
 	return nil
