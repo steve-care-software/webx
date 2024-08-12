@@ -4,7 +4,6 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/namespaces/versions/workspaces/branches/states/lists/creates"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/switchers/singles"
-	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions/deletes"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions/updates"
 )
@@ -22,7 +21,5 @@ type Application interface {
 
 	Delete(input resources.Resource, delete deletes.Delete) (resources.Resource, error) // delete the current list
 	Retrieve(input resources.Resource) (singles.Single, error)                          // retrieve the current list
-	Update(input resources.Resource, update updates.Update) (resources.Resource, error)
-	Commit(input resources.Resource) (transactions.Transactions, error)
-	Transact(input resources.Resource, trx transactions.Transactions) error
+	Update(input resources.Resource, update updates.Update) (resources.Resource, error) // updates the current list
 }
