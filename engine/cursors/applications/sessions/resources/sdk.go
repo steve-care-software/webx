@@ -4,6 +4,7 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/applications/sessions/databases"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/switchers/singles"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions/deletes"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions/inserts"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions/updates"
@@ -29,4 +30,5 @@ type Application interface {
 	Retrieve(input resources.Resource) (singles.Single, error)
 	Update(input resources.Resource, update updates.Update) (resources.Resource, error)
 	Commit(input resources.Resource) error
+	Transact(input resources.Resource, trx transactions.Transactions) error
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/storages"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/switchers"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/switchers/singles"
+	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions/deletes"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions/inserts"
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/resources/transactions/updates"
@@ -274,6 +275,45 @@ func (app *application) Update(input resources.Resource, update updates.Update) 
 
 // Commit commits the resource
 func (app *application) Commit(input resources.Resource) error {
+	return nil
+}
+
+// Transact execute transactions
+func (app *application) Transact(input resources.Resource, trx transactions.Transactions) error {
+	lastRet := input
+	list := trx.List()
+	for _, oneTrx := range list {
+		if oneTrx.IsInsert() {
+			insert := oneTrx.Insert()
+			retRes, err := app.Insert(lastRet, insert)
+			if err != nil {
+				return err
+			}
+
+			lastRet = retRes
+			continue
+		}
+
+		if oneTrx.IsUpdate() {
+			update := oneTrx.Update()
+			retRes, err := app.Update(lastRet, update)
+			if err != nil {
+				return err
+			}
+
+			lastRet = retRes
+			continue
+		}
+
+		delete := oneTrx.Delete()
+		retRes, err := app.Delete(lastRet, delete)
+		if err != nil {
+			return err
+		}
+
+		lastRet = retRes
+	}
+
 	return nil
 }
 
