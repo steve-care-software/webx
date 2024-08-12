@@ -33,7 +33,6 @@ type StorageBuilder interface {
 	WithName(name string) StorageBuilder
 	WithDelimiter(delimiter delimiters.Delimiter) StorageBuilder
 	WithWhitelist(whitelist []hash.Hash) StorageBuilder
-	WithBlacklist(blacklist []hash.Hash) StorageBuilder
 	IsDeleted() StorageBuilder
 	Now() (Storage, error)
 }
@@ -43,8 +42,5 @@ type Storage interface {
 	Name() string
 	Delimiter() delimiters.Delimiter
 	IsDeleted() bool
-	HasWhitelist() bool
 	Whitelist() []hash.Hash
-	HasBlacklist() bool
-	Blacklist() []hash.Hash
 }

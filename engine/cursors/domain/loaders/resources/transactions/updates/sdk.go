@@ -16,11 +16,6 @@ type Update interface {
 type Content interface {
 	Hash() hash.Hash
 	Name() string
-	DelimiterIndex() uint64
-	HasBlacklistAddition() bool
-	BlacklistAddition() []hash.Hash
-	HasBlacklistRemoval() bool
-	BlacklistRemoval() []hash.Hash
 	HasWhitelistAddition() bool
 	WhitelistAddition() []hash.Hash
 	HasWhitelistRemoval() bool

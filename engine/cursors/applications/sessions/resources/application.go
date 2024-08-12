@@ -2,7 +2,6 @@ package resources
 
 import (
 	"errors"
-	"strconv"
 
 	"github.com/steve-care-software/webx/engine/cursors/applications/sessions/databases"
 	"github.com/steve-care-software/webx/engine/cursors/domain/hash"
@@ -130,6 +129,22 @@ func (app *application) Select(input resources.Resource, name string) (resources
 
 // Delete deletes the selected resource
 func (app *application) Delete(input resources.Resource, delete deletes.Delete) (resources.Resource, error) {
+	name := delete.Name()
+	retStorage, err := input.All().FetchByName(name)
+	if err != nil {
+		return nil, err
+	}
+
+	err = app.validate(
+		delete.Hash(),
+		delete.Vote(),
+		retStorage.Whitelist(),
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
 	switcher, err := app.switcherBuilder.Create().
 		WithDelete(delete).
 		Now()
@@ -152,6 +167,23 @@ func (app *application) Retrieve(input resources.Resource) (singles.Single, erro
 
 // Update updates the blacklist and whitelist of our resource
 func (app *application) Update(input resources.Resource, update updates.Update) (resources.Resource, error) {
+	name := update.Content().Name()
+	retStorage, err := input.All().FetchByName(name)
+	if err != nil {
+		return nil, err
+	}
+
+	content := update.Content()
+	err = app.validate(
+		content.Hash(),
+		update.Vote(),
+		retStorage.Whitelist(),
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
 	switcher, err := app.switcherBuilder.Create().WithUpdate(update).Now()
 	if err != nil {
 		return nil, err
@@ -297,16 +329,10 @@ func (app *application) insert(input resources.Resource, insert inserts.Insert) 
 		return nil, err
 	}
 
+	whitelist := insert.Whitelist()
 	storageBuilder := app.storageBuilder.Create().
-		WithDelimiter(delimiter)
-
-	if insert.HasBlacklist() {
-		storageBuilder.WithBlacklist(insert.Blacklist())
-	}
-
-	if insert.HasWhitelist() {
-		storageBuilder.WithBlacklist(insert.Whitelist())
-	}
+		WithDelimiter(delimiter).
+		WithWhitelist(whitelist)
 
 	storage, err := storageBuilder.Now()
 	if err != nil {
@@ -328,23 +354,6 @@ func (app *application) update(input resources.Resource, update updates.Update) 
 
 	single := retResource.Current().Current()
 	storage := single.Storage()
-	err = app.validate(
-		content.Hash(),
-		update.Vote(),
-		storage.Blacklist(),
-		storage.Whitelist(),
-	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	blacklist := app.mergeLists(
-		storage.Blacklist(),
-		content.BlacklistAddition(),
-		content.BlacklistRemoval(),
-	)
-
 	whitelist := app.mergeLists(
 		storage.Whitelist(),
 		content.WhitelistAddition(),
@@ -353,14 +362,6 @@ func (app *application) update(input resources.Resource, update updates.Update) 
 
 	delimiter := storage.Delimiter()
 	storageBuilder := app.storageBuilder.Create().WithDelimiter(delimiter)
-	if len(blacklist) > 0 {
-		storageBuilder.WithBlacklist(blacklist)
-	}
-
-	if len(blacklist) > 0 {
-		storageBuilder.WithBlacklist(blacklist)
-	}
-
 	if len(whitelist) > 0 {
 		storageBuilder.WithWhitelist(whitelist)
 	}
@@ -390,31 +391,11 @@ func (app *application) delete(input resources.Resource, delete deletes.Delete) 
 	single := retResource.Current().Original()
 	storage := single.Storage()
 	delimiter := storage.Delimiter()
-	delimiterIndex := delimiter.Index()
-	pHash, err := app.hashAdapter.FromBytes([]byte(strconv.Itoa(int(delimiterIndex))))
-	if err != nil {
-		return nil, err
-	}
-
-	vote := delete.Vote()
-	err = app.validate(*pHash, vote, storage.Blacklist(), storage.Whitelist())
-	if err != nil {
-		return nil, err
-	}
-
+	whitelist := storage.Whitelist()
 	updatedStorageBuilder := app.storageBuilder.Create().
 		IsDeleted().
-		WithDelimiter(delimiter)
-
-	if storage.HasWhitelist() {
-		whitelist := storage.Whitelist()
-		updatedStorageBuilder.WithWhitelist(whitelist)
-	}
-
-	if storage.HasBlacklist() {
-		blacklist := storage.Blacklist()
-		updatedStorageBuilder.WithBlacklist(blacklist)
-	}
+		WithDelimiter(delimiter).
+		WithWhitelist(whitelist)
 
 	updatedStorage, err := updatedStorageBuilder.Now()
 	if err != nil {
@@ -431,13 +412,8 @@ func (app *application) delete(input resources.Resource, delete deletes.Delete) 
 func (app *application) validate(
 	msg hash.Hash,
 	vote signers.Vote,
-	blacklist []hash.Hash,
 	whitelist []hash.Hash,
 ) error {
-	if blacklist == nil {
-		blacklist = []hash.Hash{}
-	}
-
 	if whitelist == nil {
 		whitelist = []hash.Hash{}
 	}
@@ -450,17 +426,6 @@ func (app *application) validate(
 
 		if !isApproved {
 			return errors.New("the delete request could not be approved because the resource contains a whitelistt, which the voter is NOT a member of")
-		}
-	}
-
-	if len(blacklist) > 0 {
-		isApproved, err := app.voteAdapter.ToVerification(vote, msg.String(), blacklist)
-		if err != nil {
-			return err
-		}
-
-		if !isApproved {
-			return errors.New("the delete request could not be approved because the resource contains a blacklist, which the voter is a member of")
 		}
 	}
 
