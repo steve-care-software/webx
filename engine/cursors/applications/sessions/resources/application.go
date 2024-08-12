@@ -255,28 +255,6 @@ func (app *application) Commit(input resources.Resource) (transactions.Transacti
 		Now()
 }
 
-func (app *application) write(startAtIndex uint64, singles []singles.Single) error {
-	cpyFromIndex := startAtIndex
-	for _, oneResource := range singles {
-		storage := oneResource.Storage()
-		if storage.IsDeleted() {
-			continue
-		}
-
-		delimiter := storage.Delimiter()
-		bytes := oneResource.Bytes()
-		index := storage.Delimiter().Index()
-		err := app.dbApp.CopyBeforeThenWrite(cpyFromIndex, index, bytes)
-		if err != nil {
-			return nil
-		}
-
-		cpyFromIndex = delimiter.Index() + delimiter.Length()
-	}
-
-	return nil
-}
-
 // Transact execute transactions
 func (app *application) Transact(input resources.Resource, trx transactions.Transactions) error {
 	lastRet := input
@@ -311,6 +289,28 @@ func (app *application) Transact(input resources.Resource, trx transactions.Tran
 		}
 
 		lastRet = retRes
+	}
+
+	return nil
+}
+
+func (app *application) write(startAtIndex uint64, singles []singles.Single) error {
+	cpyFromIndex := startAtIndex
+	for _, oneResource := range singles {
+		storage := oneResource.Storage()
+		if storage.IsDeleted() {
+			continue
+		}
+
+		delimiter := storage.Delimiter()
+		bytes := oneResource.Bytes()
+		index := storage.Delimiter().Index()
+		err := app.dbApp.CopyBeforeThenWrite(cpyFromIndex, index, bytes)
+		if err != nil {
+			return nil
+		}
+
+		cpyFromIndex = delimiter.Index() + delimiter.Length()
 	}
 
 	return nil
@@ -376,6 +376,10 @@ func (app *application) update(input resources.Resource, update updates.Update) 
 	}
 
 	data := single.Bytes()
+	if content.HasData() {
+		data = content.Data()
+	}
+
 	return app.singleBuiler.Create().
 		WithBytes(data).
 		WithStorage(updatedStorage).
