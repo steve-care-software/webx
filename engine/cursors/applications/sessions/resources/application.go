@@ -162,7 +162,7 @@ func (app *application) Retrieve(input resources.Resource) (singles.Single, erro
 		return nil, errors.New(noSelectedResourceErr)
 	}
 
-	return input.Current().Current(), nil
+	return input.Current().Original(), nil
 }
 
 // Update updates the blacklist and whitelist of our resource
@@ -352,7 +352,7 @@ func (app *application) update(input resources.Resource, update updates.Update) 
 		return nil, err
 	}
 
-	single := retResource.Current().Current()
+	single := retResource.Current().Original()
 	storage := single.Storage()
 	whitelist := app.mergeLists(
 		storage.Whitelist(),
