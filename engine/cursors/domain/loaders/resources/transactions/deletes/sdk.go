@@ -5,6 +5,14 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/keys/signers"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder represents a delete builder
 type Builder interface {
 	Create() Builder
