@@ -1,5 +1,7 @@
 package interpreters
 
+type executeFn func(map[string][]byte) error
+
 type grammar struct {
 	blockEntry    string
 	blockPointers map[string]*blockPointer
@@ -18,7 +20,12 @@ type blockPointer struct {
 
 type block struct {
 	name  string
-	lines [][]string
+	lines []*line
+}
+
+type line struct {
+	values map[string]string
+	execFn executeFn
 }
 
 type value struct {

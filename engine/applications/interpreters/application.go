@@ -79,11 +79,12 @@ func (app *application) block(
 }
 
 func (app *application) line(
-	line []string,
+	line *line,
 	input []byte,
 ) (bool, []byte, error) {
+	execMap := map[string][]byte{}
 	remaining := input
-	for _, oneValueName := range line {
+	for oneVariableName, oneValueName := range line.values {
 		if pValue, ok := app.grammar.values[oneValueName]; ok {
 			isValid, retRemaining, err := app.value(
 				pValue,
@@ -98,12 +99,22 @@ func (app *application) line(
 				return false, nil, nil
 			}
 
+			length := len(remaining) - len(retRemaining)
+			execMap[oneVariableName] = remaining[0:length]
 			remaining = retRemaining
 			continue
 		}
 
 		str := fmt.Sprintf("the value (name: %s) does not exists", oneValueName)
 		return false, nil, errors.New(str)
+	}
+
+	// execute the line, if any:
+	if line.execFn != nil {
+		err := line.execFn(execMap)
+		if err != nil {
+			return false, nil, err
+		}
 	}
 
 	return true, remaining, nil

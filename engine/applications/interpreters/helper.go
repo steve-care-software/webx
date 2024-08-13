@@ -58,10 +58,24 @@ func newBlockPointer(name string, block string, cardinality string) *blockPointe
 	}
 }
 
-func newBlock(name string, lines [][]string) *block {
+func newBlock(name string, lines []*line) *block {
 	return &block{
 		name:  name,
 		lines: lines,
+	}
+}
+
+func newLineWithExecution(values map[string]string, execFn executeFn) *line {
+	return &line{
+		values: values,
+		execFn: execFn,
+	}
+}
+
+func newLine(values map[string]string) *line {
+	return &line{
+		values: values,
+		execFn: nil,
 	}
 }
 
