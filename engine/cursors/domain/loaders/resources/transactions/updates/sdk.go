@@ -5,14 +5,23 @@ import (
 	"github.com/steve-care-software/webx/engine/cursors/domain/loaders/identities/keys/signers"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder represents an update builder
 type Builder interface {
 	Create() Builder
 	WithName(name string) Builder
 	WithSigner(signer signers.Signer) Builder
+	WithRing(ring []signers.PublicKey) Builder
 	WithData(data []byte) Builder
-	WithWhiteListAddition(wlAddition []hash.Hash) Builder
-	WithWhiteListRemoval(wlRemoval []hash.Hash) Builder
+	WithWhiteListAddition(addition []hash.Hash) Builder
+	WithWhiteListRemoval(removal []hash.Hash) Builder
 	Now() (Update, error)
 }
 
