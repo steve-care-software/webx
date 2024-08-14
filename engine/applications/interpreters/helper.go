@@ -40,22 +40,38 @@ func newGrammar(
 
 func newBlock(name string, lines []*line) *block {
 	return &block{
-		name:  name,
-		lines: lines,
+		name:   name,
+		lines:  lines,
+		execFn: nil,
 	}
 }
 
-func newLineWithExecution(elements map[string]string, execFn executeFn) *line {
+func newBlockWithExecution(name string, lines []*line, execFn blockExecuteFn) *block {
+	return &block{
+		name:   name,
+		lines:  lines,
+		execFn: execFn,
+	}
+}
+
+func newLineWithExecution(elements []*variable, execFn lineExecuteFn) *line {
 	return &line{
 		elements: elements,
 		execFn:   execFn,
 	}
 }
 
-func newLine(elements map[string]string) *line {
+func newLine(elements []*variable) *line {
 	return &line{
 		elements: elements,
 		execFn:   nil,
+	}
+}
+
+func newVariable(name string, element string) *variable {
+	return &variable{
+		name:    name,
+		element: element,
 	}
 }
 

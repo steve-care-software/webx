@@ -10,13 +10,19 @@ type grammar struct {
 }
 
 type block struct {
-	name  string
-	lines []*line
+	name   string
+	lines  []*line
+	execFn blockExecuteFn
 }
 
 type line struct {
-	elements map[string]string
-	execFn   executeFn
+	elements []*variable
+	execFn   lineExecuteFn
+}
+
+type variable struct {
+	name    string
+	element string
 }
 
 type element struct {
@@ -35,4 +41,11 @@ type cardinality struct {
 	name    string
 	min     uint
 	pAmount *uint
+}
+
+// only one of its memebrs are valid at once
+type value struct {
+	block            []*value
+	variables        map[string]*value
+	retExecLineValue any
 }
