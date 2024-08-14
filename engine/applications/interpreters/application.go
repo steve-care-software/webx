@@ -137,45 +137,26 @@ func (app *application) element(
 
 	if element.token != "" {
 		if pToken, ok := app.grammar.tokens[element.token]; ok {
-			return app.token(
-				pToken,
-				input,
-			)
+			if pCardinality, ok := app.grammar.cardinalities[element.cardinality]; ok {
+				return app.match(
+					nil,
+					pToken,
+					nil,
+					input,
+					pCardinality,
+				)
+			}
+
+			str := fmt.Sprintf("the cardinality (name: %s) does not exists", element.cardinality)
+			return false, nil, errors.New(str)
 		}
 
 		str := fmt.Sprintf("the token (name: %s) does not exists", element.token)
 		return false, nil, errors.New(str)
 	}
 
-	if element.tokenPointer != "" {
-		if pTokenPointer, ok := app.grammar.tokenPointers[element.tokenPointer]; ok {
-			return app.tokenPointer(
-				pTokenPointer,
-				input,
-			)
-		}
-
-		str := fmt.Sprintf("the tokenPointer (name: %s) does not exists", element.tokenPointer)
-		return false, nil, errors.New(str)
-	}
-
-	if pBlockPointer, ok := app.grammar.blockPointers[element.blockPointer]; ok {
-		return app.blockPointer(
-			pBlockPointer,
-			input,
-		)
-	}
-
-	str := fmt.Sprintf("the tokenPointer (name: %s) does not exists", element.tokenPointer)
-	return false, nil, errors.New(str)
-}
-
-func (app *application) blockPointer(
-	blockPointer *blockPointer,
-	input []byte,
-) (bool, []byte, error) {
-	if pBlock, ok := app.grammar.blocks[blockPointer.block]; ok {
-		if pCardinality, ok := app.grammar.cardinalities[blockPointer.cardinality]; ok {
+	if pBlock, ok := app.grammar.blocks[element.block]; ok {
+		if pCardinality, ok := app.grammar.cardinalities[element.cardinality]; ok {
 			return app.match(
 				nil,
 				nil,
@@ -185,52 +166,11 @@ func (app *application) blockPointer(
 			)
 		}
 
-		str := fmt.Sprintf("the cardinality (name: %s) does not exists", blockPointer.cardinality)
+		str := fmt.Sprintf("the cardinality (name: %s) does not exists", element.cardinality)
 		return false, nil, errors.New(str)
 	}
 
-	str := fmt.Sprintf("the block (name: %s) does not exists", blockPointer.name)
-	return false, nil, errors.New(str)
-}
-
-func (app *application) token(
-	token *token,
-	input []byte,
-) (bool, []byte, error) {
-	if pCardinality, ok := app.grammar.cardinalities[token.cardinality]; ok {
-		return app.match(
-			token.characters,
-			nil,
-			nil,
-			input,
-			pCardinality,
-		)
-	}
-
-	str := fmt.Sprintf("the cardinality (name: %s) does not exists", token.cardinality)
-	return false, nil, errors.New(str)
-}
-
-func (app *application) tokenPointer(
-	tokenPointer *tokenPointer,
-	input []byte,
-) (bool, []byte, error) {
-	if pToken, ok := app.grammar.tokens[tokenPointer.token]; ok {
-		if pCardinality, ok := app.grammar.cardinalities[tokenPointer.cardinality]; ok {
-			return app.match(
-				nil,
-				pToken,
-				nil,
-				input,
-				pCardinality,
-			)
-		}
-
-		str := fmt.Sprintf("the cardinality (name: %s) does not exists", tokenPointer.cardinality)
-		return false, nil, errors.New(str)
-	}
-
-	str := fmt.Sprintf("the token (name: %s) does not exists", tokenPointer.name)
+	str := fmt.Sprintf("the token (name: %s) does not exists", element.token)
 	return false, nil, errors.New(str)
 }
 
@@ -241,6 +181,13 @@ func (app *application) match(
 	input []byte,
 	cardinality *cardinality,
 ) (bool, []byte, error) {
+	expectedMin := uint(1)
+	var pExpectedAmount *uint
+	if cardinality != nil {
+		expectedMin = cardinality.min
+		pExpectedAmount = cardinality.pAmount
+	}
+
 	remaining := input
 	matches := []byte{}
 	cpt := uint(0)
@@ -250,8 +197,8 @@ func (app *application) match(
 			break
 		}
 
-		if cardinality.pAmount != nil {
-			expectedAmount := *cardinality.pAmount
+		if pExpectedAmount != nil {
+			expectedAmount := *pExpectedAmount
 			if cpt >= expectedAmount {
 				break
 			}
@@ -283,9 +230,12 @@ func (app *application) match(
 
 		// if there is a valid token:
 		if token != nil {
-			isValid, retRemaining, err := app.token(
-				token,
+			isValid, retRemaining, err := app.match(
+				token.characters,
+				nil,
+				nil,
 				remaining,
+				nil,
 			)
 
 			if err != nil {
@@ -321,8 +271,8 @@ func (app *application) match(
 	}
 
 	// no match
-	if cpt < cardinality.min {
-		str := fmt.Sprintf("the expected mininmum (%d) was not reached, amount: %d", cardinality.min, cpt)
+	if cpt < expectedMin {
+		str := fmt.Sprintf("the expected mininmum (%d) was not reached, amount: %d", expectedMin, cpt)
 		return false, nil, errors.New(str)
 	}
 

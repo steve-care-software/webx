@@ -49,9 +49,9 @@ func NewApplication() Application {
 		[]*block{
 			newBlock("bRoot", []*line{
 				newLineWithExecution(map[string]string{
-					"first":  "vAnyNumber",
-					"plus":   "vPlus",
-					"second": "vAnyNumber",
+					"first":  "eAnyNumber",
+					"plus":   "ePlus",
+					"second": "eAnyNumber",
 				}, func(input map[string]string) error {
 					first, err := strconv.Atoi(input["first"])
 					if err != nil {
@@ -70,16 +70,12 @@ func NewApplication() Application {
 			}),
 		},
 		[]*element{
-			newElementWithTokenPointer("vAnyNumber", "tpAnyNumber"),
-			newElementWithToken("vPlus", "tPlus"),
-		},
-		[]*blockPointer{},
-		[]*tokenPointer{
-			newTokenPointer("tpAnyNumber", "tOneNumber", "cOnceOrMore"),
+			newElementWithToken("eAnyNumber", "tOneNumber", "cOnceOrMore"),
+			newElementWithToken("ePlus", "tPlus", "cOnce"),
 		},
 		[]*token{
-			newToken("tPlus", []byte{SPlus}, "cOnce"),
-			newToken("tOneNumber", []byte{NZero, NOne, NTwo, NThree, NFour, NFive, NSix, NSeven, NHeight, NNine}, "cOnce"),
+			newToken("tPlus", []byte{SPlus}),
+			newToken("tOneNumber", []byte{NZero, NOne, NTwo, NThree, NFour, NFive, NSix, NSeven, NHeight, NNine}),
 		},
 		[]*cardinality{
 			newCardinalityWithAmount("cOnce", 1, 1),

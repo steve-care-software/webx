@@ -4,8 +4,6 @@ func newGrammar(
 	blockEntry string,
 	blocks []*block,
 	elements []*element,
-	blockPointers []*blockPointer,
-	tokenPointers []*tokenPointer,
 	tokens []*token,
 	cardinalities []*cardinality,
 	bytesMapping map[uint8]string,
@@ -20,16 +18,6 @@ func newGrammar(
 		mElements[oneElement.name] = oneElement
 	}
 
-	mpBlockPointers := map[string]*blockPointer{}
-	for _, oneBlockPointer := range blockPointers {
-		mpBlockPointers[oneBlockPointer.name] = oneBlockPointer
-	}
-
-	mTokenPointers := map[string]*tokenPointer{}
-	for _, oneTokenPointer := range tokenPointers {
-		mTokenPointers[oneTokenPointer.name] = oneTokenPointer
-	}
-
 	mTokens := map[string]*token{}
 	for _, oneToken := range tokens {
 		mTokens[oneToken.name] = oneToken
@@ -42,21 +30,11 @@ func newGrammar(
 
 	return &grammar{
 		blockEntry:    blockEntry,
-		blockPointers: mpBlockPointers,
 		blocks:        mpBlock,
 		elements:      mElements,
-		tokenPointers: mTokenPointers,
 		tokens:        mTokens,
 		cardinalities: mCardinalities,
 		bytesMapping:  bytesMapping,
-	}
-}
-
-func newBlockPointer(name string, block string, cardinality string) *blockPointer {
-	return &blockPointer{
-		name:        name,
-		block:       block,
-		cardinality: cardinality,
 	}
 }
 
@@ -81,37 +59,28 @@ func newLine(elements map[string]string) *line {
 	}
 }
 
-func newElementWithTokenPointer(name string, tokenPointer string) *element {
+func newElementWithToken(name string, token string, cardinality string) *element {
 	return &element{
-		name:         name,
-		token:        "",
-		tokenPointer: tokenPointer,
-		blockPointer: "",
-	}
-}
-
-func newElementWithToken(name string, token string) *element {
-	return &element{
-		name:         name,
-		token:        token,
-		tokenPointer: "",
-		blockPointer: "",
-	}
-}
-
-func newTokenPointer(name string, token string, cardinality string) *tokenPointer {
-	return &tokenPointer{
 		name:        name,
 		token:       token,
+		block:       "",
 		cardinality: cardinality,
 	}
 }
 
-func newToken(name string, characters []byte, cardinality string) *token {
-	return &token{
+func newElementWithBlock(name string, block string, cardinality string) *element {
+	return &element{
 		name:        name,
-		characters:  characters,
+		token:       "",
+		block:       block,
 		cardinality: cardinality,
+	}
+}
+
+func newToken(name string, characters []byte) *token {
+	return &token{
+		name:       name,
+		characters: characters,
 	}
 }
 
