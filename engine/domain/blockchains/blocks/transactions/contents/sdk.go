@@ -11,5 +11,7 @@ import (
 type Content interface {
 	Hash() hash.Hash
 	Containers() containers.Containers
+	Condition() hash.Hash
+	ExpireIn() uint
 	CreatedOn() time.Time
 }
