@@ -85,10 +85,10 @@ func (app *application) line(
 ) (bool, []byte, error) {
 	execMap := map[string]string{}
 	remaining := input
-	for oneVariableName, oneValueName := range line.values {
-		if pValue, ok := app.grammar.values[oneValueName]; ok {
-			isValid, retRemaining, err := app.value(
-				pValue,
+	for oneVariableName, oneValueName := range line.elements {
+		if pElement, ok := app.grammar.elements[oneValueName]; ok {
+			isValid, retRemaining, err := app.element(
+				pElement,
 				remaining,
 			)
 
@@ -111,7 +111,7 @@ func (app *application) line(
 			continue
 		}
 
-		str := fmt.Sprintf("the value (name: %s) does not exists", oneValueName)
+		str := fmt.Sprintf("the element (name: %s) does not exists", oneValueName)
 		return false, nil, errors.New(str)
 	}
 
@@ -126,47 +126,47 @@ func (app *application) line(
 	return true, remaining, nil
 }
 
-func (app *application) value(
-	value *value,
+func (app *application) element(
+	element *element,
 	input []byte,
 ) (bool, []byte, error) {
 	if len(input) <= 0 {
-		str := fmt.Sprintf("the value (name: %s) cannot be executed because it contains 0 bytes in the input", value.name)
+		str := fmt.Sprintf("the element (name: %s) cannot be executed because it contains 0 bytes in the input", element.name)
 		return false, nil, errors.New(str)
 	}
 
-	if value.token != "" {
-		if pToken, ok := app.grammar.tokens[value.token]; ok {
+	if element.token != "" {
+		if pToken, ok := app.grammar.tokens[element.token]; ok {
 			return app.token(
 				pToken,
 				input,
 			)
 		}
 
-		str := fmt.Sprintf("the token (name: %s) does not exists", value.token)
+		str := fmt.Sprintf("the token (name: %s) does not exists", element.token)
 		return false, nil, errors.New(str)
 	}
 
-	if value.tokenPointer != "" {
-		if pTokenPointer, ok := app.grammar.tokenPointers[value.tokenPointer]; ok {
+	if element.tokenPointer != "" {
+		if pTokenPointer, ok := app.grammar.tokenPointers[element.tokenPointer]; ok {
 			return app.tokenPointer(
 				pTokenPointer,
 				input,
 			)
 		}
 
-		str := fmt.Sprintf("the tokenPointer (name: %s) does not exists", value.tokenPointer)
+		str := fmt.Sprintf("the tokenPointer (name: %s) does not exists", element.tokenPointer)
 		return false, nil, errors.New(str)
 	}
 
-	if pBlockPointer, ok := app.grammar.blockPointers[value.blockPointer]; ok {
+	if pBlockPointer, ok := app.grammar.blockPointers[element.blockPointer]; ok {
 		return app.blockPointer(
 			pBlockPointer,
 			input,
 		)
 	}
 
-	str := fmt.Sprintf("the tokenPointer (name: %s) does not exists", value.tokenPointer)
+	str := fmt.Sprintf("the tokenPointer (name: %s) does not exists", element.tokenPointer)
 	return false, nil, errors.New(str)
 }
 

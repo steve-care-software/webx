@@ -69,9 +69,9 @@ func NewApplication() Application {
 				}),
 			}),
 		},
-		[]*value{
-			newValueWithTokenPointer("vAnyNumber", "tpAnyNumber"),
-			newValueWithToken("vPlus", "tPlus"),
+		[]*element{
+			newElementWithTokenPointer("vAnyNumber", "tpAnyNumber"),
+			newElementWithToken("vPlus", "tPlus"),
 		},
 		[]*blockPointer{},
 		[]*tokenPointer{

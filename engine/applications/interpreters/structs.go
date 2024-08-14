@@ -5,7 +5,7 @@ type grammar struct {
 	bytesMapping  map[uint8]string
 	blockPointers map[string]*blockPointer
 	blocks        map[string]*block
-	values        map[string]*value
+	elements      map[string]*element
 	tokenPointers map[string]*tokenPointer
 	tokens        map[string]*token
 	cardinalities map[string]*cardinality
@@ -23,11 +23,11 @@ type block struct {
 }
 
 type line struct {
-	values map[string]string
-	execFn executeFn
+	elements map[string]string
+	execFn   executeFn
 }
 
-type value struct {
+type element struct {
 	name         string
 	token        string
 	tokenPointer string

@@ -3,7 +3,7 @@ package interpreters
 func newGrammar(
 	blockEntry string,
 	blocks []*block,
-	values []*value,
+	elements []*element,
 	blockPointers []*blockPointer,
 	tokenPointers []*tokenPointer,
 	tokens []*token,
@@ -15,9 +15,9 @@ func newGrammar(
 		mpBlock[oneBlock.name] = oneBlock
 	}
 
-	mValues := map[string]*value{}
-	for _, oneValue := range values {
-		mValues[oneValue.name] = oneValue
+	mElements := map[string]*element{}
+	for _, oneElement := range elements {
+		mElements[oneElement.name] = oneElement
 	}
 
 	mpBlockPointers := map[string]*blockPointer{}
@@ -44,7 +44,7 @@ func newGrammar(
 		blockEntry:    blockEntry,
 		blockPointers: mpBlockPointers,
 		blocks:        mpBlock,
-		values:        mValues,
+		elements:      mElements,
 		tokenPointers: mTokenPointers,
 		tokens:        mTokens,
 		cardinalities: mCardinalities,
@@ -67,22 +67,22 @@ func newBlock(name string, lines []*line) *block {
 	}
 }
 
-func newLineWithExecution(values map[string]string, execFn executeFn) *line {
+func newLineWithExecution(elements map[string]string, execFn executeFn) *line {
 	return &line{
-		values: values,
-		execFn: execFn,
+		elements: elements,
+		execFn:   execFn,
 	}
 }
 
-func newLine(values map[string]string) *line {
+func newLine(elements map[string]string) *line {
 	return &line{
-		values: values,
-		execFn: nil,
+		elements: elements,
+		execFn:   nil,
 	}
 }
 
-func newValueWithTokenPointer(name string, tokenPointer string) *value {
-	return &value{
+func newElementWithTokenPointer(name string, tokenPointer string) *element {
+	return &element{
 		name:         name,
 		token:        "",
 		tokenPointer: tokenPointer,
@@ -90,8 +90,8 @@ func newValueWithTokenPointer(name string, tokenPointer string) *value {
 	}
 }
 
-func newValueWithToken(name string, token string) *value {
-	return &value{
+func newElementWithToken(name string, token string) *element {
+	return &element{
 		name:         name,
 		token:        token,
 		tokenPointer: "",
