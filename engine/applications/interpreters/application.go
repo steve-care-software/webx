@@ -3,6 +3,7 @@ package interpreters
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 type application struct {
@@ -82,7 +83,7 @@ func (app *application) line(
 	line *line,
 	input []byte,
 ) (bool, []byte, error) {
-	execMap := map[string][]byte{}
+	execMap := map[string]string{}
 	remaining := input
 	for oneVariableName, oneValueName := range line.values {
 		if pValue, ok := app.grammar.values[oneValueName]; ok {
@@ -100,7 +101,12 @@ func (app *application) line(
 			}
 
 			length := len(remaining) - len(retRemaining)
-			execMap[oneVariableName] = remaining[0:length]
+			strValue, err := app.bytesToString(remaining[0:length])
+			if err != nil {
+				return false, nil, err
+			}
+
+			execMap[oneVariableName] = strValue
 			remaining = retRemaining
 			continue
 		}
@@ -321,4 +327,19 @@ func (app *application) match(
 	}
 
 	return true, remaining, nil
+}
+
+func (app *application) bytesToString(input []byte) (string, error) {
+	output := []string{}
+	for _, oneByte := range input {
+		if str, ok := app.grammar.bytesMapping[oneByte]; ok {
+			output = append(output, str)
+			continue
+		}
+
+		str := fmt.Sprintf("the byte (%d) is undefined in the bytes mapping of the provided grammar", oneByte)
+		return "", errors.New(str)
+	}
+
+	return strings.Join(output, ""), nil
 }

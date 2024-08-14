@@ -1,8 +1,8 @@
 package interpreters
 
 import (
-	"encoding/binary"
 	"fmt"
+	"strconv"
 )
 
 const (
@@ -40,6 +40,8 @@ const (
 	SPlus
 )
 
+type executeFn func(map[string]string) error
+
 // NewApplication creates a new application
 func NewApplication() Application {
 	out := application{newGrammar(
@@ -50,10 +52,19 @@ func NewApplication() Application {
 					"first":  "vAnyNumber",
 					"plus":   "vPlus",
 					"second": "vAnyNumber",
-				}, func(input map[string][]byte) error {
-					//first := bytesToUint64(input["first"])
-					//second := bytesToUint64(input["second"])
-					fmt.Printf("!!! yes - works %v + %v!!!!", input["first"], input["second"])
+				}, func(input map[string]string) error {
+					first, err := strconv.Atoi(input["first"])
+					if err != nil {
+						return err
+					}
+
+					second, err := strconv.Atoi(input["second"])
+					if err != nil {
+						return err
+					}
+
+					result := first + second
+					fmt.Printf("!!! yes - works %s + %s = %d!!!!", input["first"], input["second"], result)
 					return nil
 				}),
 			}),
@@ -75,6 +86,19 @@ func NewApplication() Application {
 			newCardinality("cAny", 0),
 			newCardinality("cOnceOrMore", 1),
 		},
+		map[uint8]string{
+			NZero:   "0",
+			NOne:    "1",
+			NTwo:    "2",
+			NThree:  "3",
+			NFour:   "4",
+			NFive:   "5",
+			NSix:    "6",
+			NSeven:  "7",
+			NHeight: "8",
+			NNine:   "9",
+			SPlus:   "+",
+		},
 	)}
 	return &out
 }
@@ -82,8 +106,4 @@ func NewApplication() Application {
 // Application represents the interpreter application
 type Application interface {
 	Execute(input []byte) ([]byte, error)
-}
-
-func bytesToUint64(bytes []byte) uint64 {
-	return binary.BigEndian.Uint64(bytes)
 }

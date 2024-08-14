@@ -8,6 +8,7 @@ func newGrammar(
 	tokenPointers []*tokenPointer,
 	tokens []*token,
 	cardinalities []*cardinality,
+	bytesMapping map[uint8]string,
 ) *grammar {
 	mpBlock := map[string]*block{}
 	for _, oneBlock := range blocks {
@@ -47,6 +48,7 @@ func newGrammar(
 		tokenPointers: mTokenPointers,
 		tokens:        mTokens,
 		cardinalities: mCardinalities,
+		bytesMapping:  bytesMapping,
 	}
 }
 

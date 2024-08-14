@@ -1,9 +1,8 @@
 package interpreters
 
-type executeFn func(map[string][]byte) error
-
 type grammar struct {
 	blockEntry    string
+	bytesMapping  map[uint8]string
 	blockPointers map[string]*blockPointer
 	blocks        map[string]*block
 	values        map[string]*value
