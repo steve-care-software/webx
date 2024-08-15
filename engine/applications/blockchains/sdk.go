@@ -5,8 +5,8 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/blockchains"
 	"github.com/steve-care-software/webx/engine/domain/blockchains/blocks/transactions"
 	"github.com/steve-care-software/webx/engine/domain/blockchains/blocks/transactions/contents"
-	"github.com/steve-care-software/webx/engine/domain/blockchains/hash"
 	"github.com/steve-care-software/webx/engine/domain/blockchains/roots"
+	"github.com/steve-care-software/webx/engine/domain/hash"
 )
 
 // Application represents the blockchain application

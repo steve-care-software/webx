@@ -1,6 +1,6 @@
 package elements
 
-import "github.com/steve-care-software/webx/engine/domain/blockchains/hash"
+import "github.com/steve-care-software/webx/engine/domain/hash"
 
 // Elements represents transactions content elements
 type Elements interface {

@@ -2,7 +2,7 @@ package blocks
 
 import (
 	"github.com/steve-care-software/webx/engine/domain/blockchains/blocks/transactions"
-	"github.com/steve-care-software/webx/engine/domain/blockchains/hash"
+	"github.com/steve-care-software/webx/engine/domain/hash"
 )
 
 // Block represents a block

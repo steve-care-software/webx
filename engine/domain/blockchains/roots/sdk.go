@@ -1,7 +1,7 @@
 package roots
 
 import (
-	"github.com/steve-care-software/webx/engine/domain/blockchains/hash"
+	"github.com/steve-care-software/webx/engine/domain/hash"
 )
 
 // Root represents a root block

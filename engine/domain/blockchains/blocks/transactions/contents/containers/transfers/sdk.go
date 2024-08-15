@@ -1,7 +1,7 @@
 package transfers
 
 import (
-	"github.com/steve-care-software/webx/engine/domain/blockchains/hash"
+	"github.com/steve-care-software/webx/engine/domain/hash"
 )
 
 // Transfer represents a token transfer

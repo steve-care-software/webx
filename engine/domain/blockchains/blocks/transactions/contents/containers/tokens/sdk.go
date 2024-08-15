@@ -2,7 +2,7 @@ package tokens
 
 import (
 	"github.com/steve-care-software/webx/engine/domain/blockchains/blocks/transactions/contents/containers/tokens/elements"
-	"github.com/steve-care-software/webx/engine/domain/blockchains/hash"
+	"github.com/steve-care-software/webx/engine/domain/hash"
 )
 
 // Token represents a token
