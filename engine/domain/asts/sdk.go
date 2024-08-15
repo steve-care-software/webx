@@ -4,6 +4,22 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/hash"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
+// NewNFTsBuilder creates a new nfts builder
+func NewNFTsBuilder() NFTsBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createNFTsBuilder(
+		hashAdapter,
+	)
+}
+
 // NewNFTBuilder creates a new nft builder
 func NewNFTBuilder() NFTBuilder {
 	hashAdapter := hash.NewAdapter()
@@ -24,13 +40,13 @@ type Builder interface {
 type AST interface {
 	Library() NFTs
 	Entry() hash.Hash
-	Complexity() map[uint]hash.Hash
+	Complexity() map[string]uint
 }
 
 // NFTsBuilder represents an nfts builder
 type NFTsBuilder interface {
 	Create() NFTsBuilder
-	WithList(list []NFTs) NFTsBuilder
+	WithList(list []NFT) NFTsBuilder
 	Now() (NFTs, error)
 }
 
@@ -38,7 +54,8 @@ type NFTsBuilder interface {
 type NFTs interface {
 	Hash() hash.Hash
 	List() []NFT
-	Complexity() map[uint]hash.Hash
+	Complexity() map[string]uint
+	Fetch(hash hash.Hash) (NFT, error)
 }
 
 // NFTBuilder represents an nft builder
@@ -52,6 +69,7 @@ type NFTBuilder interface {
 // NFT represents an nft
 type NFT interface {
 	Hash() hash.Hash
+	Complexity() map[string]uint
 	IsBytes() bool
 	Bytes() []byte
 	IsNFTs() bool
