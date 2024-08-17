@@ -2,6 +2,7 @@ package lines
 
 import (
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/replacements"
 )
 
 // Builder represents a line builder
@@ -21,6 +22,7 @@ type LineBuilder interface {
 	Create() LineBuilder
 	WithTokens(tokens []string) LineBuilder
 	WithExecution(execution executions.Execution) LineBuilder
+	WithReplacement(replacement replacements.Replacement) LineBuilder
 	Now() (Line, error)
 }
 
@@ -28,4 +30,6 @@ type LineBuilder interface {
 type Line interface {
 	Tokens() []string
 	Execution() executions.Execution
+	HasReplacement() bool
+	Replacement() replacements.Replacement
 }

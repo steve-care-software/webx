@@ -1,10 +1,5 @@
 package replacements
 
-import (
-	"github.com/steve-care-software/webx/engine/domain/asts"
-	"github.com/steve-care-software/webx/engine/domain/grammars/tokens"
-)
-
 // Builder represents a builder
 type Builder interface {
 	Create() Builder
@@ -20,13 +15,13 @@ type Replacements interface {
 // ReplacementBuilder represents a replacement builder
 type ReplacementBuilder interface {
 	Create() ReplacementBuilder
-	WithOrigin(origin tokens.Token) ReplacementBuilder
-	WithTarget(target asts.AST) ReplacementBuilder
+	WithOrigin(origin string) ReplacementBuilder
+	WithTarget(target string) ReplacementBuilder
 	Now() (Replacement, error)
 }
 
 // Replacement represents a replacement
 type Replacement interface {
-	Origin() tokens.Token
-	Target() asts.AST
+	Origin() string // origin token
+	Target() string // target ast
 }
