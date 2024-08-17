@@ -7,7 +7,6 @@ import (
 
 // Application represents the transpiler application
 type Application interface {
-	Lex(input []byte) ([]byte, error)
 	Parse(lexedInput []byte) (transpiles.Transpile, error)
 	Compile(transpile transpiles.Transpile) (asts.AST, error)
 	Decompile(ast asts.AST) (transpiles.Transpile, error)
