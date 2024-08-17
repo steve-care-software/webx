@@ -1,5 +1,10 @@
 package rules
 
+// NewRuleBuilder creates a new rule builder
+func NewRuleBuilder() RuleBuilder {
+	return createRuleBuilder()
+}
+
 // Builder represents a rule list
 type Builder interface {
 	Create() Builder
