@@ -10,6 +10,7 @@ import (
 type Builder interface {
 	Create() Builder
 	WithBlockEntry(blockEntry string) Builder
+	WithOmissions(omissions []string) Builder
 	WithBlocks(blocks []blocks.Block) Builder
 	WithTokens(tokens []tokens.Token) Builder
 	WithRules(rules []rules.Rule) Builder
@@ -25,4 +26,6 @@ type Grammar interface {
 	FetchBlock(name string) (blocks.Block, error)
 	FetchToken(name string) (tokens.Token, error)
 	FetchRule(name string) (rules.Rule, error)
+	HasOmissions() bool
+	Omissions() []string
 }

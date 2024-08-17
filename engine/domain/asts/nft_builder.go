@@ -16,8 +16,9 @@ func createNFTBuilder(
 	hashAdapter hash.Adapter,
 ) NFTBuilder {
 	out := nftBuilder{
-		bytes: nil,
-		nfts:  nil,
+		hashAdapter: hashAdapter,
+		bytes:       nil,
+		nfts:        nil,
 	}
 
 	return &out

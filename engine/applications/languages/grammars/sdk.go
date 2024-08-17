@@ -9,6 +9,5 @@ import (
 type Application interface {
 	Lex(input []byte) ([]byte, error)
 	Parse(lexedInput []byte) (grammars.Grammar, error)
-	Compile(grammar grammars.Grammar) ([]byte, error)
-	Interpret(byteCode []byte) (asts.AST, error)
+	Compile(grammar grammars.Grammar) (asts.AST, error)
 }
