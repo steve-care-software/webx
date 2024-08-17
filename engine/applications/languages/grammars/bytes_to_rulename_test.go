@@ -7,7 +7,7 @@ import (
 )
 
 func TestBytesToRuleName_Success(t *testing.T) {
-	possibleCharacters := createPossibleRuleNameCharactersList()
+	possibleCharacters := createPossibleUpperCaseLetters()
 	expectedValue := []byte("MY_RULE")
 	expectedRemainong := []byte("!this is some value")
 	input := []byte(fmt.Sprintf(`%s%s`, string(expectedValue), string(expectedRemainong)))
@@ -29,7 +29,7 @@ func TestBytesToRuleName_Success(t *testing.T) {
 }
 
 func TestBytesToRuleName_separatorAtEndOfRuleNameIsNotTaken_Success(t *testing.T) {
-	possibleCharacters := createPossibleRuleNameCharactersList()
+	possibleCharacters := createPossibleUpperCaseLetters()
 	expectedValue := []byte("MY_RULE")
 	expectedRemainong := []byte("_this is some value")
 	input := []byte(fmt.Sprintf(`%s%s`, string(expectedValue), string(expectedRemainong)))
@@ -51,7 +51,7 @@ func TestBytesToRuleName_separatorAtEndOfRuleNameIsNotTaken_Success(t *testing.T
 }
 
 func TestBytesToRuleName_ruleNameIsOnlyASeparator_returnsError(t *testing.T) {
-	possibleCharacters := createPossibleRuleNameCharactersList()
+	possibleCharacters := createPossibleUpperCaseLetters()
 	expectedValue := []byte("_")
 	expectedRemainong := []byte("this is some value")
 	input := []byte(fmt.Sprintf(`%s%s`, string(expectedValue), string(expectedRemainong)))
@@ -63,7 +63,7 @@ func TestBytesToRuleName_ruleNameIsOnlyASeparator_returnsError(t *testing.T) {
 }
 
 func TestBytesToRuleName_firstCharacterIsSeparator_returnsError(t *testing.T) {
-	possibleCharacters := createPossibleRuleNameCharactersList()
+	possibleCharacters := createPossibleUpperCaseLetters()
 	expectedValue := []byte("_MY_RULE")
 	expectedRemainong := []byte("!this is some value")
 	input := []byte(fmt.Sprintf(`%s%s`, string(expectedValue), string(expectedRemainong)))

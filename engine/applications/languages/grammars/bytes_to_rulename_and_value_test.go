@@ -7,7 +7,7 @@ import (
 )
 
 func TestBytesToRuleNameAndValue_Success(t *testing.T) {
-	possibleCharacters := createPossibleRuleNameCharactersList()
+	possibleCharacters := createPossibleUpperCaseLetters()
 	expectedName := []byte("MY_RULE")
 	expectedValue := []byte(`this " with escape`)
 	expectedRemaining := []byte("!this is some value")
@@ -56,7 +56,7 @@ func TestBytesToRuleNameAndValue_Success(t *testing.T) {
 }
 
 func TestBytesToRuleNameAndValue_withoutSeparator_returnsError(t *testing.T) {
-	possibleCharacters := createPossibleRuleNameCharactersList()
+	possibleCharacters := createPossibleUpperCaseLetters()
 	expectedName := []byte("MY_RULE")
 	expectedRemaining := []byte("!this is some value")
 
@@ -88,7 +88,7 @@ func TestBytesToRuleNameAndValue_withoutSeparator_returnsError(t *testing.T) {
 }
 
 func TestBytesToRuleNameAndValue_withInvalidName_returnsError(t *testing.T) {
-	possibleCharacters := createPossibleRuleNameCharactersList()
+	possibleCharacters := createPossibleUpperCaseLetters()
 	expectedName := []byte("_MY_RULE")
 	expectedRemaining := []byte("!this is some value")
 
@@ -121,7 +121,7 @@ func TestBytesToRuleNameAndValue_withInvalidName_returnsError(t *testing.T) {
 }
 
 func TestBytesToRuleNameAndValue_withoutRemainingAfterName_returnsError(t *testing.T) {
-	possibleCharacters := createPossibleRuleNameCharactersList()
+	possibleCharacters := createPossibleUpperCaseLetters()
 	expectedName := []byte("MY_RULE")
 
 	input := []byte(string(expectedName))
@@ -142,7 +142,7 @@ func TestBytesToRuleNameAndValue_withoutRemainingAfterName_returnsError(t *testi
 }
 
 func TestBytesToRuleNameAndValue_withoutValueSuffix_returnsError(t *testing.T) {
-	possibleCharacters := createPossibleRuleNameCharactersList()
+	possibleCharacters := createPossibleUpperCaseLetters()
 	expectedName := []byte("MY_RULE")
 	expectedRemaining := []byte("!this is some value")
 

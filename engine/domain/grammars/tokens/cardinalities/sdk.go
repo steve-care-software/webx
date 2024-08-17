@@ -1,5 +1,10 @@
 package cardinalities
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represents a cardinality builder
 type Builder interface {
 	Create() Builder

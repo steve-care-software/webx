@@ -4,7 +4,118 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"strconv"
 )
+
+func bytesToMinMax(
+	data []byte,
+	possibleNumbers []byte,
+	cardinalityOpen byte,
+	cardinalityClose byte,
+	cardinalitySeparator byte,
+	cardinalityZeroPlus byte,
+	cardinalityOnePlus byte,
+) (uint, *uint, []byte, error) {
+	if len(data) <= 0 {
+		str := fmt.Sprintf("the bytes must contain at least 1 value in order to convert it to cardinality's min/max, %d provided", len(data))
+		return 0, nil, nil, errors.New(str)
+	}
+
+	firstValue := data[0]
+	if firstValue == cardinalityOnePlus {
+		return 1, nil, data[1:], nil
+	}
+
+	if firstValue == cardinalityZeroPlus {
+		return 0, nil, data[1:], nil
+	}
+
+	return bytesToBracketsMinMax(
+		data,
+		possibleNumbers,
+		cardinalityOpen,
+		cardinalityClose,
+		cardinalitySeparator,
+	)
+}
+
+func bytesToBracketsMinMax(
+	data []byte,
+	possibleNumbers []byte,
+	cardinalityOpen byte,
+	cardinalityClose byte,
+	cardinalitySeparator byte,
+) (uint, *uint, []byte, error) {
+	if len(data) <= 0 {
+		str := fmt.Sprintf("the bytes must contain at least 1 value in order to convert it to cardinality's min/max, %d provided", len(data))
+		return 0, nil, nil, errors.New(str)
+	}
+
+	firstValue := data[0]
+	if firstValue != cardinalityOpen {
+		return 0, nil, nil, errors.New("the provided bytes could not be converted to cardinality's min/max")
+	}
+
+	retMinBytes, retRemaining, err := matchBytes(data[1:], possibleNumbers)
+	if err != nil {
+		return 0, nil, nil, err
+	}
+
+	iMin, err := strconv.Atoi(string(retMinBytes))
+	if err != nil {
+		return 0, nil, nil, err
+	}
+
+	uiMin := uint(iMin)
+	if len(retRemaining) <= 0 {
+		return 0, nil, nil, errors.New("the remaining bytes, after fetching the minimum, was empty and therefore could not be converted to cardinality's min/max")
+	}
+
+	nextValue := retRemaining[0]
+	if nextValue == cardinalityClose {
+		// max same as min:
+		return uiMin, &uiMin, retRemaining[1:], nil
+	}
+
+	if nextValue != cardinalitySeparator {
+		return 0, nil, nil, errors.New("the provided bytes could not be converted to cardinality's min/max, no separator found")
+	}
+
+	retRemaining = retRemaining[1:]
+	if len(retRemaining) <= 0 {
+		str := fmt.Sprintf("the remaining bytes, after fetching the cardinality separator (%s), was expected to not be empty", string([]byte{cardinalityClose}))
+		return 0, nil, nil, errors.New(str)
+	}
+
+	nextValueAfterSeparator := retRemaining[0]
+	if nextValueAfterSeparator == cardinalityClose {
+		// min, no max
+		return uiMin, nil, retRemaining[1:], nil
+	}
+
+	retMaxBytes, retRemainingAfterMax, err := matchBytes(retRemaining, possibleNumbers)
+	if err != nil {
+		return 0, nil, nil, err
+	}
+
+	if len(retRemainingAfterMax) <= 0 {
+		str := fmt.Sprintf("the remaining bytes, after fetching the cardinality's max (%s), was expected to contain the cardinality's close byte (%s).  Emty bytes returned", retMaxBytes, string([]byte{cardinalityClose}))
+		return 0, nil, nil, errors.New(str)
+	}
+
+	if retRemainingAfterMax[0] != cardinalityClose {
+		str := fmt.Sprintf("the remaining bytes, after fetching the cardinality's max, was expected to contain the close byte (%s)", string([]byte{cardinalityClose}))
+		return 0, nil, nil, errors.New(str)
+	}
+
+	iMax, err := strconv.Atoi(string(retMaxBytes))
+	if err != nil {
+		return 0, nil, nil, err
+	}
+
+	uiMax := uint(iMax)
+	return uiMin, &uiMax, retRemainingAfterMax[1:], nil
+}
 
 func bytesToRuleNameAndValue(
 	data []byte,
@@ -126,7 +237,29 @@ func extractBetween(data []byte, prefix byte, suffix byte, escape byte) ([]byte,
 	return output, data[lastIndex:], nil
 }
 
-func createPossibleRuleNameCharactersList() []byte {
+func matchBytes(data []byte, possibleValues []byte) ([]byte, []byte, error) {
+	output := []byte{}
+	for _, oneByte := range data {
+		isMatch := false
+		for _, onePossibleValue := range possibleValues {
+			if onePossibleValue == oneByte {
+				isMatch = true
+				break
+			}
+		}
+
+		if isMatch {
+			output = append(output, oneByte)
+			continue
+		}
+
+		break
+	}
+
+	return output, data[len(output):], nil
+}
+
+func createPossibleUpperCaseLetters() []byte {
 	return []byte{
 		[]byte(ulA)[0],
 		[]byte(ulB)[0],
@@ -154,5 +287,51 @@ func createPossibleRuleNameCharactersList() []byte {
 		[]byte(ulX)[0],
 		[]byte(ulY)[0],
 		[]byte(ulZ)[0],
+	}
+}
+
+func createPossibleLowerCaseLetters() []byte {
+	return []byte{
+		[]byte(llA)[0],
+		[]byte(llB)[0],
+		[]byte(llC)[0],
+		[]byte(llD)[0],
+		[]byte(llE)[0],
+		[]byte(llF)[0],
+		[]byte(llG)[0],
+		[]byte(llH)[0],
+		[]byte(llI)[0],
+		[]byte(llJ)[0],
+		[]byte(llK)[0],
+		[]byte(llL)[0],
+		[]byte(llM)[0],
+		[]byte(llN)[0],
+		[]byte(llO)[0],
+		[]byte(llP)[0],
+		[]byte(llQ)[0],
+		[]byte(llR)[0],
+		[]byte(llS)[0],
+		[]byte(llT)[0],
+		[]byte(llU)[0],
+		[]byte(llV)[0],
+		[]byte(llW)[0],
+		[]byte(llX)[0],
+		[]byte(llY)[0],
+		[]byte(llZ)[0],
+	}
+}
+
+func createPossibleNumbers() []byte {
+	return []byte{
+		[]byte(nZero)[0],
+		[]byte(nOne)[0],
+		[]byte(nTwo)[0],
+		[]byte(nTree)[0],
+		[]byte(nFour)[0],
+		[]byte(nFive)[0],
+		[]byte(nSix)[0],
+		[]byte(nSeven)[0],
+		[]byte(nHeight)[0],
+		[]byte(nNine)[0],
 	}
 }
