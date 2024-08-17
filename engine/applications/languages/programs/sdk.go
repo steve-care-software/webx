@@ -1,4 +1,4 @@
-package scripts
+package programs
 
 import (
 	"github.com/steve-care-software/webx/engine/domain/asts"
@@ -6,7 +6,7 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/stacks"
 )
 
-// Application represents the script application
+// Application represents the program application
 type Application interface {
 	Lex(grammar grammars.Grammar, input []byte) ([]byte, error)
 	Parse(grammar grammars.Grammar, input []byte) (asts.AST, error)
