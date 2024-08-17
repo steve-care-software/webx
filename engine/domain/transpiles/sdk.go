@@ -10,16 +10,14 @@ import (
 type Builder interface {
 	Create() Builder
 	WithReplacements(replacements replacements.Replacements) Builder
-	WithTokens(tokens []tokens.Token) Builder
-	WithAsts(asts asts.AST) Builder
+	WithTokens(tokens tokens.Tokens) Builder
+	WithAsts(asts asts.ASTs) Builder
 	Now() (Transpile, error)
 }
 
 // Transpile represents a transpile instance
 type Transpile interface {
 	Replacements() replacements.Replacements
-	Tokens() []tokens.Token
-	Asts() []asts.AST
-	FetchToken(name string) (tokens.Token, error)
-	FetchAST(name string) (asts.AST, error)
+	Tokens() tokens.Tokens
+	Asts() asts.ASTs
 }

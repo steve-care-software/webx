@@ -4,10 +4,10 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/hash"
 )
 
-// NewBuilder creates a new builder
-func NewBuilder() Builder {
+// NewASTBuilder creates a new ast builder
+func NewASTBuilder() AstBuilder {
 	hashAdapter := hash.NewAdapter()
-	return createBuilder(
+	return createAstBuilder(
 		hashAdapter,
 	)
 }
@@ -28,11 +28,24 @@ func NewNFTBuilder() NFTBuilder {
 	)
 }
 
-// Builder represents an AST builder
+// Builder represents an ast list
 type Builder interface {
 	Create() Builder
-	WithLibrary(library NFTs) Builder
-	WithEntry(entry hash.Hash) Builder
+	WithList(list []AST) Builder
+	Now() (ASTs, error)
+}
+
+// ASTs represents asts
+type ASTs interface {
+	List() []AST
+	Fetch(name string) (AST, error)
+}
+
+// AstBuilder represents an AST builder
+type AstBuilder interface {
+	Create() AstBuilder
+	WithLibrary(library NFTs) AstBuilder
+	WithEntry(entry hash.Hash) AstBuilder
 	Now() (AST, error)
 }
 

@@ -12,23 +12,19 @@ type Builder interface {
 	Create() Builder
 	WithBlockEntry(blockEntry string) Builder
 	WithOmissions(omissions []string) Builder
-	WithAsts(asts []asts.AST) Builder
-	WithBlocks(blocks []blocks.Block) Builder
-	WithTokens(tokens []tokens.Token) Builder
-	WithRules(rules []rules.Rule) Builder
+	WithAsts(asts asts.ASTs) Builder
+	WithBlocks(blocks blocks.Blocks) Builder
+	WithTokens(tokens tokens.Tokens) Builder
 	Now() (Grammar, error)
 }
 
 // Grammar represents a grammar
 type Grammar interface {
 	BlockEntry() string
-	Asts() []asts.AST
-	Blocks() []blocks.Block
-	Tokens() []tokens.Token
-	Rules() []rules.Rule
-	FetchBlock(name string) (blocks.Block, error)
-	FetchToken(name string) (tokens.Token, error)
-	FetchRule(name string) (rules.Rule, error)
+	Asts() asts.ASTs
+	Blocks() blocks.Blocks
+	Tokens() tokens.Tokens
+	Rules() rules.Rules
 	HasOmissions() bool
 	Omissions() []string
 }

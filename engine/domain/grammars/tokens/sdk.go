@@ -5,12 +5,25 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/grammars/tokens/elements"
 )
 
-// Builder represents the token builder
+// Builder represents a tokens list
 type Builder interface {
 	Create() Builder
-	WithName(name string) Builder
-	WithElement(element elements.Element) Builder
-	WithCardinality(cardinality cardinalities.Cardinality) Builder
+	WithList(list []Token) Builder
+	Now() (Tokens, error)
+}
+
+// Tokens represents tokens
+type Tokens interface {
+	List() []Token
+	Fetch(name string) (Token, error)
+}
+
+// TokenBuilder represents the token builder
+type TokenBuilder interface {
+	Create() TokenBuilder
+	WithName(name string) TokenBuilder
+	WithElement(element elements.Element) TokenBuilder
+	WithCardinality(cardinality cardinalities.Cardinality) TokenBuilder
 	Now() (Token, error)
 }
 

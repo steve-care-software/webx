@@ -6,16 +6,16 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/hash"
 )
 
-type builder struct {
+type astAstBuilder struct {
 	hashAdapter hash.Adapter
 	library     NFTs
 	entry       hash.Hash
 }
 
-func createBuilder(
+func createAstBuilder(
 	hashAdapter hash.Adapter,
-) Builder {
-	out := builder{
+) AstBuilder {
+	out := astAstBuilder{
 		hashAdapter: hashAdapter,
 		library:     nil,
 		entry:       nil,
@@ -25,25 +25,25 @@ func createBuilder(
 }
 
 // Create initializes the builder
-func (app *builder) Create() Builder {
-	return createBuilder(
+func (app *astAstBuilder) Create() AstBuilder {
+	return createAstBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithLibrary adds a library to the builder
-func (app *builder) WithLibrary(library NFTs) Builder {
+func (app *astAstBuilder) WithLibrary(library NFTs) AstBuilder {
 	app.library = library
 	return app
 }
 
 // WithEntry adds an entry to the builder
-func (app *builder) WithEntry(entry hash.Hash) Builder {
+func (app *astAstBuilder) WithEntry(entry hash.Hash) AstBuilder {
 	app.entry = entry
 	return app
 }
 
-func (app *builder) fetchComplexity(hashStr string) (map[string]uint, error) {
+func (app *astAstBuilder) fetchComplexity(hashStr string) (map[string]uint, error) {
 	// create the hash from the string:
 	pHash, err := app.hashAdapter.FromString(hashStr)
 	if err != nil {
@@ -92,7 +92,7 @@ func (app *builder) fetchComplexity(hashStr string) (map[string]uint, error) {
 }
 
 // Now builds a new AST instance
-func (app *builder) Now() (AST, error) {
+func (app *astAstBuilder) Now() (AST, error) {
 	if app.library == nil {
 		return nil, errors.New("the library is mandatory in order to build an AST instance")
 	}
