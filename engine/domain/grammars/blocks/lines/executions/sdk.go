@@ -47,6 +47,27 @@ const (
 	StackAssignment
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder([]uint16{
+		TypeCastIntHeight,
+		TypeCastIntSixteen,
+		TypeCastIntThirtyTwo,
+		TypeCastIntSixtyFour,
+		TypeCastUintHeight,
+		TypeCastUintSixteen,
+		TypeCastUintThirtyTwo,
+		TypeCastUintSixtyFour,
+		TypeCastFloatThirtyTwo,
+		TypeCastFloatSixtyFour,
+		TypeCastFloatString,
+		TypeCastFloatBytes,
+		MathOperationArithmeticAddition,
+		MathOperationArithmeticSubstraction,
+		StackAssignment,
+	})
+}
+
 // Builder represents an execution builder
 type Builder interface {
 	Create() Builder
