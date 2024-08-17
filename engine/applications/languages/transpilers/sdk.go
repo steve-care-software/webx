@@ -2,7 +2,6 @@ package transpilers
 
 import (
 	"github.com/steve-care-software/webx/engine/domain/asts"
-	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/replacements"
 	"github.com/steve-care-software/webx/engine/domain/transpiles"
 )
 
@@ -10,5 +9,7 @@ import (
 type Application interface {
 	Lex(input []byte) ([]byte, error)
 	Parse(lexedInput []byte) (transpiles.Transpile, error)
-	Compile(replacements replacements.Replacements) (asts.AST, error)
+	Compile(transpile transpiles.Transpile) (asts.AST, error)
+	Decompile(ast asts.AST) (transpiles.Transpile, error)
+	Compose(transpile transpiles.Transpile) ([]byte, error)
 }

@@ -11,5 +11,7 @@ type Application interface {
 	Lex(grammar grammars.Grammar, input []byte) ([]byte, error)
 	Parse(grammar grammars.Grammar, input []byte) (asts.AST, error)
 	Compile(ast asts.AST) ([]byte, error)
+	Decompile(byteCode []byte) (asts.AST, error)
+	Compose(grammar grammars.Grammar, ast asts.AST) ([]byte, error)
 	Interpret(bytecode []byte) (stacks.Stack, error)
 }
