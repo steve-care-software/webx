@@ -87,12 +87,13 @@ const cardinalitySeparator = ","
 const cardinalityZeroPlus = "*"
 const cardinalityOnePlus = "+"
 const tokenReference = "."
-const lineSeparator = "|"
+const linesSeparator = "|"
+const lineSeparator = "-"
 const underscore = "_"
 
 // NewApplication creates a new application
 func NewApplication() Application {
-	lineBuilder := lines.NewBuilder()
+	lineBuilder := lines.NewLineBuilder()
 	executionBuilder := executions.NewBuilder()
 	tokensBuilder := tokens.NewBuilder()
 	tokenBuilder := tokens.NewTokenBuilder()
@@ -120,6 +121,7 @@ func NewApplication() Application {
 		possibleUpperCaseLetters,
 		possibleNumbers,
 		possibleFuncNameCharacters,
+		[]byte(linesSeparator)[0],
 		[]byte(lineSeparator)[0],
 		[]byte(tokenReference)[0],
 		[]byte(ruleNameSeparator)[0],

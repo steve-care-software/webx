@@ -2,40 +2,48 @@ package lines
 
 import (
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions"
+	"github.com/steve-care-software/webx/engine/domain/grammars/tokens"
+	"github.com/steve-care-software/webx/engine/domain/grammars/tokens/elements"
 )
 
 type line struct {
-	tokens      []string
+	tokens      tokens.Tokens
 	execution   executions.Execution
-	replacement string
+	replacement elements.Element
 }
 
 func createLineWithExecutionAndReplacement(
-	tokens []string,
+	tokens tokens.Tokens,
 	execution executions.Execution,
-	replacement string,
+	replacement elements.Element,
 ) Line {
-	return createLineInternally(tokens, execution, "")
+	return createLineInternally(tokens, execution, replacement)
 }
 
 func createLineWithExecution(
-	tokens []string,
+	tokens tokens.Tokens,
 	execution executions.Execution,
 ) Line {
-	return createLineInternally(tokens, execution, "")
+	return createLineInternally(tokens, execution, nil)
 }
 
 func createLineWithReplacement(
-	tokens []string,
-	replacement string,
+	tokens tokens.Tokens,
+	replacement elements.Element,
 ) Line {
 	return createLineInternally(tokens, nil, replacement)
 }
 
+func createLine(
+	tokens tokens.Tokens,
+) Line {
+	return createLineInternally(tokens, nil, nil)
+}
+
 func createLineInternally(
-	tokens []string,
+	tokens tokens.Tokens,
 	execution executions.Execution,
-	replacement string,
+	replacement elements.Element,
 ) Line {
 	out := line{
 		tokens:      tokens,
@@ -47,7 +55,7 @@ func createLineInternally(
 }
 
 // Tokens returns the tokens
-func (obj *line) Tokens() []string {
+func (obj *line) Tokens() tokens.Tokens {
 	return obj.tokens
 }
 
@@ -63,10 +71,10 @@ func (obj *line) Execution() executions.Execution {
 
 // HasReplacement returns true if there is a replacement, false otherwise
 func (obj *line) HasReplacement() bool {
-	return obj.replacement != ""
+	return obj.replacement != nil
 }
 
 // Replacement returns the replacement, if any
-func (obj *line) Replacement() string {
+func (obj *line) Replacement() elements.Element {
 	return obj.replacement
 }

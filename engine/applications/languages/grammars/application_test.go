@@ -5,6 +5,114 @@ import (
 	"testing"
 )
 
+func TestApplication_line_withExecution_withReplacement_Success(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT`), remaining...)
+
+	application := NewApplication().(*application)
+	retLine, retRemaining, err := application.bytesToLine(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	if !retLine.HasReplacement() {
+		t.Errorf("the execution was expected to contain a replacement")
+		return
+	}
+
+	if !retLine.HasExecution() {
+		t.Errorf("the execution was expected to contain an execution")
+		return
+	}
+}
+
+func TestApplication_line_withExecution_withReplacement_reversed_Success(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth`), remaining...)
+
+	application := NewApplication().(*application)
+	retLine, retRemaining, err := application.bytesToLine(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	if !retLine.HasReplacement() {
+		t.Errorf("the execution was expected to contain a replacement")
+		return
+	}
+
+	if !retLine.HasExecution() {
+		t.Errorf("the execution was expected to contain an execution")
+		return
+	}
+}
+
+func TestApplication_line_withExecution_Success(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth`), remaining...)
+
+	application := NewApplication().(*application)
+	retLine, retRemaining, err := application.bytesToLine(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	if retLine.HasReplacement() {
+		t.Errorf("the execution was expected to NOT contain a replacement")
+		return
+	}
+
+	if !retLine.HasExecution() {
+		t.Errorf("the execution was expected to contain an execution")
+		return
+	}
+}
+
+func TestApplication_line__withReplacement_Success(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement`), remaining...)
+
+	application := NewApplication().(*application)
+	retLine, retRemaining, err := application.bytesToLine(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	if !retLine.HasReplacement() {
+		t.Errorf("the execution was expected to contain a replacement")
+		return
+	}
+
+	if retLine.HasExecution() {
+		t.Errorf("the execution was expected to NOT contain an execution")
+		return
+	}
+}
+
 func TestApplication_execution_withElements_Success(t *testing.T) {
 	remaining := []byte("!this is some remaining")
 	input := append([]byte(`myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth`), remaining...)

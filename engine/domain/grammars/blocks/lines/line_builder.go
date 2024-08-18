@@ -4,19 +4,21 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions"
+	"github.com/steve-care-software/webx/engine/domain/grammars/tokens"
+	"github.com/steve-care-software/webx/engine/domain/grammars/tokens/elements"
 )
 
 type lineBuilder struct {
-	tokens      []string
+	tokens      tokens.Tokens
 	execution   executions.Execution
-	replacement string
+	replacement elements.Element
 }
 
 func createLineBuilder() LineBuilder {
 	out := lineBuilder{
 		tokens:      nil,
 		execution:   nil,
-		replacement: "",
+		replacement: nil,
 	}
 
 	return &out
@@ -28,7 +30,7 @@ func (app *lineBuilder) Create() LineBuilder {
 }
 
 // WithTokens add tokens to the builder
-func (app *lineBuilder) WithTokens(tokens []string) LineBuilder {
+func (app *lineBuilder) WithTokens(tokens tokens.Tokens) LineBuilder {
 	app.tokens = tokens
 	return app
 }
@@ -40,32 +42,28 @@ func (app *lineBuilder) WithExecution(execution executions.Execution) LineBuilde
 }
 
 // WithReplacement adds replacement to the builder
-func (app *lineBuilder) WithReplacement(replacement string) LineBuilder {
+func (app *lineBuilder) WithReplacement(replacement elements.Element) LineBuilder {
 	app.replacement = replacement
 	return app
 }
 
 // Now builds a new Line instance
 func (app *lineBuilder) Now() (Line, error) {
-	if app.tokens != nil && len(app.tokens) <= 0 {
-		app.tokens = nil
-	}
-
 	if app.tokens == nil {
 		return nil, errors.New("there must be at least 1 Token in order to build a Line instance")
 	}
 
-	if app.execution != nil && app.replacement != "" {
-
+	if app.execution != nil && app.replacement != nil {
+		return createLineWithExecutionAndReplacement(app.tokens, app.execution, app.replacement), nil
 	}
 
 	if app.execution != nil {
-
+		return createLineWithExecution(app.tokens, app.execution), nil
 	}
 
-	if app.replacement != "" {
-
+	if app.replacement != nil {
+		return createLineWithReplacement(app.tokens, app.replacement), nil
 	}
 
-	return nil, nil
+	return createLine(app.tokens), nil
 }

@@ -14,7 +14,7 @@ import (
 )
 
 type application struct {
-	lineBuilder                lines.Builder
+	lineBuilder                lines.LineBuilder
 	executionBuilder           executions.Builder
 	tokensBuilder              tokens.Builder
 	tokenBuilder               tokens.TokenBuilder
@@ -28,6 +28,7 @@ type application struct {
 	possibleUpperCaseLetters   []byte
 	possibleNumbers            []byte
 	possibleFuncNameCharacters []byte
+	linesSeparator             byte
 	lineSeparator              byte
 	tokenReferenceSeparator    byte
 	ruleNameSeparator          byte
@@ -42,7 +43,7 @@ type application struct {
 }
 
 func createApplication(
-	lineBuilder lines.Builder,
+	lineBuilder lines.LineBuilder,
 	executionBuilder executions.Builder,
 	tokensBuilder tokens.Builder,
 	tokenBuilder tokens.TokenBuilder,
@@ -56,6 +57,7 @@ func createApplication(
 	possibleUpperCaseLetters []byte,
 	possibleNumbers []byte,
 	possibleFuncNameCharacters []byte,
+	linesSeparator byte,
 	lineSeparator byte,
 	tokenReferenceSeparator byte,
 	ruleNameSeparator byte,
@@ -83,6 +85,7 @@ func createApplication(
 		possibleUpperCaseLetters:   possibleUpperCaseLetters,
 		possibleNumbers:            possibleNumbers,
 		possibleFuncNameCharacters: possibleFuncNameCharacters,
+		linesSeparator:             linesSeparator,
 		lineSeparator:              lineSeparator,
 		tokenReferenceSeparator:    tokenReferenceSeparator,
 		ruleNameSeparator:          ruleNameSeparator,
@@ -117,6 +120,60 @@ func (app *application) Decompile(ast asts.AST) (grammars.Grammar, error) {
 // Compose composes a grammar instance to a grammar input
 func (app *application) Compose(grammar grammars.Grammar) ([]byte, error) {
 	return nil, nil
+}
+
+func (app *application) bytesToLine(input []byte) (lines.Line, []byte, error) {
+	retTokens, retRemaining, err := app.bytesToTokens(input)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	builder := app.lineBuilder.Create().WithTokens(retTokens)
+	for i := 0; i < 2; i++ {
+		retExecution, retElement, retRemainingAfterExexOrToken, err := app.bytesToExecutionOrReplacement(retRemaining)
+		if err != nil {
+			break
+		}
+
+		if retExecution != nil {
+			builder.WithExecution(retExecution)
+		}
+
+		if retElement != nil {
+			builder.WithReplacement(retElement)
+		}
+
+		retRemaining = retRemainingAfterExexOrToken
+	}
+
+	line, err := builder.Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return line, retRemaining, nil
+}
+
+func (app *application) bytesToExecutionOrReplacement(input []byte) (executions.Execution, elements.Element, []byte, error) {
+	if len(input) <= 0 {
+		return nil, nil, nil, errors.New("the execution or replacement was expected to contain at least 1 byte for its separator")
+	}
+
+	if input[0] != app.lineSeparator {
+		return nil, nil, nil, errors.New("the execution or replacement was expected to contain its separator")
+	}
+
+	retExecution, retRemaining, err := app.bytesToExecution(input[1:])
+	if err != nil {
+		retElement, retElementRemaining, err := app.bytesToElementReference(input[1:])
+		if err != nil {
+			return nil, nil, nil, err
+		}
+
+		return nil, retElement, retElementRemaining, nil
+	}
+
+	return retExecution, nil, retRemaining, nil
 }
 
 func (app *application) bytesToExecution(input []byte) (executions.Execution, []byte, error) {

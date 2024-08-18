@@ -2,6 +2,8 @@ package lines
 
 import (
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions"
+	"github.com/steve-care-software/webx/engine/domain/grammars/tokens"
+	"github.com/steve-care-software/webx/engine/domain/grammars/tokens/elements"
 )
 
 // NewBuilder creates a new builder
@@ -29,17 +31,17 @@ type Lines interface {
 // LineBuilder represents a line builder
 type LineBuilder interface {
 	Create() LineBuilder
-	WithTokens(tokens []string) LineBuilder
+	WithTokens(tokens tokens.Tokens) LineBuilder
 	WithExecution(execution executions.Execution) LineBuilder
-	WithReplacement(replacement string) LineBuilder
+	WithReplacement(replacement elements.Element) LineBuilder
 	Now() (Line, error)
 }
 
 // Line represents a variable
 type Line interface {
-	Tokens() []string
+	Tokens() tokens.Tokens
 	HasExecution() bool
 	Execution() executions.Execution
 	HasReplacement() bool
-	Replacement() string
+	Replacement() elements.Element
 }
