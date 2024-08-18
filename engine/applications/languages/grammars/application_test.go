@@ -5,6 +5,29 @@ import (
 	"testing"
 )
 
+func TestApplication_tokens_Success(t *testing.T) {
+	remaining := []byte("this is some remaining")
+	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]`), remaining...)
+
+	application := NewApplication().(*application)
+	retToken, retRemaining, err := application.bytesToTokens(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	list := retToken.List()
+	if len(list) != 5 {
+		t.Errorf("the tokens list was expected to contain %d tokens, %d returned", 5, len(list))
+		return
+	}
+}
+
 func TestApplication_token_withBlockName_withCardinality_Success(t *testing.T) {
 	remaining := []byte("this is some remaining")
 	input := append([]byte(`.myToken[1]`), remaining...)

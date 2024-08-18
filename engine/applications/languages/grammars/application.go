@@ -102,6 +102,27 @@ func (app *application) Compose(grammar grammars.Grammar) ([]byte, error) {
 	return nil, nil
 }
 
+func (app *application) bytesToTokens(input []byte) (tokens.Tokens, []byte, error) {
+	list := []tokens.Token{}
+	remaining := input
+	for {
+		retToken, retRemaining, err := app.bytesToToken(remaining)
+		if err != nil {
+			break
+		}
+
+		list = append(list, retToken)
+		remaining = retRemaining
+	}
+
+	ins, err := app.tokensBuilder.Create().WithList(list).Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, remaining, nil
+}
+
 func (app *application) bytesToToken(input []byte) (tokens.Token, []byte, error) {
 	if len(input) <= 0 {
 		return nil, nil, errors.New("the token was expected to contain at least 1 byte")
