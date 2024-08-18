@@ -84,9 +84,11 @@ const cardinalityClose = "]"
 const cardinalitySeparator = ","
 const cardinalityZeroPlus = "*"
 const cardinalityOnePlus = "+"
+const tokenReference = "."
 
 // NewApplication creates a new application
 func NewApplication() Application {
+	tokensBuilder := tokens.NewBuilder()
 	tokenBuilder := tokens.NewTokenBuilder()
 	elementBuilder := elements.NewBuilder()
 	ruleBuilder := rules.NewRuleBuilder()
@@ -96,6 +98,7 @@ func NewApplication() Application {
 	possibleUpperCaseLetters := createPossibleUpperCaseLetters()
 	possibleNumbers := createPossibleNumbers()
 	return createApplication(
+		tokensBuilder,
 		tokenBuilder,
 		elementBuilder,
 		ruleBuilder,
@@ -105,6 +108,7 @@ func NewApplication() Application {
 		possibleLowerCaseLetters,
 		possibleUpperCaseLetters,
 		possibleNumbers,
+		[]byte(tokenReference)[0],
 		[]byte(ruleNameSeparator)[0],
 		[]byte(ruleValuePrefix)[0],
 		[]byte(ruleValueSuffix)[0],

@@ -7,7 +7,7 @@ import (
 
 func TestApplication_token_withBlockName_withCardinality_Success(t *testing.T) {
 	remaining := []byte("this is some remaining")
-	input := append([]byte(`myToken[1]`), remaining...)
+	input := append([]byte(`.myToken[1]`), remaining...)
 
 	application := NewApplication().(*application)
 	retToken, retRemaining, err := application.bytesToToken(input)
@@ -47,7 +47,7 @@ func TestApplication_token_withBlockName_withCardinality_Success(t *testing.T) {
 
 func TestApplication_token_withBlockName_withoutCardinality_Success(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`myToken`), remaining...)
+	input := append([]byte(`.myToken`), remaining...)
 
 	application := NewApplication().(*application)
 	retToken, retRemaining, err := application.bytesToToken(input)
@@ -87,7 +87,7 @@ func TestApplication_token_withBlockName_withoutCardinality_Success(t *testing.T
 
 func TestApplication_token_withRuleName_withCardinality_Success(t *testing.T) {
 	remaining := []byte("this is some remaining")
-	input := append([]byte(`MY_RULE[1]`), remaining...)
+	input := append([]byte(`.MY_RULE[1]`), remaining...)
 
 	application := NewApplication().(*application)
 	retToken, retRemaining, err := application.bytesToToken(input)
@@ -127,10 +127,31 @@ func TestApplication_token_withRuleName_withCardinality_Success(t *testing.T) {
 
 func TestApplication_token_withoutBlockName_withoutRuleName_returnsError(t *testing.T) {
 	remaining := []byte("this is some remaining")
-	input := append([]byte(`______`), remaining...)
+	input := append([]byte(`.______`), remaining...)
 
 	application := NewApplication().(*application)
 	_, _, err := application.bytesToToken(input)
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+		return
+	}
+}
+
+func TestApplication_token_withoutTokenReferenceByte_returnsError(t *testing.T) {
+	remaining := []byte("this is some remaining")
+	input := append([]byte(`myToken[1]`), remaining...)
+
+	application := NewApplication().(*application)
+	_, _, err := application.bytesToToken(input)
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+		return
+	}
+}
+
+func TestApplication_token_withoutInput_returnsError(t *testing.T) {
+	application := NewApplication().(*application)
+	_, _, err := application.bytesToToken([]byte{})
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

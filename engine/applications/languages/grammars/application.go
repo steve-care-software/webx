@@ -1,6 +1,8 @@
 package grammars
 
 import (
+	"errors"
+
 	"github.com/steve-care-software/webx/engine/domain/asts"
 	"github.com/steve-care-software/webx/engine/domain/grammars"
 	"github.com/steve-care-software/webx/engine/domain/grammars/rules"
@@ -10,6 +12,7 @@ import (
 )
 
 type application struct {
+	tokensBuilder            tokens.Builder
 	tokenBuilder             tokens.TokenBuilder
 	elementBuilder           elements.Builder
 	ruleBuilder              rules.RuleBuilder
@@ -19,6 +22,7 @@ type application struct {
 	possibleLowerCaseLetters []byte
 	possibleUpperCaseLetters []byte
 	possibleNumbers          []byte
+	tokenReferenceSeparator  byte
 	ruleNameSeparator        byte
 	ruleValuePrefix          byte
 	ruleValueSuffix          byte
@@ -31,6 +35,7 @@ type application struct {
 }
 
 func createApplication(
+	tokensBuilder tokens.Builder,
 	tokenBuilder tokens.TokenBuilder,
 	elementBuilder elements.Builder,
 	ruleBuilder rules.RuleBuilder,
@@ -40,6 +45,7 @@ func createApplication(
 	possibleLowerCaseLetters []byte,
 	possibleUpperCaseLetters []byte,
 	possibleNumbers []byte,
+	tokenReferenceSeparator byte,
 	ruleNameSeparator byte,
 	ruleValuePrefix byte,
 	ruleValueSuffix byte,
@@ -51,6 +57,7 @@ func createApplication(
 	cardinalityOnePlus byte,
 ) Application {
 	out := application{
+		tokensBuilder:            tokensBuilder,
 		tokenBuilder:             tokenBuilder,
 		elementBuilder:           elementBuilder,
 		ruleBuilder:              ruleBuilder,
@@ -60,6 +67,7 @@ func createApplication(
 		possibleLowerCaseLetters: possibleLowerCaseLetters,
 		possibleUpperCaseLetters: possibleUpperCaseLetters,
 		possibleNumbers:          possibleNumbers,
+		tokenReferenceSeparator:  tokenReferenceSeparator,
 		ruleNameSeparator:        ruleNameSeparator,
 		ruleValuePrefix:          ruleValuePrefix,
 		ruleValueSuffix:          ruleValueSuffix,
@@ -95,7 +103,16 @@ func (app *application) Compose(grammar grammars.Grammar) ([]byte, error) {
 }
 
 func (app *application) bytesToToken(input []byte) (tokens.Token, []byte, error) {
+	if len(input) <= 0 {
+		return nil, nil, errors.New("the token was expected to contain at least 1 byte")
+	}
+
+	if input[0] != app.tokenReferenceSeparator {
+		return nil, nil, errors.New("the token was expected to contain the tokenReference byte at its prefix")
+	}
+
 	// try to match a rule
+	input = input[1:]
 	elementBuilder := app.elementBuilder.Create()
 	ruleName, retRemaining, err := app.bytesToRuleName(input)
 	if err != nil {
