@@ -14,6 +14,7 @@ import (
 )
 
 type application struct {
+	linesBuilder               lines.Builder
 	lineBuilder                lines.LineBuilder
 	executionBuilder           executions.Builder
 	tokensBuilder              tokens.Builder
@@ -43,6 +44,7 @@ type application struct {
 }
 
 func createApplication(
+	linesBuilder lines.Builder,
 	lineBuilder lines.LineBuilder,
 	executionBuilder executions.Builder,
 	tokensBuilder tokens.Builder,
@@ -71,6 +73,7 @@ func createApplication(
 	cardinalityOnePlus byte,
 ) Application {
 	out := application{
+		linesBuilder:               linesBuilder,
 		lineBuilder:                lineBuilder,
 		executionBuilder:           executionBuilder,
 		tokensBuilder:              tokensBuilder,
@@ -120,6 +123,39 @@ func (app *application) Decompile(ast asts.AST) (grammars.Grammar, error) {
 // Compose composes a grammar instance to a grammar input
 func (app *application) Compose(grammar grammars.Grammar) ([]byte, error) {
 	return nil, nil
+}
+
+func (app *application) bytesToLines(input []byte) (lines.Lines, []byte, error) {
+	remaining := input
+	list := []lines.Line{}
+	cpt := 0
+	for {
+
+		isFirst := cpt <= 0
+		if !isFirst && remaining[0] != app.linesSeparator {
+			break
+		}
+
+		if !isFirst {
+			remaining = remaining[1:]
+		}
+
+		retLine, retRemaining, err := app.bytesToLine(remaining)
+		if err != nil {
+			break
+		}
+
+		list = append(list, retLine)
+		remaining = retRemaining
+		cpt++
+	}
+
+	ins, err := app.linesBuilder.Create().WithList(list).Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, remaining, nil
 }
 
 func (app *application) bytesToLine(input []byte) (lines.Line, []byte, error) {

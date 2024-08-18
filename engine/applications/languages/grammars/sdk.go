@@ -93,6 +93,7 @@ const underscore = "_"
 
 // NewApplication creates a new application
 func NewApplication() Application {
+	linesBuilder := lines.NewBuilder()
 	lineBuilder := lines.NewLineBuilder()
 	executionBuilder := executions.NewBuilder()
 	tokensBuilder := tokens.NewBuilder()
@@ -107,6 +108,7 @@ func NewApplication() Application {
 	possibleNumbers := createPossibleNumbers()
 	possibleFuncNameCharacters := createPossibleFuncNameCharacters()
 	return createApplication(
+		linesBuilder,
 		lineBuilder,
 		executionBuilder,
 		tokensBuilder,

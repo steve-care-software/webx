@@ -5,6 +5,64 @@ import (
 	"testing"
 )
 
+func TestApplication_lines_withOneLine_Success(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT`), remaining...)
+
+	application := NewApplication().(*application)
+	retLines, retRemaining, err := application.bytesToLines(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	list := retLines.List()
+	if len(list) != 1 {
+		t.Errorf("the lines was expected to contain %d lines, %d returned", 1, len(list))
+		return
+	}
+}
+
+func TestApplication_lines_withMultipleLines_Success(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement`), remaining...)
+
+	application := NewApplication().(*application)
+	retLines, retRemaining, err := application.bytesToLines(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	list := retLines.List()
+	if len(list) != 3 {
+		t.Errorf("the lines was expected to contain %d lines, %d returned", 3, len(list))
+		return
+	}
+}
+
+func TestApplication_lines_withoutLine_returnsError(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`not a line`), remaining...)
+
+	application := NewApplication().(*application)
+	_, _, err := application.bytesToLines(input)
+	if err == nil {
+		t.Errorf("the returned error was expected to be valid, nil returned")
+		return
+	}
+}
+
 func TestApplication_line_withExecution_withReplacement_Success(t *testing.T) {
 	remaining := []byte("!this is some remaining")
 	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT`), remaining...)
@@ -86,7 +144,7 @@ func TestApplication_line_withExecution_Success(t *testing.T) {
 	}
 }
 
-func TestApplication_line__withReplacement_Success(t *testing.T) {
+func TestApplication_line_withReplacement_Success(t *testing.T) {
 	remaining := []byte("!this is some remaining")
 	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement`), remaining...)
 
@@ -109,6 +167,18 @@ func TestApplication_line__withReplacement_Success(t *testing.T) {
 
 	if retLine.HasExecution() {
 		t.Errorf("the execution was expected to NOT contain an execution")
+		return
+	}
+}
+
+func TestApplication_withoutTokens_returnsError(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT`), remaining...)
+
+	application := NewApplication().(*application)
+	_, _, err := application.bytesToLine(input)
+	if err == nil {
+		t.Errorf("the returned error was expected to be valid, nil returned")
 		return
 	}
 }
@@ -358,7 +428,7 @@ func TestApplication_token_withRuleName_withCardinality_Success(t *testing.T) {
 
 func TestApplication_token_withoutBlockName_withoutRuleName_returnsError(t *testing.T) {
 	remaining := []byte("this is some remaining")
-	input := append([]byte(`.______`), remaining...)
+	input := append([]byte(`.___`), remaining...)
 
 	application := NewApplication().(*application)
 	_, _, err := application.bytesToToken(input)
