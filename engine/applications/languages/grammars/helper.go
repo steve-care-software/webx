@@ -7,6 +7,20 @@ import (
 	"strconv"
 )
 
+func blockName(
+	data []byte,
+	firstBytes []byte,
+	secondBytes []byte,
+) ([]byte, []byte, error) {
+	retFirstMatches, retRemaining := matchBytes(data, firstBytes)
+	if len(retFirstMatches) <= 0 {
+		return nil, nil, errors.New("the bytes did not match any of the firstBytes")
+	}
+
+	retSecondMatches, retSecondRemaining := matchBytes(retRemaining, secondBytes)
+	return append(retFirstMatches, retSecondMatches...), retSecondRemaining, nil
+}
+
 func bytesToMinMax(
 	data []byte,
 	possibleNumbers []byte,
@@ -56,11 +70,7 @@ func bytesToBracketsMinMax(
 		return 0, nil, nil, errors.New("the provided bytes could not be converted to cardinality's min/max")
 	}
 
-	retMinBytes, retRemaining, err := matchBytes(data[1:], possibleNumbers)
-	if err != nil {
-		return 0, nil, nil, err
-	}
-
+	retMinBytes, retRemaining := matchBytes(data[1:], possibleNumbers)
 	iMin, err := strconv.Atoi(string(retMinBytes))
 	if err != nil {
 		return 0, nil, nil, err
@@ -93,11 +103,7 @@ func bytesToBracketsMinMax(
 		return uiMin, nil, retRemaining[1:], nil
 	}
 
-	retMaxBytes, retRemainingAfterMax, err := matchBytes(retRemaining, possibleNumbers)
-	if err != nil {
-		return 0, nil, nil, err
-	}
-
+	retMaxBytes, retRemainingAfterMax := matchBytes(retRemaining, possibleNumbers)
 	if len(retRemainingAfterMax) <= 0 {
 		str := fmt.Sprintf("the remaining bytes, after fetching the cardinality's max (%s), was expected to contain the cardinality's close byte (%s).  Emty bytes returned", retMaxBytes, string([]byte{cardinalityClose}))
 		return 0, nil, nil, errors.New(str)
@@ -237,7 +243,7 @@ func extractBetween(data []byte, prefix byte, suffix byte, escape byte) ([]byte,
 	return output, data[lastIndex:], nil
 }
 
-func matchBytes(data []byte, possibleValues []byte) ([]byte, []byte, error) {
+func matchBytes(data []byte, possibleValues []byte) ([]byte, []byte) {
 	output := []byte{}
 	for _, oneByte := range data {
 		isMatch := false
@@ -256,7 +262,13 @@ func matchBytes(data []byte, possibleValues []byte) ([]byte, []byte, error) {
 		break
 	}
 
-	return output, data[len(output):], nil
+	return output, data[len(output):]
+}
+
+func createPossibleLetters() []byte {
+	lowerCaseLetters := createPossibleLowerCaseLetters()
+	upperCaseLetters := createPossibleUpperCaseLetters()
+	return append(lowerCaseLetters, upperCaseLetters...)
 }
 
 func createPossibleUpperCaseLetters() []byte {
