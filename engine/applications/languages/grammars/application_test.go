@@ -5,6 +5,106 @@ import (
 	"testing"
 )
 
+func TestApplication_execution_withTokens_Success(t *testing.T) {
+	remaining := []byte("this is some remaining")
+	input := append([]byte(`myFuncName_secondSection.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]`), remaining...)
+
+	application := NewApplication().(*application)
+	retExecution, retRemaining, err := application.bytesToExecution(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	if !retExecution.HasTokens() {
+		t.Errorf("the execution was expected to contain tokens")
+		return
+	}
+
+	list := retExecution.Tokens().List()
+	if len(list) != 5 {
+		t.Errorf("the tokens list was expected to contain %d tokens, %d returned", 5, len(list))
+		return
+	}
+}
+
+func TestApplication_execution_withTokens_withoutRemaining_Success(t *testing.T) {
+	remaining := []byte("")
+	input := append([]byte(`myFuncName_secondSection.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]`), remaining...)
+
+	application := NewApplication().(*application)
+	retExecution, retRemaining, err := application.bytesToExecution(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	if !retExecution.HasTokens() {
+		t.Errorf("the execution was expected to contain tokens")
+		return
+	}
+
+	list := retExecution.Tokens().List()
+	if len(list) != 5 {
+		t.Errorf("the tokens list was expected to contain %d tokens, %d returned", 5, len(list))
+		return
+	}
+}
+
+func TestApplication_execution_withoutTokens_Success(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`myFuncName_secondSection`), remaining...)
+
+	application := NewApplication().(*application)
+	retExecution, retRemaining, err := application.bytesToExecution(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	if retExecution.HasTokens() {
+		t.Errorf("the execution was expected to NOT contain tokens")
+		return
+	}
+}
+
+func TestApplication_execution_withoutTokens_withoutRemaining_Success(t *testing.T) {
+	remaining := []byte("")
+	input := append([]byte(`myFuncName_secondSection`), remaining...)
+
+	application := NewApplication().(*application)
+	retExecution, retRemaining, err := application.bytesToExecution(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	if retExecution.HasTokens() {
+		t.Errorf("the execution was expected to NOT contain tokens")
+		return
+	}
+}
+
 func TestApplication_tokens_Success(t *testing.T) {
 	remaining := []byte("this is some remaining")
 	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]`), remaining...)

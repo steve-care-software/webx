@@ -5,6 +5,9 @@ import (
 
 	"github.com/steve-care-software/webx/engine/domain/asts"
 	"github.com/steve-care-software/webx/engine/domain/grammars"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/replacements"
 	"github.com/steve-care-software/webx/engine/domain/grammars/rules"
 	"github.com/steve-care-software/webx/engine/domain/grammars/tokens"
 	"github.com/steve-care-software/webx/engine/domain/grammars/tokens/cardinalities"
@@ -12,30 +15,39 @@ import (
 )
 
 type application struct {
-	tokensBuilder            tokens.Builder
-	tokenBuilder             tokens.TokenBuilder
-	elementBuilder           elements.Builder
-	ruleBuilder              rules.RuleBuilder
-	cardinalityBuilder       cardinalities.Builder
-	ruleNameValueSeparator   byte
-	possibleLetters          []byte
-	possibleLowerCaseLetters []byte
-	possibleUpperCaseLetters []byte
-	possibleNumbers          []byte
-	lineSeparator            byte
-	tokenReferenceSeparator  byte
-	ruleNameSeparator        byte
-	ruleValuePrefix          byte
-	ruleValueSuffix          byte
-	ruleValueEscape          byte
-	cardinalityOpen          byte
-	cardinalityClose         byte
-	cardinalitySeparator     byte
-	cardinalityZeroPlus      byte
-	cardinalityOnePlus       byte
+	lineBuilder                lines.Builder
+	replacementsBuilder        replacements.Builder
+	replacementBuilder         replacements.ReplacementBuilder
+	executionBuilder           executions.Builder
+	tokensBuilder              tokens.Builder
+	tokenBuilder               tokens.TokenBuilder
+	elementBuilder             elements.Builder
+	ruleBuilder                rules.RuleBuilder
+	cardinalityBuilder         cardinalities.Builder
+	ruleNameValueSeparator     byte
+	possibleLetters            []byte
+	possibleLowerCaseLetters   []byte
+	possibleUpperCaseLetters   []byte
+	possibleNumbers            []byte
+	possibleFuncNameCharacters []byte
+	lineSeparator              byte
+	tokenReferenceSeparator    byte
+	ruleNameSeparator          byte
+	ruleValuePrefix            byte
+	ruleValueSuffix            byte
+	ruleValueEscape            byte
+	cardinalityOpen            byte
+	cardinalityClose           byte
+	cardinalitySeparator       byte
+	cardinalityZeroPlus        byte
+	cardinalityOnePlus         byte
 }
 
 func createApplication(
+	lineBuilder lines.Builder,
+	replacementsBuilder replacements.Builder,
+	replacementBuilder replacements.ReplacementBuilder,
+	executionBuilder executions.Builder,
 	tokensBuilder tokens.Builder,
 	tokenBuilder tokens.TokenBuilder,
 	elementBuilder elements.Builder,
@@ -46,6 +58,7 @@ func createApplication(
 	possibleLowerCaseLetters []byte,
 	possibleUpperCaseLetters []byte,
 	possibleNumbers []byte,
+	possibleFuncNameCharacters []byte,
 	lineSeparator byte,
 	tokenReferenceSeparator byte,
 	ruleNameSeparator byte,
@@ -59,27 +72,32 @@ func createApplication(
 	cardinalityOnePlus byte,
 ) Application {
 	out := application{
-		tokensBuilder:            tokensBuilder,
-		tokenBuilder:             tokenBuilder,
-		elementBuilder:           elementBuilder,
-		ruleBuilder:              ruleBuilder,
-		cardinalityBuilder:       cardinalityBuilder,
-		ruleNameValueSeparator:   ruleNameValueSeparator,
-		possibleLetters:          possibleLetters,
-		possibleLowerCaseLetters: possibleLowerCaseLetters,
-		possibleUpperCaseLetters: possibleUpperCaseLetters,
-		possibleNumbers:          possibleNumbers,
-		lineSeparator:            lineSeparator,
-		tokenReferenceSeparator:  tokenReferenceSeparator,
-		ruleNameSeparator:        ruleNameSeparator,
-		ruleValuePrefix:          ruleValuePrefix,
-		ruleValueSuffix:          ruleValueSuffix,
-		ruleValueEscape:          ruleValueEscape,
-		cardinalityOpen:          cardinalityOpen,
-		cardinalityClose:         cardinalityClose,
-		cardinalitySeparator:     cardinalitySeparator,
-		cardinalityZeroPlus:      cardinalityZeroPlus,
-		cardinalityOnePlus:       cardinalityOnePlus,
+		lineBuilder:                lineBuilder,
+		replacementsBuilder:        replacementsBuilder,
+		replacementBuilder:         replacementBuilder,
+		executionBuilder:           executionBuilder,
+		tokensBuilder:              tokensBuilder,
+		tokenBuilder:               tokenBuilder,
+		elementBuilder:             elementBuilder,
+		ruleBuilder:                ruleBuilder,
+		cardinalityBuilder:         cardinalityBuilder,
+		ruleNameValueSeparator:     ruleNameValueSeparator,
+		possibleLetters:            possibleLetters,
+		possibleLowerCaseLetters:   possibleLowerCaseLetters,
+		possibleUpperCaseLetters:   possibleUpperCaseLetters,
+		possibleNumbers:            possibleNumbers,
+		possibleFuncNameCharacters: possibleFuncNameCharacters,
+		lineSeparator:              lineSeparator,
+		tokenReferenceSeparator:    tokenReferenceSeparator,
+		ruleNameSeparator:          ruleNameSeparator,
+		ruleValuePrefix:            ruleValuePrefix,
+		ruleValueSuffix:            ruleValueSuffix,
+		ruleValueEscape:            ruleValueEscape,
+		cardinalityOpen:            cardinalityOpen,
+		cardinalityClose:           cardinalityClose,
+		cardinalitySeparator:       cardinalitySeparator,
+		cardinalityZeroPlus:        cardinalityZeroPlus,
+		cardinalityOnePlus:         cardinalityOnePlus,
 	}
 
 	return &out
@@ -105,7 +123,42 @@ func (app *application) Compose(grammar grammars.Grammar) ([]byte, error) {
 	return nil, nil
 }
 
+func (app *application) bytesToExecution(input []byte) (executions.Execution, []byte, error) {
+	funcName, retRemaining, err := blockName(input, app.possibleLowerCaseLetters, app.possibleFuncNameCharacters)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	builder := app.executionBuilder.Create().WithFuncName(string(funcName))
+	tokens, retTokensRemaining, err := app.bytesToTokens(retRemaining)
+	if err == nil {
+		builder.WithTokens(tokens)
+		retRemaining = retTokensRemaining
+	}
+
+	ins, err := builder.Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, retRemaining, nil
+}
+
 func (app *application) bytesToTokens(input []byte) (tokens.Tokens, []byte, error) {
+	list, retRemaining, err := app.bytesToTokenList(input)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	ins, err := app.tokensBuilder.Create().WithList(list).Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, retRemaining, nil
+}
+
+func (app *application) bytesToTokenList(input []byte) ([]tokens.Token, []byte, error) {
 	list := []tokens.Token{}
 	remaining := input
 	for {
@@ -118,12 +171,7 @@ func (app *application) bytesToTokens(input []byte) (tokens.Tokens, []byte, erro
 		remaining = retRemaining
 	}
 
-	ins, err := app.tokensBuilder.Create().WithList(list).Now()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return ins, remaining, nil
+	return list, remaining, nil
 }
 
 func (app *application) bytesToToken(input []byte) (tokens.Token, []byte, error) {

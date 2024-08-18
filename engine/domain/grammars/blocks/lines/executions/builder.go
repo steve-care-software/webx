@@ -1,23 +1,16 @@
 package executions
 
-import (
-	"errors"
-	"fmt"
-)
+import "github.com/steve-care-software/webx/engine/domain/grammars/tokens"
 
 type builder struct {
-	flags   []uint16
-	tokens  []string
-	pFnFLag *uint16
+	tokens tokens.Tokens
+	fnName string
 }
 
-func createBuilder(
-	flags []uint16,
-) Builder {
+func createBuilder() Builder {
 	out := builder{
-		flags:   flags,
-		tokens:  nil,
-		pFnFLag: nil,
+		tokens: nil,
+		fnName: "",
 	}
 
 	return &out
@@ -25,46 +18,26 @@ func createBuilder(
 
 // Create initializes the builder
 func (app *builder) Create() Builder {
-	return createBuilder(
-		app.flags,
-	)
+	return createBuilder()
 }
 
 // WithTokens add tokens to the buiilder
-func (app *builder) WithTokens(tokens []string) Builder {
+func (app *builder) WithTokens(tokens tokens.Tokens) Builder {
 	app.tokens = tokens
 	return app
 }
 
-// WithFuncFlag add fn flag to the buiilder
-func (app *builder) WithFuncFlag(fnFlag uint16) Builder {
-	app.pFnFLag = &fnFlag
+// WithFuncName add func name to the buiilder
+func (app *builder) WithFuncName(funcName string) Builder {
+	app.fnName = funcName
 	return app
 }
 
 // Now builds a new Execution instance
 func (app *builder) Now() (Execution, error) {
-	if app.tokens == nil {
-		app.tokens = []string{}
+	if app.tokens != nil {
+		return createExecutionWithTokens(app.fnName, app.tokens), nil
 	}
 
-	if app.pFnFLag == nil {
-		return nil, errors.New("the func flag is mandatory in order to build an Execution instance")
-	}
-
-	isValid := false
-	currentFlag := *app.pFnFLag
-	for _, oneFlag := range app.flags {
-		if currentFlag == oneFlag {
-			isValid = true
-			break
-		}
-	}
-
-	if !isValid {
-		str := fmt.Sprintf("the provided flag (%d) is invalid", currentFlag)
-		return nil, errors.New(str)
-	}
-
-	return createExecution(app.tokens, currentFlag), nil
+	return createExecution(app.fnName), nil
 }

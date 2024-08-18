@@ -269,6 +269,11 @@ func matchBytes(data []byte, possibleValues []byte) ([]byte, []byte) {
 	return output, data[len(output):]
 }
 
+func createPossibleFuncNameCharacters() []byte {
+	letters := createPossibleLetters()
+	return append(letters, []byte(underscore)...)
+}
+
 func createPossibleLetters() []byte {
 	lowerCaseLetters := createPossibleLowerCaseLetters()
 	upperCaseLetters := createPossibleUpperCaseLetters()

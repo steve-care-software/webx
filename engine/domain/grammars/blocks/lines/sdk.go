@@ -5,6 +5,16 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/replacements"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewLineBuilder creates a line builder
+func NewLineBuilder() LineBuilder {
+	return createLineBuilder()
+}
+
 // Builder represents a line builder
 type Builder interface {
 	Create() Builder
@@ -29,6 +39,7 @@ type LineBuilder interface {
 // Line represents a variable
 type Line interface {
 	Tokens() []string
+	HasExecution() bool
 	Execution() executions.Execution
 	HasReplacement() bool
 	Replacement() replacements.Replacement

@@ -3,6 +3,9 @@ package grammars
 import (
 	"github.com/steve-care-software/webx/engine/domain/asts"
 	"github.com/steve-care-software/webx/engine/domain/grammars"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/replacements"
 	"github.com/steve-care-software/webx/engine/domain/grammars/rules"
 	"github.com/steve-care-software/webx/engine/domain/grammars/tokens"
 	"github.com/steve-care-software/webx/engine/domain/grammars/tokens/cardinalities"
@@ -86,9 +89,14 @@ const cardinalityZeroPlus = "*"
 const cardinalityOnePlus = "+"
 const tokenReference = "."
 const lineSeparator = "|"
+const underscore = "_"
 
 // NewApplication creates a new application
 func NewApplication() Application {
+	lineBuilder := lines.NewBuilder()
+	replacementsBuilder := replacements.NewBuilder()
+	replacementBuilder := replacements.NewReplacementBuilder()
+	executionBuilder := executions.NewBuilder()
 	tokensBuilder := tokens.NewBuilder()
 	tokenBuilder := tokens.NewTokenBuilder()
 	elementBuilder := elements.NewBuilder()
@@ -98,7 +106,12 @@ func NewApplication() Application {
 	possibleLowerCaseLetters := createPossibleLowerCaseLetters()
 	possibleUpperCaseLetters := createPossibleUpperCaseLetters()
 	possibleNumbers := createPossibleNumbers()
+	possibleFuncNameCharacters := createPossibleFuncNameCharacters()
 	return createApplication(
+		lineBuilder,
+		replacementsBuilder,
+		replacementBuilder,
+		executionBuilder,
 		tokensBuilder,
 		tokenBuilder,
 		elementBuilder,
@@ -109,6 +122,7 @@ func NewApplication() Application {
 		possibleLowerCaseLetters,
 		possibleUpperCaseLetters,
 		possibleNumbers,
+		possibleFuncNameCharacters,
 		[]byte(lineSeparator)[0],
 		[]byte(tokenReference)[0],
 		[]byte(ruleNameSeparator)[0],

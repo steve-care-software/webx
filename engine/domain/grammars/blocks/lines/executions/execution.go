@@ -1,28 +1,48 @@
 package executions
 
+import "github.com/steve-care-software/webx/engine/domain/grammars/tokens"
+
 type execution struct {
-	tokens []string
-	fnFLag uint16
+	tokens tokens.Tokens
+	fnName string
 }
 
 func createExecution(
-	tokens []string,
-	fnFLag uint16,
+	fnName string,
+) Execution {
+	return createExecutionInternally(fnName, nil)
+}
+
+func createExecutionWithTokens(
+	fnName string,
+	tokens tokens.Tokens,
+) Execution {
+	return createExecutionInternally(fnName, tokens)
+}
+
+func createExecutionInternally(
+	fnName string,
+	tokens tokens.Tokens,
 ) Execution {
 	out := execution{
+		fnName: fnName,
 		tokens: tokens,
-		fnFLag: fnFLag,
 	}
 
 	return &out
 }
 
-// Tokens returns the tokens
-func (obj *execution) Tokens() []string {
-	return obj.tokens
+// FuncName returns the func name
+func (obj *execution) FuncName() string {
+	return obj.fnName
 }
 
-// FuncFlag returns the func flag
-func (obj *execution) FuncFlag() uint16 {
-	return obj.fnFLag
+// HasTokens returns true if there is tokens, false otherwise
+func (obj *execution) HasTokens() bool {
+	return obj.tokens != nil
+}
+
+// Tokens returns the tokens
+func (obj *execution) Tokens() tokens.Tokens {
+	return obj.tokens
 }
