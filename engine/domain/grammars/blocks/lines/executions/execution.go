@@ -1,10 +1,10 @@
 package executions
 
-import "github.com/steve-care-software/webx/engine/domain/grammars/tokens"
+import "github.com/steve-care-software/webx/engine/domain/grammars/tokens/elements"
 
 type execution struct {
-	tokens tokens.Tokens
-	fnName string
+	fnName   string
+	elements elements.Elements
 }
 
 func createExecution(
@@ -13,20 +13,20 @@ func createExecution(
 	return createExecutionInternally(fnName, nil)
 }
 
-func createExecutionWithTokens(
+func createExecutionWithElements(
 	fnName string,
-	tokens tokens.Tokens,
+	elements elements.Elements,
 ) Execution {
-	return createExecutionInternally(fnName, tokens)
+	return createExecutionInternally(fnName, elements)
 }
 
 func createExecutionInternally(
 	fnName string,
-	tokens tokens.Tokens,
+	elements elements.Elements,
 ) Execution {
 	out := execution{
-		fnName: fnName,
-		tokens: tokens,
+		fnName:   fnName,
+		elements: elements,
 	}
 
 	return &out
@@ -37,12 +37,12 @@ func (obj *execution) FuncName() string {
 	return obj.fnName
 }
 
-// HasTokens returns true if there is tokens, false otherwise
-func (obj *execution) HasTokens() bool {
-	return obj.tokens != nil
+// HasElements returns true if there is elements, false otherwise
+func (obj *execution) HasElements() bool {
+	return obj.elements != nil
 }
 
-// Tokens returns the tokens
-func (obj *execution) Tokens() tokens.Tokens {
-	return obj.tokens
+// Elements returns the elements
+func (obj *execution) Elements() elements.Elements {
+	return obj.elements
 }

@@ -7,7 +7,6 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/grammars"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions"
-	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/replacements"
 	"github.com/steve-care-software/webx/engine/domain/grammars/rules"
 	"github.com/steve-care-software/webx/engine/domain/grammars/tokens"
 	"github.com/steve-care-software/webx/engine/domain/grammars/tokens/cardinalities"
@@ -16,12 +15,11 @@ import (
 
 type application struct {
 	lineBuilder                lines.Builder
-	replacementsBuilder        replacements.Builder
-	replacementBuilder         replacements.ReplacementBuilder
 	executionBuilder           executions.Builder
 	tokensBuilder              tokens.Builder
 	tokenBuilder               tokens.TokenBuilder
-	elementBuilder             elements.Builder
+	elementsBuilder            elements.Builder
+	elementBuilder             elements.ElementBuilder
 	ruleBuilder                rules.RuleBuilder
 	cardinalityBuilder         cardinalities.Builder
 	ruleNameValueSeparator     byte
@@ -45,12 +43,11 @@ type application struct {
 
 func createApplication(
 	lineBuilder lines.Builder,
-	replacementsBuilder replacements.Builder,
-	replacementBuilder replacements.ReplacementBuilder,
 	executionBuilder executions.Builder,
 	tokensBuilder tokens.Builder,
 	tokenBuilder tokens.TokenBuilder,
-	elementBuilder elements.Builder,
+	elementsBuilder elements.Builder,
+	elementBuilder elements.ElementBuilder,
 	ruleBuilder rules.RuleBuilder,
 	cardinalityBuilder cardinalities.Builder,
 	ruleNameValueSeparator byte,
@@ -73,11 +70,10 @@ func createApplication(
 ) Application {
 	out := application{
 		lineBuilder:                lineBuilder,
-		replacementsBuilder:        replacementsBuilder,
-		replacementBuilder:         replacementBuilder,
 		executionBuilder:           executionBuilder,
 		tokensBuilder:              tokensBuilder,
 		tokenBuilder:               tokenBuilder,
+		elementsBuilder:            elementsBuilder,
 		elementBuilder:             elementBuilder,
 		ruleBuilder:                ruleBuilder,
 		cardinalityBuilder:         cardinalityBuilder,
@@ -130,10 +126,10 @@ func (app *application) bytesToExecution(input []byte) (executions.Execution, []
 	}
 
 	builder := app.executionBuilder.Create().WithFuncName(string(funcName))
-	tokens, retTokensRemaining, err := app.bytesToTokens(retRemaining)
+	elements, retElementsRemaining, err := app.bytesToElementReferences(retRemaining)
 	if err == nil {
-		builder.WithTokens(tokens)
-		retRemaining = retTokensRemaining
+		builder.WithElements(elements)
+		retRemaining = retElementsRemaining
 	}
 
 	ins, err := builder.Now()
@@ -175,34 +171,7 @@ func (app *application) bytesToTokenList(input []byte) ([]tokens.Token, []byte, 
 }
 
 func (app *application) bytesToToken(input []byte) (tokens.Token, []byte, error) {
-	if len(input) <= 0 {
-		return nil, nil, errors.New("the token was expected to contain at least 1 byte")
-	}
-
-	if input[0] != app.tokenReferenceSeparator {
-		return nil, nil, errors.New("the token was expected to contain the tokenReference byte at its prefix")
-	}
-
-	// try to match a rule
-	input = input[1:]
-	elementBuilder := app.elementBuilder.Create()
-	ruleName, retRemaining, err := app.bytesToRuleName(input)
-	if err != nil {
-		// there is no rule, so try to match a block
-		blockName, retBlockRemaining, err := blockName(input, app.possibleLowerCaseLetters, app.possibleLetters)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		elementBuilder.WithBlock(string(blockName))
-		retRemaining = retBlockRemaining
-	}
-
-	if err == nil {
-		elementBuilder.WithRule(ruleName)
-	}
-
-	element, err := elementBuilder.Now()
+	element, retRemaining, err := app.bytesToElementReference(input)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -231,6 +200,66 @@ func (app *application) bytesToToken(input []byte) (tokens.Token, []byte, error)
 	}
 
 	return ins, retRemaining, nil
+}
+
+func (app *application) bytesToElementReferences(input []byte) (elements.Elements, []byte, error) {
+	list := []elements.Element{}
+	remaining := input
+	for {
+		retElement, retRemaining, err := app.bytesToElementReference(remaining)
+		if err != nil {
+			break
+		}
+
+		list = append(list, retElement)
+		remaining = retRemaining
+	}
+
+	ins, err := app.elementsBuilder.Create().WithList(list).Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, remaining, nil
+}
+
+func (app *application) bytesToElementReference(input []byte) (elements.Element, []byte, error) {
+	if len(input) <= 0 {
+		return nil, nil, errors.New("the token was expected to contain at least 1 byte")
+	}
+
+	if input[0] != app.tokenReferenceSeparator {
+		return nil, nil, errors.New("the token was expected to contain the tokenReference byte at its prefix")
+	}
+
+	return app.bytesToElement(input[1:])
+}
+
+func (app *application) bytesToElement(input []byte) (elements.Element, []byte, error) {
+	// try to match a rule
+	elementBuilder := app.elementBuilder.Create()
+	ruleName, retRemaining, err := app.bytesToRuleName(input)
+	if err != nil {
+		// there is no rule, so try to match a block
+		blockName, retBlockRemaining, err := blockName(input, app.possibleLowerCaseLetters, app.possibleLetters)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		elementBuilder.WithBlock(string(blockName))
+		retRemaining = retBlockRemaining
+	}
+
+	if err == nil {
+		elementBuilder.WithRule(ruleName)
+	}
+
+	element, err := elementBuilder.Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return element, retRemaining, nil
 }
 
 func (app *application) bytesToCardinality(input []byte) (cardinalities.Cardinality, []byte, error) {

@@ -25,6 +25,15 @@ func createElementInternally(
 	return &out
 }
 
+// Name returns the rule or block name
+func (obj *element) Name() string {
+	if obj.IsBlock() {
+		return obj.block
+	}
+
+	return obj.rule
+}
+
 // IsRule returns true if there is a rule, false otherwise
 func (obj *element) IsRule() bool {
 	return obj.rule != ""

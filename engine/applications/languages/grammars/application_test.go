@@ -5,9 +5,9 @@ import (
 	"testing"
 )
 
-func TestApplication_execution_withTokens_Success(t *testing.T) {
-	remaining := []byte("this is some remaining")
-	input := append([]byte(`myFuncName_secondSection.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]`), remaining...)
+func TestApplication_execution_withElements_Success(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth`), remaining...)
 
 	application := NewApplication().(*application)
 	retExecution, retRemaining, err := application.bytesToExecution(input)
@@ -21,21 +21,21 @@ func TestApplication_execution_withTokens_Success(t *testing.T) {
 		return
 	}
 
-	if !retExecution.HasTokens() {
-		t.Errorf("the execution was expected to contain tokens")
+	if !retExecution.HasElements() {
+		t.Errorf("the execution was expected to contain elements")
 		return
 	}
 
-	list := retExecution.Tokens().List()
+	list := retExecution.Elements().List()
 	if len(list) != 5 {
 		t.Errorf("the tokens list was expected to contain %d tokens, %d returned", 5, len(list))
 		return
 	}
 }
 
-func TestApplication_execution_withTokens_withoutRemaining_Success(t *testing.T) {
+func TestApplication_execution_withElements_withoutRemaining_Success(t *testing.T) {
 	remaining := []byte("")
-	input := append([]byte(`myFuncName_secondSection.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]`), remaining...)
+	input := append([]byte(`myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth`), remaining...)
 
 	application := NewApplication().(*application)
 	retExecution, retRemaining, err := application.bytesToExecution(input)
@@ -49,19 +49,19 @@ func TestApplication_execution_withTokens_withoutRemaining_Success(t *testing.T)
 		return
 	}
 
-	if !retExecution.HasTokens() {
-		t.Errorf("the execution was expected to contain tokens")
+	if !retExecution.HasElements() {
+		t.Errorf("the execution was expected to contain elements")
 		return
 	}
 
-	list := retExecution.Tokens().List()
+	list := retExecution.Elements().List()
 	if len(list) != 5 {
-		t.Errorf("the tokens list was expected to contain %d tokens, %d returned", 5, len(list))
+		t.Errorf("the tokens list was expected to contain %d elements, %d returned", 5, len(list))
 		return
 	}
 }
 
-func TestApplication_execution_withoutTokens_Success(t *testing.T) {
+func TestApplication_execution_withoutElements_Success(t *testing.T) {
 	remaining := []byte("!this is some remaining")
 	input := append([]byte(`myFuncName_secondSection`), remaining...)
 
@@ -77,13 +77,13 @@ func TestApplication_execution_withoutTokens_Success(t *testing.T) {
 		return
 	}
 
-	if retExecution.HasTokens() {
-		t.Errorf("the execution was expected to NOT contain tokens")
+	if retExecution.HasElements() {
+		t.Errorf("the execution was expected to NOT contain elements")
 		return
 	}
 }
 
-func TestApplication_execution_withoutTokens_withoutRemaining_Success(t *testing.T) {
+func TestApplication_execution_withoutElements_withoutRemaining_Success(t *testing.T) {
 	remaining := []byte("")
 	input := append([]byte(`myFuncName_secondSection`), remaining...)
 
@@ -99,8 +99,8 @@ func TestApplication_execution_withoutTokens_withoutRemaining_Success(t *testing
 		return
 	}
 
-	if retExecution.HasTokens() {
-		t.Errorf("the execution was expected to NOT contain tokens")
+	if retExecution.HasElements() {
+		t.Errorf("the execution was expected to NOT contain elements")
 		return
 	}
 }

@@ -4,20 +4,19 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions"
-	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/replacements"
 )
 
 type lineBuilder struct {
 	tokens      []string
 	execution   executions.Execution
-	replacement replacements.Replacement
+	replacement string
 }
 
 func createLineBuilder() LineBuilder {
 	out := lineBuilder{
 		tokens:      nil,
 		execution:   nil,
-		replacement: nil,
+		replacement: "",
 	}
 
 	return &out
@@ -41,7 +40,7 @@ func (app *lineBuilder) WithExecution(execution executions.Execution) LineBuilde
 }
 
 // WithReplacement adds replacement to the builder
-func (app *lineBuilder) WithReplacement(replacement replacements.Replacement) LineBuilder {
+func (app *lineBuilder) WithReplacement(replacement string) LineBuilder {
 	app.replacement = replacement
 	return app
 }
@@ -56,7 +55,7 @@ func (app *lineBuilder) Now() (Line, error) {
 		return nil, errors.New("there must be at least 1 Token in order to build a Line instance")
 	}
 
-	if app.execution != nil && app.replacement != nil {
+	if app.execution != nil && app.replacement != "" {
 
 	}
 
@@ -64,7 +63,7 @@ func (app *lineBuilder) Now() (Line, error) {
 
 	}
 
-	if app.replacement != nil {
+	if app.replacement != "" {
 
 	}
 

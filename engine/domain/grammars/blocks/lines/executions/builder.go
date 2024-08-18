@@ -1,16 +1,16 @@
 package executions
 
-import "github.com/steve-care-software/webx/engine/domain/grammars/tokens"
+import "github.com/steve-care-software/webx/engine/domain/grammars/tokens/elements"
 
 type builder struct {
-	tokens tokens.Tokens
-	fnName string
+	elements elements.Elements
+	fnName   string
 }
 
 func createBuilder() Builder {
 	out := builder{
-		tokens: nil,
-		fnName: "",
+		elements: nil,
+		fnName:   "",
 	}
 
 	return &out
@@ -21,9 +21,9 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithTokens add tokens to the buiilder
-func (app *builder) WithTokens(tokens tokens.Tokens) Builder {
-	app.tokens = tokens
+// WithElements add elements to the buiilder
+func (app *builder) WithElements(elements elements.Elements) Builder {
+	app.elements = elements
 	return app
 }
 
@@ -35,8 +35,8 @@ func (app *builder) WithFuncName(funcName string) Builder {
 
 // Now builds a new Execution instance
 func (app *builder) Now() (Execution, error) {
-	if app.tokens != nil {
-		return createExecutionWithTokens(app.fnName, app.tokens), nil
+	if app.elements != nil {
+		return createExecutionWithElements(app.fnName, app.elements), nil
 	}
 
 	return createExecution(app.fnName), nil

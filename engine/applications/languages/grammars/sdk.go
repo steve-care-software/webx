@@ -5,7 +5,6 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/grammars"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions"
-	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/replacements"
 	"github.com/steve-care-software/webx/engine/domain/grammars/rules"
 	"github.com/steve-care-software/webx/engine/domain/grammars/tokens"
 	"github.com/steve-care-software/webx/engine/domain/grammars/tokens/cardinalities"
@@ -94,12 +93,11 @@ const underscore = "_"
 // NewApplication creates a new application
 func NewApplication() Application {
 	lineBuilder := lines.NewBuilder()
-	replacementsBuilder := replacements.NewBuilder()
-	replacementBuilder := replacements.NewReplacementBuilder()
 	executionBuilder := executions.NewBuilder()
 	tokensBuilder := tokens.NewBuilder()
 	tokenBuilder := tokens.NewTokenBuilder()
-	elementBuilder := elements.NewBuilder()
+	elementsBuilder := elements.NewBuilder()
+	elementBuilder := elements.NewElementBuilder()
 	ruleBuilder := rules.NewRuleBuilder()
 	cardinalityBuilder := cardinalities.NewBuilder()
 	possibleLetters := createPossibleLetters()
@@ -109,11 +107,10 @@ func NewApplication() Application {
 	possibleFuncNameCharacters := createPossibleFuncNameCharacters()
 	return createApplication(
 		lineBuilder,
-		replacementsBuilder,
-		replacementBuilder,
 		executionBuilder,
 		tokensBuilder,
 		tokenBuilder,
+		elementsBuilder,
 		elementBuilder,
 		ruleBuilder,
 		cardinalityBuilder,

@@ -1,16 +1,17 @@
 package elements
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 type builder struct {
-	rule  string
-	block string
+	list []Element
 }
 
 func createBuilder() Builder {
 	out := builder{
-		rule:  "",
-		block: "",
+		list: nil,
 	}
 
 	return &out
@@ -21,27 +22,31 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithRule adds a rule to the builder
-func (app *builder) WithRule(rule string) Builder {
-	app.rule = rule
+// WithList adds a list to the builder
+func (app *builder) WithList(list []Element) Builder {
+	app.list = list
 	return app
 }
 
-// WithBlock adds a block to the builder
-func (app *builder) WithBlock(block string) Builder {
-	app.block = block
-	return app
-}
-
-// Now builds a new Element
-func (app *builder) Now() (Element, error) {
-	if app.rule != "" {
-		return createElementWithRule(app.rule), nil
+// Now builds a new Elements instance
+func (app *builder) Now() (Elements, error) {
+	if app.list != nil && len(app.list) <= 0 {
+		app.list = nil
 	}
 
-	if app.block != "" {
-		return createElementWithBlock(app.block), nil
+	if app.list == nil {
+		return nil, errors.New("there must be at least 1 Element in order to build a Elements instance")
 	}
 
-	return nil, errors.New("the Element is invalid")
+	mp := map[string]Element{}
+	for _, oneElement := range app.list {
+		keyname := oneElement.Name()
+		if _, ok := mp[keyname]; ok {
+			str := fmt.Sprintf("the Element (name: %s) is a duplicate", keyname)
+			return nil, errors.New(str)
+		}
+		mp[keyname] = oneElement
+	}
+
+	return createElements(app.list, mp), nil
 }

@@ -1,6 +1,6 @@
 package executions
 
-import "github.com/steve-care-software/webx/engine/domain/grammars/tokens"
+import "github.com/steve-care-software/webx/engine/domain/grammars/tokens/elements"
 
 // NewBuilder creates a new builder
 func NewBuilder() Builder {
@@ -10,7 +10,7 @@ func NewBuilder() Builder {
 // Builder represents an execution builder
 type Builder interface {
 	Create() Builder
-	WithTokens(tokens tokens.Tokens) Builder
+	WithElements(elements elements.Elements) Builder
 	WithFuncName(fnFlag string) Builder
 	Now() (Execution, error)
 }
@@ -18,6 +18,6 @@ type Builder interface {
 // Execution represents an execution
 type Execution interface {
 	FuncName() string
-	HasTokens() bool
-	Tokens() tokens.Tokens
+	HasElements() bool
+	Elements() elements.Elements
 }

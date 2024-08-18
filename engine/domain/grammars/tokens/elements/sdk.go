@@ -5,16 +5,35 @@ func NewBuilder() Builder {
 	return createBuilder()
 }
 
-// Builder represents the element builder
+// NewElementBuilder creates a new element builder
+func NewElementBuilder() ElementBuilder {
+	return createElementBuilder()
+}
+
+// Builder represents an elments list
 type Builder interface {
 	Create() Builder
-	WithRule(rule string) Builder
-	WithBlock(block string) Builder
+	WithList(list []Element) Builder
+	Now() (Elements, error)
+}
+
+// Elements represents elements
+type Elements interface {
+	List() []Element
+	Fetch(name string) (Element, error)
+}
+
+// ElementBuilder represents the element builder
+type ElementBuilder interface {
+	Create() ElementBuilder
+	WithRule(rule string) ElementBuilder
+	WithBlock(block string) ElementBuilder
 	Now() (Element, error)
 }
 
 // Element represents an element
 type Element interface {
+	Name() string
 	IsRule() bool
 	Rule() string
 	IsBlock() bool

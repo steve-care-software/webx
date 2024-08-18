@@ -2,33 +2,32 @@ package lines
 
 import (
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions"
-	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/replacements"
 )
 
 type line struct {
 	tokens      []string
 	execution   executions.Execution
-	replacement replacements.Replacement
+	replacement string
 }
 
 func createLineWithExecutionAndReplacement(
 	tokens []string,
 	execution executions.Execution,
-	replacement replacements.Replacement,
+	replacement string,
 ) Line {
-	return createLineInternally(tokens, execution, replacement)
+	return createLineInternally(tokens, execution, "")
 }
 
 func createLineWithExecution(
 	tokens []string,
 	execution executions.Execution,
 ) Line {
-	return createLineInternally(tokens, execution, nil)
+	return createLineInternally(tokens, execution, "")
 }
 
 func createLineWithReplacement(
 	tokens []string,
-	replacement replacements.Replacement,
+	replacement string,
 ) Line {
 	return createLineInternally(tokens, nil, replacement)
 }
@@ -36,7 +35,7 @@ func createLineWithReplacement(
 func createLineInternally(
 	tokens []string,
 	execution executions.Execution,
-	replacement replacements.Replacement,
+	replacement string,
 ) Line {
 	out := line{
 		tokens:      tokens,
@@ -64,10 +63,10 @@ func (obj *line) Execution() executions.Execution {
 
 // HasReplacement returns true if there is a replacement, false otherwise
 func (obj *line) HasReplacement() bool {
-	return obj.replacement != nil
+	return obj.replacement != ""
 }
 
 // Replacement returns the replacement, if any
-func (obj *line) Replacement() replacements.Replacement {
+func (obj *line) Replacement() string {
 	return obj.replacement
 }
