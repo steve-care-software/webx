@@ -4,7 +4,9 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/asts"
 	"github.com/steve-care-software/webx/engine/domain/grammars"
 	"github.com/steve-care-software/webx/engine/domain/grammars/rules"
+	"github.com/steve-care-software/webx/engine/domain/grammars/tokens"
 	"github.com/steve-care-software/webx/engine/domain/grammars/tokens/cardinalities"
+	"github.com/steve-care-software/webx/engine/domain/grammars/tokens/elements"
 )
 
 const llA = "a"
@@ -85,14 +87,22 @@ const cardinalityOnePlus = "+"
 
 // NewApplication creates a new application
 func NewApplication() Application {
+	tokenBuilder := tokens.NewTokenBuilder()
+	elementBuilder := elements.NewBuilder()
 	ruleBuilder := rules.NewRuleBuilder()
 	cardinalityBuilder := cardinalities.NewBuilder()
+	possibleLetters := createPossibleLetters()
+	possibleLowerCaseLetters := createPossibleLowerCaseLetters()
 	possibleUpperCaseLetters := createPossibleUpperCaseLetters()
 	possibleNumbers := createPossibleNumbers()
 	return createApplication(
+		tokenBuilder,
+		elementBuilder,
 		ruleBuilder,
 		cardinalityBuilder,
 		[]byte(ruleNameValueSeparator)[0],
+		possibleLetters,
+		possibleLowerCaseLetters,
 		possibleUpperCaseLetters,
 		possibleNumbers,
 		[]byte(ruleNameSeparator)[0],

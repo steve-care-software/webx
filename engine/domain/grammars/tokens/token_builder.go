@@ -8,14 +8,12 @@ import (
 )
 
 type tokenBuilder struct {
-	name        string
 	element     elements.Element
 	cardinality cardinalities.Cardinality
 }
 
 func createTokenBuilder() TokenBuilder {
 	out := tokenBuilder{
-		name:        "",
 		element:     nil,
 		cardinality: nil,
 	}
@@ -26,12 +24,6 @@ func createTokenBuilder() TokenBuilder {
 // Create initializes the builder
 func (app *tokenBuilder) Create() TokenBuilder {
 	return createTokenBuilder()
-}
-
-// WithName adds a name to the builder
-func (app *tokenBuilder) WithName(name string) TokenBuilder {
-	app.name = name
-	return app
 }
 
 // WithElement adds an element to the builder
@@ -48,10 +40,6 @@ func (app *tokenBuilder) WithCardinality(cardinality cardinalities.Cardinality) 
 
 // Now builds a new Token instance
 func (app *tokenBuilder) Now() (Token, error) {
-	if app.name == "" {
-		return nil, errors.New("the name is mandatory in order to build a Token instance")
-	}
-
 	if app.element == nil {
 		return nil, errors.New("the element is mandatory in order to build a Token instance")
 	}
@@ -61,7 +49,6 @@ func (app *tokenBuilder) Now() (Token, error) {
 	}
 
 	return createToken(
-		app.name,
 		app.element,
 		app.cardinality,
 	), nil

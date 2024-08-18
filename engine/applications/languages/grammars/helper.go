@@ -191,6 +191,10 @@ func bytesToRuleName(data []byte, possibleBytes []byte, separator byte) ([]byte,
 		remaining = append(sepBytes, remaining...)
 	}
 
+	if len(output) <= 0 {
+		return nil, nil, errors.New("the rule name must contain at least 1 byte")
+	}
+
 	return output, remaining, nil
 }
 

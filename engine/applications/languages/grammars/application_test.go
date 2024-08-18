@@ -5,6 +5,138 @@ import (
 	"testing"
 )
 
+func TestApplication_token_withBlockName_withCardinality_Success(t *testing.T) {
+	remaining := []byte("this is some remaining")
+	input := append([]byte(`myToken[1]`), remaining...)
+
+	application := NewApplication().(*application)
+	retToken, retRemaining, err := application.bytesToToken(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if retToken.Name() != "myToken" {
+		t.Errorf("the token name is invalid, expected (%s), returned (%s)", "myToken", retToken.Name())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	cardinality := retToken.Cardinality()
+	if cardinality.Min() != 1 {
+		t.Errorf("the cardinality min was expected to be (%d), (%d) returned", 1, cardinality.Min())
+		return
+	}
+
+	if !cardinality.HasMax() {
+		t.Errorf("the cardinality was expected to contain a max")
+		return
+	}
+
+	pMax := cardinality.Max()
+	max := *pMax
+	if max != 1 {
+		t.Errorf("the cardinality max was expected to be (%d), (%d) returned", 1, max)
+		return
+	}
+}
+
+func TestApplication_token_withBlockName_withoutCardinality_Success(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`myToken`), remaining...)
+
+	application := NewApplication().(*application)
+	retToken, retRemaining, err := application.bytesToToken(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if retToken.Name() != "myToken" {
+		t.Errorf("the token name is invalid, expected (%s), returned (%s)", "myToken", retToken.Name())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	cardinality := retToken.Cardinality()
+	if cardinality.Min() != 1 {
+		t.Errorf("the cardinality min was expected to be (%d), (%d) returned", 1, cardinality.Min())
+		return
+	}
+
+	if !cardinality.HasMax() {
+		t.Errorf("the cardinality was expected to contain a max")
+		return
+	}
+
+	pMax := cardinality.Max()
+	max := *pMax
+	if max != 1 {
+		t.Errorf("the cardinality max was expected to be (%d), (%d) returned", 1, max)
+		return
+	}
+}
+
+func TestApplication_token_withRuleName_withCardinality_Success(t *testing.T) {
+	remaining := []byte("this is some remaining")
+	input := append([]byte(`MY_RULE[1]`), remaining...)
+
+	application := NewApplication().(*application)
+	retToken, retRemaining, err := application.bytesToToken(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if retToken.Name() != "MY_RULE" {
+		t.Errorf("the token name is invalid, expected (%s), returned (%s)", "MY_RULE", retToken.Name())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	cardinality := retToken.Cardinality()
+	if cardinality.Min() != 1 {
+		t.Errorf("the cardinality min was expected to be (%d), (%d) returned", 1, cardinality.Min())
+		return
+	}
+
+	if !cardinality.HasMax() {
+		t.Errorf("the cardinality was expected to contain a max")
+		return
+	}
+
+	pMax := cardinality.Max()
+	max := *pMax
+	if max != 1 {
+		t.Errorf("the cardinality max was expected to be (%d), (%d) returned", 1, max)
+		return
+	}
+}
+
+func TestApplication_token_withoutBlockName_withoutRuleName_returnsError(t *testing.T) {
+	remaining := []byte("this is some remaining")
+	input := append([]byte(`______`), remaining...)
+
+	application := NewApplication().(*application)
+	_, _, err := application.bytesToToken(input)
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+		return
+	}
+}
+
 func TestApplication_rule_Success(t *testing.T) {
 	expectedName := "MY_RULE"
 	expectedValue := []byte(`this " with escape`)

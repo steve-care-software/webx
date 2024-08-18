@@ -4,13 +4,19 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/asts"
 	"github.com/steve-care-software/webx/engine/domain/grammars"
 	"github.com/steve-care-software/webx/engine/domain/grammars/rules"
+	"github.com/steve-care-software/webx/engine/domain/grammars/tokens"
 	"github.com/steve-care-software/webx/engine/domain/grammars/tokens/cardinalities"
+	"github.com/steve-care-software/webx/engine/domain/grammars/tokens/elements"
 )
 
 type application struct {
+	tokenBuilder             tokens.TokenBuilder
+	elementBuilder           elements.Builder
 	ruleBuilder              rules.RuleBuilder
 	cardinalityBuilder       cardinalities.Builder
 	ruleNameValueSeparator   byte
+	possibleLetters          []byte
+	possibleLowerCaseLetters []byte
 	possibleUpperCaseLetters []byte
 	possibleNumbers          []byte
 	ruleNameSeparator        byte
@@ -25,9 +31,13 @@ type application struct {
 }
 
 func createApplication(
+	tokenBuilder tokens.TokenBuilder,
+	elementBuilder elements.Builder,
 	ruleBuilder rules.RuleBuilder,
 	cardinalityBuilder cardinalities.Builder,
 	ruleNameValueSeparator byte,
+	possibleLetters []byte,
+	possibleLowerCaseLetters []byte,
 	possibleUpperCaseLetters []byte,
 	possibleNumbers []byte,
 	ruleNameSeparator byte,
@@ -41,9 +51,13 @@ func createApplication(
 	cardinalityOnePlus byte,
 ) Application {
 	out := application{
+		tokenBuilder:             tokenBuilder,
+		elementBuilder:           elementBuilder,
 		ruleBuilder:              ruleBuilder,
 		cardinalityBuilder:       cardinalityBuilder,
 		ruleNameValueSeparator:   ruleNameValueSeparator,
+		possibleLetters:          possibleLetters,
+		possibleLowerCaseLetters: possibleLowerCaseLetters,
 		possibleUpperCaseLetters: possibleUpperCaseLetters,
 		possibleNumbers:          possibleNumbers,
 		ruleNameSeparator:        ruleNameSeparator,
@@ -78,6 +92,56 @@ func (app *application) Decompile(ast asts.AST) (grammars.Grammar, error) {
 // Compose composes a grammar instance to a grammar input
 func (app *application) Compose(grammar grammars.Grammar) ([]byte, error) {
 	return nil, nil
+}
+
+func (app *application) bytesToToken(input []byte) (tokens.Token, []byte, error) {
+	// try to match a rule
+	elementBuilder := app.elementBuilder.Create()
+	ruleName, retRemaining, err := app.bytesToRuleName(input)
+	if err != nil {
+		// there is no rule, so try to match a block
+		blockName, retBlockRemaining, err := blockName(input, app.possibleLowerCaseLetters, app.possibleLetters)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		elementBuilder.WithBlock(string(blockName))
+		retRemaining = retBlockRemaining
+	}
+
+	if err == nil {
+		elementBuilder.WithRule(ruleName)
+	}
+
+	element, err := elementBuilder.Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	cardinalityIns, retRemainingAfterCardinality, err := app.bytesToCardinality(retRemaining)
+	if err != nil {
+		ins, err := app.cardinalityBuilder.Create().WithMin(1).WithMax(1).Now()
+		if err != nil {
+			return nil, nil, err
+		}
+
+		cardinalityIns = ins
+	}
+
+	if err == nil {
+		retRemaining = retRemainingAfterCardinality
+	}
+
+	ins, err := app.tokenBuilder.Create().
+		WithCardinality(cardinalityIns).
+		WithElement(element).
+		Now()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, retRemaining, nil
 }
 
 func (app *application) bytesToCardinality(input []byte) (cardinalities.Cardinality, []byte, error) {
@@ -133,4 +197,18 @@ func (app *application) bytesToRule(input []byte) (rules.Rule, []byte, error) {
 	}
 
 	return ins, remaining, nil
+}
+
+func (app *application) bytesToRuleName(input []byte) (string, []byte, error) {
+	retRuleName, retRemaining, err := bytesToRuleName(
+		input,
+		app.possibleUpperCaseLetters,
+		app.ruleNameSeparator,
+	)
+
+	if err != nil {
+		return "", nil, err
+	}
+
+	return string(retRuleName), retRemaining, nil
 }

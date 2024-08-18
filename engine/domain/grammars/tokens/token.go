@@ -6,18 +6,15 @@ import (
 )
 
 type token struct {
-	name        string
 	element     elements.Element
 	cardinality cardinalities.Cardinality
 }
 
 func createToken(
-	name string,
 	element elements.Element,
 	cardinality cardinalities.Cardinality,
 ) Token {
 	out := token{
-		name:        name,
 		element:     element,
 		cardinality: cardinality,
 	}
@@ -27,7 +24,11 @@ func createToken(
 
 // Name returns the name
 func (obj *token) Name() string {
-	return obj.name
+	if obj.element.IsBlock() {
+		return obj.element.Block()
+	}
+
+	return obj.element.Rule()
 }
 
 // Element returns the element

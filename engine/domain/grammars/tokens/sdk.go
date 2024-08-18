@@ -31,7 +31,6 @@ type Tokens interface {
 // TokenBuilder represents the token builder
 type TokenBuilder interface {
 	Create() TokenBuilder
-	WithName(name string) TokenBuilder
 	WithElement(element elements.Element) TokenBuilder
 	WithCardinality(cardinality cardinalities.Cardinality) TokenBuilder
 	Now() (Token, error)
