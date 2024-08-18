@@ -22,6 +22,7 @@ type application struct {
 	possibleLowerCaseLetters []byte
 	possibleUpperCaseLetters []byte
 	possibleNumbers          []byte
+	lineSeparator            byte
 	tokenReferenceSeparator  byte
 	ruleNameSeparator        byte
 	ruleValuePrefix          byte
@@ -45,6 +46,7 @@ func createApplication(
 	possibleLowerCaseLetters []byte,
 	possibleUpperCaseLetters []byte,
 	possibleNumbers []byte,
+	lineSeparator byte,
 	tokenReferenceSeparator byte,
 	ruleNameSeparator byte,
 	ruleValuePrefix byte,
@@ -67,6 +69,7 @@ func createApplication(
 		possibleLowerCaseLetters: possibleLowerCaseLetters,
 		possibleUpperCaseLetters: possibleUpperCaseLetters,
 		possibleNumbers:          possibleNumbers,
+		lineSeparator:            lineSeparator,
 		tokenReferenceSeparator:  tokenReferenceSeparator,
 		ruleNameSeparator:        ruleNameSeparator,
 		ruleValuePrefix:          ruleValuePrefix,

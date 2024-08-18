@@ -85,6 +85,7 @@ const cardinalitySeparator = ","
 const cardinalityZeroPlus = "*"
 const cardinalityOnePlus = "+"
 const tokenReference = "."
+const lineSeparator = "|"
 
 // NewApplication creates a new application
 func NewApplication() Application {
@@ -108,6 +109,7 @@ func NewApplication() Application {
 		possibleLowerCaseLetters,
 		possibleUpperCaseLetters,
 		possibleNumbers,
+		[]byte(lineSeparator)[0],
 		[]byte(tokenReference)[0],
 		[]byte(ruleNameSeparator)[0],
 		[]byte(ruleValuePrefix)[0],

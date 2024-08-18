@@ -1,5 +1,15 @@
 package replacements
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewReplacementBuilder creates a new replacement builder
+func NewReplacementBuilder() ReplacementBuilder {
+	return createReplacementBuilder()
+}
+
 // Builder represents a builder
 type Builder interface {
 	Create() Builder
