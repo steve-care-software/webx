@@ -1,5 +1,10 @@
 package elements
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represents the element builder
 type Builder interface {
 	Create() Builder
