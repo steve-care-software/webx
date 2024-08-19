@@ -3,6 +3,7 @@ package grammars
 import (
 	"github.com/steve-care-software/webx/engine/domain/asts"
 	"github.com/steve-care-software/webx/engine/domain/grammars"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/suites"
@@ -94,9 +95,13 @@ const funcNameSeparator = "_"
 const blockDefinitionSeparator = ":"
 const failSeparator = "@"
 const suiteLineSuffix = "."
+const blockSuffix = ";"
+const suiteSeparatorPrefix = "---"
 
 // NewApplication creates a new application
 func NewApplication() Application {
+	blocksBuilder := blocks.NewBuilder()
+	blockBuilder := blocks.NewBlockBuilder()
 	suitesBuilder := suites.NewBuilder()
 	suiteBuilder := suites.NewSuiteBuilder()
 	linesBuilder := lines.NewBuilder()
@@ -114,6 +119,8 @@ func NewApplication() Application {
 	possibleNumbers := createPossibleNumbers()
 	possibleFuncNameCharacters := createPossibleFuncNameCharacters()
 	return createApplication(
+		blocksBuilder,
+		blockBuilder,
 		suitesBuilder,
 		suiteBuilder,
 		linesBuilder,
@@ -125,12 +132,13 @@ func NewApplication() Application {
 		elementBuilder,
 		ruleBuilder,
 		cardinalityBuilder,
-		[]byte(ruleNameValueSeparator)[0],
+		[]byte(suiteSeparatorPrefix),
 		possibleLetters,
 		possibleLowerCaseLetters,
 		possibleUpperCaseLetters,
 		possibleNumbers,
 		possibleFuncNameCharacters,
+		[]byte(blockSuffix)[0],
 		[]byte(suiteLineSuffix)[0],
 		[]byte(failSeparator)[0],
 		[]byte(blockDefinitionSeparator)[0],
@@ -138,6 +146,7 @@ func NewApplication() Application {
 		[]byte(lineSeparator)[0],
 		[]byte(tokenReference)[0],
 		[]byte(ruleNameSeparator)[0],
+		[]byte(ruleNameValueSeparator)[0],
 		[]byte(ruleValuePrefix)[0],
 		[]byte(ruleValueSuffix)[0],
 		[]byte(ruleValueEscape)[0],

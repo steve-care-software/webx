@@ -5,9 +5,158 @@ import (
 	"testing"
 )
 
+func TestApplication_blocks_Success(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;`), remaining...)
+
+	application := NewApplication().(*application)
+	retBlocks, retRemaining, err := application.bytesToBlocks(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	list := retBlocks.List()
+	if len(list) != 2 {
+		t.Errorf("the block was expected to contain %d suite instances, %d returned", 4, len(list))
+		return
+	}
+}
+
+func TestApplication_blocks_withoutBlocks_returnsError(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(``), remaining...)
+
+	application := NewApplication().(*application)
+	_, _, err := application.bytesToBlocks(input)
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+		return
+	}
+}
+
+func TestApplication_block_withSuites_Success(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`myBlock:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;`), remaining...)
+
+	application := NewApplication().(*application)
+	retBlock, retRemaining, err := application.bytesToBlock(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	if retBlock.Name() != "myBlock" {
+		t.Errorf("the block name was expected to be (%s), (%s) returned", "myBlock", retBlock.Name())
+		return
+	}
+
+	list := retBlock.Lines().List()
+	if len(list) != 3 {
+		t.Errorf("the lines was expected to contain %d suite instances, %d returned", 3, len(list))
+		return
+	}
+
+	if !retBlock.HasSuites() {
+		t.Errorf("the block was expected to contain suites")
+		return
+	}
+
+	suitesList := retBlock.Suites().List()
+	if len(suitesList) != 4 {
+		t.Errorf("the suites was expected to contain %d suite instances, %d returned", 4, len(suitesList))
+		return
+	}
+}
+
+func TestApplication_block_Success(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`myBlock:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;`), remaining...)
+
+	application := NewApplication().(*application)
+	retBlock, retRemaining, err := application.bytesToBlock(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	if retBlock.Name() != "myBlock" {
+		t.Errorf("the block name was expected to be (%s), (%s) returned", "myBlock", retBlock.Name())
+		return
+	}
+
+	if retBlock.HasSuites() {
+		t.Errorf("the block was expected to NOT contain suites")
+		return
+	}
+
+	list := retBlock.Lines().List()
+	if len(list) != 3 {
+		t.Errorf("the lines was expected to contain %d suite instances, %d returned", 3, len(list))
+		return
+	}
+}
+
+func TestApplication_block_withoutSuffix_returnsError(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`myBlock:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.`), remaining...)
+
+	application := NewApplication().(*application)
+	_, _, err := application.bytesToBlock(input)
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+		return
+	}
+}
+
+func TestApplication_block_withoutSuffix_withoutRemaining_returnsError(t *testing.T) {
+	input := []byte(`myBlock:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.`)
+	application := NewApplication().(*application)
+	_, _, err := application.bytesToBlock(input)
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+		return
+	}
+}
+
+func TestApplication_block_withoutSuffix_withInvalidBlockDefinition_returnsError(t *testing.T) {
+	input := []byte(`myBlock.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;`)
+	application := NewApplication().(*application)
+	_, _, err := application.bytesToBlock(input)
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+		return
+	}
+}
+
+func TestApplication_block_withoutSuffix_withoutLines_returnsError(t *testing.T) {
+	input := []byte(`myBlock:---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;`)
+	application := NewApplication().(*application)
+	_, _, err := application.bytesToBlock(input)
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+		return
+	}
+}
+
 func TestApplication_suites_Success(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`myTest:.myElement.myTest:@.myElement.`), remaining...)
+	input := append([]byte(`---myTest:.myElement.myTest:@.myElement.`), remaining...)
 
 	application := NewApplication().(*application)
 	retSuites, retRemaining, err := application.bytesToSuites(input)
