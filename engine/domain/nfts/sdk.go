@@ -24,6 +24,7 @@ func NewNFTBuilder() NFTBuilder {
 type Builder interface {
 	Create() Builder
 	WithList(list []NFT) Builder
+	WithName(name string) Builder
 	Now() (NFTs, error)
 }
 
@@ -32,7 +33,8 @@ type NFTs interface {
 	Hash() hash.Hash
 	List() []NFT
 	Fetch(hash hash.Hash) (NFT, error)
-	Combine(input NFTs) []NFT
+	HasName() bool
+	Name() string
 }
 
 // NFTBuilder represents an nft builder

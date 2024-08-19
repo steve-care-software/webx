@@ -11,6 +11,7 @@ type nfts struct {
 	hash hash.Hash
 	list []NFT
 	mp   map[string]NFT
+	name string
 }
 
 func createNFTs(
@@ -18,10 +19,29 @@ func createNFTs(
 	list []NFT,
 	mp map[string]NFT,
 ) NFTs {
+	return createNFTsInternally(hash, list, mp, "")
+}
+
+func createNFTsWithName(
+	hash hash.Hash,
+	list []NFT,
+	mp map[string]NFT,
+	name string,
+) NFTs {
+	return createNFTsInternally(hash, list, mp, name)
+}
+
+func createNFTsInternally(
+	hash hash.Hash,
+	list []NFT,
+	mp map[string]NFT,
+	name string,
+) NFTs {
 	out := nfts{
 		hash: hash,
 		list: list,
 		mp:   mp,
+		name: name,
 	}
 
 	return &out
@@ -48,19 +68,12 @@ func (obj *nfts) Fetch(hash hash.Hash) (NFT, error) {
 	return nil, errors.New(str)
 }
 
-// Combine returns the unique list of NFTs presents in current and passed NFTs
-func (obj *nfts) Combine(input NFTs) []NFT {
-	combined := append(obj.list, input.List()...)
-	mp := map[string]NFT{}
-	for _, oneNFT := range combined {
-		keyname := oneNFT.Hash().String()
-		mp[keyname] = oneNFT
-	}
+// HasName returns true if there is a name, false otherwise
+func (obj *nfts) HasName() bool {
+	return obj.name != ""
+}
 
-	output := []NFT{}
-	for _, oneNFT := range mp {
-		output = append(output, oneNFT)
-	}
-
-	return output
+// Name returns the name, if any
+func (obj *nfts) Name() string {
+	return obj.name
 }

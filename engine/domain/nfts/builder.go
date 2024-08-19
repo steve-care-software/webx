@@ -9,6 +9,7 @@ import (
 type builder struct {
 	hashAdapter hash.Adapter
 	list        []NFT
+	name        string
 }
 
 func createBuilder(
@@ -17,6 +18,7 @@ func createBuilder(
 	out := builder{
 		hashAdapter: hashAdapter,
 		list:        nil,
+		name:        "",
 	}
 
 	return &out
@@ -32,6 +34,12 @@ func (app *builder) Create() Builder {
 // WithList adds a list to the builder
 func (app *builder) WithList(list []NFT) Builder {
 	app.list = list
+	return app
+}
+
+// WithName adds a name to the builder
+func (app *builder) WithName(name string) Builder {
+	app.name = name
 	return app
 }
 
@@ -56,6 +64,15 @@ func (app *builder) Now() (NFTs, error) {
 	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
+	}
+
+	if app.name != "" {
+		return createNFTsWithName(
+			*pHash,
+			app.list,
+			mp,
+			app.name,
+		), nil
 	}
 
 	return createNFTs(

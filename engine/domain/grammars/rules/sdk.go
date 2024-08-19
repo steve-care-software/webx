@@ -1,5 +1,21 @@
 package rules
 
+import "github.com/steve-care-software/webx/engine/domain/nfts"
+
+// NewAdapter creates a new adapter
+func NewAdapter() Adapter {
+	rulesBuilder := NewBuilder()
+	ruleBuilder := NewRuleBuilder()
+	nftsBuilder := nfts.NewBuilder()
+	nftBuilder := nfts.NewNFTBuilder()
+	return createAdapter(
+		rulesBuilder,
+		ruleBuilder,
+		nftsBuilder,
+		nftBuilder,
+	)
+}
+
 // NewBuilder creates a new builder
 func NewBuilder() Builder {
 	return createBuilder()
@@ -8,6 +24,12 @@ func NewBuilder() Builder {
 // NewRuleBuilder creates a new rule builder
 func NewRuleBuilder() RuleBuilder {
 	return createRuleBuilder()
+}
+
+// Adapter represents the rule adapter
+type Adapter interface {
+	RuleToNFT(ins Rule) (nfts.NFT, error)
+	NFTToInstance(root nfts.NFT) (Rule, error)
 }
 
 // Builder represents a rule list
