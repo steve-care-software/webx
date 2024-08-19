@@ -5,6 +5,16 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/suites"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewBlockBuilder creates a new block builder
+func NewBlockBuilder() BlockBuilder {
+	return createBlockBuilder()
+}
+
 // Builder represents a block list
 type Builder interface {
 	Create() Builder
