@@ -4,8 +4,8 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions"
-	"github.com/steve-care-software/webx/engine/domain/grammars/tokens"
-	"github.com/steve-care-software/webx/engine/domain/grammars/tokens/elements"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/elements"
 )
 
 type lineBuilder struct {

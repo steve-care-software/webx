@@ -1,6 +1,6 @@
 package suites
 
-import "github.com/steve-care-software/webx/engine/domain/grammars/tokens/elements"
+import "github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/elements"
 
 type suite struct {
 	name    string

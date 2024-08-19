@@ -6,11 +6,11 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/cardinalities"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/elements"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/suites"
 	"github.com/steve-care-software/webx/engine/domain/grammars/rules"
-	"github.com/steve-care-software/webx/engine/domain/grammars/tokens"
-	"github.com/steve-care-software/webx/engine/domain/grammars/tokens/cardinalities"
-	"github.com/steve-care-software/webx/engine/domain/grammars/tokens/elements"
 )
 
 const llA = "a"

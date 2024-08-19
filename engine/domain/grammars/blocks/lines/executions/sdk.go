@@ -1,6 +1,6 @@
 package executions
 
-import "github.com/steve-care-software/webx/engine/domain/grammars/tokens/elements"
+import "github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/elements"
 
 // NewBuilder creates a new builder
 func NewBuilder() Builder {

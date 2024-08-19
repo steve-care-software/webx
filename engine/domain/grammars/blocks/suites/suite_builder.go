@@ -3,7 +3,7 @@ package suites
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/engine/domain/grammars/tokens/elements"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/elements"
 )
 
 type suiteBuilder struct {

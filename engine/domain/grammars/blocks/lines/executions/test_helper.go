@@ -1,6 +1,6 @@
 package executions
 
-import "github.com/steve-care-software/webx/engine/domain/grammars/tokens/elements"
+import "github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/elements"
 
 // NewExecutionForTests creates a new execution for tests
 func NewExecutionForTests(fnName string) Execution {

@@ -2,8 +2,8 @@ package grammars
 
 import (
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/elements"
 	"github.com/steve-care-software/webx/engine/domain/grammars/rules"
-	"github.com/steve-care-software/webx/engine/domain/grammars/tokens/elements"
 )
 
 // NewBuilder creates a new builder

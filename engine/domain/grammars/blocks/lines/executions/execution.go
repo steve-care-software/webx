@@ -1,6 +1,6 @@
 package executions
 
-import "github.com/steve-care-software/webx/engine/domain/grammars/tokens/elements"
+import "github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/elements"
 
 type execution struct {
 	fnName   string

@@ -1,8 +1,8 @@
 package tokens
 
 import (
-	"github.com/steve-care-software/webx/engine/domain/grammars/tokens/cardinalities"
-	"github.com/steve-care-software/webx/engine/domain/grammars/tokens/elements"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/cardinalities"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/elements"
 )
 
 // NewBuilder creates a new builder
