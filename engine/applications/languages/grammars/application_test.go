@@ -5,6 +5,184 @@ import (
 	"testing"
 )
 
+func TestApplication_grammar_withOmissions_Success(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`v1;>.myRoot;#.first.second.third;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
+
+	application := NewApplication()
+	retGrammar, retRemaining, err := application.Parse(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	if retGrammar.Version() != 1 {
+		t.Errorf("the version was expected to be %d, %d returned", 1, retGrammar.Version())
+		return
+	}
+
+	if retGrammar.Root().Name() != "myRoot" {
+		t.Errorf("the root was expected to be %s, %s returned", "myRoot", retGrammar.Root())
+		return
+	}
+
+	retBlocks := retGrammar.Blocks().List()
+	if len(retBlocks) != 2 {
+		t.Errorf("the grammar was expected to contain %d block instances, %d returned", 2, len(retBlocks))
+		return
+	}
+
+	retRules := retGrammar.Rules().List()
+	if len(retRules) != 2 {
+		t.Errorf("the grammar was expected to contain %d rule instances, %d returned", 2, len(retRules))
+		return
+	}
+
+	if !retGrammar.HasOmissions() {
+		t.Errorf("the grammar was expected to contain omissions")
+		return
+	}
+
+	retOmissions := retGrammar.Rules().List()
+	if len(retOmissions) != 2 {
+		t.Errorf("the grammar was expected to contain %d omission elements, %d returned", 2, len(retOmissions))
+		return
+	}
+}
+
+func TestApplication_grammar_Success(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`v1;>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
+
+	application := NewApplication()
+	retGrammar, retRemaining, err := application.Parse(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	if retGrammar.Version() != 1 {
+		t.Errorf("the version was expected to be %d, %d returned", 1, retGrammar.Version())
+		return
+	}
+
+	if retGrammar.Root().Name() != "myRoot" {
+		t.Errorf("the root was expected to be %s, %s returned", "myRoot", retGrammar.Root())
+		return
+	}
+
+	retBlocks := retGrammar.Blocks().List()
+	if len(retBlocks) != 2 {
+		t.Errorf("the grammar was expected to contain %d block instances, %d returned", 2, len(retBlocks))
+		return
+	}
+
+	retRules := retGrammar.Rules().List()
+	if len(retRules) != 2 {
+		t.Errorf("the grammar was expected to contain %d rule instances, %d returned", 2, len(retRules))
+		return
+	}
+
+	if retGrammar.HasOmissions() {
+		t.Errorf("the grammar was expected to NOT contain omissions")
+		return
+	}
+}
+
+func TestApplication_grammar_withoutVersion_returnsError(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
+
+	application := NewApplication()
+	_, _, err := application.Parse(input)
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+		return
+	}
+}
+
+func TestApplication_grammar_withNonNumericVersion_returnsError(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`vDE;>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
+
+	application := NewApplication()
+	_, _, err := application.Parse(input)
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+		return
+	}
+}
+
+func TestApplication_grammar_withoutRoot_returnsError(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`v1;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
+
+	application := NewApplication()
+	_, _, err := application.Parse(input)
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+		return
+	}
+}
+
+func TestApplication_grammar_withInvalidRootElementReference_returnsError(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`v1;>myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
+
+	application := NewApplication()
+	_, _, err := application.Parse(input)
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+		return
+	}
+}
+
+func TestApplication_grammar_withInvalidOmissionElementReference_returnsError(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`v1;>.myRoot;#invalidReference;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
+
+	application := NewApplication()
+	_, _, err := application.Parse(input)
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+		return
+	}
+}
+
+func TestApplication_grammar_withoutBlocks_returnsError(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`v1;>.myRoot;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
+
+	application := NewApplication()
+	_, _, err := application.Parse(input)
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+		return
+	}
+}
+
+func TestApplication_grammar_withoutRules_returnsError(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`v1;>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;`), remaining...)
+
+	application := NewApplication()
+	_, _, err := application.Parse(input)
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+		return
+	}
+}
+
 func TestApplication_blocks_Success(t *testing.T) {
 	remaining := []byte("!this is some remaining")
 	input := append([]byte(`myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;`), remaining...)
@@ -23,7 +201,7 @@ func TestApplication_blocks_Success(t *testing.T) {
 
 	list := retBlocks.List()
 	if len(list) != 2 {
-		t.Errorf("the block was expected to contain %d suite instances, %d returned", 4, len(list))
+		t.Errorf("the block was expected to contain %d suite instances, %d returned", 2, len(list))
 		return
 	}
 }

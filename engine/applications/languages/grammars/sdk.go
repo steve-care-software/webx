@@ -97,9 +97,16 @@ const failSeparator = "@"
 const suiteLineSuffix = "."
 const blockSuffix = ";"
 const suiteSeparatorPrefix = "---"
+const versionPrefix = "v"
+const versionSuffix = ";"
+const rootPrefix = ">"
+const rootSuffix = ";"
+const omissionPrefix = "#"
+const omissionSuffix = ";"
 
 // NewApplication creates a new application
 func NewApplication() Application {
+	grammarBuilder := grammars.NewBuilder()
 	blocksBuilder := blocks.NewBuilder()
 	blockBuilder := blocks.NewBlockBuilder()
 	suitesBuilder := suites.NewBuilder()
@@ -111,6 +118,7 @@ func NewApplication() Application {
 	tokenBuilder := tokens.NewTokenBuilder()
 	elementsBuilder := elements.NewBuilder()
 	elementBuilder := elements.NewElementBuilder()
+	rulesBuilder := rules.NewBuilder()
 	ruleBuilder := rules.NewRuleBuilder()
 	cardinalityBuilder := cardinalities.NewBuilder()
 	possibleLetters := createPossibleLetters()
@@ -119,6 +127,7 @@ func NewApplication() Application {
 	possibleNumbers := createPossibleNumbers()
 	possibleFuncNameCharacters := createPossibleFuncNameCharacters()
 	return createApplication(
+		grammarBuilder,
 		blocksBuilder,
 		blockBuilder,
 		suitesBuilder,
@@ -130,6 +139,7 @@ func NewApplication() Application {
 		tokenBuilder,
 		elementsBuilder,
 		elementBuilder,
+		rulesBuilder,
 		ruleBuilder,
 		cardinalityBuilder,
 		[]byte(suiteSeparatorPrefix),
@@ -138,6 +148,12 @@ func NewApplication() Application {
 		possibleUpperCaseLetters,
 		possibleNumbers,
 		possibleFuncNameCharacters,
+		[]byte(omissionPrefix)[0],
+		[]byte(omissionSuffix)[0],
+		[]byte(versionPrefix)[0],
+		[]byte(versionSuffix)[0],
+		[]byte(rootPrefix)[0],
+		[]byte(rootSuffix)[0],
 		[]byte(blockSuffix)[0],
 		[]byte(suiteLineSuffix)[0],
 		[]byte(failSeparator)[0],
@@ -160,7 +176,7 @@ func NewApplication() Application {
 
 // Application represents the grammar application
 type Application interface {
-	Parse(lexedInput []byte) (grammars.Grammar, error)
+	Parse(input []byte) (grammars.Grammar, []byte, error)
 	Compile(grammar grammars.Grammar) (asts.AST, error)
 	Decompile(ast asts.AST) (grammars.Grammar, error)
 	Compose(grammar grammars.Grammar) ([]byte, error)

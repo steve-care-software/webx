@@ -146,7 +146,7 @@ func bytesToRuleNameAndValue(
 		return nil, nil, nil, errors.New(str)
 	}
 
-	retRuleValue, retRemainingAfterValue, err := extractBetween(retRemaining[1:], ruleValuePrefix, ruleValueSuffix, ruleValueEscape)
+	retRuleValue, retRemainingAfterValue, err := extractBetween(retRemaining[1:], ruleValuePrefix, ruleValueSuffix, &ruleValueEscape)
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -198,7 +198,7 @@ func bytesToRuleName(data []byte, possibleBytes []byte, separator byte) ([]byte,
 	return output, remaining, nil
 }
 
-func extractBetween(data []byte, prefix byte, suffix byte, escape byte) ([]byte, []byte, error) {
+func extractBetween(data []byte, prefix byte, suffix byte, pEscape *byte) ([]byte, []byte, error) {
 	if len(data) < 2 {
 		str := fmt.Sprintf("the input was expected to contain at least 2 bytes, %d provided", len(data))
 		return nil, nil, errors.New(str)
@@ -216,8 +216,8 @@ func extractBetween(data []byte, prefix byte, suffix byte, escape byte) ([]byte,
 	lastIndex := 1
 	for _, oneByte := range data[1:] {
 		lastIndex++
-		if !escapeReached && lastByteInInt != -1 {
-			escapeReached = oneByte == escape
+		if pEscape != nil && !escapeReached && lastByteInInt != -1 {
+			escapeReached = oneByte == *pEscape
 			if escapeReached {
 				continue
 			}

@@ -1,5 +1,10 @@
 package rules
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // NewRuleBuilder creates a new rule builder
 func NewRuleBuilder() RuleBuilder {
 	return createRuleBuilder()

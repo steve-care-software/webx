@@ -3,6 +3,7 @@ package grammars
 import (
 	"bytes"
 	"errors"
+	"strconv"
 
 	"github.com/steve-care-software/webx/engine/domain/asts"
 	"github.com/steve-care-software/webx/engine/domain/grammars"
@@ -17,6 +18,7 @@ import (
 )
 
 type application struct {
+	grammarBuilder             grammars.Builder
 	blocksBuilder              blocks.Builder
 	blockBuilder               blocks.BlockBuilder
 	suitesBuilder              suites.Builder
@@ -28,6 +30,7 @@ type application struct {
 	tokenBuilder               tokens.TokenBuilder
 	elementsBuilder            elements.Builder
 	elementBuilder             elements.ElementBuilder
+	rulesBuilder               rules.Builder
 	ruleBuilder                rules.RuleBuilder
 	cardinalityBuilder         cardinalities.Builder
 	suiteSeparatorPrefix       []byte
@@ -36,6 +39,12 @@ type application struct {
 	possibleUpperCaseLetters   []byte
 	possibleNumbers            []byte
 	possibleFuncNameCharacters []byte
+	omissionPrefix             byte
+	omissionSuffix             byte
+	versionPrefix              byte
+	versionSuffix              byte
+	rootPrefix                 byte
+	rootSuffix                 byte
 	blockSuffix                byte
 	suiteLineSuffix            byte
 	failSeparator              byte
@@ -56,6 +65,7 @@ type application struct {
 }
 
 func createApplication(
+	grammarBuilder grammars.Builder,
 	blocksBuilder blocks.Builder,
 	blockBuilder blocks.BlockBuilder,
 	suitesBuilder suites.Builder,
@@ -67,6 +77,7 @@ func createApplication(
 	tokenBuilder tokens.TokenBuilder,
 	elementsBuilder elements.Builder,
 	elementBuilder elements.ElementBuilder,
+	rulesBuilder rules.Builder,
 	ruleBuilder rules.RuleBuilder,
 	cardinalityBuilder cardinalities.Builder,
 	suiteSeparatorPrefix []byte,
@@ -75,6 +86,12 @@ func createApplication(
 	possibleUpperCaseLetters []byte,
 	possibleNumbers []byte,
 	possibleFuncNameCharacters []byte,
+	omissionPrefix byte,
+	omissionSuffix byte,
+	versionPrefix byte,
+	versionSuffix byte,
+	rootPrefix byte,
+	rootSuffix byte,
 	blockSuffix byte,
 	suiteLineSuffix byte,
 	failSeparator byte,
@@ -94,6 +111,7 @@ func createApplication(
 	cardinalityOnePlus byte,
 ) Application {
 	out := application{
+		grammarBuilder:             grammarBuilder,
 		blocksBuilder:              blocksBuilder,
 		blockBuilder:               blockBuilder,
 		suitesBuilder:              suitesBuilder,
@@ -105,6 +123,7 @@ func createApplication(
 		tokenBuilder:               tokenBuilder,
 		elementsBuilder:            elementsBuilder,
 		elementBuilder:             elementBuilder,
+		rulesBuilder:               rulesBuilder,
 		ruleBuilder:                ruleBuilder,
 		cardinalityBuilder:         cardinalityBuilder,
 		suiteSeparatorPrefix:       suiteSeparatorPrefix,
@@ -113,6 +132,12 @@ func createApplication(
 		possibleUpperCaseLetters:   possibleUpperCaseLetters,
 		possibleNumbers:            possibleNumbers,
 		possibleFuncNameCharacters: possibleFuncNameCharacters,
+		omissionPrefix:             omissionPrefix,
+		omissionSuffix:             omissionSuffix,
+		versionPrefix:              versionPrefix,
+		versionSuffix:              versionSuffix,
+		rootPrefix:                 rootPrefix,
+		rootSuffix:                 rootSuffix,
 		suiteLineSuffix:            suiteLineSuffix,
 		failSeparator:              failSeparator,
 		blockDefinitionSeparator:   blockDefinitionSeparator,
@@ -136,8 +161,8 @@ func createApplication(
 }
 
 // Parse parses the input and returns a grammar instance
-func (app *application) Parse(lexedInput []byte) (grammars.Grammar, error) {
-	return nil, nil
+func (app *application) Parse(input []byte) (grammars.Grammar, []byte, error) {
+	return app.bytesToGrammar(input)
 }
 
 // Compile compiles a grammar to an AST
@@ -153,6 +178,61 @@ func (app *application) Decompile(ast asts.AST) (grammars.Grammar, error) {
 // Compose composes a grammar instance to a grammar input
 func (app *application) Compose(grammar grammars.Grammar) ([]byte, error) {
 	return nil, nil
+}
+
+func (app *application) bytesToGrammar(input []byte) (grammars.Grammar, []byte, error) {
+	retVersion, retVersionRemaining, err := extractBetween(input, app.versionPrefix, app.versionSuffix, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	version, err := strconv.Atoi(string(retVersion))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	retRootBytes, retRootRemaining, err := extractBetween(retVersionRemaining, app.rootPrefix, app.rootSuffix, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	retRoot, _, err := app.bytesToElementReference(retRootBytes)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	remaining := retRootRemaining
+	builder := app.grammarBuilder.Create().WithVersion(uint(version)).WithRoot(retRoot)
+	retOmissionBytes, retOmissionRemaining, err := extractBetween(retRootRemaining, app.omissionPrefix, app.omissionSuffix, nil)
+	if err == nil {
+		retOmissions, _, err := app.bytesToElementReferences(retOmissionBytes)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		builder.WithOmissions(retOmissions)
+		remaining = retOmissionRemaining
+	}
+
+	retBlocks, retBlocksRemaining, err := app.bytesToBlocks(remaining)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	retRules, retRemaining, err := app.bytesToRules(retBlocksRemaining)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	ins, err := builder.WithBlocks(retBlocks).
+		WithRules(retRules).
+		Now()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, retRemaining, nil
 }
 
 func (app *application) bytesToBlocks(input []byte) (blocks.Blocks, []byte, error) {
@@ -543,6 +623,27 @@ func (app *application) bytesToCardinality(input []byte) (cardinalities.Cardinal
 	}
 
 	return retIns, retRemaining, nil
+}
+
+func (app *application) bytesToRules(input []byte) (rules.Rules, []byte, error) {
+	remaining := input
+	list := []rules.Rule{}
+	for {
+		retRule, retRemaining, err := app.bytesToRule(remaining)
+		if err != nil {
+			break
+		}
+
+		list = append(list, retRule)
+		remaining = retRemaining
+	}
+
+	ins, err := app.rulesBuilder.Create().WithList(list).Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, remaining, nil
 }
 
 func (app *application) bytesToRule(input []byte) (rules.Rule, []byte, error) {
