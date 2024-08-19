@@ -32,6 +32,7 @@ func TestBytesToRuleNameAndValue_Success(t *testing.T) {
 		[]byte(ruleValuePrefix)[0],
 		[]byte(ruleValueSuffix)[0],
 		[]byte(ruleValueEscape)[0],
+		[]byte(filterBytes),
 	)
 
 	if err != nil {
@@ -79,6 +80,7 @@ func TestBytesToRuleNameAndValue_withoutSeparator_returnsError(t *testing.T) {
 		[]byte(ruleValuePrefix)[0],
 		[]byte(ruleValueSuffix)[0],
 		[]byte(ruleValueEscape)[0],
+		[]byte(filterBytes),
 	)
 
 	if err == nil {
@@ -112,6 +114,7 @@ func TestBytesToRuleNameAndValue_withInvalidName_returnsError(t *testing.T) {
 		[]byte(ruleValuePrefix)[0],
 		[]byte(ruleValueSuffix)[0],
 		[]byte(ruleValueEscape)[0],
+		[]byte(filterBytes),
 	)
 
 	if err == nil {
@@ -133,6 +136,7 @@ func TestBytesToRuleNameAndValue_withoutRemainingAfterName_returnsError(t *testi
 		[]byte(ruleValuePrefix)[0],
 		[]byte(ruleValueSuffix)[0],
 		[]byte(ruleValueEscape)[0],
+		[]byte(filterBytes),
 	)
 
 	if err == nil {
@@ -165,6 +169,7 @@ func TestBytesToRuleNameAndValue_withoutValueSuffix_returnsError(t *testing.T) {
 		[]byte(ruleValuePrefix)[0],
 		[]byte(ruleValueSuffix)[0],
 		[]byte(ruleValueEscape)[0],
+		[]byte(filterBytes),
 	)
 
 	if err == nil {

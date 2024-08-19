@@ -11,13 +11,15 @@ func blockName(
 	data []byte,
 	firstBytes []byte,
 	secondBytes []byte,
+	filterBytes []byte,
 ) ([]byte, []byte, error) {
-	retFirstMatches, retRemaining := matchBytes(data, firstBytes)
+	data = filterPrefix(data, filterBytes)
+	retFirstMatches, retRemaining := matchBytes(data, firstBytes, filterBytes)
 	if len(retFirstMatches) <= 0 {
 		return nil, nil, errors.New("the bytes did not match any of the firstBytes")
 	}
 
-	retSecondMatches, retSecondRemaining := matchBytes(retRemaining, secondBytes)
+	retSecondMatches, retSecondRemaining := matchBytes(retRemaining, secondBytes, filterBytes)
 	return append(retFirstMatches, retSecondMatches...), retSecondRemaining, nil
 }
 
@@ -29,7 +31,9 @@ func bytesToMinMax(
 	cardinalitySeparator byte,
 	cardinalityZeroPlus byte,
 	cardinalityOnePlus byte,
+	filterBytes []byte,
 ) (uint, *uint, []byte, error) {
+	data = filterPrefix(data, filterBytes)
 	if len(data) <= 0 {
 		str := fmt.Sprintf("the bytes must contain at least 1 value in order to convert it to cardinality's min/max, %d provided", len(data))
 		return 0, nil, nil, errors.New(str)
@@ -50,6 +54,7 @@ func bytesToMinMax(
 		cardinalityOpen,
 		cardinalityClose,
 		cardinalitySeparator,
+		filterBytes,
 	)
 }
 
@@ -59,18 +64,22 @@ func bytesToBracketsMinMax(
 	cardinalityOpen byte,
 	cardinalityClose byte,
 	cardinalitySeparator byte,
+	filterBytes []byte,
 ) (uint, *uint, []byte, error) {
+	data = filterPrefix(data, filterBytes)
 	if len(data) <= 0 {
 		str := fmt.Sprintf("the bytes must contain at least 1 value in order to convert it to cardinality's min/max, %d provided", len(data))
 		return 0, nil, nil, errors.New(str)
 	}
 
+	data = filterPrefix(data, filterBytes)
 	firstValue := data[0]
 	if firstValue != cardinalityOpen {
 		return 0, nil, nil, errors.New("the provided bytes could not be converted to cardinality's min/max")
 	}
 
-	retMinBytes, retRemaining := matchBytes(data[1:], possibleNumbers)
+	data = filterPrefix(data[1:], filterBytes)
+	retMinBytes, retRemaining := matchBytes(data, possibleNumbers, filterBytes)
 	iMin, err := strconv.Atoi(string(retMinBytes))
 	if err != nil {
 		return 0, nil, nil, err
@@ -91,7 +100,7 @@ func bytesToBracketsMinMax(
 		return 0, nil, nil, errors.New("the provided bytes could not be converted to cardinality's min/max, no separator found")
 	}
 
-	retRemaining = retRemaining[1:]
+	retRemaining = filterPrefix(retRemaining[1:], filterBytes)
 	if len(retRemaining) <= 0 {
 		str := fmt.Sprintf("the remaining bytes, after fetching the cardinality separator (%s), was expected to not be empty", string([]byte{cardinalityClose}))
 		return 0, nil, nil, errors.New(str)
@@ -103,7 +112,8 @@ func bytesToBracketsMinMax(
 		return uiMin, nil, retRemaining[1:], nil
 	}
 
-	retMaxBytes, retRemainingAfterMax := matchBytes(retRemaining, possibleNumbers)
+	retRemaining = filterPrefix(retRemaining, filterBytes)
+	retMaxBytes, retRemainingAfterMax := matchBytes(retRemaining, possibleNumbers, filterBytes)
 	if len(retRemainingAfterMax) <= 0 {
 		str := fmt.Sprintf("the remaining bytes, after fetching the cardinality's max (%s), was expected to contain the cardinality's close byte (%s).  Emty bytes returned", retMaxBytes, string([]byte{cardinalityClose}))
 		return 0, nil, nil, errors.New(str)
@@ -120,7 +130,7 @@ func bytesToBracketsMinMax(
 	}
 
 	uiMax := uint(iMax)
-	return uiMin, &uiMax, retRemainingAfterMax[1:], nil
+	return uiMin, &uiMax, filterPrefix(retRemainingAfterMax[1:], filterBytes), nil
 }
 
 func bytesToRuleNameAndValue(
@@ -131,8 +141,9 @@ func bytesToRuleNameAndValue(
 	ruleValuePrefix byte,
 	ruleValueSuffix byte,
 	ruleValueEscape byte,
+	filterBytes []byte,
 ) ([]byte, []byte, []byte, error) {
-	retRuleName, retRemaining, err := bytesToRuleName(data, possibleNameCharacters, ruleNameSeparator)
+	retRuleName, retRemaining, err := bytesToRuleName(data, possibleNameCharacters, ruleNameSeparator, filterBytes)
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -141,20 +152,23 @@ func bytesToRuleNameAndValue(
 		return nil, nil, nil, errors.New("the remaining data after fetching the ruleName was expected to contain at least 1 byte")
 	}
 
+	retRemaining = filterPrefix(retRemaining, filterBytes)
 	if retRemaining[0] != ruleNameValueSeparator {
 		str := fmt.Sprintf("the byte after fetching the ruleName was expected to be %d, %d provided", ruleNameValueSeparator, retRemaining[0])
 		return nil, nil, nil, errors.New(str)
 	}
 
-	retRuleValue, retRemainingAfterValue, err := extractBetween(retRemaining[1:], ruleValuePrefix, ruleValueSuffix, &ruleValueEscape)
+	retRemaining = filterPrefix(retRemaining[1:], filterBytes)
+	retRuleValue, retRemainingAfterValue, err := extractBetween(retRemaining, ruleValuePrefix, ruleValueSuffix, &ruleValueEscape)
 	if err != nil {
 		return nil, nil, nil, err
 	}
 
-	return retRuleName, retRuleValue, retRemainingAfterValue, nil
+	return retRuleName, retRuleValue, filterPrefix(retRemainingAfterValue, filterBytes), nil
 }
 
-func bytesToRuleName(data []byte, possibleBytes []byte, separator byte) ([]byte, []byte, error) {
+func bytesToRuleName(data []byte, possibleBytes []byte, separator byte, filter []byte) ([]byte, []byte, error) {
+	data = filterPrefix(data, filter)
 	output := []byte{}
 	for idx, oneByte := range data {
 		isValid := false
@@ -184,7 +198,7 @@ func bytesToRuleName(data []byte, possibleBytes []byte, separator byte) ([]byte,
 		break
 	}
 
-	remaining := data[len(output):]
+	remaining := filterPrefix(data[len(output):], filter)
 	sepBytes := []byte{separator}
 	if bytes.HasSuffix(output, sepBytes) {
 		output = output[:len(output)-1]
@@ -195,7 +209,7 @@ func bytesToRuleName(data []byte, possibleBytes []byte, separator byte) ([]byte,
 		return nil, nil, errors.New("the rule name must contain at least 1 byte")
 	}
 
-	return output, remaining, nil
+	return output, filterPrefix(remaining, filter), nil
 }
 
 func extractBetween(data []byte, prefix byte, suffix byte, pEscape *byte) ([]byte, []byte, error) {
@@ -247,7 +261,7 @@ func extractBetween(data []byte, prefix byte, suffix byte, pEscape *byte) ([]byt
 	return output, data[lastIndex:], nil
 }
 
-func matchBytes(data []byte, possibleValues []byte) ([]byte, []byte) {
+func matchBytes(data []byte, possibleValues []byte, filterBytes []byte) ([]byte, []byte) {
 	output := []byte{}
 	for _, oneByte := range data {
 		isMatch := false
@@ -266,7 +280,22 @@ func matchBytes(data []byte, possibleValues []byte) ([]byte, []byte) {
 		break
 	}
 
-	return output, data[len(output):]
+	return output, filterPrefix(data[len(output):], filterBytes)
+}
+
+func filterPrefix(data []byte, possibleBytes []byte) []byte {
+	if len(data) <= 0 {
+		return data
+	}
+
+	first := data[0]
+	for _, oneByte := range possibleBytes {
+		if first == oneByte {
+			return filterPrefix(data[1:], possibleBytes)
+		}
+	}
+
+	return data
 }
 
 func createPossibleFuncNameCharacters() []byte {

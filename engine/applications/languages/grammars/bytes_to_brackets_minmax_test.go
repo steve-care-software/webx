@@ -14,6 +14,7 @@ func TestBytesToBracketMinMax_withSpecificValue_Success(t *testing.T) {
 		[]byte(cardinalityOpen)[0],
 		[]byte(cardinalityClose)[0],
 		[]byte(cardinalitySeparator)[0],
+		[]byte(filterBytes),
 	)
 
 	if err != nil {
@@ -51,6 +52,7 @@ func TestBytesToBracketMinMax_withMin_withoutMax_Success(t *testing.T) {
 		[]byte(cardinalityOpen)[0],
 		[]byte(cardinalityClose)[0],
 		[]byte(cardinalitySeparator)[0],
+		[]byte(filterBytes),
 	)
 
 	if err != nil {
@@ -83,6 +85,7 @@ func TestBytesToBracketMinMax_withMin_withMax_Success(t *testing.T) {
 		[]byte(cardinalityOpen)[0],
 		[]byte(cardinalityClose)[0],
 		[]byte(cardinalitySeparator)[0],
+		[]byte(filterBytes),
 	)
 
 	if err != nil {
@@ -119,6 +122,7 @@ func TestBytesToBracketMinMax_withMin_withMax_withRemaining_withoutCloseByte_ret
 		[]byte(cardinalityOpen)[0],
 		[]byte(cardinalityClose)[0],
 		[]byte(cardinalitySeparator)[0],
+		[]byte(filterBytes),
 	)
 
 	if err == nil {
@@ -135,6 +139,7 @@ func TestBytesToBracketMinMax_withMin_withMax_withoutCloseByte_returnsError(t *t
 		[]byte(cardinalityOpen)[0],
 		[]byte(cardinalityClose)[0],
 		[]byte(cardinalitySeparator)[0],
+		[]byte(filterBytes),
 	)
 
 	if err == nil {
@@ -151,6 +156,7 @@ func TestBytesToBracketMinMax_withMin_withoutSeparatorByte_returnsError(t *testi
 		[]byte(cardinalityOpen)[0],
 		[]byte(cardinalityClose)[0],
 		[]byte(cardinalitySeparator)[0],
+		[]byte(filterBytes),
 	)
 
 	if err == nil {
@@ -167,6 +173,7 @@ func TestBytesToBracketMinMax_withMin_withoutRemainingAfterMin_returnsError(t *t
 		[]byte(cardinalityOpen)[0],
 		[]byte(cardinalityClose)[0],
 		[]byte(cardinalitySeparator)[0],
+		[]byte(filterBytes),
 	)
 
 	if err == nil {
@@ -183,6 +190,7 @@ func TestBytesToBracketMinMax_withMin_withoutRemainingAfterSeparator_returnsErro
 		[]byte(cardinalityOpen)[0],
 		[]byte(cardinalityClose)[0],
 		[]byte(cardinalitySeparator)[0],
+		[]byte(filterBytes),
 	)
 
 	if err == nil {
@@ -199,6 +207,7 @@ func TestBytesToBracketMinMax_withoutOpenByte_returnsError(t *testing.T) {
 		[]byte(cardinalityOpen)[0],
 		[]byte(cardinalityClose)[0],
 		[]byte(cardinalitySeparator)[0],
+		[]byte(filterBytes),
 	)
 
 	if err == nil {
@@ -215,6 +224,7 @@ func TestBytesToBracketMinMax_withoutMinMatch_returnsError(t *testing.T) {
 		[]byte(cardinalityOpen)[0],
 		[]byte(cardinalityClose)[0],
 		[]byte(cardinalitySeparator)[0],
+		[]byte(filterBytes),
 	)
 
 	if err == nil {
@@ -231,6 +241,7 @@ func TestBytesToBracketMinMax_withEmptyData_returnsError(t *testing.T) {
 		[]byte(cardinalityOpen)[0],
 		[]byte(cardinalityClose)[0],
 		[]byte(cardinalitySeparator)[0],
+		[]byte(filterBytes),
 	)
 
 	if err == nil {
@@ -247,6 +258,7 @@ func TestBytesToBracketMinMax_withInvalidNumbers_returnsError(t *testing.T) {
 		[]byte(cardinalityOpen)[0],
 		[]byte(cardinalityClose)[0],
 		[]byte(cardinalitySeparator)[0],
+		[]byte(filterBytes),
 	)
 
 	if err == nil {

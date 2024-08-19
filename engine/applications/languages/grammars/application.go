@@ -33,6 +33,7 @@ type application struct {
 	rulesBuilder               rules.Builder
 	ruleBuilder                rules.RuleBuilder
 	cardinalityBuilder         cardinalities.Builder
+	filterBytes                []byte
 	suiteSeparatorPrefix       []byte
 	possibleLetters            []byte
 	possibleLowerCaseLetters   []byte
@@ -80,6 +81,7 @@ func createApplication(
 	rulesBuilder rules.Builder,
 	ruleBuilder rules.RuleBuilder,
 	cardinalityBuilder cardinalities.Builder,
+	filterBytes []byte,
 	suiteSeparatorPrefix []byte,
 	possibleLetters []byte,
 	possibleLowerCaseLetters []byte,
@@ -126,6 +128,7 @@ func createApplication(
 		rulesBuilder:               rulesBuilder,
 		ruleBuilder:                ruleBuilder,
 		cardinalityBuilder:         cardinalityBuilder,
+		filterBytes:                filterBytes,
 		suiteSeparatorPrefix:       suiteSeparatorPrefix,
 		possibleLetters:            possibleLetters,
 		possibleLowerCaseLetters:   possibleLowerCaseLetters,
@@ -181,6 +184,7 @@ func (app *application) Compose(grammar grammars.Grammar) ([]byte, error) {
 }
 
 func (app *application) bytesToGrammar(input []byte) (grammars.Grammar, []byte, error) {
+	input = filterPrefix(input, app.filterBytes)
 	retVersion, retVersionRemaining, err := extractBetween(input, app.versionPrefix, app.versionSuffix, nil)
 	if err != nil {
 		return nil, nil, err
@@ -191,6 +195,7 @@ func (app *application) bytesToGrammar(input []byte) (grammars.Grammar, []byte, 
 		return nil, nil, err
 	}
 
+	retVersionRemaining = filterPrefix(retVersionRemaining, app.filterBytes)
 	retRootBytes, retRootRemaining, err := extractBetween(retVersionRemaining, app.rootPrefix, app.rootSuffix, nil)
 	if err != nil {
 		return nil, nil, err
@@ -201,6 +206,7 @@ func (app *application) bytesToGrammar(input []byte) (grammars.Grammar, []byte, 
 		return nil, nil, err
 	}
 
+	retRootRemaining = filterPrefix(retRootRemaining, app.filterBytes)
 	remaining := retRootRemaining
 	builder := app.grammarBuilder.Create().WithVersion(uint(version)).WithRoot(retRoot)
 	retOmissionBytes, retOmissionRemaining, err := extractBetween(retRootRemaining, app.omissionPrefix, app.omissionSuffix, nil)
@@ -288,15 +294,16 @@ func (app *application) bytesToBlock(input []byte) (blocks.Block, []byte, error)
 		return nil, nil, err
 	}
 
-	return retIns, remaining[1:], nil
+	return retIns, filterPrefix(remaining[1:], app.filterBytes), nil
 }
 
 func (app *application) bytesToSuites(input []byte) (suites.Suites, []byte, error) {
+	input = filterPrefix(input, app.filterBytes)
 	if !bytes.HasPrefix(input, app.suiteSeparatorPrefix) {
 		return nil, nil, errors.New("the suite was expecting the suite prefix bytes as its prefix")
 	}
 
-	remaining := input[len(app.suiteSeparatorPrefix):]
+	remaining := filterPrefix(input[len(app.suiteSeparatorPrefix):], app.filterBytes)
 	list := []suites.Suite{}
 	for {
 		retSuite, retRemaining, err := app.bytesToSuite(remaining)
@@ -305,7 +312,7 @@ func (app *application) bytesToSuites(input []byte) (suites.Suites, []byte, erro
 		}
 
 		list = append(list, retSuite)
-		remaining = retRemaining
+		remaining = filterPrefix(retRemaining, app.filterBytes)
 	}
 
 	ins, err := app.suitesBuilder.Create().WithList(list).Now()
@@ -313,7 +320,7 @@ func (app *application) bytesToSuites(input []byte) (suites.Suites, []byte, erro
 		return nil, nil, err
 	}
 
-	return ins, remaining, nil
+	return ins, filterPrefix(remaining, app.filterBytes), nil
 }
 
 func (app *application) bytesToSuite(input []byte) (suites.Suite, []byte, error) {
@@ -364,7 +371,7 @@ func (app *application) bytesToBlockDefinition(input []byte) (string, []byte, er
 		return "", nil, errors.New("the blockDefinition was expected to contain the blockDefinitionSeparator byte at its suffix")
 	}
 
-	return blockName, retBlockRemaining[1:], nil
+	return blockName, filterPrefix(retBlockRemaining[1:], app.filterBytes), nil
 }
 
 func (app *application) bytesToLines(input []byte) (lines.Lines, []byte, error) {
@@ -379,7 +386,7 @@ func (app *application) bytesToLines(input []byte) (lines.Lines, []byte, error) 
 		}
 
 		if !isFirst {
-			remaining = remaining[1:]
+			remaining = filterPrefix(remaining[1:], app.filterBytes)
 		}
 
 		retLine, retRemaining, err := app.bytesToLine(remaining)
@@ -388,7 +395,7 @@ func (app *application) bytesToLines(input []byte) (lines.Lines, []byte, error) 
 		}
 
 		list = append(list, retLine)
-		remaining = retRemaining
+		remaining = filterPrefix(retRemaining, app.filterBytes)
 		cpt++
 	}
 
@@ -433,6 +440,7 @@ func (app *application) bytesToLine(input []byte) (lines.Line, []byte, error) {
 }
 
 func (app *application) bytesToExecutionOrReplacement(input []byte) (executions.Execution, elements.Element, []byte, error) {
+	input = filterPrefix(input, app.filterBytes)
 	if len(input) <= 0 {
 		return nil, nil, nil, errors.New("the execution or replacement was expected to contain at least 1 byte for its separator")
 	}
@@ -455,7 +463,7 @@ func (app *application) bytesToExecutionOrReplacement(input []byte) (executions.
 }
 
 func (app *application) bytesToExecution(input []byte) (executions.Execution, []byte, error) {
-	funcName, retRemaining, err := blockName(input, app.possibleLowerCaseLetters, app.possibleFuncNameCharacters)
+	funcName, retRemaining, err := blockName(input, app.possibleLowerCaseLetters, app.possibleFuncNameCharacters, app.filterBytes)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -559,6 +567,7 @@ func (app *application) bytesToElementReferences(input []byte) (elements.Element
 }
 
 func (app *application) bytesToElementReference(input []byte) (elements.Element, []byte, error) {
+	input = filterPrefix(input, app.filterBytes)
 	if len(input) <= 0 {
 		return nil, nil, errors.New("the token was expected to contain at least 1 byte")
 	}
@@ -567,7 +576,8 @@ func (app *application) bytesToElementReference(input []byte) (elements.Element,
 		return nil, nil, errors.New("the token was expected to contain the tokenReference byte at its prefix")
 	}
 
-	return app.bytesToElement(input[1:])
+	input = filterPrefix(input[1:], app.filterBytes)
+	return app.bytesToElement(input)
 }
 
 func (app *application) bytesToElement(input []byte) (elements.Element, []byte, error) {
@@ -606,6 +616,7 @@ func (app *application) bytesToCardinality(input []byte) (cardinalities.Cardinal
 		app.cardinalitySeparator,
 		app.cardinalityZeroPlus,
 		app.cardinalityOnePlus,
+		app.filterBytes,
 	)
 
 	if err != nil {
@@ -635,7 +646,7 @@ func (app *application) bytesToRules(input []byte) (rules.Rules, []byte, error) 
 		}
 
 		list = append(list, retRule)
-		remaining = retRemaining
+		remaining = filterPrefix(retRemaining, app.filterBytes)
 	}
 
 	ins, err := app.rulesBuilder.Create().WithList(list).Now()
@@ -655,6 +666,7 @@ func (app *application) bytesToRule(input []byte) (rules.Rule, []byte, error) {
 		app.ruleValuePrefix,
 		app.ruleValueSuffix,
 		app.ruleValueEscape,
+		app.filterBytes,
 	)
 
 	if err != nil {
@@ -674,7 +686,7 @@ func (app *application) bytesToRule(input []byte) (rules.Rule, []byte, error) {
 }
 
 func (app *application) bytesToBlockName(input []byte) (string, []byte, error) {
-	blockName, retBlockRemaining, err := blockName(input, app.possibleLowerCaseLetters, app.possibleLetters)
+	blockName, retBlockRemaining, err := blockName(input, app.possibleLowerCaseLetters, app.possibleLetters, app.filterBytes)
 	if err != nil {
 		return "", nil, err
 	}
@@ -687,6 +699,7 @@ func (app *application) bytesToRuleName(input []byte) (string, []byte, error) {
 		input,
 		app.possibleUpperCaseLetters,
 		app.ruleNameSeparator,
+		app.filterBytes,
 	)
 
 	if err != nil {

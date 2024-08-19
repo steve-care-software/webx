@@ -11,7 +11,7 @@ func TestBlockName_Success(t *testing.T) {
 	expectedRemaining := []byte{}
 	expectedBlockName := []byte("myBlockName")
 	input := []byte(append(expectedBlockName, expectedRemaining...))
-	retBlockName, retRemaining, err := blockName(input, lowerCaseLetters, anyLetters)
+	retBlockName, retRemaining, err := blockName(input, lowerCaseLetters, anyLetters, []byte(filterBytes))
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -34,7 +34,7 @@ func TestBlockName_withRemaining_Success(t *testing.T) {
 	expectedRemaining := []byte("!this is some remaining")
 	expectedBlockName := []byte("myBlockName")
 	input := []byte(append(expectedBlockName, expectedRemaining...))
-	retBlockName, retRemaining, err := blockName(input, lowerCaseLetters, anyLetters)
+	retBlockName, retRemaining, err := blockName(input, lowerCaseLetters, anyLetters, []byte(filterBytes))
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -57,7 +57,7 @@ func TestBlockName_withoutMatch_returnsError(t *testing.T) {
 	expectedRemaining := []byte("!this is some remaining")
 	expectedBlockName := []byte("INVALID")
 	input := []byte(append(expectedBlockName, expectedRemaining...))
-	_, _, err := blockName(input, lowerCaseLetters, anyLetters)
+	_, _, err := blockName(input, lowerCaseLetters, anyLetters, []byte(filterBytes))
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

@@ -103,6 +103,7 @@ const rootPrefix = ">"
 const rootSuffix = ";"
 const omissionPrefix = "#"
 const omissionSuffix = ";"
+const filterBytes = " \n\r\t"
 
 // NewApplication creates a new application
 func NewApplication() Application {
@@ -142,6 +143,7 @@ func NewApplication() Application {
 		rulesBuilder,
 		ruleBuilder,
 		cardinalityBuilder,
+		[]byte(filterBytes),
 		[]byte(suiteSeparatorPrefix),
 		possibleLetters,
 		possibleLowerCaseLetters,

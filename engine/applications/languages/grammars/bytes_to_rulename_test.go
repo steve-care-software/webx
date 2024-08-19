@@ -11,7 +11,7 @@ func TestBytesToRuleName_Success(t *testing.T) {
 	expectedValue := []byte("MY_RULE")
 	expectedRemainong := []byte("!this is some value")
 	input := []byte(fmt.Sprintf(`%s%s`, string(expectedValue), string(expectedRemainong)))
-	retName, retRemaining, err := bytesToRuleName(input, possibleCharacters, []byte(ruleNameSeparator)[0])
+	retName, retRemaining, err := bytesToRuleName(input, possibleCharacters, []byte(ruleNameSeparator)[0], []byte(filterBytes))
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -33,7 +33,7 @@ func TestBytesToRuleName_separatorAtEndOfRuleNameIsNotTaken_Success(t *testing.T
 	expectedValue := []byte("MY_RULE")
 	expectedRemainong := []byte("_this is some value")
 	input := []byte(fmt.Sprintf(`%s%s`, string(expectedValue), string(expectedRemainong)))
-	retName, retRemaining, err := bytesToRuleName(input, possibleCharacters, []byte(ruleNameSeparator)[0])
+	retName, retRemaining, err := bytesToRuleName(input, possibleCharacters, []byte(ruleNameSeparator)[0], []byte(filterBytes))
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -55,7 +55,7 @@ func TestBytesToRuleName_ruleNameIsOnlyASeparator_returnsError(t *testing.T) {
 	expectedValue := []byte("_")
 	expectedRemainong := []byte("this is some value")
 	input := []byte(fmt.Sprintf(`%s%s`, string(expectedValue), string(expectedRemainong)))
-	_, _, err := bytesToRuleName(input, possibleCharacters, []byte(ruleNameSeparator)[0])
+	_, _, err := bytesToRuleName(input, possibleCharacters, []byte(ruleNameSeparator)[0], []byte(filterBytes))
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
@@ -67,7 +67,7 @@ func TestBytesToRuleName_firstCharacterIsSeparator_returnsError(t *testing.T) {
 	expectedValue := []byte("_MY_RULE")
 	expectedRemainong := []byte("!this is some value")
 	input := []byte(fmt.Sprintf(`%s%s`, string(expectedValue), string(expectedRemainong)))
-	_, _, err := bytesToRuleName(input, possibleCharacters, []byte(ruleNameSeparator)[0])
+	_, _, err := bytesToRuleName(input, possibleCharacters, []byte(ruleNameSeparator)[0], []byte(filterBytes))
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
