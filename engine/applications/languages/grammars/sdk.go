@@ -13,6 +13,20 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/grammars/rules"
 )
 
+const (
+	// BytesCardinalityPrefix represents the cardinality prefix byte
+	BytesCardinalityPrefix (uint8) = iota
+
+	// BytesCardinalitySuffix represents the cardinality suffix byte
+	BytesCardinalitySuffix
+
+	// BytesCardinalitySeparator represents the cardinality separator byte
+	BytesCardinalitySeparator
+)
+
+// AmountOfBytesIntUint64 represents the amount of bytes an uint64 contains
+const AmountOfBytesIntUint64 = 8
+
 const llA = "a"
 const llB = "b"
 const llC = "c"
@@ -107,6 +121,9 @@ const filterBytes = " \n\r\t"
 
 // NewApplication creates a new application
 func NewApplication() Application {
+	astBuilder := asts.NewASTBuilder()
+	nftsBuilder := asts.NewNFTsBuilder()
+	nftBuilder := asts.NewNFTBuilder()
 	grammarBuilder := grammars.NewBuilder()
 	blocksBuilder := blocks.NewBuilder()
 	blockBuilder := blocks.NewBlockBuilder()
@@ -128,6 +145,9 @@ func NewApplication() Application {
 	possibleNumbers := createPossibleNumbers()
 	possibleFuncNameCharacters := createPossibleFuncNameCharacters()
 	return createApplication(
+		astBuilder,
+		nftsBuilder,
+		nftBuilder,
 		grammarBuilder,
 		blocksBuilder,
 		blockBuilder,

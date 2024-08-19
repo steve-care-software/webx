@@ -2,6 +2,7 @@ package grammars
 
 import (
 	"bytes"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"strconv"
@@ -384,4 +385,14 @@ func createPossibleNumbers() []byte {
 		[]byte(nHeight)[0],
 		[]byte(nNine)[0],
 	}
+}
+
+func uintToBytes(value uint64) []byte {
+	bytes := make([]byte, AmountOfBytesIntUint64)
+	binary.BigEndian.PutUint64(bytes, uint64(value))
+	return bytes
+}
+
+func bytesToUInt(bytes []byte) uint64 {
+	return binary.BigEndian.Uint64(bytes)
 }
