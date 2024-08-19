@@ -1,4 +1,4 @@
-package asts
+package nfts
 
 import (
 	"errors"
@@ -46,4 +46,21 @@ func (obj *nfts) Fetch(hash hash.Hash) (NFT, error) {
 
 	str := fmt.Sprintf("there is no NFT registered for the provided hash: %s", keyname)
 	return nil, errors.New(str)
+}
+
+// Combine returns the unique list of NFTs presents in current and passed NFTs
+func (obj *nfts) Combine(input NFTs) []NFT {
+	combined := append(obj.list, input.List()...)
+	mp := map[string]NFT{}
+	for _, oneNFT := range combined {
+		keyname := oneNFT.Hash().String()
+		mp[keyname] = oneNFT
+	}
+
+	output := []NFT{}
+	for _, oneNFT := range mp {
+		output = append(output, oneNFT)
+	}
+
+	return output
 }

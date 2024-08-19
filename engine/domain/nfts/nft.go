@@ -1,11 +1,11 @@
-package asts
+package nfts
 
 import "github.com/steve-care-software/webx/engine/domain/hash"
 
 type nft struct {
 	hash  hash.Hash
 	pByte *byte
-	nfts  []hash.Hash
+	nfts  NFTs
 }
 
 func createNFTWithByte(
@@ -17,7 +17,7 @@ func createNFTWithByte(
 
 func createNFTWithNFTs(
 	hash hash.Hash,
-	nfts []hash.Hash,
+	nfts NFTs,
 ) NFT {
 	return createNFTInternally(hash, nil, nfts)
 }
@@ -25,7 +25,7 @@ func createNFTWithNFTs(
 func createNFTInternally(
 	hash hash.Hash,
 	pByte *byte,
-	nfts []hash.Hash,
+	nfts NFTs,
 ) NFT {
 	out := nft{
 		hash:  hash,
@@ -57,6 +57,6 @@ func (obj *nft) IsNFTs() bool {
 }
 
 // NFTs returns the nfts, if any
-func (obj *nft) NFTs() []hash.Hash {
+func (obj *nft) NFTs() NFTs {
 	return obj.nfts
 }

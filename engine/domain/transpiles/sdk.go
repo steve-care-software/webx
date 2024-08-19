@@ -1,10 +1,6 @@
 package transpiles
 
-import (
-	"github.com/steve-care-software/webx/engine/domain/asts"
-	"github.com/steve-care-software/webx/engine/vms/domain/instances/routes/tokens"
-)
-
+/*
 // Builder represents a transpile builder
 type Builder interface {
 	Create() Builder
@@ -20,3 +16,4 @@ type Transpile interface {
 	Tokens() tokens.Tokens
 	Asts() asts.ASTs
 }
+*/

@@ -1,21 +1,20 @@
-package asts
+package nfts
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/steve-care-software/webx/engine/domain/hash"
 )
 
-type nftsBuilder struct {
+type builder struct {
 	hashAdapter hash.Adapter
 	list        []NFT
 }
 
-func createNFTsBuilder(
+func createBuilder(
 	hashAdapter hash.Adapter,
-) NFTsBuilder {
-	out := nftsBuilder{
+) Builder {
+	out := builder{
 		hashAdapter: hashAdapter,
 		list:        nil,
 	}
@@ -24,20 +23,20 @@ func createNFTsBuilder(
 }
 
 // Create initializes the builder
-func (app *nftsBuilder) Create() NFTsBuilder {
-	return createNFTsBuilder(
+func (app *builder) Create() Builder {
+	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithList adds a list to the builder
-func (app *nftsBuilder) WithList(list []NFT) NFTsBuilder {
+func (app *builder) WithList(list []NFT) Builder {
 	app.list = list
 	return app
 }
 
 // Now builds a new NFTs instance
-func (app *nftsBuilder) Now() (NFTs, error) {
+func (app *builder) Now() (NFTs, error) {
 	if app.list != nil && len(app.list) <= 0 {
 		app.list = nil
 	}
@@ -49,17 +48,8 @@ func (app *nftsBuilder) Now() (NFTs, error) {
 	mp := map[string]NFT{}
 	data := [][]byte{}
 	for _, oneNFT := range app.list {
-		pByte := oneNFT.Byte()
-		data = append(data, []byte{
-			*pByte,
-		})
-
+		data = append(data, oneNFT.Hash().Bytes())
 		keyname := oneNFT.Hash().String()
-		if _, ok := mp[keyname]; ok {
-			str := fmt.Sprintf("the NFT (hash: %s) is a duplicate", keyname)
-			return nil, errors.New(str)
-		}
-
 		mp[keyname] = oneNFT
 	}
 

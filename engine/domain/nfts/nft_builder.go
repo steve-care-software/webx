@@ -1,4 +1,4 @@
-package asts
+package nfts
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 type nftBuilder struct {
 	hashAdapter hash.Adapter
 	pByte       *byte
-	nfts        []hash.Hash
+	nfts        NFTs
 }
 
 func createNFTBuilder(
@@ -38,22 +38,14 @@ func (app *nftBuilder) WithByte(byteValue byte) NFTBuilder {
 }
 
 // WithNFTs add nfts to the builder
-func (app *nftBuilder) WithNFTs(nfts []hash.Hash) NFTBuilder {
+func (app *nftBuilder) WithNFTs(nfts NFTs) NFTBuilder {
 	app.nfts = nfts
 	return app
 }
 
 func (app *nftBuilder) hash() (hash.Hash, error) {
-	if app.nfts != nil && len(app.nfts) <= 0 {
-		app.nfts = nil
-	}
-
 	if app.pByte != nil && app.nfts != nil {
 		return nil, errors.New("the bytes and nfts cannot both be non-empty")
-	}
-
-	if app.nfts != nil && len(app.nfts) <= 1 {
-		return app.nfts[0], nil
 	}
 
 	data := [][]byte{}
@@ -65,9 +57,7 @@ func (app *nftBuilder) hash() (hash.Hash, error) {
 	}
 
 	if app.nfts != nil {
-		for _, oneNFT := range app.nfts {
-			data = append(data, oneNFT)
-		}
+		data = append(data, app.nfts.Hash().Bytes())
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes(data)

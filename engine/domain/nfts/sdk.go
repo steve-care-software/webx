@@ -1,0 +1,53 @@
+package nfts
+
+import (
+	"github.com/steve-care-software/webx/engine/domain/hash"
+)
+
+// NewBuilder creates a new nfts builder
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
+// NewNFTBuilder creates a new nft builder
+func NewNFTBuilder() NFTBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createNFTBuilder(
+		hashAdapter,
+	)
+}
+
+// Builder represents an nfts builder
+type Builder interface {
+	Create() Builder
+	WithList(list []NFT) Builder
+	Now() (NFTs, error)
+}
+
+// NFTs represents nfts
+type NFTs interface {
+	Hash() hash.Hash
+	List() []NFT
+	Fetch(hash hash.Hash) (NFT, error)
+	Combine(input NFTs) []NFT
+}
+
+// NFTBuilder represents an nft builder
+type NFTBuilder interface {
+	Create() NFTBuilder
+	WithByte(byte byte) NFTBuilder
+	WithNFTs(nfts NFTs) NFTBuilder
+	Now() (NFT, error)
+}
+
+// NFT represents an nft
+type NFT interface {
+	Hash() hash.Hash
+	IsByte() bool
+	Byte() *byte
+	IsNFTs() bool
+	NFTs() NFTs
+}

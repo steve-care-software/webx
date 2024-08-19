@@ -1,7 +1,6 @@
 package grammars
 
 import (
-	"github.com/steve-care-software/webx/engine/domain/asts"
 	"github.com/steve-care-software/webx/engine/domain/grammars"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines"
@@ -11,6 +10,7 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/elements"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/suites"
 	"github.com/steve-care-software/webx/engine/domain/grammars/rules"
+	"github.com/steve-care-software/webx/engine/domain/nfts"
 )
 
 const (
@@ -121,9 +121,6 @@ const filterBytes = " \n\r\t"
 
 // NewApplication creates a new application
 func NewApplication() Application {
-	astBuilder := asts.NewASTBuilder()
-	nftsBuilder := asts.NewNFTsBuilder()
-	nftBuilder := asts.NewNFTBuilder()
 	grammarBuilder := grammars.NewBuilder()
 	blocksBuilder := blocks.NewBuilder()
 	blockBuilder := blocks.NewBlockBuilder()
@@ -145,9 +142,6 @@ func NewApplication() Application {
 	possibleNumbers := createPossibleNumbers()
 	possibleFuncNameCharacters := createPossibleFuncNameCharacters()
 	return createApplication(
-		astBuilder,
-		nftsBuilder,
-		nftBuilder,
 		grammarBuilder,
 		blocksBuilder,
 		blockBuilder,
@@ -199,7 +193,7 @@ func NewApplication() Application {
 // Application represents the grammar application
 type Application interface {
 	Parse(input []byte) (grammars.Grammar, []byte, error)
-	Compile(grammar grammars.Grammar) (asts.AST, error)
-	Decompile(ast asts.AST) (grammars.Grammar, error)
+	Compile(grammar grammars.Grammar) (nfts.NFT, error)
+	Decompile(ast nfts.NFT) (grammars.Grammar, error)
 	Compose(grammar grammars.Grammar) ([]byte, error)
 }

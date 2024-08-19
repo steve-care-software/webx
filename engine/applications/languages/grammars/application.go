@@ -5,7 +5,6 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/steve-care-software/webx/engine/domain/asts"
 	"github.com/steve-care-software/webx/engine/domain/grammars"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines"
@@ -15,12 +14,10 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/elements"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/suites"
 	"github.com/steve-care-software/webx/engine/domain/grammars/rules"
+	"github.com/steve-care-software/webx/engine/domain/nfts"
 )
 
 type application struct {
-	astBuilder                 asts.AstBuilder
-	nftsBuilder                asts.NFTsBuilder
-	nftBuilder                 asts.NFTBuilder
 	grammarBuilder             grammars.Builder
 	blocksBuilder              blocks.Builder
 	blockBuilder               blocks.BlockBuilder
@@ -69,9 +66,6 @@ type application struct {
 }
 
 func createApplication(
-	astBuilder asts.AstBuilder,
-	nftsBuilder asts.NFTsBuilder,
-	nftBuilder asts.NFTBuilder,
 	grammarBuilder grammars.Builder,
 	blocksBuilder blocks.Builder,
 	blockBuilder blocks.BlockBuilder,
@@ -119,9 +113,6 @@ func createApplication(
 	cardinalityOnePlus byte,
 ) Application {
 	out := application{
-		astBuilder:                 astBuilder,
-		nftsBuilder:                nftsBuilder,
-		nftBuilder:                 nftBuilder,
 		grammarBuilder:             grammarBuilder,
 		blocksBuilder:              blocksBuilder,
 		blockBuilder:               blockBuilder,
@@ -177,14 +168,14 @@ func (app *application) Parse(input []byte) (grammars.Grammar, []byte, error) {
 	return app.bytesToGrammar(input)
 }
 
-// Compile compiles a grammar to an AST
-func (app *application) Compile(grammar grammars.Grammar) (asts.AST, error) {
+// Compile compiles a grammar to an NFT
+func (app *application) Compile(grammar grammars.Grammar) (nfts.NFT, error) {
 	//return app.grammarToAST(grammar)
 	return nil, nil
 }
 
-// Decompile decompiles an AST to a grammar instance
-func (app *application) Decompile(ast asts.AST) (grammars.Grammar, error) {
+// Decompile decompiles an NFT to a grammar instance
+func (app *application) Decompile(ast nfts.NFT) (grammars.Grammar, error) {
 	return nil, nil
 }
 
@@ -230,13 +221,6 @@ func (app *application) blocksToNFT(blocks blocks.Blocks) (asts.NFT, []asts.NFT,
 func (app *application) blockToNFT(block blocks.Block) (asts.NFT, []asts.NFT, error) {
 	return nil, nil, nil
 }*/
-
-func (app *application) suiteToNFT(suite suites.Suite, grammar grammars.Grammar) (asts.NFT, []asts.NFT, error) {
-	/*name := suite.Name()
-	element := suite.Element()
-	isFail := suite.IsFail()*/
-	return nil, nil, nil
-}
 
 /*
 	func (app *application) linesToNFT(lines lines.Lines, grammar grammars.Grammar) (asts.NFT, []asts.NFT, error) {
