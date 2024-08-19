@@ -2,6 +2,7 @@ package blocks
 
 import (
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/suites"
 )
 
 // Builder represents a block list
@@ -22,6 +23,7 @@ type BlockBuilder interface {
 	Create() BlockBuilder
 	WithName(name string) BlockBuilder
 	WithLines(lines lines.Lines) BlockBuilder
+	WithSuites(suites suites.Suites) BlockBuilder
 	Now() (Block, error)
 }
 
@@ -29,4 +31,6 @@ type BlockBuilder interface {
 type Block interface {
 	Name() string
 	Lines() lines.Lines
+	HasSuites() bool
+	Suites() suites.Suites
 }
