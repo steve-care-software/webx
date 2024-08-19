@@ -7,6 +7,7 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/grammars"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/suites"
 	"github.com/steve-care-software/webx/engine/domain/grammars/rules"
 	"github.com/steve-care-software/webx/engine/domain/grammars/tokens"
 	"github.com/steve-care-software/webx/engine/domain/grammars/tokens/cardinalities"
@@ -14,6 +15,8 @@ import (
 )
 
 type application struct {
+	suitesBuilder              suites.Builder
+	suiteBuilder               suites.SuiteBuilder
 	linesBuilder               lines.Builder
 	lineBuilder                lines.LineBuilder
 	executionBuilder           executions.Builder
@@ -29,6 +32,9 @@ type application struct {
 	possibleUpperCaseLetters   []byte
 	possibleNumbers            []byte
 	possibleFuncNameCharacters []byte
+	suiteLineSuffix            byte
+	failSeparator              byte
+	blockDefinitionSeparator   byte
 	linesSeparator             byte
 	lineSeparator              byte
 	tokenReferenceSeparator    byte
@@ -44,6 +50,8 @@ type application struct {
 }
 
 func createApplication(
+	suitesBuilder suites.Builder,
+	suiteBuilder suites.SuiteBuilder,
 	linesBuilder lines.Builder,
 	lineBuilder lines.LineBuilder,
 	executionBuilder executions.Builder,
@@ -59,6 +67,9 @@ func createApplication(
 	possibleUpperCaseLetters []byte,
 	possibleNumbers []byte,
 	possibleFuncNameCharacters []byte,
+	suiteLineSuffix byte,
+	failSeparator byte,
+	blockDefinitionSeparator byte,
 	linesSeparator byte,
 	lineSeparator byte,
 	tokenReferenceSeparator byte,
@@ -73,6 +84,8 @@ func createApplication(
 	cardinalityOnePlus byte,
 ) Application {
 	out := application{
+		suitesBuilder:              suitesBuilder,
+		suiteBuilder:               suiteBuilder,
 		linesBuilder:               linesBuilder,
 		lineBuilder:                lineBuilder,
 		executionBuilder:           executionBuilder,
@@ -88,6 +101,9 @@ func createApplication(
 		possibleUpperCaseLetters:   possibleUpperCaseLetters,
 		possibleNumbers:            possibleNumbers,
 		possibleFuncNameCharacters: possibleFuncNameCharacters,
+		suiteLineSuffix:            suiteLineSuffix,
+		failSeparator:              failSeparator,
+		blockDefinitionSeparator:   blockDefinitionSeparator,
 		linesSeparator:             linesSeparator,
 		lineSeparator:              lineSeparator,
 		tokenReferenceSeparator:    tokenReferenceSeparator,
@@ -123,6 +139,78 @@ func (app *application) Decompile(ast asts.AST) (grammars.Grammar, error) {
 // Compose composes a grammar instance to a grammar input
 func (app *application) Compose(grammar grammars.Grammar) ([]byte, error) {
 	return nil, nil
+}
+
+func (app *application) bytesToSuites(input []byte) (suites.Suites, []byte, error) {
+	remaining := input
+	list := []suites.Suite{}
+	for {
+		retSuite, retRemaining, err := app.bytesToSuite(remaining)
+		if err != nil {
+			break
+		}
+
+		list = append(list, retSuite)
+		remaining = retRemaining
+	}
+
+	ins, err := app.suitesBuilder.Create().WithList(list).Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, remaining, nil
+}
+
+func (app *application) bytesToSuite(input []byte) (suites.Suite, []byte, error) {
+	testName, retBlockNameRemaining, err := app.bytesToBlockDefinition(input)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	remaining := retBlockNameRemaining
+	builder := app.suiteBuilder.Create().WithName(testName)
+	if len(retBlockNameRemaining) != 0 && retBlockNameRemaining[0] == app.failSeparator {
+		builder.IsFail()
+		remaining = retBlockNameRemaining[1:]
+	}
+
+	element, retElementRemaining, err := app.bytesToElementReference(remaining)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	retIns, err := builder.WithElement(element).Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if len(retElementRemaining) <= 0 {
+		return nil, nil, errors.New("the suite was expected to contain at least 1 byte at the end of its instruction")
+	}
+
+	if retElementRemaining[0] != app.suiteLineSuffix {
+		return nil, nil, errors.New("the suite was expected to contain the suiteLineSuffix byte at its suffix")
+	}
+
+	return retIns, retElementRemaining[1:], nil
+}
+
+func (app *application) bytesToBlockDefinition(input []byte) (string, []byte, error) {
+	blockName, retBlockRemaining, err := app.bytesToBlockName(input)
+	if err != nil {
+		return "", nil, err
+	}
+
+	if len(retBlockRemaining) <= 0 {
+		return "", nil, errors.New("the blockDefinition was expected to contain at least 1 byte after fetching its name")
+	}
+
+	if retBlockRemaining[0] != app.blockDefinitionSeparator {
+		return "", nil, errors.New("the blockDefinition was expected to contain the blockDefinitionSeparator byte at its suffix")
+	}
+
+	return blockName, retBlockRemaining[1:], nil
 }
 
 func (app *application) bytesToLines(input []byte) (lines.Lines, []byte, error) {
@@ -334,7 +422,7 @@ func (app *application) bytesToElement(input []byte) (elements.Element, []byte, 
 	ruleName, retRemaining, err := app.bytesToRuleName(input)
 	if err != nil {
 		// there is no rule, so try to match a block
-		blockName, retBlockRemaining, err := blockName(input, app.possibleLowerCaseLetters, app.possibleLetters)
+		blockName, retBlockRemaining, err := app.bytesToBlockName(input)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -408,6 +496,15 @@ func (app *application) bytesToRule(input []byte) (rules.Rule, []byte, error) {
 	}
 
 	return ins, remaining, nil
+}
+
+func (app *application) bytesToBlockName(input []byte) (string, []byte, error) {
+	blockName, retBlockRemaining, err := blockName(input, app.possibleLowerCaseLetters, app.possibleLetters)
+	if err != nil {
+		return "", nil, err
+	}
+
+	return string(blockName), retBlockRemaining, nil
 }
 
 func (app *application) bytesToRuleName(input []byte) (string, []byte, error) {

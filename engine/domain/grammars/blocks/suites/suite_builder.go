@@ -33,6 +33,12 @@ func (app *suiteBuilder) WithName(name string) SuiteBuilder {
 	return app
 }
 
+// WithElement adds an element to the builder
+func (app *suiteBuilder) WithElement(element elements.Element) SuiteBuilder {
+	app.element = element
+	return app
+}
+
 // IsFail flags the suite as fail
 func (app *suiteBuilder) IsFail() SuiteBuilder {
 	app.isFail = true

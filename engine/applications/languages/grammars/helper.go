@@ -271,7 +271,7 @@ func matchBytes(data []byte, possibleValues []byte) ([]byte, []byte) {
 
 func createPossibleFuncNameCharacters() []byte {
 	letters := createPossibleLetters()
-	return append(letters, []byte(underscore)...)
+	return append(letters, []byte(funcNameSeparator)...)
 }
 
 func createPossibleLetters() []byte {

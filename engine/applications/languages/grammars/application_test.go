@@ -5,6 +5,146 @@ import (
 	"testing"
 )
 
+func TestApplication_suites_Success(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`myTest:.myElement.myTest:@.myElement.`), remaining...)
+
+	application := NewApplication().(*application)
+	retSuites, retRemaining, err := application.bytesToSuites(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	list := retSuites.List()
+	if len(list) != 2 {
+		t.Errorf("the suites was expected to contain %d suite instances, %d returned", 2, len(list))
+		return
+	}
+}
+
+func TestApplication_suites_withoutSuites_returnsError(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(``), remaining...)
+
+	application := NewApplication().(*application)
+	_, _, err := application.bytesToSuites(input)
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+	}
+}
+
+func TestApplication_suite_Success(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`myTest:.myElement.`), remaining...)
+
+	application := NewApplication().(*application)
+	retSuite, retRemaining, err := application.bytesToSuite(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	if retSuite.Name() != "myTest" {
+		t.Errorf("the suite name was expected to be (%s), (%s) returned", "myTest", retSuite.Name())
+		return
+	}
+
+	if retSuite.Element().Name() != "myElement" {
+		t.Errorf("the suite's element name was expected to be (%s), (%s) returned", "myElement", retSuite.Element().Name())
+		return
+	}
+
+	if retSuite.IsFail() {
+		t.Errorf("the suite was expected to NOT fail")
+		return
+	}
+}
+
+func TestApplication_suite_isFail_Success(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`myTest:@.myElement.`), remaining...)
+
+	application := NewApplication().(*application)
+	retSuite, retRemaining, err := application.bytesToSuite(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if !bytes.Equal(remaining, retRemaining) {
+		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
+		return
+	}
+
+	if retSuite.Name() != "myTest" {
+		t.Errorf("the suite name was expected to be (%s), (%s) returned", "myTest", retSuite.Name())
+		return
+	}
+
+	if retSuite.Element().Name() != "myElement" {
+		t.Errorf("the suite's element name was expected to be (%s), (%s) returned", "myElement", retSuite.Element().Name())
+		return
+	}
+
+	if !retSuite.IsFail() {
+		t.Errorf("the suite was expected to fail")
+		return
+	}
+}
+
+func TestApplication_suite_withInvalidElement_returnsError(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`myTest:myElement`), remaining...)
+
+	application := NewApplication().(*application)
+	_, _, err := application.bytesToSuite(input)
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+	}
+}
+
+func TestApplication_suite_withInvalidBlockNameDefinition_returnsError(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`#myTest:.myElement`), remaining...)
+
+	application := NewApplication().(*application)
+	_, _, err := application.bytesToSuite(input)
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+	}
+}
+
+func TestApplication_suite_withoutSuiteLineSuffix_returnsError(t *testing.T) {
+	remaining := []byte("!this is some remaining")
+	input := append([]byte(`myTest:.myElement`), remaining...)
+
+	application := NewApplication().(*application)
+	_, _, err := application.bytesToSuite(input)
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+	}
+}
+
+func TestApplication_suite_withoutSuiteLineSuffix_withoutRemainingBytes_returnsError(t *testing.T) {
+	input := []byte(`myTest:.myElement`)
+	application := NewApplication().(*application)
+	_, _, err := application.bytesToSuite(input)
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+	}
+}
+
 func TestApplication_lines_withOneLine_Success(t *testing.T) {
 	remaining := []byte("!this is some remaining")
 	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT`), remaining...)

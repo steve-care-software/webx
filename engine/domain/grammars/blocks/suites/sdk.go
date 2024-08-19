@@ -28,6 +28,7 @@ type Suites interface {
 type SuiteBuilder interface {
 	Create() SuiteBuilder
 	WithName(name string) SuiteBuilder
+	WithElement(element elements.Element) SuiteBuilder
 	IsFail() SuiteBuilder
 	Now() (Suite, error)
 }
