@@ -76,7 +76,7 @@ type NFTs interface {
 // NFTBuilder represents an nft builder
 type NFTBuilder interface {
 	Create() NFTBuilder
-	WithBytes(bytes []byte) NFTBuilder
+	WithByte(byte byte) NFTBuilder
 	WithNFTs(nfts []hash.Hash) NFTBuilder
 	Now() (NFT, error)
 }
@@ -84,8 +84,8 @@ type NFTBuilder interface {
 // NFT represents an nft
 type NFT interface {
 	Hash() hash.Hash
-	IsBytes() bool
-	Bytes() []byte
+	IsByte() bool
+	Byte() *byte
 	IsNFTs() bool
 	NFTs() []hash.Hash
 }

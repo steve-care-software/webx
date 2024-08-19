@@ -8,7 +8,7 @@ import (
 
 type nftBuilder struct {
 	hashAdapter hash.Adapter
-	bytes       []byte
+	pByte       *byte
 	nfts        []hash.Hash
 }
 
@@ -17,7 +17,7 @@ func createNFTBuilder(
 ) NFTBuilder {
 	out := nftBuilder{
 		hashAdapter: hashAdapter,
-		bytes:       nil,
+		pByte:       nil,
 		nfts:        nil,
 	}
 
@@ -31,9 +31,9 @@ func (app *nftBuilder) Create() NFTBuilder {
 	)
 }
 
-// WithBytes add bytes to the builder
-func (app *nftBuilder) WithBytes(bytes []byte) NFTBuilder {
-	app.bytes = bytes
+// WithByte adds a byte to the builder
+func (app *nftBuilder) WithByte(byteValue byte) NFTBuilder {
+	app.pByte = &byteValue
 	return app
 }
 
@@ -44,15 +44,11 @@ func (app *nftBuilder) WithNFTs(nfts []hash.Hash) NFTBuilder {
 }
 
 func (app *nftBuilder) hash() (hash.Hash, error) {
-	if app.bytes != nil && len(app.bytes) <= 0 {
-		app.bytes = nil
-	}
-
 	if app.nfts != nil && len(app.nfts) <= 0 {
 		app.nfts = nil
 	}
 
-	if app.bytes != nil && app.nfts != nil {
+	if app.pByte != nil && app.nfts != nil {
 		return nil, errors.New("the bytes and nfts cannot both be non-empty")
 	}
 
@@ -61,8 +57,11 @@ func (app *nftBuilder) hash() (hash.Hash, error) {
 	}
 
 	data := [][]byte{}
-	if app.bytes != nil {
-		data = append(data, app.bytes)
+	if app.pByte != nil {
+		byteValue := *app.pByte
+		data = append(data, []byte{
+			byteValue,
+		})
 	}
 
 	if app.nfts != nil {
@@ -86,8 +85,8 @@ func (app *nftBuilder) Now() (NFT, error) {
 		return nil, err
 	}
 
-	if app.bytes != nil {
-		return createNFTWithBytes(pHash, app.bytes), nil
+	if app.pByte != nil {
+		return createNFTWithByte(pHash, app.pByte), nil
 	}
 
 	if app.nfts != nil {

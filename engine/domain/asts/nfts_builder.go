@@ -49,7 +49,11 @@ func (app *nftsBuilder) Now() (NFTs, error) {
 	mp := map[string]NFT{}
 	data := [][]byte{}
 	for _, oneNFT := range app.list {
-		data = append(data, oneNFT.Bytes())
+		pByte := oneNFT.Byte()
+		data = append(data, []byte{
+			*pByte,
+		})
+
 		keyname := oneNFT.Hash().String()
 		if _, ok := mp[keyname]; ok {
 			str := fmt.Sprintf("the NFT (hash: %s) is a duplicate", keyname)

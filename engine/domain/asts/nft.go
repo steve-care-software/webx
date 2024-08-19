@@ -4,15 +4,15 @@ import "github.com/steve-care-software/webx/engine/domain/hash"
 
 type nft struct {
 	hash  hash.Hash
-	bytes []byte
+	pByte *byte
 	nfts  []hash.Hash
 }
 
-func createNFTWithBytes(
+func createNFTWithByte(
 	hash hash.Hash,
-	bytes []byte,
+	pByte *byte,
 ) NFT {
-	return createNFTInternally(hash, bytes, nil)
+	return createNFTInternally(hash, pByte, nil)
 }
 
 func createNFTWithNFTs(
@@ -24,12 +24,12 @@ func createNFTWithNFTs(
 
 func createNFTInternally(
 	hash hash.Hash,
-	bytes []byte,
+	pByte *byte,
 	nfts []hash.Hash,
 ) NFT {
 	out := nft{
 		hash:  hash,
-		bytes: bytes,
+		pByte: pByte,
 		nfts:  nfts,
 	}
 
@@ -41,14 +41,14 @@ func (obj *nft) Hash() hash.Hash {
 	return obj.hash
 }
 
-// IsBytes returns true if there is bytes, false otherwise
-func (obj *nft) IsBytes() bool {
-	return obj.bytes != nil
+// IsByte returns true if there is a byte, false otherwise
+func (obj *nft) IsByte() bool {
+	return obj.pByte != nil
 }
 
-// Bytes returns the bytes, if any
-func (obj *nft) Bytes() []byte {
-	return obj.bytes
+// Byte returns the byte, if any
+func (obj *nft) Byte() *byte {
+	return obj.pByte
 }
 
 // IsNFTs returns true if there is nfts, false otherwise
