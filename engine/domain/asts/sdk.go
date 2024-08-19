@@ -57,7 +57,6 @@ type AstBuilder interface {
 type AST interface {
 	Library() NFTs
 	Entry() hash.Hash
-	Complexity() map[string]uint
 }
 
 // NFTsBuilder represents an nfts builder
@@ -71,7 +70,6 @@ type NFTsBuilder interface {
 type NFTs interface {
 	Hash() hash.Hash
 	List() []NFT
-	Complexity() map[string]uint
 	Fetch(hash hash.Hash) (NFT, error)
 }
 
@@ -86,7 +84,6 @@ type NFTBuilder interface {
 // NFT represents an nft
 type NFT interface {
 	Hash() hash.Hash
-	Complexity() map[string]uint
 	IsBytes() bool
 	Bytes() []byte
 	IsNFTs() bool

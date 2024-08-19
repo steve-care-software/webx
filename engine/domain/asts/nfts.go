@@ -8,23 +8,20 @@ import (
 )
 
 type nfts struct {
-	hash       hash.Hash
-	list       []NFT
-	mp         map[string]NFT
-	complexity map[string]uint
+	hash hash.Hash
+	list []NFT
+	mp   map[string]NFT
 }
 
 func createNFTs(
 	hash hash.Hash,
 	list []NFT,
 	mp map[string]NFT,
-	complexity map[string]uint,
 ) NFTs {
 	out := nfts{
-		hash:       hash,
-		list:       list,
-		mp:         mp,
-		complexity: complexity,
+		hash: hash,
+		list: list,
+		mp:   mp,
 	}
 
 	return &out
@@ -38,11 +35,6 @@ func (obj *nfts) Hash() hash.Hash {
 // List returns the list of nfts
 func (obj *nfts) List() []NFT {
 	return obj.list
-}
-
-// Complexity returns the complexity
-func (obj *nfts) Complexity() map[string]uint {
-	return obj.complexity
 }
 
 // Fetch fetches an nft by hash

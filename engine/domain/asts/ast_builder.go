@@ -43,54 +43,6 @@ func (app *astAstBuilder) WithEntry(entry hash.Hash) AstBuilder {
 	return app
 }
 
-func (app *astAstBuilder) fetchComplexity(hashStr string) (map[string]uint, error) {
-	// create the hash from the string:
-	pHash, err := app.hashAdapter.FromString(hashStr)
-	if err != nil {
-		return nil, err
-	}
-
-	// fetch the nft from the library:
-	nft, err := app.library.Fetch(*pHash)
-	if err != nil {
-		return nil, err
-	}
-
-	// fetch the complexity of that nft:
-	complexity := map[string]uint{}
-
-	// for each sub-nft, fetch their sub-complexity and add the current complexity:
-	directComplexity := nft.Complexity()
-	for subHashStr, score := range directComplexity {
-		// fetch the sub complexity:
-		subComplexity, err := app.fetchComplexity(subHashStr)
-		if err != nil {
-			return nil, err
-		}
-
-		// merge the sub complexity to the output:
-		for subHashStr, subScore := range subComplexity {
-			if currentScore, ok := complexity[subHashStr]; ok {
-				complexity[subHashStr] = currentScore + subScore
-				continue
-			}
-
-			complexity[subHashStr] = subScore
-		}
-
-		// add the current sub score to the score if it already exists:
-		if currentScore, ok := complexity[subHashStr]; ok {
-			complexity[subHashStr] = currentScore + score
-			continue
-		}
-
-		// it only exists directly, so add the score:
-		complexity[subHashStr] = score
-	}
-
-	return complexity, nil
-}
-
 // Now builds a new AST instance
 func (app *astAstBuilder) Now() (AST, error) {
 	if app.library == nil {
@@ -101,14 +53,8 @@ func (app *astAstBuilder) Now() (AST, error) {
 		return nil, errors.New("the entry hash is mandatory in order to build an AST instance")
 	}
 
-	complexity, err := app.fetchComplexity(app.entry.String())
-	if err != nil {
-		return nil, err
-	}
-
 	return createAST(
 		app.library,
 		app.entry,
-		complexity,
 	), nil
 }

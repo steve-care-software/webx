@@ -64,29 +64,10 @@ func (app *nftsBuilder) Now() (NFTs, error) {
 		return nil, err
 	}
 
-	// calculate the complexity:
-	complexity := map[string]uint{}
-	for _, oneNFT := range app.list {
-		if oneNFT.IsBytes() {
-			continue
-		}
-
-		subComplexity := oneNFT.Complexity()
-		for subHashStr, score := range subComplexity {
-			if _, ok := complexity[subHashStr]; ok {
-				complexity[subHashStr] = score + 1
-				continue
-			}
-
-			complexity[subHashStr] = 1
-		}
-	}
-
 	return createNFTs(
 		*pHash,
 		app.list,
 		mp,
-		complexity,
 	), nil
 
 }

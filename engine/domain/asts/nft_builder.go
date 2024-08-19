@@ -91,19 +91,7 @@ func (app *nftBuilder) Now() (NFT, error) {
 	}
 
 	if app.nfts != nil {
-		// calculate the complexity:
-		complexity := map[string]uint{}
-		for _, oneHash := range app.nfts {
-			keyname := oneHash.String()
-			if _, ok := complexity[keyname]; ok {
-				complexity[keyname]++
-				continue
-			}
-
-			complexity[keyname] = 1
-		}
-
-		return createNFTWithNFTs(pHash, app.nfts, complexity), nil
+		return createNFTWithNFTs(pHash, app.nfts), nil
 	}
 
 	return nil, errors.New("the NFT is invalid")
