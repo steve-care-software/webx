@@ -4,6 +4,11 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/hash"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // NewASTBuilder creates a new ast builder
 func NewASTBuilder() AstBuilder {
 	hashAdapter := hash.NewAdapter()
@@ -38,7 +43,6 @@ type Builder interface {
 // ASTs represents asts
 type ASTs interface {
 	List() []AST
-	Fetch(name string) (AST, error)
 }
 
 // AstBuilder represents an AST builder
