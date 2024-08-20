@@ -5,6 +5,16 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewValueBuilder creates a new value builder
+func NewValueBuilder() ValueBuilder {
+	return createValueBuilder()
+}
+
 // Builder represents the values builder
 type Builder interface {
 	Create() Builder

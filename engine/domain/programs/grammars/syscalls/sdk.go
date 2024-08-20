@@ -4,6 +4,16 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/syscalls/values"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewSyscallBuilder creates a new syscall builder
+func NewSyscallBuilder() SyscallBuilder {
+	return createSyscallBuilder()
+}
+
 // Builder represents the syscalls builder
 type Builder interface {
 	Create() Builder

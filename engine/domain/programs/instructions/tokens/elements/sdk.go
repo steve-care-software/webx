@@ -1,9 +1,13 @@
 package elements
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represents the element builder
 type Builder interface {
 	Create() Builder
-	WithName(name string) Builder
 	WithRule(rule string) Builder
 	WithSyscall(syscall string) Builder
 	WithInstruction(instruction string) Builder

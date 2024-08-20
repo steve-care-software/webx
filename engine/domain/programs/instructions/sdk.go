@@ -2,6 +2,16 @@ package instructions
 
 import "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens"
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewInstructionBuilder creates a new instruction builder
+func NewInstructionBuilder() InstructionBuilder {
+	return createInstructionBuilder()
+}
+
 // Builder represents the instructions builder
 type Builder interface {
 	Create() Builder

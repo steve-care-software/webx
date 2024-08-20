@@ -2,6 +2,16 @@ package tokens
 
 import "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements"
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewTokenBuilder creates a new token builder
+func NewTokenBuilder() TokenBuilder {
+	return createTokenBuilder()
+}
+
 // Builder represents the tokens builder
 type Builder interface {
 	Create() Builder
