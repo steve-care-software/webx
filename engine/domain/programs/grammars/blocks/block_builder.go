@@ -9,6 +9,7 @@ import (
 
 type blockBuilder struct {
 	name   string
+	line   lines.Line
 	lines  lines.Lines
 	suites suites.Suites
 }
@@ -16,6 +17,7 @@ type blockBuilder struct {
 func createBlockBuilder() BlockBuilder {
 	out := blockBuilder{
 		name:   "",
+		line:   nil,
 		lines:  nil,
 		suites: nil,
 	}
@@ -31,6 +33,12 @@ func (app *blockBuilder) Create() BlockBuilder {
 // WithName adds a name to the builder
 func (app *blockBuilder) WithName(name string) BlockBuilder {
 	app.name = name
+	return app
+}
+
+// WithLine add line to the builder
+func (app *blockBuilder) WithLine(line lines.Line) BlockBuilder {
+	app.line = line
 	return app
 }
 
@@ -52,13 +60,21 @@ func (app *blockBuilder) Now() (Block, error) {
 		return nil, errors.New("the name is mandatory in order to build a Block instance")
 	}
 
-	if app.lines == nil {
-		return nil, errors.New("the lines is mandatory in order to build a Block instance")
+	if app.line != nil && app.suites != nil {
+		return createBlockWithLineAndSuites(app.name, app.line, app.suites), nil
 	}
 
-	if app.suites != nil {
-		return createBlockWithSuites(app.name, app.lines, app.suites), nil
+	if app.line != nil {
+		return createBlockWithLine(app.name, app.line), nil
 	}
 
-	return createBlock(app.name, app.lines), nil
+	if app.lines != nil && app.suites != nil {
+		return createBlockWithLinesAndSuites(app.name, app.lines, app.suites), nil
+	}
+
+	if app.lines != nil {
+		return createBlockWithLines(app.name, app.lines), nil
+	}
+
+	return nil, errors.New("the Block is invalid")
 }

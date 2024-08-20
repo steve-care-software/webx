@@ -262,13 +262,13 @@ func (app *application) Suite(grammar grammars.Grammar, blockName string) ([]byt
 }
 
 func (app *application) writeBlock(grammar grammars.Grammar, block blocks.Block) ([]byte, error) {
-	linesList := block.Lines().List()
-	if len(linesList) > 1 {
-		str := fmt.Sprintf("the block (name: %s) cannot be written because it contains multiple lines", block.Name())
+	if !block.HasLine() {
+		str := fmt.Sprintf("the block (name: %s) cannot be written because it contains lines instead of a line", block.Name())
 		return nil, errors.New(str)
 	}
 
-	return app.writeLine(grammar, linesList[0])
+	line := block.Line()
+	return app.writeLine(grammar, line)
 }
 
 func (app *application) writeLine(grammar grammars.Grammar, line lines.Line) ([]byte, error) {
@@ -496,22 +496,39 @@ func (app *application) blockToNFT(
 	blocks nfts.NFTs,
 	block blocks.Block,
 ) (nfts.NFT, error) {
-	lines := block.Lines()
+	list := []nfts.NFT{}
 	name := block.Name()
 	parentBlockNames = append(parentBlockNames, name)
-	linesNFT, err := app.linesToNFT(
-		parentBlockNames,
-		rules,
-		blocks,
-		lines,
-	)
+	if block.HasLines() {
+		lines := block.Lines()
+		linesNFT, err := app.linesToNFT(
+			parentBlockNames,
+			rules,
+			blocks,
+			lines,
+		)
 
-	if err != nil {
-		return nil, err
+		if err != nil {
+			return nil, err
+		}
+
+		list = append(list, linesNFT)
 	}
 
-	list := []nfts.NFT{
-		linesNFT,
+	if block.HasLine() {
+		line := block.Line()
+		lineNFT, err := app.lineToNFT(
+			parentBlockNames,
+			rules,
+			blocks,
+			line,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		list = append(list, lineNFT)
 	}
 
 	if block.HasSuites() {
@@ -1086,7 +1103,17 @@ func (app *application) bytesToBlock(input []byte) (blocks.Block, []byte, error)
 	}
 
 	remaining := retLinesRemaining
-	builder := app.blockBuilder.Create().WithName(blockName).WithLines(retLines)
+	builder := app.blockBuilder.Create().WithName(blockName)
+	linesList := retLines.List()
+	listLength := len(linesList)
+	if listLength == 1 {
+		builder.WithLine(linesList[0])
+	}
+
+	if listLength > 1 {
+		builder.WithLines(retLines)
+	}
+
 	retSuites, retSuitesRemaining, err := app.bytesToSuites(retLinesRemaining)
 	if err == nil {
 		builder.WithSuites(retSuites)

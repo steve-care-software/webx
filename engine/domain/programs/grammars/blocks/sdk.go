@@ -32,6 +32,7 @@ type Blocks interface {
 type BlockBuilder interface {
 	Create() BlockBuilder
 	WithName(name string) BlockBuilder
+	WithLine(line lines.Line) BlockBuilder
 	WithLines(lines lines.Lines) BlockBuilder
 	WithSuites(suites suites.Suites) BlockBuilder
 	Now() (Block, error)
@@ -40,6 +41,9 @@ type BlockBuilder interface {
 // Block repreents a block
 type Block interface {
 	Name() string
+	HasLine() bool
+	Line() lines.Line
+	HasLines() bool
 	Lines() lines.Lines
 	HasSuites() bool
 	Suites() suites.Suites
