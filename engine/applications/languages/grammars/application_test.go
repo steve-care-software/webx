@@ -9,9 +9,10 @@ import (
 func TestApplication_grammar_composeBlock_withReplacement_Success(t *testing.T) {
 	input := []byte(`
 		v1;
-		>.addition;
+		>.additionInParenthesis;
 		# .SPACE .TAB. EOL;
-		
+
+		additionInParenthesis: .OPEN_PARENTHESIS .addition .CLOSE_PARENTHESIS - .addition;
 		addition: .firstNumber .PLUS_SIGN .secondNumber - .myReplacement;
 		secondNumber: .N_THREE .N_FOUR .N_FIVE;
 		firstNumber: .N_ONE .N_TWO;
@@ -46,7 +47,7 @@ func TestApplication_grammar_composeBlock_withReplacement_Success(t *testing.T) 
 		return
 	}
 
-	retValue, err := application.ComposeBlock(retGrammar, "addition")
+	retValue, err := application.ComposeBlock(retGrammar, "additionInParenthesis")
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return

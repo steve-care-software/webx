@@ -6,6 +6,7 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/elements"
 	"github.com/steve-care-software/webx/engine/domain/grammars/rules"
+	"github.com/steve-care-software/webx/engine/domain/grammars/syscalls"
 )
 
 type builder struct {
@@ -13,6 +14,7 @@ type builder struct {
 	root      elements.Element
 	rules     rules.Rules
 	blocks    blocks.Blocks
+	syscalls  syscalls.Syscalls
 	omissions elements.Elements
 }
 
@@ -22,6 +24,7 @@ func createBuilder() Builder {
 		root:      nil,
 		rules:     nil,
 		blocks:    nil,
+		syscalls:  nil,
 		omissions: nil,
 	}
 
@@ -63,6 +66,12 @@ func (app *builder) WithOmissions(omissions elements.Elements) Builder {
 	return app
 }
 
+// WithSyscalls add syscalls to the builder
+func (app *builder) WithSyscalls(syscalls syscalls.Syscalls) Builder {
+	app.syscalls = syscalls
+	return app
+}
+
 // Now builds a new Grammar instance
 func (app *builder) Now() (Grammar, error) {
 	if app.pVersion == nil {
@@ -79,6 +88,14 @@ func (app *builder) Now() (Grammar, error) {
 
 	if app.blocks == nil {
 		return nil, errors.New("the blocks is mandatory in order to build a Grammar instance")
+	}
+
+	if app.syscalls != nil && app.omissions != nil {
+		return createGrammarWithSyscallsAndOmissions(*app.pVersion, app.root, app.rules, app.blocks, app.syscalls, app.omissions), nil
+	}
+
+	if app.syscalls != nil {
+		return createGrammarWithSyscalls(*app.pVersion, app.root, app.rules, app.blocks, app.syscalls), nil
 	}
 
 	if app.omissions != nil {

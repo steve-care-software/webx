@@ -4,6 +4,7 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/elements"
 	"github.com/steve-care-software/webx/engine/domain/grammars/rules"
+	"github.com/steve-care-software/webx/engine/domain/grammars/syscalls"
 )
 
 // NewBuilder creates a new builder
@@ -18,6 +19,7 @@ type Builder interface {
 	WithRoot(root elements.Element) Builder
 	WithRules(rules rules.Rules) Builder
 	WithBlocks(blocks blocks.Blocks) Builder
+	WithSyscalls(syscalls syscalls.Syscalls) Builder
 	WithOmissions(omissions elements.Elements) Builder
 	Now() (Grammar, error)
 }
@@ -28,6 +30,8 @@ type Grammar interface {
 	Root() elements.Element
 	Rules() rules.Rules
 	Blocks() blocks.Blocks
+	HasSyscalls() bool
+	Syscalls() syscalls.Syscalls
 	HasOmissions() bool
 	Omissions() elements.Elements
 }
