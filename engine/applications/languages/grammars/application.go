@@ -10,6 +10,7 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions/parameters"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/cardinalities"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/cardinalities/uints"
@@ -33,6 +34,8 @@ type application struct {
 	linesBuilder               lines.Builder
 	lineBuilder                lines.LineBuilder
 	executionBuilder           executions.Builder
+	parametersBuilder          parameters.Builder
+	parameterBuilder           parameters.ParameterBuilder
 	tokensBuilder              tokens.Builder
 	tokenBuilder               tokens.TokenBuilder
 	elementsBuilder            elements.Builder
@@ -40,6 +43,7 @@ type application struct {
 	rulesBuilder               rules.Builder
 	ruleBuilder                rules.RuleBuilder
 	cardinalityBuilder         cardinalities.Builder
+	funcsMap                   map[string]CoreFn
 	filterBytes                []byte
 	suiteSeparatorPrefix       []byte
 	possibleLetters            []byte
@@ -70,6 +74,9 @@ type application struct {
 	cardinalitySeparator       byte
 	cardinalityZeroPlus        byte
 	cardinalityOnePlus         byte
+	indexOpen                  byte
+	indexClose                 byte
+	parameterSeparator         byte
 }
 
 func createApplication(
@@ -86,6 +93,8 @@ func createApplication(
 	linesBuilder lines.Builder,
 	lineBuilder lines.LineBuilder,
 	executionBuilder executions.Builder,
+	parametersBuilder parameters.Builder,
+	parameterBuilder parameters.ParameterBuilder,
 	tokensBuilder tokens.Builder,
 	tokenBuilder tokens.TokenBuilder,
 	elementsBuilder elements.Builder,
@@ -93,6 +102,7 @@ func createApplication(
 	rulesBuilder rules.Builder,
 	ruleBuilder rules.RuleBuilder,
 	cardinalityBuilder cardinalities.Builder,
+	funcsMap map[string]CoreFn,
 	filterBytes []byte,
 	suiteSeparatorPrefix []byte,
 	possibleLetters []byte,
@@ -123,6 +133,9 @@ func createApplication(
 	cardinalitySeparator byte,
 	cardinalityZeroPlus byte,
 	cardinalityOnePlus byte,
+	indexOpen byte,
+	indexClose byte,
+	parameterSeparator byte,
 ) Application {
 	out := application{
 		ruleAdapter:                ruleAdapter,
@@ -138,6 +151,8 @@ func createApplication(
 		linesBuilder:               linesBuilder,
 		lineBuilder:                lineBuilder,
 		executionBuilder:           executionBuilder,
+		parametersBuilder:          parametersBuilder,
+		parameterBuilder:           parameterBuilder,
 		tokensBuilder:              tokensBuilder,
 		tokenBuilder:               tokenBuilder,
 		elementsBuilder:            elementsBuilder,
@@ -145,6 +160,7 @@ func createApplication(
 		rulesBuilder:               rulesBuilder,
 		ruleBuilder:                ruleBuilder,
 		cardinalityBuilder:         cardinalityBuilder,
+		funcsMap:                   funcsMap,
 		filterBytes:                filterBytes,
 		suiteSeparatorPrefix:       suiteSeparatorPrefix,
 		possibleLetters:            possibleLetters,
@@ -175,12 +191,15 @@ func createApplication(
 		cardinalitySeparator:       cardinalitySeparator,
 		cardinalityZeroPlus:        cardinalityZeroPlus,
 		cardinalityOnePlus:         cardinalityOnePlus,
+		indexOpen:                  indexOpen,
+		indexClose:                 indexClose,
+		parameterSeparator:         parameterSeparator,
 	}
 
 	return &out
 }
 
-// Parse parses the input and returns a grammar instance
+// Parse parses an input and creates a Grammar instance
 func (app *application) Parse(input []byte) (grammars.Grammar, []byte, error) {
 	return app.bytesToGrammar(input)
 }
@@ -190,14 +209,149 @@ func (app *application) Compile(grammar grammars.Grammar) (nfts.NFT, error) {
 	return app.grammarToNFT(grammar)
 }
 
-// Decompile decompiles an NFT to a grammar instance
+// Decompile decompiles an NFT into a grammar instance
 func (app *application) Decompile(ast nfts.NFT) (grammars.Grammar, error) {
 	return nil, nil
 }
 
-// Compose composes a grammar instance to a grammar input
-func (app *application) Compose(grammar grammars.Grammar) ([]byte, error) {
-	return nil, nil
+// Compose composes an output from a a grammar instance and a block name
+func (app *application) Compose(grammar grammars.Grammar, blockName string) ([]byte, error) {
+	block, err := grammar.Blocks().Fetch(blockName)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.writeBlock(grammar, block)
+}
+
+func (app *application) writeBlock(grammar grammars.Grammar, block blocks.Block) ([]byte, error) {
+	linesList := block.Lines().List()
+	if len(linesList) > 1 {
+		str := fmt.Sprintf("the block (name: %s) cannot be written because it contains multiple lines", block.Name())
+		return nil, errors.New(str)
+	}
+
+	return app.writeLine(grammar, linesList[0])
+}
+
+func (app *application) writeLine(grammar grammars.Grammar, line lines.Line) ([]byte, error) {
+	tokens := line.Tokens()
+	retBytes, tokensMap, err := app.writeTokens(grammar, tokens)
+	if err != nil {
+		return nil, err
+	}
+
+	output := retBytes
+	if line.HasExecution() {
+		execution := line.Execution()
+		fnName := execution.FuncName()
+		params := map[string][]byte{}
+		if execution.HasParameters() {
+			parametersList := execution.Parameters().List()
+			for _, oneParameter := range parametersList {
+				paramElementName := oneParameter.Element().Name()
+				paramElementIndex := oneParameter.Index()
+				if _, ok := tokensMap[paramElementName]; !ok {
+					str := fmt.Sprintf("the func (name: %s) contains a param (name: %s, index: %d) that is not declared in the line", fnName, paramElementName, paramElementIndex)
+					return nil, errors.New(str)
+				}
+
+				name := oneParameter.Name()
+				params[name] = tokensMap[paramElementName][int(paramElementIndex)]
+			}
+		}
+
+		if fn, ok := app.funcsMap[fnName]; ok {
+			execOutput, err := fn(params)
+			if err != nil {
+				return nil, err
+			}
+
+			output = execOutput
+		}
+	}
+
+	if line.HasReplacement() {
+		replacement := line.Replacement()
+		retValueBytes, err := app.writeElement(grammar, replacement)
+		if err != nil {
+			return nil, err
+		}
+
+		output = retValueBytes
+	}
+
+	return output, nil
+}
+
+func (app *application) writeTokens(grammar grammars.Grammar, tokens tokens.Tokens) ([]byte, map[string][][]byte, error) {
+	output := []byte{}
+	mp := map[string][][]byte{}
+	list := tokens.List()
+	for _, oneToken := range list {
+		name := oneToken.Name()
+		retBytes, retMultiLine, err := app.writeToken(grammar, oneToken)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		mp[name] = retMultiLine
+		output = append(output, retBytes...)
+	}
+
+	return output, mp, nil
+}
+
+func (app *application) writeToken(grammar grammars.Grammar, token tokens.Token) ([]byte, [][]byte, error) {
+	name := token.Name()
+	cardinality := token.Cardinality()
+	if !cardinality.HasMax() {
+		str := fmt.Sprintf("the cardinality, in the token (name: %s) must contain a max in order to be written", name)
+		return nil, nil, errors.New(str)
+	}
+
+	pMax := cardinality.Max()
+	min := cardinality.Min()
+	if *pMax != min {
+		str := fmt.Sprintf("the cardinality, in the token (name: %s) must contain a min (%d) and a max (%d) that are equal in order to be written", name, min, *pMax)
+		return nil, nil, errors.New(str)
+	}
+
+	element := token.Element()
+	elementBytes, err := app.writeElement(grammar, element)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	output := []byte{}
+	multiLine := [][]byte{}
+	castedMin := int(min)
+	for i := 0; i < castedMin; i++ {
+		multiLine = append(multiLine, elementBytes)
+		output = append(output, elementBytes...)
+	}
+
+	return output, multiLine, nil
+}
+
+func (app *application) writeElement(grammar grammars.Grammar, element elements.Element) ([]byte, error) {
+	if element.IsBlock() {
+		blockName := element.Block()
+		block, err := grammar.Blocks().Fetch(blockName)
+		if err != nil {
+			return nil, err
+		}
+
+		return app.writeBlock(grammar, block)
+	}
+
+	ruleName := element.Rule()
+	rule, err := grammar.Rules().Fetch(ruleName)
+	if err != nil {
+		return nil, err
+	}
+
+	return rule.Bytes(), nil
 }
 
 func (app *application) grammarToNFT(
@@ -599,20 +753,95 @@ func (app *application) executionToNFT(
 		funcNameNFT,
 	}
 
-	if execution.HasElements() {
-		elements := execution.Elements()
-		elementNFT, err := app.elementsToNFT(
+	if execution.HasParameters() {
+		parameters := execution.Parameters()
+		parameterNFT, err := app.parametersToNFT(
 			parentBlockNames,
 			rules,
 			blocks,
-			elements,
+			parameters,
 		)
 
 		if err != nil {
 			return nil, err
 		}
 
-		list = append(list, elementNFT)
+		list = append(list, parameterNFT)
+	}
+
+	nft, err := app.nftsListToNFT(list, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return nft, nil
+}
+
+func (app *application) parametersToNFT(
+	parentBlockNames []string,
+	rules nfts.NFT,
+	blocks nfts.NFTs,
+	parameters parameters.Parameters,
+) (nfts.NFT, error) {
+	output := []nfts.NFT{}
+	list := parameters.List()
+	for _, oneParameter := range list {
+		retNFT, err := app.parameterToNFT(
+			parentBlockNames,
+			rules,
+			blocks,
+			oneParameter,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, retNFT)
+	}
+
+	nft, err := app.nftsListToNFT(output, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return nft, nil
+}
+
+func (app *application) parameterToNFT(
+	parentBlockNames []string,
+	rules nfts.NFT,
+	blocks nfts.NFTs,
+	parameter parameters.Parameter,
+) (nfts.NFT, error) {
+	element := parameter.Element()
+	elementNFT, err := app.elementToNFT(
+		parentBlockNames,
+		rules,
+		blocks,
+		element,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	index := parameter.Index()
+	indexNFT, err := app.uintAdapter.ToNFT(uint64(index))
+	if err != nil {
+		return nil, err
+	}
+
+	name := parameter.Name()
+	nameNFT, err := app.stringToNFT(name)
+	if err != nil {
+		return nil, err
+	}
+
+	list := []nfts.NFT{
+		elementNFT,
+		indexNFT,
+		nameNFT,
 	}
 
 	nft, err := app.nftsListToNFT(list, "")
@@ -1015,10 +1244,10 @@ func (app *application) bytesToExecution(input []byte) (executions.Execution, []
 	}
 
 	builder := app.executionBuilder.Create().WithFuncName(string(funcName))
-	elements, retElementsRemaining, err := app.bytesToElementReferences(retRemaining)
+	parameters, retParametersRemaining, err := app.bytesToParameters(retRemaining)
 	if err == nil {
-		builder.WithElements(elements)
-		retRemaining = retElementsRemaining
+		builder.WithParameters(parameters)
+		retRemaining = retParametersRemaining
 	}
 
 	ins, err := builder.Now()
@@ -1027,6 +1256,75 @@ func (app *application) bytesToExecution(input []byte) (executions.Execution, []
 	}
 
 	return ins, retRemaining, nil
+}
+
+func (app *application) bytesToParameters(input []byte) (parameters.Parameters, []byte, error) {
+	list := []parameters.Parameter{}
+	remaining := input
+	for {
+		retParameter, retRemaining, err := app.bytesToParameter(remaining)
+		if err != nil {
+			break
+		}
+
+		list = append(list, retParameter)
+		remaining = retRemaining
+	}
+
+	ins, err := app.parametersBuilder.Create().
+		WithList(list).
+		Now()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, remaining, nil
+}
+
+func (app *application) bytesToParameter(input []byte) (parameters.Parameter, []byte, error) {
+	element, retElementRemaining, err := app.bytesToElementReference(input)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	retValue, retValueRemaining, err := bytesToBracketsIndex(
+		retElementRemaining,
+		app.possibleNumbers,
+		app.indexOpen,
+		app.indexClose,
+		app.filterBytes,
+	)
+
+	if err != nil {
+		retValue = 0
+		retValueRemaining = retElementRemaining
+	}
+
+	if len(retValueRemaining) <= 0 {
+		return nil, nil, errors.New("the parameter was expected to contain at least 1 byte before its name")
+	}
+
+	if retValueRemaining[0] != app.parameterSeparator {
+		return nil, nil, errors.New("the parameter was expected to contain the parameterSeparator byte before its name")
+	}
+
+	name, retNameRemaining, err := app.bytesToBlockName(retValueRemaining[1:])
+	if err != nil {
+		return nil, nil, err
+	}
+
+	ins, err := app.parameterBuilder.Create().
+		WithElement(element).
+		WithIndex(uint(retValue)).
+		WithName(name).
+		Now()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, retNameRemaining, nil
 }
 
 func (app *application) bytesToTokens(input []byte) (tokens.Tokens, []byte, error) {

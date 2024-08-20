@@ -1,10 +1,10 @@
 package executions
 
-import "github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/elements"
+import "github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions/parameters"
 
 type execution struct {
-	fnName   string
-	elements elements.Elements
+	fnName     string
+	parameters parameters.Parameters
 }
 
 func createExecution(
@@ -13,20 +13,20 @@ func createExecution(
 	return createExecutionInternally(fnName, nil)
 }
 
-func createExecutionWithElements(
+func createExecutionWithParameters(
 	fnName string,
-	elements elements.Elements,
+	parameters parameters.Parameters,
 ) Execution {
-	return createExecutionInternally(fnName, elements)
+	return createExecutionInternally(fnName, parameters)
 }
 
 func createExecutionInternally(
 	fnName string,
-	elements elements.Elements,
+	parameters parameters.Parameters,
 ) Execution {
 	out := execution{
-		fnName:   fnName,
-		elements: elements,
+		fnName:     fnName,
+		parameters: parameters,
 	}
 
 	return &out
@@ -37,12 +37,12 @@ func (obj *execution) FuncName() string {
 	return obj.fnName
 }
 
-// HasElements returns true if there is elements, false otherwise
-func (obj *execution) HasElements() bool {
-	return obj.elements != nil
+// HasParameters returns true if there is parameters, false otherwise
+func (obj *execution) HasParameters() bool {
+	return obj.parameters != nil
 }
 
-// Elements returns the elements
-func (obj *execution) Elements() elements.Elements {
-	return obj.elements
+// Parameters returns the parameters, if any
+func (obj *execution) Parameters() parameters.Parameters {
+	return obj.parameters
 }

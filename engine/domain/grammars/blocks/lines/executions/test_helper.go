@@ -1,6 +1,8 @@
 package executions
 
-import "github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/elements"
+import (
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions/parameters"
+)
 
 // NewExecutionForTests creates a new execution for tests
 func NewExecutionForTests(fnName string) Execution {
@@ -12,9 +14,9 @@ func NewExecutionForTests(fnName string) Execution {
 	return ins
 }
 
-// NewExecutionWithElementsForTests creates a new execution with elements for tests
-func NewExecutionWithElementsForTests(elements elements.Elements, fnName string) Execution {
-	ins, err := NewBuilder().Create().WithElements(elements).WithFuncName(fnName).Now()
+// NewExecutionWithParameterssForTests creates a new execution with parameters for tests
+func NewExecutionWithParameterssForTests(parameters parameters.Parameters, fnName string) Execution {
+	ins, err := NewBuilder().Create().WithParameters(parameters).WithFuncName(fnName).Now()
 	if err != nil {
 		panic(err)
 	}

@@ -1,10 +1,14 @@
 package grammars
 
 import (
+	"errors"
+	"math/big"
+
 	"github.com/steve-care-software/webx/engine/domain/grammars"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions/parameters"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/cardinalities"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/cardinalities/uints"
@@ -13,6 +17,9 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/grammars/rules"
 	"github.com/steve-care-software/webx/engine/domain/nfts"
 )
+
+// CoreFn represents a core fn
+type CoreFn func(input map[string][]byte) ([]byte, error)
 
 const (
 	// BytesCardinalityPrefix represents the cardinality prefix byte
@@ -103,6 +110,9 @@ const cardinalityClose = "]"
 const cardinalitySeparator = ","
 const cardinalityZeroPlus = "*"
 const cardinalityOnePlus = "+"
+const indexOpen = "["
+const indexClose = "]"
+const parameterSeparator = ":"
 const tokenReference = "."
 const linesSeparator = "|"
 const lineSeparator = "-"
@@ -135,6 +145,8 @@ func NewApplication() Application {
 	linesBuilder := lines.NewBuilder()
 	lineBuilder := lines.NewLineBuilder()
 	executionBuilder := executions.NewBuilder()
+	parametersBuilder := parameters.NewBuilder()
+	parameterBuilder := parameters.NewParameterBuilder()
 	tokensBuilder := tokens.NewBuilder()
 	tokenBuilder := tokens.NewTokenBuilder()
 	elementsBuilder := elements.NewBuilder()
@@ -161,6 +173,8 @@ func NewApplication() Application {
 		linesBuilder,
 		lineBuilder,
 		executionBuilder,
+		parametersBuilder,
+		parameterBuilder,
 		tokensBuilder,
 		tokenBuilder,
 		elementsBuilder,
@@ -168,6 +182,29 @@ func NewApplication() Application {
 		rulesBuilder,
 		ruleBuilder,
 		cardinalityBuilder,
+		map[string]CoreFn{
+			"math_operation_arithmetic_addition": func(input map[string][]byte) ([]byte, error) {
+				if firstBytes, ok := input["first"]; ok {
+					if secondBytes, ok := input["second"]; ok {
+						pFirst, _ := big.NewInt(int64(0)).SetString(string(firstBytes), 10)
+						if pFirst == nil {
+							return nil, errors.New("the first value could not be converted to a number")
+						}
+
+						pSecond, _ := big.NewInt(int64(0)).SetString(string(secondBytes), 10)
+						if pSecond == nil {
+							return nil, errors.New("the second value could not be converted to a number")
+						}
+
+						return []byte(pFirst.Add(pFirst, pSecond).String()), nil
+					}
+
+					return nil, errors.New("the second value was not defined")
+				}
+
+				return nil, errors.New("the first value was not defined")
+			},
+		},
 		[]byte(filterBytes),
 		[]byte(suiteSeparatorPrefix),
 		possibleLetters,
@@ -198,13 +235,23 @@ func NewApplication() Application {
 		[]byte(cardinalitySeparator)[0],
 		[]byte(cardinalityZeroPlus)[0],
 		[]byte(cardinalityOnePlus)[0],
+		[]byte(indexOpen)[0],
+		[]byte(indexClose)[0],
+		[]byte(parameterSeparator)[0],
 	)
 }
 
 // Application represents the grammar application
 type Application interface {
+	// Parse parses an input and creates a Grammar instance
 	Parse(input []byte) (grammars.Grammar, []byte, error)
+
+	// Compile compiles a grammar to an NFT
 	Compile(grammar grammars.Grammar) (nfts.NFT, error)
-	Decompile(ast nfts.NFT) (grammars.Grammar, error)
-	Compose(grammar grammars.Grammar) ([]byte, error)
+
+	// Decompile decompiles an NFT into a grammar instance
+	Decompile(nft nfts.NFT) (grammars.Grammar, error)
+
+	// Compose composes an output from a a grammar instance and a block name
+	Compose(grammar grammars.Grammar, blockName string) ([]byte, error)
 }

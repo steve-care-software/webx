@@ -59,6 +59,45 @@ func bytesToMinMax(
 	)
 }
 
+func bytesToBracketsIndex(
+	data []byte,
+	possibleNumbers []byte,
+	indexOpen byte,
+	indexClose byte,
+	filterBytes []byte,
+) (uint, []byte, error) {
+	data = filterPrefix(data, filterBytes)
+	if len(data) <= 0 {
+		str := fmt.Sprintf("the bytes must contain at least 1 value in order to convert it to an index, %d provided", len(data))
+		return 0, nil, errors.New(str)
+	}
+
+	data = filterPrefix(data, filterBytes)
+	firstValue := data[0]
+	if firstValue != indexOpen {
+		return 0, nil, errors.New("the provided bytes could not be converted to an index because it does not contain the indexOpen byte")
+	}
+
+	data = filterPrefix(data[1:], filterBytes)
+	retMinBytes, retRemaining := matchBytes(data, possibleNumbers, filterBytes)
+	iValue, err := strconv.Atoi(string(retMinBytes))
+	if err != nil {
+		return 0, nil, err
+	}
+
+	uiValue := uint(iValue)
+	if len(retRemaining) <= 0 {
+		return 0, nil, errors.New("the remaining bytes, after fetching the minimum, was empty and therefore could not be converted to cardinality's min/max")
+	}
+
+	nextValue := retRemaining[0]
+	if nextValue != indexClose {
+		return 0, nil, errors.New("the provided bytes could not be converted to an index because it does not contain the indexClose byte")
+	}
+
+	return uiValue, filterPrefix(retRemaining[1:], filterBytes), nil
+}
+
 func bytesToBracketsMinMax(
 	data []byte,
 	possibleNumbers []byte,
@@ -301,7 +340,8 @@ func filterPrefix(data []byte, possibleBytes []byte) []byte {
 
 func createPossibleFuncNameCharacters() []byte {
 	letters := createPossibleLetters()
-	return append(letters, []byte(funcNameSeparator)...)
+	output := append(letters, []byte(funcNameSeparator)...)
+	return append(output, createPossibleNumbers()...)
 }
 
 func createPossibleLetters() []byte {

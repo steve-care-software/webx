@@ -1,8 +1,9 @@
 package programs
 
 import (
-	"github.com/steve-care-software/webx/engine/domain/asts"
 	"github.com/steve-care-software/webx/engine/domain/grammars"
+	"github.com/steve-care-software/webx/engine/domain/nfts"
+	"github.com/steve-care-software/webx/engine/domain/programs"
 	"github.com/steve-care-software/webx/engine/domain/stacks"
 )
 
@@ -55,9 +56,9 @@ const (
 
 // Application represents the program application
 type Application interface {
-	Parse(grammar grammars.Grammar, input []byte) (asts.AST, error)
-	Compile(ast asts.AST) ([]byte, error)
-	Decompile(byteCode []byte) (asts.AST, error)
-	Compose(grammar grammars.Grammar, ast asts.AST) ([]byte, error)
-	Interpret(bytecode []byte) (stacks.Stack, error)
+	Parse(grammar grammars.Grammar, input []byte) (programs.Program, error)
+	Compile(program programs.Program) (nfts.NFT, error)
+	Decompile(nft nfts.NFT) (programs.Program, error)
+	Compose(program programs.Program) ([]byte, error)
+	Interpret(program programs.Program) (stacks.Stack, error)
 }

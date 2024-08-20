@@ -1,7 +1,7 @@
 package executions
 
 import (
-	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/elements"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions/parameters"
 )
 
 // NewBuilder creates a new builder
@@ -12,7 +12,7 @@ func NewBuilder() Builder {
 // Builder represents an execution builder
 type Builder interface {
 	Create() Builder
-	WithElements(elements elements.Elements) Builder
+	WithParameters(parameters parameters.Parameters) Builder
 	WithFuncName(fnFlag string) Builder
 	Now() (Execution, error)
 }
@@ -20,6 +20,6 @@ type Builder interface {
 // Execution represents an execution
 type Execution interface {
 	FuncName() string
-	HasElements() bool
-	Elements() elements.Elements
+	HasParameters() bool
+	Parameters() parameters.Parameters
 }

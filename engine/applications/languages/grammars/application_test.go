@@ -6,13 +6,171 @@ import (
 	"testing"
 )
 
+func TestApplication_grammar_compile_compose_withReplacement_Success(t *testing.T) {
+	input := []byte(`
+		v1;
+		>.addition;
+		# .SPACE .TAB. EOL;
+		
+		addition: .firstNumber .PLUS_SIGN .secondNumber - .myReplacement;
+		secondNumber: .N_THREE .N_FOUR .N_FIVE;
+		firstNumber: .N_ONE .N_TWO;
+		myReplacement: .N_ONE .N_THREE;
+
+		replacedNumber: .N_TWO .N_FOUR;
+
+		N_ZERO: "0"
+		N_ONE: "1"
+		N_TWO: "2"
+		N_THREE: "3"
+		N_FOUR: "4"
+		N_FIVE: "5"
+		N_SIX: "6"
+		OPEN_PARENTHESIS: "("
+		CLOSE_PARENTHESIS: ")"	
+		PLUS_SIGN: "+"		
+		SPACE: " "
+		TAB: "\t\t"
+		EOL: "\n"
+	`)
+
+	application := NewApplication()
+	retGrammar, _, err := application.Parse(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	retValue, err := application.Compose(retGrammar, "addition")
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	expected := "13"
+	if string(retValue) != expected {
+		t.Errorf("the returned value is invalid")
+		return
+	}
+}
+
+func TestApplication_grammar_compile_compose_withFunc_withReplacement_Success(t *testing.T) {
+	input := []byte(`
+		v1;
+		>.addition;
+		# .SPACE .TAB. EOL;
+		
+		addition: .firstNumber .PLUS_SIGN .secondNumber - math_operation_arithmetic_addition .firstNumber[0]:first .secondNumber[0]:second - .myReplacement;
+		secondNumber: .N_THREE .N_FOUR .N_FIVE;
+		firstNumber: .N_ONE .N_TWO;
+		myReplacement: .N_ONE .N_THREE;
+
+		replacedNumber: .N_TWO .N_FOUR;
+
+		N_ZERO: "0"
+		N_ONE: "1"
+		N_TWO: "2"
+		N_THREE: "3"
+		N_FOUR: "4"
+		N_FIVE: "5"
+		N_SIX: "6"
+		OPEN_PARENTHESIS: "("
+		CLOSE_PARENTHESIS: ")"	
+		PLUS_SIGN: "+"		
+		SPACE: " "
+		TAB: "\t\t"
+		EOL: "\n"
+	`)
+
+	application := NewApplication()
+	retGrammar, _, err := application.Parse(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	retValue, err := application.Compose(retGrammar, "addition")
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	expected := "13"
+	if string(retValue) != expected {
+		t.Errorf("the returned value is invalid")
+		return
+	}
+}
+
+func TestApplication_grammar_compile_compose_withFunc_Success(t *testing.T) {
+	input := []byte(`
+		v1;
+		>.addition;
+		# .SPACE .TAB. EOL;
+		
+		addition: .firstNumber .PLUS_SIGN .secondNumber - math_operation_arithmetic_addition .firstNumber[0]:first .secondNumber[0]:second;
+		secondNumber: .N_THREE .N_FOUR .N_FIVE;
+		firstNumber: .N_ONE .N_TWO;
+
+		replacedNumber: .N_TWO .N_FOUR;
+
+		N_ZERO: "0"
+		N_ONE: "1"
+		N_TWO: "2"
+		N_THREE: "3"
+		N_FOUR: "4"
+		N_FIVE: "5"
+		N_SIX: "6"
+		OPEN_PARENTHESIS: "("
+		CLOSE_PARENTHESIS: ")"	
+		PLUS_SIGN: "+"		
+		SPACE: " "
+		TAB: "\t\t"
+		EOL: "\n"
+	`)
+
+	application := NewApplication()
+	retGrammar, _, err := application.Parse(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	retValue, err := application.Compose(retGrammar, "addition")
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	expected := "357"
+	if string(retValue) != expected {
+		t.Errorf("the returned value is invalid")
+		return
+	}
+}
+
 func TestApplication_grammar_compile_decompile_Success(t *testing.T) {
 	input := []byte(`
 		v1;
 		>.numberInParenthesis;
 		# .SPACE .TAB. EOL;
-		
-		numberInParenthesis: 	.number - my_func .number - .N_ZERO
+
+		numberInParenthesis: 	.number - my_func .number:number - .N_ZERO
 								| .OPEN_PARENTHESIS .numberInParenthesis .CLOSE_PARENTHESIS
 								---
 				 					firstTest:@.N_ONE.
@@ -43,7 +201,7 @@ func TestApplication_grammar_compile_decompile_Success(t *testing.T) {
 		N_HEIGHT: "8"
 		N_NINE: "9"
 		OPEN_PARENTHESIS: "("
-		CLOSE_PARENTHESIS: ")"		
+		CLOSE_PARENTHESIS: ")"
 		SPACE: " "
 		TAB: "\t\t"
 		EOL: "\n"
@@ -77,8 +235,8 @@ func TestApplication_grammar_withOmissions_Success(t *testing.T) {
 		>.myRoot;
 		#.first.second.third;
 
-		myFirst: .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst .mySecond .myThird .myFourth .myFifth - .MY_REPLACEMENT
-				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement - myFuncName_secondSection .myFirst .mySecond .myThird .myFourth .myFifth
+		myFirst: .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth - .MY_REPLACEMENT
+				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth
 				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement
 				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,]
 				 ---
@@ -86,8 +244,8 @@ func TestApplication_grammar_withOmissions_Success(t *testing.T) {
 					secondTest:@.myElement.
 				 ;
 
-		mySecond: .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst .mySecond .myThird .myFourth .myFifth - .MY_REPLACEMENT
-				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement - myFuncName_secondSection .myFirst .mySecond .myThird .myFourth .myFifth
+		mySecond: .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth - .MY_REPLACEMENT
+				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth
 				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement
 				 ;
 
@@ -141,53 +299,9 @@ func TestApplication_grammar_withOmissions_Success(t *testing.T) {
 	}
 }
 
-func TestApplication_grammar_Success(t *testing.T) {
-	remaining := []byte("!this is some remaining")
-	input := append([]byte(`v1;>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
-
-	application := NewApplication()
-	retGrammar, retRemaining, err := application.Parse(input)
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	if !bytes.Equal(remaining, retRemaining) {
-		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
-		return
-	}
-
-	if retGrammar.Version() != 1 {
-		t.Errorf("the version was expected to be %d, %d returned", 1, retGrammar.Version())
-		return
-	}
-
-	if retGrammar.Root().Name() != "myRoot" {
-		t.Errorf("the root was expected to be %s, %s returned", "myRoot", retGrammar.Root())
-		return
-	}
-
-	retBlocks := retGrammar.Blocks().List()
-	if len(retBlocks) != 2 {
-		t.Errorf("the grammar was expected to contain %d block instances, %d returned", 2, len(retBlocks))
-		return
-	}
-
-	retRules := retGrammar.Rules().List()
-	if len(retRules) != 2 {
-		t.Errorf("the grammar was expected to contain %d rule instances, %d returned", 2, len(retRules))
-		return
-	}
-
-	if retGrammar.HasOmissions() {
-		t.Errorf("the grammar was expected to NOT contain omissions")
-		return
-	}
-}
-
 func TestApplication_grammar_withoutVersion_returnsError(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
+	input := append([]byte(`>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
 
 	application := NewApplication()
 	_, _, err := application.Parse(input)
@@ -199,7 +313,7 @@ func TestApplication_grammar_withoutVersion_returnsError(t *testing.T) {
 
 func TestApplication_grammar_withNonNumericVersion_returnsError(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`vDE;>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
+	input := append([]byte(`vDE;>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
 
 	application := NewApplication()
 	_, _, err := application.Parse(input)
@@ -211,7 +325,7 @@ func TestApplication_grammar_withNonNumericVersion_returnsError(t *testing.T) {
 
 func TestApplication_grammar_withoutRoot_returnsError(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`v1;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
+	input := append([]byte(`v1;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
 
 	application := NewApplication()
 	_, _, err := application.Parse(input)
@@ -223,7 +337,7 @@ func TestApplication_grammar_withoutRoot_returnsError(t *testing.T) {
 
 func TestApplication_grammar_withInvalidRootElementReference_returnsError(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`v1;>myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
+	input := append([]byte(`v1;>myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
 
 	application := NewApplication()
 	_, _, err := application.Parse(input)
@@ -235,7 +349,7 @@ func TestApplication_grammar_withInvalidRootElementReference_returnsError(t *tes
 
 func TestApplication_grammar_withInvalidOmissionElementReference_returnsError(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`v1;>.myRoot;#invalidReference;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
+	input := append([]byte(`v1;>.myRoot;#invalidReference;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
 
 	application := NewApplication()
 	_, _, err := application.Parse(input)
@@ -259,35 +373,12 @@ func TestApplication_grammar_withoutBlocks_returnsError(t *testing.T) {
 
 func TestApplication_grammar_withoutRules_returnsError(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`v1;>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;`), remaining...)
+	input := append([]byte(`v1;>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;`), remaining...)
 
 	application := NewApplication()
 	_, _, err := application.Parse(input)
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
-		return
-	}
-}
-
-func TestApplication_blocks_Success(t *testing.T) {
-	remaining := []byte("!this is some remaining")
-	input := append([]byte(`myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;`), remaining...)
-
-	application := NewApplication().(*application)
-	retBlocks, retRemaining, err := application.bytesToBlocks(input)
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	if !bytes.Equal(remaining, retRemaining) {
-		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
-		return
-	}
-
-	list := retBlocks.List()
-	if len(list) != 2 {
-		t.Errorf("the block was expected to contain %d suite instances, %d returned", 2, len(list))
 		return
 	}
 }
@@ -304,81 +395,9 @@ func TestApplication_blocks_withoutBlocks_returnsError(t *testing.T) {
 	}
 }
 
-func TestApplication_block_withSuites_Success(t *testing.T) {
-	remaining := []byte("!this is some remaining")
-	input := append([]byte(`myBlock:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;`), remaining...)
-
-	application := NewApplication().(*application)
-	retBlock, retRemaining, err := application.bytesToBlock(input)
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	if !bytes.Equal(remaining, retRemaining) {
-		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
-		return
-	}
-
-	if retBlock.Name() != "myBlock" {
-		t.Errorf("the block name was expected to be (%s), (%s) returned", "myBlock", retBlock.Name())
-		return
-	}
-
-	list := retBlock.Lines().List()
-	if len(list) != 3 {
-		t.Errorf("the lines was expected to contain %d suite instances, %d returned", 3, len(list))
-		return
-	}
-
-	if !retBlock.HasSuites() {
-		t.Errorf("the block was expected to contain suites")
-		return
-	}
-
-	suitesList := retBlock.Suites().List()
-	if len(suitesList) != 4 {
-		t.Errorf("the suites was expected to contain %d suite instances, %d returned", 4, len(suitesList))
-		return
-	}
-}
-
-func TestApplication_block_Success(t *testing.T) {
-	remaining := []byte("!this is some remaining")
-	input := append([]byte(`myBlock:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;`), remaining...)
-
-	application := NewApplication().(*application)
-	retBlock, retRemaining, err := application.bytesToBlock(input)
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	if !bytes.Equal(remaining, retRemaining) {
-		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
-		return
-	}
-
-	if retBlock.Name() != "myBlock" {
-		t.Errorf("the block name was expected to be (%s), (%s) returned", "myBlock", retBlock.Name())
-		return
-	}
-
-	if retBlock.HasSuites() {
-		t.Errorf("the block was expected to NOT contain suites")
-		return
-	}
-
-	list := retBlock.Lines().List()
-	if len(list) != 3 {
-		t.Errorf("the lines was expected to contain %d suite instances, %d returned", 3, len(list))
-		return
-	}
-}
-
 func TestApplication_block_withoutSuffix_returnsError(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`myBlock:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.`), remaining...)
+	input := append([]byte(`myBlock:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.`), remaining...)
 
 	application := NewApplication().(*application)
 	_, _, err := application.bytesToBlock(input)
@@ -389,7 +408,7 @@ func TestApplication_block_withoutSuffix_returnsError(t *testing.T) {
 }
 
 func TestApplication_block_withoutSuffix_withoutRemaining_returnsError(t *testing.T) {
-	input := []byte(`myBlock:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.`)
+	input := []byte(`myBlock:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.`)
 	application := NewApplication().(*application)
 	_, _, err := application.bytesToBlock(input)
 	if err == nil {
@@ -399,7 +418,7 @@ func TestApplication_block_withoutSuffix_withoutRemaining_returnsError(t *testin
 }
 
 func TestApplication_block_withoutSuffix_withInvalidBlockDefinition_returnsError(t *testing.T) {
-	input := []byte(`myBlock.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;`)
+	input := []byte(`myBlock.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;`)
 	application := NewApplication().(*application)
 	_, _, err := application.bytesToBlock(input)
 	if err == nil {
@@ -560,7 +579,7 @@ func TestApplication_suite_withoutSuiteLineSuffix_withoutRemainingBytes_returnsE
 
 func TestApplication_lines_withOneLine_Success(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT`), remaining...)
+	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT`), remaining...)
 
 	application := NewApplication().(*application)
 	retLines, retRemaining, err := application.bytesToLines(input)
@@ -583,7 +602,7 @@ func TestApplication_lines_withOneLine_Success(t *testing.T) {
 
 func TestApplication_lines_withMultipleLines_Success(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement`), remaining...)
+	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement`), remaining...)
 
 	application := NewApplication().(*application)
 	retLines, retRemaining, err := application.bytesToLines(input)
@@ -618,7 +637,7 @@ func TestApplication_lines_withoutLine_returnsError(t *testing.T) {
 
 func TestApplication_line_withExecution_withReplacement_Success(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`.myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst .mySecond .myThird .myFourth .myFifth - .MY_REPLACEMENT`), remaining...)
+	input := append([]byte(`.myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth - .MY_REPLACEMENT`), remaining...)
 
 	application := NewApplication().(*application)
 	retLine, retRemaining, err := application.bytesToLine(input)
@@ -645,7 +664,7 @@ func TestApplication_line_withExecution_withReplacement_Success(t *testing.T) {
 
 func TestApplication_line_withExecution_withReplacement_reversed_Success(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`.myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement - myFuncName_secondSection .myFirst .mySecond .myThird .myFourth .myFifth`), remaining...)
+	input := append([]byte(`.myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth`), remaining...)
 
 	application := NewApplication().(*application)
 	retLine, retRemaining, err := application.bytesToLine(input)
@@ -672,7 +691,7 @@ func TestApplication_line_withExecution_withReplacement_reversed_Success(t *test
 
 func TestApplication_line_withExecution_Success(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`.myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst .mySecond .myThird .myFourth .myFifth`), remaining...)
+	input := append([]byte(`.myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth`), remaining...)
 
 	application := NewApplication().(*application)
 	retLine, retRemaining, err := application.bytesToLine(input)
@@ -726,7 +745,7 @@ func TestApplication_line_withReplacement_Success(t *testing.T) {
 
 func TestApplication_withoutTokens_returnsError(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`myFuncName_secondSection .myFirst .mySecond .myThird .myFourth .myFifth - .MY_REPLACEMENT`), remaining...)
+	input := append([]byte(`myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth - .MY_REPLACEMENT`), remaining...)
 
 	application := NewApplication().(*application)
 	_, _, err := application.bytesToLine(input)
@@ -738,7 +757,7 @@ func TestApplication_withoutTokens_returnsError(t *testing.T) {
 
 func TestApplication_execution_withElements_Success(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`myFuncName_secondSection .myFirst .mySecond .myThird .myFourth .myFifth`), remaining...)
+	input := append([]byte(`myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth`), remaining...)
 
 	application := NewApplication().(*application)
 	retExecution, retRemaining, err := application.bytesToExecution(input)
@@ -752,21 +771,21 @@ func TestApplication_execution_withElements_Success(t *testing.T) {
 		return
 	}
 
-	if !retExecution.HasElements() {
-		t.Errorf("the execution was expected to contain elements")
+	if !retExecution.HasParameters() {
+		t.Errorf("the execution was expected to contain paramters")
 		return
 	}
 
-	list := retExecution.Elements().List()
+	list := retExecution.Parameters().List()
 	if len(list) != 5 {
-		t.Errorf("the tokens list was expected to contain %d tokens, %d returned", 5, len(list))
+		t.Errorf("the paramters list was expected to contain %d paramters, %d returned", 5, len(list))
 		return
 	}
 }
 
 func TestApplication_execution_withElements_withoutRemaining_Success(t *testing.T) {
 	remaining := []byte("")
-	input := append([]byte(`myFuncName_secondSection .myFirst .mySecond .myThird .myFourth .myFifth`), remaining...)
+	input := append([]byte(`myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth`), remaining...)
 
 	application := NewApplication().(*application)
 	retExecution, retRemaining, err := application.bytesToExecution(input)
@@ -780,14 +799,14 @@ func TestApplication_execution_withElements_withoutRemaining_Success(t *testing.
 		return
 	}
 
-	if !retExecution.HasElements() {
-		t.Errorf("the execution was expected to contain elements")
+	if !retExecution.HasParameters() {
+		t.Errorf("the execution was expected to contain paramters")
 		return
 	}
 
-	list := retExecution.Elements().List()
+	list := retExecution.Parameters().List()
 	if len(list) != 5 {
-		t.Errorf("the tokens list was expected to contain %d elements, %d returned", 5, len(list))
+		t.Errorf("the tokens list was expected to contain %d paramters, %d returned", 5, len(list))
 		return
 	}
 }
@@ -808,8 +827,8 @@ func TestApplication_execution_withoutElements_Success(t *testing.T) {
 		return
 	}
 
-	if retExecution.HasElements() {
-		t.Errorf("the execution was expected to NOT contain elements")
+	if retExecution.HasParameters() {
+		t.Errorf("the execution was expected to NOT contain parameters")
 		return
 	}
 }
@@ -830,8 +849,8 @@ func TestApplication_execution_withoutElements_withoutRemaining_Success(t *testi
 		return
 	}
 
-	if retExecution.HasElements() {
-		t.Errorf("the execution was expected to NOT contain elements")
+	if retExecution.HasParameters() {
+		t.Errorf("the execution was expected to NOT contain parameters")
 		return
 	}
 }
