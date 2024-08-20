@@ -30,8 +30,8 @@ func createAdapter(
 	return &out
 }
 
-// RuleToNFT comverts a rule to an NFT
-func (app *adapter) RuleToNFT(ins Rule) (nfts.NFT, error) {
+// InstanceToNFT comverts an instance to an NFT
+func (app *adapter) InstanceToNFT(ins Rule) (nfts.NFT, error) {
 	list := []nfts.NFT{}
 	data := ins.Bytes()
 	for _, oneByte := range data {
@@ -87,5 +87,53 @@ func (app *adapter) NFTToInstance(root nfts.NFT) (Rule, error) {
 	return app.ruleBuilder.Create().
 		WithName(name).
 		WithBytes(values).
+		Now()
+}
+
+// InstancesToNFT converts instances to NFT
+func (app *adapter) InstancesToNFT(ins Rules) (nfts.NFT, error) {
+	out := []nfts.NFT{}
+	list := ins.List()
+	for _, oneRule := range list {
+		retAST, err := app.InstanceToNFT(oneRule)
+		if err != nil {
+			return nil, err
+		}
+
+		out = append(out, retAST)
+	}
+
+	nfts, err := app.nftsBuilder.Create().
+		WithList(out).
+		Now()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return app.nftBuilder.Create().
+		WithNFTs(nfts).
+		Now()
+}
+
+// NFTToInstances converts NFT to instances
+func (app *adapter) NFTToInstances(root nfts.NFT) (Rules, error) {
+	if root.IsByte() {
+		return nil, errors.New("the root NFT was expected to contain sub NFT's")
+	}
+
+	output := []Rule{}
+	list := root.NFTs().List()
+	for _, oneNFT := range list {
+		retRule, err := app.NFTToInstance(oneNFT)
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, retRule)
+	}
+
+	return app.rulesBuilder.Create().
+		WithList(output).
 		Now()
 }

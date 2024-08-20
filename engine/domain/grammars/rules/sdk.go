@@ -28,8 +28,10 @@ func NewRuleBuilder() RuleBuilder {
 
 // Adapter represents the rule adapter
 type Adapter interface {
-	RuleToNFT(ins Rule) (nfts.NFT, error)
+	InstanceToNFT(ins Rule) (nfts.NFT, error)
 	NFTToInstance(root nfts.NFT) (Rule, error)
+	InstancesToNFT(ins Rules) (nfts.NFT, error)
+	NFTToInstances(root nfts.NFT) (Rules, error)
 }
 
 // Builder represents a rule list
