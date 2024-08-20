@@ -18,6 +18,8 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/suites"
 	"github.com/steve-care-software/webx/engine/domain/grammars/rules"
 	"github.com/steve-care-software/webx/engine/domain/nfts"
+	"github.com/steve-care-software/webx/engine/domain/programs"
+	"github.com/steve-care-software/webx/engine/domain/stacks"
 )
 
 type application struct {
@@ -199,29 +201,64 @@ func createApplication(
 	return &out
 }
 
-// Parse parses an input and creates a Grammar instance
-func (app *application) Parse(input []byte) (grammars.Grammar, []byte, error) {
+// ParseGrammar parses an input and creates a Grammar instance
+func (app *application) ParseGrammar(input []byte) (grammars.Grammar, []byte, error) {
 	return app.bytesToGrammar(input)
 }
 
-// Compile compiles a grammar to an NFT
-func (app *application) Compile(grammar grammars.Grammar) (nfts.NFT, error) {
+// CompileGrammar compiles a grammar to an NFT
+func (app *application) CompileGrammar(grammar grammars.Grammar) (nfts.NFT, error) {
 	return app.grammarToNFT(grammar)
 }
 
-// Decompile decompiles an NFT into a grammar instance
-func (app *application) Decompile(ast nfts.NFT) (grammars.Grammar, error) {
+// DecompileGrammar decompiles an NFT into a grammar instance
+func (app *application) DecompileGrammar(ast nfts.NFT) (grammars.Grammar, error) {
 	return nil, nil
 }
 
-// Compose composes an output from a a grammar instance and a block name
-func (app *application) Compose(grammar grammars.Grammar, blockName string) ([]byte, error) {
+// ComposeBlock fetches a blockName from the grammar and composes an output
+func (app *application) ComposeBlock(grammar grammars.Grammar, blockName string) ([]byte, error) {
 	block, err := grammar.Blocks().Fetch(blockName)
 	if err != nil {
 		return nil, err
 	}
 
 	return app.writeBlock(grammar, block)
+}
+
+// ParseProgram takes a grammar and an input, parses it and returns the program
+func (app *application) ParseProgram(grammar grammars.Grammar, input []byte) (programs.Program, error) {
+	return nil, nil
+}
+
+// CompileProgram compiles a program to an NFT
+func (app *application) CompileProgram(program programs.Program) (nfts.NFT, error) {
+	return nil, nil
+}
+
+// DecompileProgram decompiles an NFT into a program instance
+func (app *application) DecompileProgram(nft nfts.NFT) (programs.Program, error) {
+	return nil, nil
+}
+
+// ComposeProgram takes the program and composes an output
+func (app *application) ComposeProgram(program programs.Program) ([]byte, error) {
+	return nil, nil
+}
+
+// Interpret interprets the input and returns the stack
+func (app *application) Interpret(program programs.Program) (stacks.Stack, error) {
+	return nil, nil
+}
+
+// Suites executes all the test suites of the grammar
+func (app *application) Suites(grammar grammars.Grammar) ([]byte, error) {
+	return nil, nil
+}
+
+// Suite executes the test suite of the provided blockName in the grammar
+func (app *application) Suite(grammar grammars.Grammar, blockName string) ([]byte, error) {
+	return nil, nil
 }
 
 func (app *application) writeBlock(grammar grammars.Grammar, block blocks.Block) ([]byte, error) {

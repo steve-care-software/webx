@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestApplication_grammar_compile_compose_withReplacement_Success(t *testing.T) {
+func TestApplication_grammar_composeBlock_withReplacement_Success(t *testing.T) {
 	input := []byte(`
 		v1;
 		>.addition;
@@ -35,7 +35,7 @@ func TestApplication_grammar_compile_compose_withReplacement_Success(t *testing.
 	`)
 
 	application := NewApplication()
-	retGrammar, _, err := application.Parse(input)
+	retGrammar, _, err := application.ParseGrammar(input)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -46,7 +46,7 @@ func TestApplication_grammar_compile_compose_withReplacement_Success(t *testing.
 		return
 	}
 
-	retValue, err := application.Compose(retGrammar, "addition")
+	retValue, err := application.ComposeBlock(retGrammar, "addition")
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -59,7 +59,7 @@ func TestApplication_grammar_compile_compose_withReplacement_Success(t *testing.
 	}
 }
 
-func TestApplication_grammar_compile_compose_withFunc_withReplacement_Success(t *testing.T) {
+func TestApplication_grammar_composeBlock_withFunc_withReplacement_Success(t *testing.T) {
 	input := []byte(`
 		v1;
 		>.addition;
@@ -88,7 +88,7 @@ func TestApplication_grammar_compile_compose_withFunc_withReplacement_Success(t 
 	`)
 
 	application := NewApplication()
-	retGrammar, _, err := application.Parse(input)
+	retGrammar, _, err := application.ParseGrammar(input)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -99,7 +99,7 @@ func TestApplication_grammar_compile_compose_withFunc_withReplacement_Success(t 
 		return
 	}
 
-	retValue, err := application.Compose(retGrammar, "addition")
+	retValue, err := application.ComposeBlock(retGrammar, "addition")
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -112,7 +112,7 @@ func TestApplication_grammar_compile_compose_withFunc_withReplacement_Success(t 
 	}
 }
 
-func TestApplication_grammar_compile_compose_withFunc_Success(t *testing.T) {
+func TestApplication_grammar_composeBlock_withFunc_Success(t *testing.T) {
 	input := []byte(`
 		v1;
 		>.addition;
@@ -140,7 +140,7 @@ func TestApplication_grammar_compile_compose_withFunc_Success(t *testing.T) {
 	`)
 
 	application := NewApplication()
-	retGrammar, _, err := application.Parse(input)
+	retGrammar, _, err := application.ParseGrammar(input)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -151,7 +151,7 @@ func TestApplication_grammar_compile_compose_withFunc_Success(t *testing.T) {
 		return
 	}
 
-	retValue, err := application.Compose(retGrammar, "addition")
+	retValue, err := application.ComposeBlock(retGrammar, "addition")
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -164,7 +164,7 @@ func TestApplication_grammar_compile_compose_withFunc_Success(t *testing.T) {
 	}
 }
 
-func TestApplication_grammar_compile_decompile_Success(t *testing.T) {
+func TestApplication_grammar_compileGrammar_decompile_Success(t *testing.T) {
 	input := []byte(`
 		v1;
 		>.numberInParenthesis;
@@ -208,7 +208,7 @@ func TestApplication_grammar_compile_decompile_Success(t *testing.T) {
 	`)
 
 	application := NewApplication()
-	retGrammar, _, err := application.Parse(input)
+	retGrammar, _, err := application.ParseGrammar(input)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -219,7 +219,7 @@ func TestApplication_grammar_compile_decompile_Success(t *testing.T) {
 		return
 	}
 
-	retAST, err := application.Compile(retGrammar)
+	retAST, err := application.CompileGrammar(retGrammar)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -254,7 +254,7 @@ func TestApplication_grammar_withOmissions_Success(t *testing.T) {
 		`), remaining...)
 
 	application := NewApplication()
-	retGrammar, retRemaining, err := application.Parse(input)
+	retGrammar, retRemaining, err := application.ParseGrammar(input)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -304,7 +304,7 @@ func TestApplication_grammar_withoutVersion_returnsError(t *testing.T) {
 	input := append([]byte(`>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
 
 	application := NewApplication()
-	_, _, err := application.Parse(input)
+	_, _, err := application.ParseGrammar(input)
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
@@ -316,7 +316,7 @@ func TestApplication_grammar_withNonNumericVersion_returnsError(t *testing.T) {
 	input := append([]byte(`vDE;>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
 
 	application := NewApplication()
-	_, _, err := application.Parse(input)
+	_, _, err := application.ParseGrammar(input)
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
@@ -328,7 +328,7 @@ func TestApplication_grammar_withoutRoot_returnsError(t *testing.T) {
 	input := append([]byte(`v1;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
 
 	application := NewApplication()
-	_, _, err := application.Parse(input)
+	_, _, err := application.ParseGrammar(input)
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
@@ -340,7 +340,7 @@ func TestApplication_grammar_withInvalidRootElementReference_returnsError(t *tes
 	input := append([]byte(`v1;>myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
 
 	application := NewApplication()
-	_, _, err := application.Parse(input)
+	_, _, err := application.ParseGrammar(input)
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
@@ -352,7 +352,7 @@ func TestApplication_grammar_withInvalidOmissionElementReference_returnsError(t 
 	input := append([]byte(`v1;>.myRoot;#invalidReference;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
 
 	application := NewApplication()
-	_, _, err := application.Parse(input)
+	_, _, err := application.ParseGrammar(input)
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
@@ -364,7 +364,7 @@ func TestApplication_grammar_withoutBlocks_returnsError(t *testing.T) {
 	input := append([]byte(`v1;>.myRoot;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
 
 	application := NewApplication()
-	_, _, err := application.Parse(input)
+	_, _, err := application.ParseGrammar(input)
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
@@ -376,7 +376,7 @@ func TestApplication_grammar_withoutRules_returnsError(t *testing.T) {
 	input := append([]byte(`v1;>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;`), remaining...)
 
 	application := NewApplication()
-	_, _, err := application.Parse(input)
+	_, _, err := application.ParseGrammar(input)
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
