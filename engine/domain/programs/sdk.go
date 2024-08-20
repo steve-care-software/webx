@@ -1,7 +1,7 @@
 package programs
 
 import (
-	"github.com/steve-care-software/webx/engine/domain/grammars"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars"
 	"github.com/steve-care-software/webx/engine/domain/programs/instructions"
 	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements"
 )
