@@ -3,6 +3,7 @@ package grammars
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/steve-care-software/webx/engine/domain/grammars"
@@ -11,6 +12,7 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/cardinalities"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/cardinalities/uints"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/elements"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/suites"
 	"github.com/steve-care-software/webx/engine/domain/grammars/rules"
@@ -18,6 +20,11 @@ import (
 )
 
 type application struct {
+	ruleAdapter                rules.Adapter
+	cardinalityAdapter         cardinalities.Adapter
+	uintAdapter                uints.Adapter
+	nftsBuilder                nfts.Builder
+	nftBuilder                 nfts.NFTBuilder
 	grammarBuilder             grammars.Builder
 	blocksBuilder              blocks.Builder
 	blockBuilder               blocks.BlockBuilder
@@ -66,6 +73,11 @@ type application struct {
 }
 
 func createApplication(
+	ruleAdapter rules.Adapter,
+	cardinalityAdapter cardinalities.Adapter,
+	uintAdapter uints.Adapter,
+	nftsBuilder nfts.Builder,
+	nftBuilder nfts.NFTBuilder,
 	grammarBuilder grammars.Builder,
 	blocksBuilder blocks.Builder,
 	blockBuilder blocks.BlockBuilder,
@@ -113,6 +125,11 @@ func createApplication(
 	cardinalityOnePlus byte,
 ) Application {
 	out := application{
+		ruleAdapter:                ruleAdapter,
+		cardinalityAdapter:         cardinalityAdapter,
+		uintAdapter:                uintAdapter,
+		nftsBuilder:                nftsBuilder,
+		nftBuilder:                 nftBuilder,
 		grammarBuilder:             grammarBuilder,
 		blocksBuilder:              blocksBuilder,
 		blockBuilder:               blockBuilder,
@@ -170,8 +187,7 @@ func (app *application) Parse(input []byte) (grammars.Grammar, []byte, error) {
 
 // Compile compiles a grammar to an NFT
 func (app *application) Compile(grammar grammars.Grammar) (nfts.NFT, error) {
-	//return app.grammarToAST(grammar)
-	return nil, nil
+	return app.grammarToNFT(grammar)
 }
 
 // Decompile decompiles an NFT to a grammar instance
@@ -184,281 +200,535 @@ func (app *application) Compose(grammar grammars.Grammar) ([]byte, error) {
 	return nil, nil
 }
 
-/*
-func (app *application) grammarToAST(grammar grammars.Grammar) (asts.AST, error) {
+func (app *application) grammarToNFT(
+	grammar grammars.Grammar,
+) (nfts.NFT, error) {
+	version := grammar.Version()
+	versionNFT, err := app.uintAdapter.ToNFT(uint64(version))
+	if err != nil {
+		return nil, err
+	}
+
+	rules := grammar.Rules()
+	rulesNFT, err := app.ruleAdapter.InstancesToNFT(rules)
+	if err != nil {
+		return nil, err
+	}
+
+	blocks := grammar.Blocks()
+	blocksNFT, retBlocksNFTs, err := app.blocksToNFT(
+		rulesNFT,
+		blocks,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
 	root := grammar.Root()
-	if root.IsBlock() {
-		blockName := root.Block()
-		return app.fetchBlockThenConvertToAST(blockName, grammar)
-	}
+	rootNFT, err := app.elementToNFT(
+		[]string{},
+		rulesNFT,
+		retBlocksNFTs,
+		root,
+	)
 
-	ruleName := root.Rule()
-	return app.fetchRuleThenConvertToAST(ruleName, grammar)
-}
-
-func (app *application) fetchBlockThenConvertToAST(blockName string, grammar grammars.Grammar) (asts.AST, error) {
-	nft, list, err := app.fetchBlockThenConvertToNFT(blockName, grammar)
 	if err != nil {
 		return nil, err
 	}
 
-	return app.createAST(list, nft.Hash())
+	list := []nfts.NFT{
+		versionNFT,
+		rootNFT,
+		rulesNFT,
+		blocksNFT,
+	}
+
+	if grammar.HasOmissions() {
+		omissions := grammar.Omissions()
+		omissionsNFT, err := app.elementsToNFT(
+			[]string{},
+			rulesNFT,
+			retBlocksNFTs,
+			omissions,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		list = append(list, omissionsNFT)
+	}
+
+	return app.nftsListToNFT(list, "")
 }
 
-func (app *application) fetchRuleThenConvertToAST(ruleName string, grammar grammars.Grammar) (asts.AST, error) {
-	nft, err := app.fetchRuleThenConvertToNFT(ruleName, grammar)
+func (app *application) blocksToNFT(
+	rules nfts.NFT,
+	blocksIns blocks.Blocks,
+) (nfts.NFT, nfts.NFTs, error) {
+	var blocks nfts.NFTs
+	output := []nfts.NFT{}
+	list := blocksIns.List()
+	for _, oneBlock := range list {
+		retNFT, err := app.blockToNFT(
+			[]string{},
+			rules,
+			blocks,
+			oneBlock,
+		)
+
+		if err != nil {
+			return nil, nil, err
+		}
+
+		output = append(output, retNFT)
+		retBlocks, err := app.nftsBuilder.Create().WithList(output).Now()
+		if err != nil {
+			return nil, nil, err
+		}
+
+		blocks = retBlocks
+	}
+
+	nft, err := app.nftsListToNFT(output, "")
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return nft, blocks, nil
+}
+
+func (app *application) blockToNFT(
+	parentBlockNames []string,
+	rules nfts.NFT,
+	blocks nfts.NFTs,
+	block blocks.Block,
+) (nfts.NFT, error) {
+	lines := block.Lines()
+	name := block.Name()
+	parentBlockNames = append(parentBlockNames, name)
+	linesNFT, err := app.linesToNFT(
+		parentBlockNames,
+		rules,
+		blocks,
+		lines,
+	)
+
 	if err != nil {
 		return nil, err
 	}
 
-	return app.createAST([]asts.NFT{nft}, nft.Hash())
-}
-
-func (app *application) blocksToNFT(blocks blocks.Blocks) (asts.NFT, []asts.NFT, error) {
-	return nil, nil, nil
-}
-
-func (app *application) blockToNFT(block blocks.Block) (asts.NFT, []asts.NFT, error) {
-	return nil, nil, nil
-}*/
-
-/*
-	func (app *application) linesToNFT(lines lines.Lines, grammar grammars.Grammar) (asts.NFT, []asts.NFT, error) {
-		list := lines.List()
-		nftHashes := []hash.Hash{}
-		nftList := []asts.NFT{}
-		for _, oneLine := range list {
-			retNFT, retList, err := app.lineToNFT(oneLine, grammar)
-			if err != nil {
-				return nil, nil, err
-			}
-
-			nftHashes = append(nftHashes, retNFT.Hash())
-			nftList = append(nftList, retNFT)
-			nftList = append(nftList, retList...)
-		}
-
-		nft, err := app.nftBuilder.Create().WithNFTs(nftHashes).Now()
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nft, nftList, nil
+	list := []nfts.NFT{
+		linesNFT,
 	}
 
-	func (app *application) lineToNFT(line lines.Line, grammar grammars.Grammar) (asts.NFT, []asts.NFT, error) {
-		tokens := line.Tokens()
-		tokensNFT, retList, err := app.tokensToNFT(tokens, grammar)
+	if block.HasSuites() {
+		suites := block.Suites()
+		suitesNFT, err := app.suitesToNFT(
+			parentBlockNames,
+			rules,
+			blocks,
+			suites,
+		)
+
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 
-		nftHashes := []hash.Hash{
-			tokensNFT.Hash(),
-		}
-
-		nftList := retList
-		if line.HasExecution() {
-			execution := line.Execution()
-			execNFT, retExecList, err := app.executionToNFT(execution, grammar)
-			if err != nil {
-				return nil, nil, err
-			}
-
-			nftHashes = append(nftHashes, execNFT.Hash())
-			nftList = append(nftList, retExecList...)
-		}
-
-		if line.HasReplacement() {
-			replacement := line.Replacement()
-			elNFT, retElList, err := app.elementToNFT(replacement, grammar)
-			if err != nil {
-				return nil, nil, err
-			}
-
-			nftHashes = append(nftHashes, elNFT.Hash())
-			nftList = append(nftList, retElList...)
-		}
-
-		nft, err := app.nftBuilder.Create().WithNFTs(nftHashes).Now()
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nft, nftList, nil
+		list = append(list, suitesNFT)
 	}
 
-	func (app *application) executionToNFT(execution executions.Execution, grammar grammars.Grammar) (asts.NFT, []asts.NFT, error) {
-		fnNameBytes := []byte(execution.FuncName())
-		fnNameNFT, err := app.nftBuilder.Create().WithBytes(fnNameBytes).Now()
+	nft, err := app.nftsListToNFT(list, name)
+	if err != nil {
+		return nil, err
+	}
+
+	return nft, nil
+}
+
+func (app *application) suitesToNFT(
+	parentBlockNames []string,
+	rules nfts.NFT,
+	blocks nfts.NFTs,
+	suites suites.Suites,
+) (nfts.NFT, error) {
+	output := []nfts.NFT{}
+	list := suites.List()
+	for _, oneSuite := range list {
+		retNFT, err := app.suiteToNFT(
+			parentBlockNames,
+			rules,
+			blocks,
+			oneSuite,
+		)
+
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 
+		output = append(output, retNFT)
+	}
+
+	nft, err := app.nftsListToNFT(output, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return nft, nil
+}
+
+func (app *application) suiteToNFT(
+	parentBlockNames []string,
+	rules nfts.NFT,
+	blocks nfts.NFTs,
+	suite suites.Suite,
+) (nfts.NFT, error) {
+	element := suite.Element()
+	elementNFT, err := app.elementToNFT(
+		parentBlockNames,
+		rules,
+		blocks,
+		element,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	isFail := byte(0)
+	if suite.IsFail() {
+		isFail = byte(1)
+	}
+
+	isFailNFT, err := app.nftBuilder.Create().
+		WithByte(isFail).
+		Now()
+
+	if err != nil {
+		return nil, err
+	}
+
+	name := suite.Name()
+	nft, err := app.nftsListToNFT([]nfts.NFT{
+		elementNFT,
+		isFailNFT,
+	}, name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return nft, nil
+}
+
+func (app *application) linesToNFT(
+	parentBlockNames []string,
+	rules nfts.NFT,
+	blocks nfts.NFTs,
+	lines lines.Lines,
+) (nfts.NFT, error) {
+	output := []nfts.NFT{}
+	list := lines.List()
+	for _, oneLine := range list {
+		retNFT, err := app.lineToNFT(
+			parentBlockNames,
+			rules,
+			blocks,
+			oneLine,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, retNFT)
+	}
+
+	nft, err := app.nftsListToNFT(output, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return nft, nil
+}
+
+func (app *application) lineToNFT(
+	parentBlockNames []string,
+	rules nfts.NFT,
+	blocks nfts.NFTs,
+	line lines.Line,
+) (nfts.NFT, error) {
+	tokens := line.Tokens()
+	tokensNFT, err := app.tokensToNFT(
+		parentBlockNames,
+		rules,
+		blocks,
+		tokens,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	list := []nfts.NFT{
+		tokensNFT,
+	}
+
+	if line.HasExecution() {
+		execution := line.Execution()
+		execNFT, err := app.executionToNFT(
+			parentBlockNames,
+			rules,
+			blocks,
+			execution,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		list = append(list, execNFT)
+	}
+
+	if line.HasReplacement() {
+		replacement := line.Replacement()
+		execNFT, err := app.elementToNFT(
+			parentBlockNames,
+			rules,
+			blocks,
+			replacement,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		list = append(list, execNFT)
+	}
+
+	nft, err := app.nftsListToNFT(list, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return nft, nil
+}
+
+func (app *application) tokensToNFT(
+	parentBlockNames []string,
+	rules nfts.NFT,
+	blocks nfts.NFTs,
+	tokens tokens.Tokens,
+) (nfts.NFT, error) {
+	output := []nfts.NFT{}
+	list := tokens.List()
+	for _, oneToken := range list {
+		retNFT, err := app.tokenToNFT(
+			parentBlockNames,
+			rules,
+			blocks,
+			oneToken,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, retNFT)
+	}
+
+	nft, err := app.nftsListToNFT(output, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return nft, nil
+}
+
+func (app *application) tokenToNFT(
+	parentBlockNames []string,
+	rules nfts.NFT,
+	blocks nfts.NFTs,
+	token tokens.Token,
+) (nfts.NFT, error) {
+	element := token.Element()
+	retElementAST, err := app.elementToNFT(
+		parentBlockNames,
+		rules,
+		blocks,
+		element,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	cardinality := token.Cardinality()
+	cardinalityNFT, err := app.cardinalityAdapter.ToNFT(cardinality)
+	if err != nil {
+		return nil, err
+	}
+
+	name := token.Name()
+	nft, err := app.nftsListToNFT([]nfts.NFT{
+		retElementAST,
+		cardinalityNFT,
+	}, name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return nft, nil
+}
+
+func (app *application) executionToNFT(
+	parentBlockNames []string,
+	rules nfts.NFT,
+	blocks nfts.NFTs,
+	execution executions.Execution,
+) (nfts.NFT, error) {
+	funcName := execution.FuncName()
+	funcNameNFT, err := app.stringToNFT(funcName)
+	if err != nil {
+		return nil, err
+	}
+
+	list := []nfts.NFT{
+		funcNameNFT,
+	}
+
+	if execution.HasElements() {
 		elements := execution.Elements()
-		elementsNFT, retList, err := app.elementsToNFT(elements, grammar)
-		if err != nil {
-			return nil, nil, err
-		}
+		elementNFT, err := app.elementsToNFT(
+			parentBlockNames,
+			rules,
+			blocks,
+			elements,
+		)
 
-		nft, err := app.nftBuilder.Create().WithNFTs([]hash.Hash{
-			fnNameNFT.Hash(),
-			elementsNFT.Hash(),
-		}).Now()
-
-		return nft, retList, nil
-	}
-
-	func (app *application) tokensToNFT(tokens tokens.Tokens, grammar grammars.Grammar) (asts.NFT, []asts.NFT, error) {
-		list := tokens.List()
-		nftHashes := []hash.Hash{}
-		nftList := []asts.NFT{}
-		for _, oneToken := range list {
-			retNFT, retList, err := app.tokenToNFT(oneToken, grammar)
-			if err != nil {
-				return nil, nil, err
-			}
-
-			nftHashes = append(nftHashes, retNFT.Hash())
-			nftList = append(nftList, retNFT)
-			nftList = append(nftList, retList...)
-		}
-
-		nft, err := app.nftBuilder.Create().WithNFTs(nftHashes).Now()
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nft, nftList, nil
-	}
-
-	func (app *application) cardinalityToNFT(cardinality cardinalities.Cardinality) (asts.NFT, error) {
-		min := cardinality.Min()
-		output := []byte{
-			BytesCardinalityPrefix,
-		}
-
-		output = append(output, uintToBytes(uint64(min))...)
-		if cardinality.HasMax() {
-			output = append(output, BytesCardinalitySeparator)
-			pMax := cardinality.Max()
-			output = append(output, uintToBytes(uint64(*pMax))...)
-		}
-
-		output = append(output, BytesCardinalitySuffix)
-		return app.nftBuilder.Create().
-			WithBytes(output).
-			Now()
-	}
-
-	func (app *application) tokenToNFT(token tokens.Token, grammar grammars.Grammar) (asts.NFT, []asts.NFT, error) {
-		element := token.Element()
-		elementNFT, retList, err := app.elementToNFT(element, grammar)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		cardinality := token.Cardinality()
-		cardinalityNFT, err := app.cardinalityToNFT(cardinality)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		nft, err := app.nftBuilder.Create().WithNFTs([]hash.Hash{
-			elementNFT.Hash(),
-			cardinalityNFT.Hash(),
-		}).Now()
-
-		if err != nil {
-			return nil, nil, err
-		}
-
-		list := append(retList, elementNFT)
-		list = append(list, cardinalityNFT)
-		return nft, list, nil
-	}
-
-	func (app *application) elementsToNFT(elements elements.Elements, grammar grammars.Grammar) (asts.NFT, []asts.NFT, error) {
-		list := elements.List()
-		nftHashes := []hash.Hash{}
-		nftList := []asts.NFT{}
-		for _, oneElement := range list {
-			retNFT, retList, err := app.elementToNFT(oneElement, grammar)
-			if err != nil {
-				return nil, nil, err
-			}
-
-			nftHashes = append(nftHashes, retNFT.Hash())
-			nftList = append(nftList, retNFT)
-			nftList = append(nftList, retList...)
-		}
-
-		nft, err := app.nftBuilder.Create().WithNFTs(nftHashes).Now()
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return nft, nftList, nil
-	}
-
-	func (app *application) elementToNFT(element elements.Element, grammar grammars.Grammar) (asts.NFT, []asts.NFT, error) {
-		if element.IsRule() {
-			ruleName := element.Rule()
-			nft, err := app.fetchRuleThenConvertToNFT(ruleName, grammar)
-			if err != nil {
-				return nil, nil, err
-			}
-
-			return nft, []asts.NFT{}, nil
-		}
-
-		blockName := element.Block()
-		return app.fetchBlockThenConvertToNFT(blockName, grammar)
-	}
-
-	func (app *application) fetchBlockThenConvertToNFT(blockName string, grammar grammars.Grammar) (asts.NFT, []asts.NFT, error) {
-		block, err := grammar.Blocks().Fetch(blockName)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		return app.blockToNFT(block)
-	}
-
-	func (app *application) fetchRuleThenConvertToNFT(ruleName string, grammar grammars.Grammar) (asts.NFT, error) {
-		rule, err := grammar.Rules().Fetch(ruleName)
 		if err != nil {
 			return nil, err
 		}
 
-		return app.ruleToNFT(rule)
+		list = append(list, elementNFT)
 	}
 
-	func (app *application) createAST(list []asts.NFT, entry hash.Hash) (asts.AST, error) {
-		library, err := app.nftListToNFTs(list)
+	nft, err := app.nftsListToNFT(list, "")
+	if err != nil {
+		return nil, err
+	}
+
+	return nft, nil
+}
+
+func (app *application) stringToNFT(
+	value string,
+) (nfts.NFT, error) {
+	list := []nfts.NFT{}
+	data := []byte(value)
+	for _, oneByte := range data {
+		nft, err := app.nftBuilder.Create().WithByte(oneByte).Now()
 		if err != nil {
 			return nil, err
 		}
 
-		return app.astBuilder.Create().
-			WithEntry(entry).
-			WithLibrary(library).
-			Now()
+		list = append(list, nft)
 	}
 
-	func (app *application) nftListToNFTs(list []asts.NFT) (asts.NFTs, error) {
-		return app.nftsBuilder.Create().
-			WithList(list).
-			Now()
+	return app.nftsListToNFT(list, "")
+}
+
+func (app *application) elementsToNFT(
+	parentBlockNames []string,
+	rules nfts.NFT,
+	blocks nfts.NFTs,
+	elements elements.Elements,
+) (nfts.NFT, error) {
+	output := []nfts.NFT{}
+	updatedBlocks := blocks
+	list := elements.List()
+	for _, oneElement := range list {
+		retNFT, err := app.elementToNFT(
+			parentBlockNames,
+			rules,
+			updatedBlocks,
+			oneElement,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, retNFT)
 	}
 
-	func (app *application) ruleToNFT(rule rules.Rule) (asts.NFT, error) {
-		bytes := rule.Bytes()
-		return app.nftBuilder.Create().
-			WithBytes(bytes).
-			Now()
+	nft, err := app.nftsListToNFT(output, "")
+	if err != nil {
+		return nil, err
 	}
-*/
+
+	return nft, nil
+}
+
+func (app *application) elementToNFT(
+	parentBlockNames []string,
+	rules nfts.NFT,
+	blocks nfts.NFTs,
+	element elements.Element,
+) (nfts.NFT, error) {
+	if element.IsBlock() {
+		name := element.Block()
+		for _, oneParentBlockName := range parentBlockNames {
+			if name != oneParentBlockName {
+				continue
+			}
+
+			level := uint(len(parentBlockNames))
+			return app.nftBuilder.Create().
+				WithRecursive(level).
+				Now()
+		}
+
+		if blocks == nil {
+			str := fmt.Sprintf("the block reference (name: %s) could not be found in element", name)
+			return nil, errors.New(str)
+		}
+
+		retIns, err := blocks.Fetch(name)
+		if err != nil {
+			return nil, err
+		}
+
+		return retIns, nil
+	}
+
+	name := element.Rule()
+	retNFT, err := rules.Fetch(name)
+	if err != nil {
+		return nil, err
+	}
+
+	return retNFT, nil
+}
+
+func (app *application) nftsListToNFT(list []nfts.NFT, name string) (nfts.NFT, error) {
+	builder := app.nftsBuilder.Create().WithList(list)
+	if name != "" {
+		builder.WithName(name)
+	}
+
+	nfts, err := builder.Now()
+	if err != nil {
+		return nil, err
+	}
+
+	return app.nftBuilder.Create().
+		WithNFTs(nfts).
+		Now()
+}
+
 func (app *application) bytesToGrammar(input []byte) (grammars.Grammar, []byte, error) {
 	input = filterPrefix(input, app.filterBytes)
 	retVersion, retVersionRemaining, err := extractBetween(input, app.versionPrefix, app.versionSuffix, nil)

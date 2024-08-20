@@ -38,6 +38,11 @@ func (app *builder) Now() (Blocks, error) {
 		return nil, errors.New("there must be at least 1 Block in order to build a Blocks instance")
 	}
 
+	// reverse the list:
+	for i, j := 0, len(app.list)-1; i < j; i, j = i+1, j-1 {
+		app.list[i], app.list[j] = app.list[j], app.list[i]
+	}
+
 	mp := map[string]Block{}
 	for _, oneBlock := range app.list {
 		keyname := oneBlock.Name()

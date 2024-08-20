@@ -1,36 +1,51 @@
 package nfts
 
-import "github.com/steve-care-software/webx/engine/domain/hash"
+import (
+	"errors"
+	"fmt"
+
+	"github.com/steve-care-software/webx/engine/domain/hash"
+)
 
 type nft struct {
-	hash  hash.Hash
-	pByte *byte
-	nfts  NFTs
+	hash       hash.Hash
+	pByte      *byte
+	nfts       NFTs
+	pRecursive *uint
 }
 
 func createNFTWithByte(
 	hash hash.Hash,
 	pByte *byte,
 ) NFT {
-	return createNFTInternally(hash, pByte, nil)
+	return createNFTInternally(hash, pByte, nil, nil)
 }
 
 func createNFTWithNFTs(
 	hash hash.Hash,
 	nfts NFTs,
 ) NFT {
-	return createNFTInternally(hash, nil, nfts)
+	return createNFTInternally(hash, nil, nfts, nil)
+}
+
+func createNFTWithRecursive(
+	hash hash.Hash,
+	pRecursive *uint,
+) NFT {
+	return createNFTInternally(hash, nil, nil, pRecursive)
 }
 
 func createNFTInternally(
 	hash hash.Hash,
 	pByte *byte,
 	nfts NFTs,
+	pRecursive *uint,
 ) NFT {
 	out := nft{
-		hash:  hash,
-		pByte: pByte,
-		nfts:  nfts,
+		hash:       hash,
+		pByte:      pByte,
+		nfts:       nfts,
+		pRecursive: pRecursive,
 	}
 
 	return &out
@@ -59,4 +74,28 @@ func (obj *nft) IsNFTs() bool {
 // NFTs returns the nfts, if any
 func (obj *nft) NFTs() NFTs {
 	return obj.nfts
+}
+
+// IsRecursive returns true if recursive, false otherwise
+func (obj *nft) IsRecursive() bool {
+	return obj.pRecursive != nil
+}
+
+// Recursive returns the recursive level, if any
+func (obj *nft) Recursive() *uint {
+	return obj.pRecursive
+}
+
+// Fetch fetches an nft by name
+func (obj *nft) Fetch(name string) (NFT, error) {
+	if !obj.IsNFTs() {
+		str := fmt.Sprintf("the NFT (name: %s) could not be found", name)
+		return nil, errors.New(str)
+	}
+
+	if obj.nfts.HasName() && obj.nfts.Name() == name {
+		return obj, nil
+	}
+
+	return obj.nfts.Fetch(name)
 }

@@ -2,6 +2,7 @@ package nfts
 
 import (
 	"errors"
+	"strconv"
 
 	"github.com/steve-care-software/webx/engine/domain/hash"
 )
@@ -10,6 +11,7 @@ type nftBuilder struct {
 	hashAdapter hash.Adapter
 	pByte       *byte
 	nfts        NFTs
+	pRecursive  *uint
 }
 
 func createNFTBuilder(
@@ -19,6 +21,7 @@ func createNFTBuilder(
 		hashAdapter: hashAdapter,
 		pByte:       nil,
 		nfts:        nil,
+		pRecursive:  nil,
 	}
 
 	return &out
@@ -43,6 +46,12 @@ func (app *nftBuilder) WithNFTs(nfts NFTs) NFTBuilder {
 	return app
 }
 
+// WithRecursive adds a recursive level to the builder
+func (app *nftBuilder) WithRecursive(recursive uint) NFTBuilder {
+	app.pRecursive = &recursive
+	return app
+}
+
 func (app *nftBuilder) hash() (hash.Hash, error) {
 	if app.pByte != nil && app.nfts != nil {
 		return nil, errors.New("the bytes and nfts cannot both be non-empty")
@@ -58,6 +67,10 @@ func (app *nftBuilder) hash() (hash.Hash, error) {
 
 	if app.nfts != nil {
 		data = append(data, app.nfts.Hash().Bytes())
+	}
+
+	if app.pRecursive != nil {
+		data = append(data, []byte(strconv.Itoa(int(*app.pRecursive))))
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes(data)
@@ -81,6 +94,10 @@ func (app *nftBuilder) Now() (NFT, error) {
 
 	if app.nfts != nil {
 		return createNFTWithNFTs(pHash, app.nfts), nil
+	}
+
+	if app.pRecursive != nil {
+		return createNFTWithRecursive(pHash, app.pRecursive), nil
 	}
 
 	return nil, errors.New("the NFT is invalid")

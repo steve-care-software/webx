@@ -2,8 +2,73 @@ package grammars
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 )
+
+func TestApplication_grammar_compile_decompile_Success(t *testing.T) {
+	input := []byte(`
+		v1;
+		>.numberInParenthesis;
+		# .SPACE .TAB. EOL;
+		
+		numberInParenthesis: 	.number - my_func .number - .N_ZERO
+								| .OPEN_PARENTHESIS .numberInParenthesis .CLOSE_PARENTHESIS
+								---
+				 					firstTest:@.N_ONE.
+									secondTest:.N_TWO.
+								;
+
+		number: .anyNumber+;
+		anyNumber: 	.N_ZERO
+					| .N_ONE
+					| .N_TWO
+					| .N_THREE
+					| .N_FOUR
+					| .N_FIVE
+					| .N_SIX
+					| .N_SEVEN
+					| .N_HEIGHT
+					| .N_NINE
+					;
+
+		N_ZERO: "0"
+		N_ONE: "1"
+		N_TWO: "2"
+		N_THREE: "3"
+		N_FOUR: "4"
+		N_FIVE: "5"
+		N_SIX: "6"
+		N_SEVEN: "7"
+		N_HEIGHT: "8"
+		N_NINE: "9"
+		OPEN_PARENTHESIS: "("
+		CLOSE_PARENTHESIS: ")"		
+		SPACE: " "
+		TAB: "\t\t"
+		EOL: "\n"
+	`)
+
+	application := NewApplication()
+	retGrammar, _, err := application.Parse(input)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	retAST, err := application.Compile(retGrammar)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	fmt.Printf("\n%v\n", retAST)
+}
 
 func TestApplication_grammar_withOmissions_Success(t *testing.T) {
 	remaining := []byte("!this is some remaining")
@@ -11,7 +76,7 @@ func TestApplication_grammar_withOmissions_Success(t *testing.T) {
 		v1;
 		>.myRoot;
 		#.first.second.third;
-		
+
 		myFirst: .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst .mySecond .myThird .myFourth .myFifth - .MY_REPLACEMENT
 				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement - myFuncName_secondSection .myFirst .mySecond .myThird .myFourth .myFifth
 				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement
@@ -20,12 +85,12 @@ func TestApplication_grammar_withOmissions_Success(t *testing.T) {
 				 	firstTest:@.myElement.
 					secondTest:@.myElement.
 				 ;
-				 
+
 		mySecond: .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst .mySecond .myThird .myFourth .myFifth - .MY_REPLACEMENT
 				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement - myFuncName_secondSection .myFirst .mySecond .myThird .myFourth .myFifth
 				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement
 				 ;
-				 
+
 		FIRST: "this \" with escape"
 		SECOND: "some value"
 		`), remaining...)
@@ -76,7 +141,6 @@ func TestApplication_grammar_withOmissions_Success(t *testing.T) {
 	}
 }
 
-/*
 func TestApplication_grammar_Success(t *testing.T) {
 	remaining := []byte("!this is some remaining")
 	input := append([]byte(`v1;>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst.mySecond.myThird.myFourth.myFifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
@@ -1125,4 +1189,3 @@ func TestApplication_cardinality_withInvalidInput_returnsError(t *testing.T) {
 		return
 	}
 }
-*/

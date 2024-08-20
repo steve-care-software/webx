@@ -10,37 +10,32 @@ import (
 type nfts struct {
 	hash hash.Hash
 	list []NFT
-	mp   map[string]NFT
 	name string
 }
 
 func createNFTs(
 	hash hash.Hash,
 	list []NFT,
-	mp map[string]NFT,
 ) NFTs {
-	return createNFTsInternally(hash, list, mp, "")
+	return createNFTsInternally(hash, list, "")
 }
 
 func createNFTsWithName(
 	hash hash.Hash,
 	list []NFT,
-	mp map[string]NFT,
 	name string,
 ) NFTs {
-	return createNFTsInternally(hash, list, mp, name)
+	return createNFTsInternally(hash, list, name)
 }
 
 func createNFTsInternally(
 	hash hash.Hash,
 	list []NFT,
-	mp map[string]NFT,
 	name string,
 ) NFTs {
 	out := nfts{
 		hash: hash,
 		list: list,
-		mp:   mp,
 		name: name,
 	}
 
@@ -57,14 +52,18 @@ func (obj *nfts) List() []NFT {
 	return obj.list
 }
 
-// Fetch fetches an nft by hash
-func (obj *nfts) Fetch(hash hash.Hash) (NFT, error) {
-	keyname := hash.String()
-	if ins, ok := obj.mp[keyname]; ok {
-		return ins, nil
+// name fetches an nfts by name
+func (obj *nfts) Fetch(name string) (NFT, error) {
+	for _, oneNFT := range obj.list {
+		retNFT, err := oneNFT.Fetch(name)
+		if err != nil {
+			continue
+		}
+
+		return retNFT, nil
 	}
 
-	str := fmt.Sprintf("there is no NFT registered for the provided hash: %s", keyname)
+	str := fmt.Sprintf("the NFT (name: %s) could not be found", name)
 	return nil, errors.New(str)
 }
 

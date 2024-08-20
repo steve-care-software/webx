@@ -32,7 +32,7 @@ type Builder interface {
 type NFTs interface {
 	Hash() hash.Hash
 	List() []NFT
-	Fetch(hash hash.Hash) (NFT, error)
+	Fetch(name string) (NFT, error)
 	HasName() bool
 	Name() string
 }
@@ -42,14 +42,18 @@ type NFTBuilder interface {
 	Create() NFTBuilder
 	WithByte(byte byte) NFTBuilder
 	WithNFTs(nfts NFTs) NFTBuilder
+	WithRecursive(recursive uint) NFTBuilder
 	Now() (NFT, error)
 }
 
 // NFT represents an nft
 type NFT interface {
 	Hash() hash.Hash
+	Fetch(name string) (NFT, error)
 	IsByte() bool
 	Byte() *byte
 	IsNFTs() bool
 	NFTs() NFTs
+	IsRecursive() bool
+	Recursive() *uint
 }

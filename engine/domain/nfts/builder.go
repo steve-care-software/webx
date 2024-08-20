@@ -53,12 +53,9 @@ func (app *builder) Now() (NFTs, error) {
 		return nil, errors.New("there must be at least 1 NFT in order to build an NFTs instance")
 	}
 
-	mp := map[string]NFT{}
 	data := [][]byte{}
 	for _, oneNFT := range app.list {
 		data = append(data, oneNFT.Hash().Bytes())
-		keyname := oneNFT.Hash().String()
-		mp[keyname] = oneNFT
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes(data)
@@ -70,7 +67,6 @@ func (app *builder) Now() (NFTs, error) {
 		return createNFTsWithName(
 			*pHash,
 			app.list,
-			mp,
 			app.name,
 		), nil
 	}
@@ -78,7 +74,6 @@ func (app *builder) Now() (NFTs, error) {
 	return createNFTs(
 		*pHash,
 		app.list,
-		mp,
 	), nil
 
 }

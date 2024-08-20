@@ -7,6 +7,7 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/executions"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/cardinalities"
+	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/cardinalities/uints"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/lines/tokens/elements"
 	"github.com/steve-care-software/webx/engine/domain/grammars/blocks/suites"
 	"github.com/steve-care-software/webx/engine/domain/grammars/rules"
@@ -121,6 +122,11 @@ const filterBytes = " \n\r\t"
 
 // NewApplication creates a new application
 func NewApplication() Application {
+	ruleAdapter := rules.NewAdapter()
+	cardinalityAdapter := cardinalities.NewAdapter()
+	uintAdapter := uints.NewAdapter()
+	nftsBuilder := nfts.NewBuilder()
+	nftBuilder := nfts.NewNFTBuilder()
 	grammarBuilder := grammars.NewBuilder()
 	blocksBuilder := blocks.NewBuilder()
 	blockBuilder := blocks.NewBlockBuilder()
@@ -142,6 +148,11 @@ func NewApplication() Application {
 	possibleNumbers := createPossibleNumbers()
 	possibleFuncNameCharacters := createPossibleFuncNameCharacters()
 	return createApplication(
+		ruleAdapter,
+		cardinalityAdapter,
+		uintAdapter,
+		nftsBuilder,
+		nftBuilder,
 		grammarBuilder,
 		blocksBuilder,
 		blockBuilder,
