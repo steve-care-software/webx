@@ -7,6 +7,7 @@ import (
 	instructions_tokens "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens"
 	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements"
 	instructions_elements "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements"
+	"github.com/steve-care-software/webx/engine/domain/programs/syscalls"
 )
 
 // NewParserAdapter creates a new parser adapter
@@ -60,6 +61,7 @@ type Builder interface {
 	WithGrammar(grammar grammars.Grammar) Builder
 	WithRoot(root elements.Element) Builder
 	WithInstructions(instructions instructions.Instructions) Builder
+	WithSyscalls(syscalls syscalls.Syscalls) Builder
 	Now() (Program, error)
 }
 
@@ -68,4 +70,6 @@ type Program interface {
 	Grammar() grammars.Grammar
 	Root() elements.Element
 	Instructions() instructions.Instructions
+	HasSyscalls() bool
+	Syscalls() syscalls.Syscalls
 }

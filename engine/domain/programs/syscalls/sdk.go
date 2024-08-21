@@ -4,6 +4,7 @@ import "github.com/steve-care-software/webx/engine/domain/programs/syscalls/valu
 
 // Syscalls represents syscalls
 type Syscalls interface {
+	List() []Syscall
 }
 
 // Syscall represents a syscall

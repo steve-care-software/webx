@@ -18,7 +18,7 @@ func TestParserAdapter_Success(t *testing.T) {
 			| .N_ZERO
 			;
 
-		additionInParenthesis: .OPEN_PARENTHESIS .addition .CLOSE_PARENTHESIS;
+		additionInParenthesis: .OPEN_PARENTHESIS ._myCall .addition .CLOSE_PARENTHESIS;
 		addition: .firstNumber .PLUS_SIGN .secondNumber - .myReplacement;
 		secondNumber: .N_THREE .N_FOUR .N_FIVE;
 		firstNumber: .N_ONE .N_TWO;
