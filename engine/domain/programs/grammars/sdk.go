@@ -110,12 +110,24 @@ const omissionPrefix = "#"
 const omissionSuffix = ";"
 const filterBytes = " \n\r\t"
 
-func NewParserAdapter() ParserAdapter {
+// NewNFTAdapter creates a new nft adapter
+func NewNFTAdapter() NFTAdapter {
 	ruleAdapter := rules.NewAdapter()
 	cardinalityAdapter := cardinalities.NewAdapter()
 	uintAdapter := uints.NewAdapter()
 	nftsBuilder := nfts.NewBuilder()
 	nftBuilder := nfts.NewNFTBuilder()
+	return createNFTAdapter(
+		ruleAdapter,
+		cardinalityAdapter,
+		uintAdapter,
+		nftsBuilder,
+		nftBuilder,
+	)
+}
+
+// NewParserAdapter creates a new parser adapter
+func NewParserAdapter() ParserAdapter {
 	grammarBuilder := NewBuilder()
 	blocksBuilder := blocks.NewBuilder()
 	blockBuilder := blocks.NewBlockBuilder()
@@ -139,11 +151,6 @@ func NewParserAdapter() ParserAdapter {
 	possibleNumbers := createPossibleNumbers()
 	possibleFuncNameCharacters := createPossibleFuncNameCharacters()
 	return createParserAdapter(
-		ruleAdapter,
-		cardinalityAdapter,
-		uintAdapter,
-		nftsBuilder,
-		nftBuilder,
 		grammarBuilder,
 		blocksBuilder,
 		blockBuilder,

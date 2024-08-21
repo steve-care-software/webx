@@ -5,25 +5,18 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/steve-care-software/webx/engine/domain/nfts"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/cardinalities"
-	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/cardinalities/uints"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/suites"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/rules"
 )
 
 type parserAdapter struct {
-	ruleAdapter                rules.Adapter
-	cardinalityAdapter         cardinalities.Adapter
-	uintAdapter                uints.Adapter
-	nftsBuilder                nfts.Builder
-	nftBuilder                 nfts.NFTBuilder
 	grammarBuilder             Builder
 	blocksBuilder              blocks.Builder
 	blockBuilder               blocks.BlockBuilder
@@ -77,11 +70,6 @@ type parserAdapter struct {
 }
 
 func createParserAdapter(
-	ruleAdapter rules.Adapter,
-	cardinalityAdapter cardinalities.Adapter,
-	uintAdapter uints.Adapter,
-	nftsBuilder nfts.Builder,
-	nftBuilder nfts.NFTBuilder,
 	grammarBuilder Builder,
 	blocksBuilder blocks.Builder,
 	blockBuilder blocks.BlockBuilder,
@@ -134,11 +122,6 @@ func createParserAdapter(
 	parameterSeparator byte,
 ) ParserAdapter {
 	out := parserAdapter{
-		ruleAdapter:                ruleAdapter,
-		cardinalityAdapter:         cardinalityAdapter,
-		uintAdapter:                uintAdapter,
-		nftsBuilder:                nftsBuilder,
-		nftBuilder:                 nftBuilder,
 		grammarBuilder:             grammarBuilder,
 		blocksBuilder:              blocksBuilder,
 		blockBuilder:               blockBuilder,

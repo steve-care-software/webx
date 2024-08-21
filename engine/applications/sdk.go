@@ -121,6 +121,7 @@ const filterBytes = " \n\r\t"
 // NewApplication creates a new application
 func NewApplication() Application {
 	grammarParserAdapter := grammars.NewParserAdapter()
+	grammarNFTAdapter := grammars.NewNFTAdapter()
 	ruleAdapter := rules.NewAdapter()
 	cardinalityAdapter := cardinalities.NewAdapter()
 	uintAdapter := uints.NewAdapter()
@@ -150,6 +151,7 @@ func NewApplication() Application {
 	possibleFuncNameCharacters := createPossibleFuncNameCharacters()
 	return createApplication(
 		grammarParserAdapter,
+		grammarNFTAdapter,
 		ruleAdapter,
 		cardinalityAdapter,
 		uintAdapter,

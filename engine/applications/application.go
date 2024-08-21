@@ -22,6 +22,7 @@ import (
 
 type application struct {
 	grammarParserAdapter       grammars.ParserAdapter
+	grammarNFTAdapter          grammars.NFTAdapter
 	ruleAdapter                rules.Adapter
 	cardinalityAdapter         cardinalities.Adapter
 	uintAdapter                uints.Adapter
@@ -82,6 +83,7 @@ type application struct {
 
 func createApplication(
 	grammarParserAdapter grammars.ParserAdapter,
+	grammarNFTAdapter grammars.NFTAdapter,
 	ruleAdapter rules.Adapter,
 	cardinalityAdapter cardinalities.Adapter,
 	uintAdapter uints.Adapter,
@@ -141,6 +143,7 @@ func createApplication(
 ) Application {
 	out := application{
 		grammarParserAdapter:       grammarParserAdapter,
+		grammarNFTAdapter:          grammarNFTAdapter,
 		ruleAdapter:                ruleAdapter,
 		cardinalityAdapter:         cardinalityAdapter,
 		uintAdapter:                uintAdapter,
@@ -209,7 +212,7 @@ func (app *application) ParseGrammar(input []byte) (grammars.Grammar, []byte, er
 
 // CompileGrammar compiles a grammar to an NFT
 func (app *application) CompileGrammar(grammar grammars.Grammar) (nfts.NFT, error) {
-	return app.grammarToNFT(grammar)
+	return app.grammarNFTAdapter.ToNFT(grammar)
 }
 
 // DecompileGrammar decompiles an NFT into a grammar instance
