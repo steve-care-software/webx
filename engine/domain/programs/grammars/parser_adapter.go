@@ -911,7 +911,7 @@ func (app *parserAdapter) bytesToCardinality(input []byte) (cardinalities.Cardin
 }
 
 func (app *parserAdapter) bytesToRules(input []byte) (rules.Rules, []byte, error) {
-	remaining := input
+	remaining := filterPrefix(input, app.filterBytes)
 	list := []rules.Rule{}
 	for {
 		retRule, retRemaining, err := app.bytesToRule(remaining)
@@ -928,7 +928,7 @@ func (app *parserAdapter) bytesToRules(input []byte) (rules.Rules, []byte, error
 		return nil, nil, err
 	}
 
-	return ins, remaining, nil
+	return ins, filterPrefix(remaining, app.filterBytes), nil
 }
 
 func (app *parserAdapter) bytesToRule(input []byte) (rules.Rule, []byte, error) {
@@ -947,6 +947,14 @@ func (app *parserAdapter) bytesToRule(input []byte) (rules.Rule, []byte, error) 
 		return nil, nil, err
 	}
 
+	if len(remaining) <= 0 {
+		return nil, nil, errors.New("the rule was expected to contain at least 1 byte at the end of its definition")
+	}
+
+	if remaining[0] != app.blockSuffix {
+		return nil, nil, errors.New("the rule was expected to contain the blockSuffix byte at its suffix")
+	}
+
 	ins, err := app.ruleBuilder.Create().
 		WithName(string(name)).
 		WithBytes(value).
@@ -956,7 +964,7 @@ func (app *parserAdapter) bytesToRule(input []byte) (rules.Rule, []byte, error) 
 		return nil, nil, err
 	}
 
-	return ins, remaining, nil
+	return ins, filterPrefix(remaining[1:], app.filterBytes), nil
 }
 
 func (app *parserAdapter) bytesToBlockName(input []byte) (string, []byte, error) {

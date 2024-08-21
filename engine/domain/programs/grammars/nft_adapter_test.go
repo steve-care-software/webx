@@ -30,21 +30,21 @@ func TestApplication_grammar_compileGrammar_decompile_Success(t *testing.T) {
 					| .N_NINE
 					;
 
-		N_ZERO: "0"
-		N_ONE: "1"
-		N_TWO: "2"
-		N_THREE: "3"
-		N_FOUR: "4"
-		N_FIVE: "5"
-		N_SIX: "6"
-		N_SEVEN: "7"
-		N_HEIGHT: "8"
-		N_NINE: "9"
-		OPEN_PARENTHESIS: "("
-		CLOSE_PARENTHESIS: ")"
-		SPACE: " "
-		TAB: "\t\t"
-		EOL: "\n"
+		N_ZERO: "0";
+		N_ONE: "1";
+		N_TWO: "2";
+		N_THREE: "3";
+		N_FOUR: "4";
+		N_FIVE: "5";
+		N_SIX: "6";
+		N_SEVEN: "7";
+		N_HEIGHT: "8";
+		N_NINE: "9";
+		OPEN_PARENTHESIS: "(";
+		CLOSE_PARENTHESIS: ")";
+		SPACE: " ";
+		TAB: "\t\t";
+		EOL: "\n";
 	`)
 
 	parserAdapter := NewParserAdapter()

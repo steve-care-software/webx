@@ -16,19 +16,19 @@ func TestComposeAdapter_withReplacement_Success(t *testing.T) {
 
 		replacedNumber: .N_TWO .N_FOUR;
 
-		N_ZERO: "0"
-		N_ONE: "1"
-		N_TWO: "2"
-		N_THREE: "3"
-		N_FOUR: "4"
-		N_FIVE: "5"
-		N_SIX: "6"
-		OPEN_PARENTHESIS: "("
-		CLOSE_PARENTHESIS: ")"
-		PLUS_SIGN: "+"
-		SPACE: " "
-		TAB: "\t\t"
-		EOL: "\n"
+		N_ZERO: "0";
+		N_ONE: "1";
+		N_TWO: "2";
+		N_THREE: "3";
+		N_FOUR: "4";
+		N_FIVE: "5";
+		N_SIX: "6";
+		OPEN_PARENTHESIS: "(";
+		CLOSE_PARENTHESIS: ")";
+		PLUS_SIGN: "+";
+		SPACE: " ";
+		TAB: "\t\t";
+		EOL: "\n";
 	`)
 
 	parserAdapter := NewParserAdapter()
@@ -70,19 +70,19 @@ func TestComposeAdapter_withFunc_withReplacement_Success(t *testing.T) {
 
 		replacedNumber: .N_TWO .N_FOUR;
 
-		N_ZERO: "0"
-		N_ONE: "1"
-		N_TWO: "2"
-		N_THREE: "3"
-		N_FOUR: "4"
-		N_FIVE: "5"
-		N_SIX: "6"
-		OPEN_PARENTHESIS: "("
-		CLOSE_PARENTHESIS: ")"
-		PLUS_SIGN: "+"
-		SPACE: " "
-		TAB: "\t\t"
-		EOL: "\n"
+		N_ZERO: "0";
+		N_ONE: "1";
+		N_TWO: "2";
+		N_THREE: "3";
+		N_FOUR: "4";
+		N_FIVE: "5";
+		N_SIX: "6";
+		OPEN_PARENTHESIS: "(";
+		CLOSE_PARENTHESIS: ")";
+		PLUS_SIGN: "+";
+		SPACE: " ";
+		TAB: "\t\t";
+		EOL: "\n";
 	`)
 
 	parserAdapter := NewParserAdapter()
@@ -123,19 +123,19 @@ func TestComposeAdapter_withFunc_Success(t *testing.T) {
 
 		replacedNumber: .N_TWO .N_FOUR;
 
-		N_ZERO: "0"
-		N_ONE: "1"
-		N_TWO: "2"
-		N_THREE: "3"
-		N_FOUR: "4"
-		N_FIVE: "5"
-		N_SIX: "6"
-		OPEN_PARENTHESIS: "("
-		CLOSE_PARENTHESIS: ")"	
-		PLUS_SIGN: "+"		
-		SPACE: " "
-		TAB: "\t\t"
-		EOL: "\n"
+		N_ZERO: "0";
+		N_ONE: "1";
+		N_TWO: "2";
+		N_THREE: "3";
+		N_FOUR: "4";
+		N_FIVE: "5";
+		N_SIX: "6";
+		OPEN_PARENTHESIS: "(";
+		CLOSE_PARENTHESIS: ")";	
+		PLUS_SIGN: "+";
+		SPACE: " ";
+		TAB: "\t\t";
+		EOL: "\n";
 	`)
 
 	parserAdapter := NewParserAdapter()
