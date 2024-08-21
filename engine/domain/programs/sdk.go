@@ -7,6 +7,11 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // ParserAdapter represents the program parser adapter
 type ParserAdapter interface {
 	// ToProgram takes the grammar and input and converts them to a program instance and the remaining data
