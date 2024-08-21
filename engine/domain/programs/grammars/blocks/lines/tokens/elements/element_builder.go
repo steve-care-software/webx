@@ -37,7 +37,7 @@ func (app *elementBuilder) WithBlock(block string) ElementBuilder {
 
 // WithSyscall adds a syscall to the builder
 func (app *elementBuilder) WithSyscall(syscall string) ElementBuilder {
-	app.block = syscall
+	app.syscall = syscall
 	return app
 }
 

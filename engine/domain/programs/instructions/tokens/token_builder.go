@@ -7,16 +7,14 @@ import (
 )
 
 type tokenBuilder struct {
-	name    string
-	element elements.Element
-	pAmount *uint
+	name     string
+	elements elements.Elements
 }
 
 func createTokenBuilder() TokenBuilder {
 	out := tokenBuilder{
-		name:    "",
-		element: nil,
-		pAmount: nil,
+		name:     "",
+		elements: nil,
 	}
 
 	return &out
@@ -33,15 +31,9 @@ func (app *tokenBuilder) WithName(name string) TokenBuilder {
 	return app
 }
 
-// WithElement adds an element to the builder
-func (app *tokenBuilder) WithElement(element elements.Element) TokenBuilder {
-	app.element = element
-	return app
-}
-
-// WithAmount adds an amount to the builder
-func (app *tokenBuilder) WithAmount(amount uint) TokenBuilder {
-	app.pAmount = &amount
+// WithElements add elements to the builder
+func (app *tokenBuilder) WithElements(elements elements.Elements) TokenBuilder {
+	app.elements = elements
 	return app
 }
 
@@ -51,13 +43,9 @@ func (app *tokenBuilder) Now() (Token, error) {
 		return nil, errors.New("the name is mandatory in order to build a Token instance")
 	}
 
-	if app.element == nil {
-		return nil, errors.New("the element is mandatory in order to build a Token instance")
+	if app.elements == nil {
+		return nil, errors.New("the elements is mandatory in order to build a Token instance")
 	}
 
-	if app.pAmount == nil {
-		return nil, errors.New("the amount is mandatory in order to build a Token instance")
-	}
-
-	return createToken(app.name, app.element, *app.pAmount), nil
+	return createToken(app.name, app.elements), nil
 }

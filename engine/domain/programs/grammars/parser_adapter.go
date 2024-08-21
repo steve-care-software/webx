@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"strconv"
+	"strings"
 
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines"
@@ -426,7 +427,12 @@ func (app *parserAdapter) bytesToSyscallName(input []byte) (string, []byte, erro
 		return "", nil, err
 	}
 
-	return string(blockName), filterPrefix(retBlockNameRemaining, app.filterBytes), nil
+	sysCallName := strings.Join([]string{
+		string([]byte{input[0]}),
+		blockName,
+	}, "")
+
+	return sysCallName, filterPrefix(retBlockNameRemaining, app.filterBytes), nil
 }
 
 func (app *parserAdapter) bytesToValues(input []byte) (values.Values, []byte, error) {

@@ -4,8 +4,32 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/nfts"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars"
 	"github.com/steve-care-software/webx/engine/domain/programs/instructions"
+	instructions_tokens "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens"
 	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements"
+	instructions_elements "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements"
 )
+
+// NewParserAdapter creates a new parser adapter
+func NewParserAdapter() ParserAdapter {
+	grammarAdapter := grammars.NewParserAdapter()
+	builder := NewBuilder()
+	instructionsBuilder := instructions.NewBuilder()
+	instructionBuilder := instructions.NewInstructionBuilder()
+	tokensBuilder := instructions_tokens.NewBuilder()
+	tokenBuilder := instructions_tokens.NewTokenBuilder()
+	elementsBuilder := instructions_elements.NewBuilder()
+	elementBuilder := instructions_elements.NewElementBuilder()
+	return createParserAdapter(
+		grammarAdapter,
+		builder,
+		instructionsBuilder,
+		instructionBuilder,
+		tokensBuilder,
+		tokenBuilder,
+		elementsBuilder,
+		elementBuilder,
+	)
+}
 
 // NewBuilder creates a new builder
 func NewBuilder() Builder {
@@ -28,12 +52,6 @@ type NFTAdapter interface {
 
 	// ToProgram converts an NFT to a program instance
 	ToProgram(nft nfts.NFT) (Program, error)
-}
-
-// ComposeAdapter represents the program compose adapter
-type ComposeAdapter interface {
-	// ToBytes takes a program and returns its bytes
-	ToBytes(program Program) ([]byte, error)
 }
 
 // Builder represents the program builder

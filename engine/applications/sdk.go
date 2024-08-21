@@ -42,9 +42,6 @@ type Application interface {
 	// DecompileProgram decompiles an NFT into a program instance
 	DecompileProgram(nft nfts.NFT) (programs.Program, error)
 
-	// ComposeProgram takes the program and composes an output
-	ComposeProgram(program programs.Program) ([]byte, error)
-
 	// Interpret interprets the input and returns the stack
 	Interpret(program programs.Program) (stacks.Stack, error)
 

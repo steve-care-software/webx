@@ -38,7 +38,11 @@ func (obj *element) Name() string {
 		return obj.block
 	}
 
-	return obj.rule
+	if obj.IsRule() {
+		return obj.rule
+	}
+
+	return obj.syscall
 }
 
 // IsRule returns true if there is a rule, false otherwise

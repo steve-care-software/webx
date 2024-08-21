@@ -62,11 +62,6 @@ func (app *application) DecompileProgram(nft nfts.NFT) (programs.Program, error)
 	return nil, nil
 }
 
-// ComposeProgram takes the program and composes an output
-func (app *application) ComposeProgram(program programs.Program) ([]byte, error) {
-	return nil, nil
-}
-
 // Interpret interprets the input and returns the stack
 func (app *application) Interpret(program programs.Program) (stacks.Stack, error) {
 	return nil, nil

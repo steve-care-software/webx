@@ -28,14 +28,12 @@ type Tokens interface {
 type TokenBuilder interface {
 	Create() TokenBuilder
 	WithName(name string) TokenBuilder
-	WithElement(element elements.Element) TokenBuilder
-	WithAmount(amount uint) TokenBuilder
+	WithElements(elements elements.Elements) TokenBuilder
 	Now() (Token, error)
 }
 
 // Token represents a token
 type Token interface {
 	Name() string
-	Element() elements.Element
-	Amount() uint
+	Elements() elements.Elements
 }

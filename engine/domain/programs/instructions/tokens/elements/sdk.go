@@ -5,12 +5,29 @@ func NewBuilder() Builder {
 	return createBuilder()
 }
 
-// Builder represents the element builder
+// NewElementBuilder creates a new element builder
+func NewElementBuilder() ElementBuilder {
+	return createElementBuilder()
+}
+
+// Builder represents the elements builder
 type Builder interface {
 	Create() Builder
-	WithRule(rule string) Builder
-	WithSyscall(syscall string) Builder
-	WithInstruction(instruction string) Builder
+	WithList(list []Element) Builder
+	Now() (Elements, error)
+}
+
+// Elements represents elements
+type Elements interface {
+	List() []Element
+}
+
+// ElementBuilder represents the element builder
+type ElementBuilder interface {
+	Create() ElementBuilder
+	WithRule(rule string) ElementBuilder
+	WithSyscall(syscall string) ElementBuilder
+	WithInstruction(instruction string) ElementBuilder
 	Now() (Element, error)
 }
 

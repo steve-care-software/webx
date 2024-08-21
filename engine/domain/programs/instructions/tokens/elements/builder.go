@@ -1,18 +1,16 @@
 package elements
 
-import "errors"
+import (
+	"errors"
+)
 
 type builder struct {
-	rule        string
-	syscall     string
-	instruction string
+	list []Element
 }
 
 func createBuilder() Builder {
 	out := builder{
-		rule:        "",
-		syscall:     "",
-		instruction: "",
+		list: nil,
 	}
 
 	return &out
@@ -23,37 +21,21 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithRule adds a rule to the builder
-func (app *builder) WithRule(rule string) Builder {
-	app.rule = rule
+// WithList adds a list to the builder
+func (app *builder) WithList(list []Element) Builder {
+	app.list = list
 	return app
 }
 
-// WithSyscall adds a syscall to the builder
-func (app *builder) WithSyscall(syscall string) Builder {
-	app.syscall = syscall
-	return app
-}
-
-// WithInstruction adds an instruction to the builder
-func (app *builder) WithInstruction(instruction string) Builder {
-	app.instruction = instruction
-	return app
-}
-
-// Now builds a new Element instance
-func (app *builder) Now() (Element, error) {
-	if app.rule != "" {
-		return createElementWithRule(app.rule), nil
+// Now builds a new Elements instance
+func (app *builder) Now() (Elements, error) {
+	if app.list != nil && len(app.list) <= 0 {
+		app.list = nil
 	}
 
-	if app.syscall != "" {
-		return createElementWithSyscall(app.syscall), nil
+	if app.list == nil {
+		return nil, errors.New("there must be at least 1 Element in order to build a Elements instance")
 	}
 
-	if app.instruction != "" {
-		return createElementWithInstruction(app.instruction), nil
-	}
-
-	return nil, errors.New("the Element is invalid")
+	return createElements(app.list), nil
 }
