@@ -1,6 +1,8 @@
 package syscalls
 
-import "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls/values"
+import (
+	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls/parameters"
+)
 
 // NewBuilder creates a new builder
 func NewBuilder() Builder {
@@ -29,7 +31,7 @@ type SyscallBuilder interface {
 	Create() SyscallBuilder
 	WithName(name string) SyscallBuilder
 	WithFuncName(fnName string) SyscallBuilder
-	WithValues(values values.Values) SyscallBuilder
+	WithParameters(parameters parameters.Parameters) SyscallBuilder
 	Now() (Syscall, error)
 }
 
@@ -37,6 +39,6 @@ type SyscallBuilder interface {
 type Syscall interface {
 	Name() string
 	FuncName() string
-	HasValues() bool
-	Values() values.Values
+	HasParameters() bool
+	Parameters() parameters.Parameters
 }

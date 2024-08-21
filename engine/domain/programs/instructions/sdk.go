@@ -22,6 +22,7 @@ type Builder interface {
 // Instructions represents instructions
 type Instructions interface {
 	List() []Instruction
+	Fetch(name string) (Instruction, error)
 }
 
 // InstructionBuilder represents the instruction builder

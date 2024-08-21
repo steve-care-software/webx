@@ -16,7 +16,6 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/suites"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/rules"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/syscalls"
-	"github.com/steve-care-software/webx/engine/domain/programs/grammars/syscalls/values"
 )
 
 // CoreFn represents a core fn
@@ -171,8 +170,6 @@ func NewParserAdapter() ParserAdapter {
 	grammarBuilder := NewBuilder()
 	syscallsBuilder := syscalls.NewBuilder()
 	syscallBuilder := syscalls.NewSyscallBuilder()
-	syscallValuesBuilder := values.NewBuilder()
-	syscallValueBuilder := values.NewValueBuilder()
 	blocksBuilder := blocks.NewBuilder()
 	blockBuilder := blocks.NewBlockBuilder()
 	suitesBuilder := suites.NewBuilder()
@@ -198,8 +195,6 @@ func NewParserAdapter() ParserAdapter {
 		grammarBuilder,
 		syscallsBuilder,
 		syscallBuilder,
-		syscallValuesBuilder,
-		syscallValueBuilder,
 		blocksBuilder,
 		blockBuilder,
 		suitesBuilder,

@@ -16,15 +16,12 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/suites"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/rules"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/syscalls"
-	"github.com/steve-care-software/webx/engine/domain/programs/grammars/syscalls/values"
 )
 
 type parserAdapter struct {
 	grammarBuilder             Builder
 	syscallsBuilder            syscalls.Builder
 	syscallBuilder             syscalls.SyscallBuilder
-	syscallValuesBuilder       values.Builder
-	syscallValueBuilder        values.ValueBuilder
 	blocksBuilder              blocks.Builder
 	blockBuilder               blocks.BlockBuilder
 	suitesBuilder              suites.Builder
@@ -84,8 +81,6 @@ func createParserAdapter(
 	grammarBuilder Builder,
 	syscallsBuilder syscalls.Builder,
 	syscallBuilder syscalls.SyscallBuilder,
-	syscallValuesBuilder values.Builder,
-	syscallValueBuilder values.ValueBuilder,
 	blocksBuilder blocks.Builder,
 	blockBuilder blocks.BlockBuilder,
 	suitesBuilder suites.Builder,
@@ -144,8 +139,6 @@ func createParserAdapter(
 		grammarBuilder:             grammarBuilder,
 		syscallsBuilder:            syscallsBuilder,
 		syscallBuilder:             syscallBuilder,
-		syscallValuesBuilder:       syscallValuesBuilder,
-		syscallValueBuilder:        syscallValueBuilder,
 		blocksBuilder:              blocksBuilder,
 		blockBuilder:               blockBuilder,
 		suitesBuilder:              suitesBuilder,
@@ -390,9 +383,9 @@ func (app *parserAdapter) bytesToSyscall(input []byte) (syscalls.Syscall, []byte
 		WithName(sysCallName)
 
 	retRemaining := retFuncNameRemaining
-	retValues, retValuesRemaining, err := app.bytesToValues(retFuncNameRemaining)
+	retParameters, retValuesRemaining, err := app.bytesToParameteres(retFuncNameRemaining)
 	if err == nil {
-		builder.WithValues(retValues)
+		builder.WithParameters(retParameters)
 		retRemaining = retValuesRemaining
 	}
 
@@ -446,53 +439,6 @@ func (app *parserAdapter) bytesToSyscallName(input []byte) (string, []byte, erro
 	}, "")
 
 	return sysCallName, filterPrefix(retBlockNameRemaining, app.filterBytes), nil
-}
-
-func (app *parserAdapter) bytesToValues(input []byte) (values.Values, []byte, error) {
-	remaining := input
-	list := []values.Value{}
-	for {
-		retValue, retRemaining, err := app.bytesToValue(remaining)
-		if err != nil {
-			break
-		}
-
-		list = append(list, retValue)
-		remaining = retRemaining
-	}
-
-	ins, err := app.syscallValuesBuilder.Create().
-		WithList(list).
-		Now()
-
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return ins, filterPrefix(remaining, app.filterBytes), nil
-}
-
-func (app *parserAdapter) bytesToValue(input []byte) (values.Value, []byte, error) {
-	retParameter, retToken, retRemaining, err := app.bytesToParametereOrToken(input)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	builder := app.syscallValueBuilder.Create()
-	if retParameter != nil {
-		builder.WithParameter(retParameter)
-	}
-
-	if retToken != nil {
-		builder.WithToken(retToken)
-	}
-
-	ins, err := builder.Now()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return ins, retRemaining, nil
 }
 
 func (app *parserAdapter) bytesToParametereOrToken(input []byte) (parameters.Parameter, tokens.Token, []byte, error) {

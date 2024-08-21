@@ -7,6 +7,9 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/stacks"
 )
 
+// SyscallFn represents the syscall func
+type SyscallFn func(map[string][]byte) error
+
 // NewApplication creates a new application
 func NewApplication() Application {
 	grammarParserAdapter := grammars.NewParserAdapter()
@@ -16,6 +19,7 @@ func NewApplication() Application {
 		grammarParserAdapter,
 		grammarNFTAdapter,
 		grammarComposeAdapter,
+		map[string]SyscallFn{},
 	)
 }
 

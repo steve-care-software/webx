@@ -12,13 +12,11 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/syscalls"
-	"github.com/steve-care-software/webx/engine/domain/programs/grammars/syscalls/values"
 	"github.com/steve-care-software/webx/engine/domain/programs/instructions"
 	instructions_tokens "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens"
 	instructions_elements "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements"
 	instructions_syscalls "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls"
-	instructions_syscalls_values "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls/values"
-	instructions_syscalls_values_parameters "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls/values/parameters"
+	instructions_syscalls_values_parameters "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls/parameters"
 )
 
 type parserAdapter struct {
@@ -32,9 +30,8 @@ type parserAdapter struct {
 	elementBuilder       instructions_elements.ElementBuilder
 	syscallsBuilder      instructions_syscalls.Builder
 	syscallBuilder       instructions_syscalls.SyscallBuilder
-	valuesBuilder        instructions_syscalls_values.Builder
-	valueBuilder         instructions_syscalls_values.ValueBuilder
-	parameterBuilder     instructions_syscalls_values_parameters.Builder
+	parametersBuilder    instructions_syscalls_values_parameters.Builder
+	parameterBuilder     instructions_syscalls_values_parameters.ParameterBuilder
 	currrentInstructions []instructions.Instruction
 }
 
@@ -49,9 +46,8 @@ func createParserAdapter(
 	elementBuilder instructions_elements.ElementBuilder,
 	syscallsBuilder instructions_syscalls.Builder,
 	syscallBuilder instructions_syscalls.SyscallBuilder,
-	valuesBuilder instructions_syscalls_values.Builder,
-	valueBuilder instructions_syscalls_values.ValueBuilder,
-	parameterBuilder instructions_syscalls_values_parameters.Builder,
+	parametersBuilder instructions_syscalls_values_parameters.Builder,
+	parameterBuilder instructions_syscalls_values_parameters.ParameterBuilder,
 ) ParserAdapter {
 	out := parserAdapter{
 		grammarAdapter:      grammarAdapter,
@@ -64,8 +60,7 @@ func createParserAdapter(
 		elementBuilder:      elementBuilder,
 		syscallsBuilder:     syscallsBuilder,
 		syscallBuilder:      syscallBuilder,
-		valuesBuilder:       valuesBuilder,
-		valueBuilder:        valueBuilder,
+		parametersBuilder:   parametersBuilder,
 		parameterBuilder:    parameterBuilder,
 	}
 
@@ -341,17 +336,17 @@ func (app *parserAdapter) toSyscall(
 	name := syscall.Name()
 	funcName := syscall.FuncName()
 	builder := app.syscallBuilder.Create().WithFuncName(funcName).WithName(name)
-	if syscall.HasValues() {
-		values := syscall.Values()
-		retValues, err := app.toValues(
-			values,
+	if syscall.HasParameters() {
+		parameters := syscall.Parameters()
+		retParameters, err := app.toParameters(
+			parameters,
 		)
 
 		if err != nil {
 			return nil, err
 		}
 
-		builder.WithValues(retValues)
+		builder.WithParameters(retParameters)
 	}
 
 	ins, err := builder.Now()
@@ -362,63 +357,30 @@ func (app *parserAdapter) toSyscall(
 	return ins, nil
 }
 
-func (app *parserAdapter) toValues(
-	values values.Values,
-) (instructions_syscalls_values.Values, error) {
-	output := []instructions_syscalls_values.Value{}
-	list := values.List()
-	for _, oneValue := range list {
-		retValue, err := app.toValue(
-			oneValue,
-		)
+func (app *parserAdapter) toParameters(
+	parameters parameters.Parameters,
+) (instructions_syscalls_values_parameters.Parameters, error) {
+	list := parameters.List()
+	output := []instructions_syscalls_values_parameters.Parameter{}
+	for _, oneParameter := range list {
+		element := oneParameter.Element()
+		name := oneParameter.Name()
+		index := oneParameter.Index()
+		ins, err := app.parameterBuilder.Create().
+			WithToken(element.Name()).
+			WithName(name).
+			WithIndex(index).
+			Now()
 
 		if err != nil {
 			return nil, err
 		}
 
-		output = append(output, retValue)
+		output = append(output, ins)
 	}
 
-	return app.valuesBuilder.Create().
+	return app.parametersBuilder.Create().
 		WithList(output).
-		Now()
-}
-
-func (app *parserAdapter) toValue(
-	value values.Value,
-) (instructions_syscalls_values.Value, error) {
-	builder := app.valueBuilder.Create()
-	if value.IsParameter() {
-		parameter := value.Parameter()
-		retParameter, err := app.toParameter(
-			parameter,
-		)
-
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithParameter(retParameter)
-	}
-
-	if value.IsToken() {
-		tokenName := value.Token().Name()
-		builder.WithToken(tokenName)
-	}
-
-	return builder.Now()
-}
-
-func (app *parserAdapter) toParameter(
-	parameter parameters.Parameter,
-) (instructions_syscalls_values_parameters.Parameter, error) {
-	element := parameter.Element()
-	name := parameter.Name()
-	index := parameter.Index()
-	return app.parameterBuilder.Create().
-		WithElement(element.Name()).
-		WithName(name).
-		WithIndex(index).
 		Now()
 }
 

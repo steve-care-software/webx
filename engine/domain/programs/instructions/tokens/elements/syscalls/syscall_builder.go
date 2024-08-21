@@ -3,20 +3,20 @@ package syscalls
 import (
 	"errors"
 
-	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls/values"
+	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls/parameters"
 )
 
 type syscallBuilder struct {
-	name     string
-	funcName string
-	values   values.Values
+	name       string
+	funcName   string
+	parameters parameters.Parameters
 }
 
 func createSyscallBuilder() SyscallBuilder {
 	out := syscallBuilder{
-		name:     "",
-		funcName: "",
-		values:   nil,
+		name:       "",
+		funcName:   "",
+		parameters: nil,
 	}
 
 	return &out
@@ -39,9 +39,9 @@ func (app *syscallBuilder) WithFuncName(funcName string) SyscallBuilder {
 	return app
 }
 
-// WithValues add values to the builder
-func (app *syscallBuilder) WithValues(values values.Values) SyscallBuilder {
-	app.values = values
+// WithParameters add parameters to the builder
+func (app *syscallBuilder) WithParameters(parameters parameters.Parameters) SyscallBuilder {
+	app.parameters = parameters
 	return app
 }
 
@@ -55,8 +55,8 @@ func (app *syscallBuilder) Now() (Syscall, error) {
 		return nil, errors.New("the funcName is mandatory in order to build a Syscall instance")
 	}
 
-	if app.values != nil {
-		return createSyscallWithValues(app.name, app.funcName, app.values), nil
+	if app.parameters != nil {
+		return createSyscallWithParameters(app.name, app.funcName, app.parameters), nil
 	}
 
 	return createSyscall(app.name, app.funcName), nil

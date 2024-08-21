@@ -8,8 +8,7 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements"
 	instructions_elements "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements"
 	instructions_syscalls "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls"
-	instructions_syscalls_values "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls/values"
-	instructions_syscalls_values_parameters "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls/values/parameters"
+	instructions_syscalls_values_parameters "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls/parameters"
 )
 
 // NewParserAdapter creates a new parser adapter
@@ -24,9 +23,8 @@ func NewParserAdapter() ParserAdapter {
 	elementBuilder := instructions_elements.NewElementBuilder()
 	syscallsBuilder := instructions_syscalls.NewBuilder()
 	syscallBuilder := instructions_syscalls.NewSyscallBuilder()
-	valuesBuilder := instructions_syscalls_values.NewBuilder()
-	valueBuilder := instructions_syscalls_values.NewValueBuilder()
-	parameterBuilder := instructions_syscalls_values_parameters.NewBuilder()
+	parametersBuilder := instructions_syscalls_values_parameters.NewBuilder()
+	parameterBuilder := instructions_syscalls_values_parameters.NewParameterBuilder()
 	return createParserAdapter(
 		grammarAdapter,
 		builder,
@@ -38,8 +36,7 @@ func NewParserAdapter() ParserAdapter {
 		elementBuilder,
 		syscallsBuilder,
 		syscallBuilder,
-		valuesBuilder,
-		valueBuilder,
+		parametersBuilder,
 		parameterBuilder,
 	)
 }
@@ -66,8 +63,8 @@ type NFTAdapter interface {
 
 // ComposeAdapter represents the grammar compose adapter
 type ComposeAdapter interface {
-	// ToBytes takes a grammar and returns its bytes
-	ToBytes(program Program) ([]byte, error)
+	// ToBytes takes a program and an element name and returns its bytes
+	ToBytes(program Program, elementName string) ([]byte, error)
 }
 
 // Builder represents the program builder

@@ -1,13 +1,13 @@
 package syscalls
 
 import (
-	"github.com/steve-care-software/webx/engine/domain/programs/grammars/syscalls/values"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters"
 )
 
 type syscall struct {
-	name     string
-	funcName string
-	values   values.Values
+	name       string
+	funcName   string
+	parameters parameters.Parameters
 }
 
 func createSyscall(
@@ -17,23 +17,23 @@ func createSyscall(
 	return createSyscallInternally(name, funcName, nil)
 }
 
-func createSyscallWithValues(
+func createSyscallWithParameters(
 	name string,
 	funcName string,
-	values values.Values,
+	parameters parameters.Parameters,
 ) Syscall {
-	return createSyscallInternally(name, funcName, values)
+	return createSyscallInternally(name, funcName, parameters)
 }
 
 func createSyscallInternally(
 	name string,
 	funcName string,
-	values values.Values,
+	parameters parameters.Parameters,
 ) Syscall {
 	out := syscall{
-		name:     name,
-		funcName: funcName,
-		values:   values,
+		name:       name,
+		funcName:   funcName,
+		parameters: parameters,
 	}
 
 	return &out
@@ -49,12 +49,12 @@ func (obj *syscall) FuncName() string {
 	return obj.funcName
 }
 
-// HasValues returns true if there is values, false otherwise
-func (obj *syscall) HasValues() bool {
-	return obj.values != nil
+// HasParameters returns true if there is parameters, false otherwise
+func (obj *syscall) HasParameters() bool {
+	return obj.parameters != nil
 }
 
-// Values returns the values
-func (obj *syscall) Values() values.Values {
-	return obj.values
+// Parameters returns the parameters
+func (obj *syscall) Parameters() parameters.Parameters {
+	return obj.parameters
 }

@@ -1,27 +1,39 @@
 package applications
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/steve-care-software/webx/engine/domain/nfts"
 	"github.com/steve-care-software/webx/engine/domain/programs"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars"
+	"github.com/steve-care-software/webx/engine/domain/programs/instructions"
+	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens"
+	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements"
+	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls"
+	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls/parameters"
 	"github.com/steve-care-software/webx/engine/domain/stacks"
 )
 
 type application struct {
+	programComposer       programs.ComposeAdapter
 	grammarParserAdapter  grammars.ParserAdapter
 	grammarNFTAdapter     grammars.NFTAdapter
 	grammarComposeAdapter grammars.ComposeAdapter
+	syscalls              map[string]SyscallFn
 }
 
 func createApplication(
 	grammarParserAdapter grammars.ParserAdapter,
 	grammarNFTAdapter grammars.NFTAdapter,
 	grammarComposeAdapter grammars.ComposeAdapter,
+	syscalls map[string]SyscallFn,
 ) Application {
 	out := application{
 		grammarParserAdapter:  grammarParserAdapter,
 		grammarNFTAdapter:     grammarNFTAdapter,
 		grammarComposeAdapter: grammarComposeAdapter,
+		syscalls:              syscalls,
 	}
 
 	return &out
@@ -64,6 +76,12 @@ func (app *application) DecompileProgram(nft nfts.NFT) (programs.Program, error)
 
 // Interpret interprets the input and returns the stack
 func (app *application) Interpret(program programs.Program) (stacks.Stack, error) {
+	root := program.Root()
+	app.interpretElement(
+		program,
+		root,
+	)
+
 	return nil, nil
 }
 
@@ -75,4 +93,156 @@ func (app *application) Suites(grammar grammars.Grammar) ([]byte, error) {
 // Suite executes the test suite of the provided blockName in the grammar
 func (app *application) Suite(grammar grammars.Grammar, blockName string) ([]byte, error) {
 	return nil, nil
+}
+
+func (app *application) interpretInstruction(
+	program programs.Program,
+	instruction instructions.Instruction,
+) error {
+	tokens := instruction.Tokens()
+	return app.interpretTokens(
+		program,
+		tokens,
+	)
+}
+
+func (app *application) interpretTokens(
+	program programs.Program,
+	tokens tokens.Tokens,
+) error {
+	list := tokens.List()
+	for _, oneToken := range list {
+		err := app.interpretToken(
+			program,
+			oneToken,
+		)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (app *application) interpretToken(
+	program programs.Program,
+	token tokens.Token,
+) error {
+	elements := token.Elements()
+	return app.interpretElements(
+		program,
+		elements,
+	)
+}
+
+func (app *application) interpretElements(
+	program programs.Program,
+	elements elements.Elements,
+) error {
+	list := elements.List()
+	for _, oneElement := range list {
+		err := app.interpretElement(
+			program,
+			oneElement,
+		)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (app *application) interpretElement(
+	program programs.Program,
+	element elements.Element,
+) error {
+	if element.IsRule() {
+		return nil
+	}
+
+	if element.IsSyscall() {
+		syscall := element.Syscall()
+		return app.interpretSyscall(
+			program,
+			syscall,
+		)
+	}
+
+	insName := element.Instruction()
+	instruction, err := program.Instructions().Fetch(insName)
+	if err != nil {
+		return err
+	}
+
+	return app.interpretInstruction(
+		program,
+		instruction,
+	)
+}
+
+func (app *application) interpretSyscall(
+	program programs.Program,
+	sysCall syscalls.Syscall,
+) error {
+	name := sysCall.Name()
+	fnName := sysCall.FuncName()
+	mpParams := map[string][]byte{}
+	if sysCall.HasParameters() {
+		parameters := sysCall.Parameters()
+		retMapParams, err := app.fetchParameters(program, parameters)
+		if err != nil {
+			str := fmt.Sprintf("there was an error while fetching the syscall (blockName: %s, sysCallFn: %s) parameters: %s", name, fnName, err.Error())
+			return errors.New(str)
+		}
+
+		mpParams = retMapParams
+	}
+
+	if fn, ok := app.syscalls[fnName]; ok {
+		err := fn(mpParams)
+		if err != nil {
+			return err
+		}
+	}
+
+	str := fmt.Sprintf("the sysCall (sysCallFn: %s) declared in block (name: %s) does not exists", fnName, name)
+	return errors.New(str)
+}
+
+func (app *application) fetchParameters(
+	program programs.Program,
+	parameters parameters.Parameters,
+) (map[string][]byte, error) {
+	output := map[string][]byte{}
+	list := parameters.List()
+	for _, oneParameter := range list {
+		name, value, err := app.fetchParameter(
+			program,
+			oneParameter,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		output[name] = value
+	}
+
+	return output, nil
+}
+
+func (app *application) fetchParameter(
+	program programs.Program,
+	parameter parameters.Parameter,
+) (string, []byte, error) {
+	token := parameter.Token()
+	retBytes, err := app.programComposer.ToBytes(program, token)
+	if err != nil {
+		return "", nil, err
+	}
+
+	return parameter.Name(), retBytes, nil
 }

@@ -2,6 +2,7 @@ package instructions
 
 import (
 	"errors"
+	"fmt"
 )
 
 type builder struct {
@@ -37,5 +38,16 @@ func (app *builder) Now() (Instructions, error) {
 		return nil, errors.New("there must be at least 1 Instruction in order to build a Instructions instance")
 	}
 
-	return createInstructions(app.list), nil
+	mp := map[string]Instruction{}
+	for _, oneToken := range app.list {
+		keyname := oneToken.Block()
+		if _, ok := mp[keyname]; ok {
+			str := fmt.Sprintf("the Instruction (name: %s) is a duplicate", keyname)
+			return nil, errors.New(str)
+		}
+
+		mp[keyname] = oneToken
+	}
+
+	return createInstructions(app.list, mp), nil
 }
