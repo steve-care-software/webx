@@ -11,6 +11,11 @@ import (
 	instructions_syscalls_values_parameters "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls/parameters"
 )
 
+// NewComposerAdapter creates a new composer adapter
+func NewComposerAdapter() ComposeAdapter {
+	return createComposeAdapter()
+}
+
 // NewParserAdapter creates a new parser adapter
 func NewParserAdapter() ParserAdapter {
 	grammarAdapter := grammars.NewParserAdapter()

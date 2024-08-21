@@ -1,6 +1,9 @@
 package applications
 
 import (
+	"errors"
+	"math/big"
+
 	"github.com/steve-care-software/webx/engine/domain/nfts"
 	"github.com/steve-care-software/webx/engine/domain/programs"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars"
@@ -8,18 +11,43 @@ import (
 )
 
 // SyscallFn represents the syscall func
-type SyscallFn func(map[string][]byte) error
+type SyscallFn func(map[string][]byte) (any, error)
 
 // NewApplication creates a new application
 func NewApplication() Application {
+	programComposer := programs.NewComposerAdapter()
 	grammarParserAdapter := grammars.NewParserAdapter()
 	grammarNFTAdapter := grammars.NewNFTAdapter()
 	grammarComposeAdapter := grammars.NewComposeAdapter()
 	return createApplication(
+		programComposer,
 		grammarParserAdapter,
 		grammarNFTAdapter,
 		grammarComposeAdapter,
-		map[string]SyscallFn{},
+		map[string]SyscallFn{
+			"math_operation_arithmetic_add": func(params map[string][]byte) (any, error) {
+				if firstBytes, ok := params["first"]; ok {
+					if secondBytes, ok := params["second"]; ok {
+						first, _ := big.NewInt(0).SetString(string(firstBytes), 0)
+						if first == nil {
+							return nil, errors.New("the values passed to the first paramter could not be casted to an int")
+						}
+
+						second, _ := big.NewInt(0).SetString(string(secondBytes), 0)
+						if second == nil {
+							return nil, errors.New("the values passed to the second paramter could not be casted to an int")
+						}
+
+						value := first.Add(first, second)
+						return value.Int64(), nil
+					}
+
+					return nil, errors.New("the first parameter could not be found")
+				}
+
+				return nil, errors.New("the second parameter could not be found")
+			},
+		},
 	)
 }
 

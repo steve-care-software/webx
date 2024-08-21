@@ -24,12 +24,14 @@ type application struct {
 }
 
 func createApplication(
+	programComposer programs.ComposeAdapter,
 	grammarParserAdapter grammars.ParserAdapter,
 	grammarNFTAdapter grammars.NFTAdapter,
 	grammarComposeAdapter grammars.ComposeAdapter,
 	syscalls map[string]SyscallFn,
 ) Application {
 	out := application{
+		programComposer:       programComposer,
 		grammarParserAdapter:  grammarParserAdapter,
 		grammarNFTAdapter:     grammarNFTAdapter,
 		grammarComposeAdapter: grammarComposeAdapter,
@@ -202,7 +204,7 @@ func (app *application) interpretSyscall(
 	}
 
 	if fn, ok := app.syscalls[fnName]; ok {
-		err := fn(mpParams)
+		_, err := fn(mpParams)
 		if err != nil {
 			return err
 		}
