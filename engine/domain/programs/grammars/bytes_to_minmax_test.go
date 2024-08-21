@@ -16,6 +16,7 @@ func TestBytesToMinMax_withZeroPlus_Success(t *testing.T) {
 		[]byte(cardinalitySeparator)[0],
 		[]byte(cardinalityZeroPlus)[0],
 		[]byte(cardinalityOnePlus)[0],
+		[]byte(cardinalityOptional)[0],
 		[]byte(filterBytes),
 	)
 
@@ -51,6 +52,7 @@ func TestBytesToMinMax_withOnePlus_Success(t *testing.T) {
 		[]byte(cardinalitySeparator)[0],
 		[]byte(cardinalityZeroPlus)[0],
 		[]byte(cardinalityOnePlus)[0],
+		[]byte(cardinalityOptional)[0],
 		[]byte(filterBytes),
 	)
 
@@ -86,6 +88,7 @@ func TestBytesToMinMax_withBrackets_Success(t *testing.T) {
 		[]byte(cardinalitySeparator)[0],
 		[]byte(cardinalityZeroPlus)[0],
 		[]byte(cardinalityOnePlus)[0],
+		[]byte(cardinalityOptional)[0],
 		[]byte(filterBytes),
 	)
 
@@ -120,6 +123,7 @@ func TestBytesToMinMax_withoutInput_returnsError(t *testing.T) {
 		[]byte(cardinalitySeparator)[0],
 		[]byte(cardinalityZeroPlus)[0],
 		[]byte(cardinalityOnePlus)[0],
+		[]byte(cardinalityOptional)[0],
 		[]byte(filterBytes),
 	)
 

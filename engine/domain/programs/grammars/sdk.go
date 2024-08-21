@@ -97,6 +97,7 @@ const cardinalityClose = "]"
 const cardinalitySeparator = ","
 const cardinalityZeroPlus = "*"
 const cardinalityOnePlus = "+"
+const cardinalityOptional = "?"
 const indexOpen = "["
 const indexClose = "]"
 const parameterSeparator = ":"
@@ -244,6 +245,7 @@ func NewParserAdapter() ParserAdapter {
 		[]byte(cardinalitySeparator)[0],
 		[]byte(cardinalityZeroPlus)[0],
 		[]byte(cardinalityOnePlus)[0],
+		[]byte(cardinalityOptional)[0],
 		[]byte(indexOpen)[0],
 		[]byte(indexClose)[0],
 		[]byte(parameterSeparator)[0],

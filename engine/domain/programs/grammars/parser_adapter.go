@@ -70,6 +70,7 @@ type parserAdapter struct {
 	cardinalitySeparator       byte
 	cardinalityZeroPlus        byte
 	cardinalityOnePlus         byte
+	cardinalityOptional        byte
 	indexOpen                  byte
 	indexClose                 byte
 	parameterSeparator         byte
@@ -129,6 +130,7 @@ func createParserAdapter(
 	cardinalitySeparator byte,
 	cardinalityZeroPlus byte,
 	cardinalityOnePlus byte,
+	cardinalityOptional byte,
 	indexOpen byte,
 	indexClose byte,
 	parameterSeparator byte,
@@ -187,6 +189,7 @@ func createParserAdapter(
 		cardinalitySeparator:       cardinalitySeparator,
 		cardinalityZeroPlus:        cardinalityZeroPlus,
 		cardinalityOnePlus:         cardinalityOnePlus,
+		cardinalityOptional:        cardinalityOptional,
 		indexOpen:                  indexOpen,
 		indexClose:                 indexClose,
 		parameterSeparator:         parameterSeparator,
@@ -890,6 +893,7 @@ func (app *parserAdapter) bytesToCardinality(input []byte) (cardinalities.Cardin
 		app.cardinalitySeparator,
 		app.cardinalityZeroPlus,
 		app.cardinalityOnePlus,
+		app.cardinalityOptional,
 		app.filterBytes,
 	)
 

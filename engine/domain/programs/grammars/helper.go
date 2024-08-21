@@ -31,6 +31,7 @@ func bytesToMinMax(
 	cardinalitySeparator byte,
 	cardinalityZeroPlus byte,
 	cardinalityOnePlus byte,
+	cardinalityOptional byte,
 	filterBytes []byte,
 ) (uint, *uint, []byte, error) {
 	data = filterPrefix(data, filterBytes)
@@ -46,6 +47,11 @@ func bytesToMinMax(
 
 	if firstValue == cardinalityZeroPlus {
 		return 0, nil, data[1:], nil
+	}
+
+	if firstValue == cardinalityOptional {
+		max := uint(1)
+		return 0, &max, data[1:], nil
 	}
 
 	return bytesToBracketsMinMax(
