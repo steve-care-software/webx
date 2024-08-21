@@ -1,4 +1,4 @@
-package applications
+package grammars
 
 import (
 	"bytes"

@@ -23,20 +23,6 @@ import (
 // CoreFn represents a core fn
 type CoreFn func(input map[string][]byte) ([]byte, error)
 
-const (
-	// BytesCardinalityPrefix represents the cardinality prefix byte
-	BytesCardinalityPrefix (uint8) = iota
-
-	// BytesCardinalitySuffix represents the cardinality suffix byte
-	BytesCardinalitySuffix
-
-	// BytesCardinalitySeparator represents the cardinality separator byte
-	BytesCardinalitySeparator
-)
-
-// AmountOfBytesIntUint64 represents the amount of bytes an uint64 contains
-const AmountOfBytesIntUint64 = 8
-
 const llA = "a"
 const llB = "b"
 const llC = "c"
@@ -134,6 +120,7 @@ const filterBytes = " \n\r\t"
 
 // NewApplication creates a new application
 func NewApplication() Application {
+	grammarParserAdapter := grammars.NewParserAdapter()
 	ruleAdapter := rules.NewAdapter()
 	cardinalityAdapter := cardinalities.NewAdapter()
 	uintAdapter := uints.NewAdapter()
@@ -162,6 +149,7 @@ func NewApplication() Application {
 	possibleNumbers := createPossibleNumbers()
 	possibleFuncNameCharacters := createPossibleFuncNameCharacters()
 	return createApplication(
+		grammarParserAdapter,
 		ruleAdapter,
 		cardinalityAdapter,
 		uintAdapter,
