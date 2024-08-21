@@ -1,7 +1,6 @@
 package grammars
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -61,11 +60,11 @@ func TestApplication_grammar_compileGrammar_decompile_Success(t *testing.T) {
 	}
 
 	nftAdapter := NewNFTAdapter()
-	retNFT, err := nftAdapter.ToNFT(retGrammar)
+	_, err = nftAdapter.ToNFT(retGrammar)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
 	}
 
-	fmt.Printf("\n%v\n", retNFT)
+	//fmt.Printf("\n%v\n", retNFT)
 }

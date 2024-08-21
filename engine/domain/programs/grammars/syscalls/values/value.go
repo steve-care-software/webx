@@ -2,12 +2,12 @@ package values
 
 import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters"
-	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens"
 )
 
 type value struct {
 	parameter parameters.Parameter
-	element   elements.Element
+	token     tokens.Token
 }
 
 func createValueWithParameter(
@@ -16,19 +16,19 @@ func createValueWithParameter(
 	return createValueInternally(parameter, nil)
 }
 
-func createValueWithElement(
-	element elements.Element,
+func createValueWithToken(
+	token tokens.Token,
 ) Value {
-	return createValueInternally(nil, element)
+	return createValueInternally(nil, token)
 }
 
 func createValueInternally(
 	parameter parameters.Parameter,
-	element elements.Element,
+	token tokens.Token,
 ) Value {
 	out := value{
 		parameter: parameter,
-		element:   element,
+		token:     token,
 	}
 
 	return &out
@@ -44,12 +44,12 @@ func (obj *value) Parameter() parameters.Parameter {
 	return obj.parameter
 }
 
-// IsElement returns true if there is an element, false otherwise
-func (obj *value) IsElement() bool {
-	return obj.element != nil
+// IsToken returns true if there is an token, false otherwise
+func (obj *value) IsToken() bool {
+	return obj.token != nil
 }
 
-// Element returns the element, if any
-func (obj *value) Element() elements.Element {
-	return obj.element
+// Token returns the token, if any
+func (obj *value) Token() tokens.Token {
+	return obj.token
 }

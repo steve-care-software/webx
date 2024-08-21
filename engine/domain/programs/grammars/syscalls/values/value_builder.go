@@ -4,18 +4,18 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters"
-	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens"
 )
 
 type valueBuilder struct {
 	parameter parameters.Parameter
-	element   elements.Element
+	token     tokens.Token
 }
 
 func createValueBuilder() ValueBuilder {
 	out := valueBuilder{
 		parameter: nil,
-		element:   nil,
+		token:     nil,
 	}
 
 	return &out
@@ -32,9 +32,9 @@ func (app *valueBuilder) WithParameter(parameter parameters.Parameter) ValueBuil
 	return app
 }
 
-// WithElement adds an element to the builder
-func (app *valueBuilder) WithElement(element elements.Element) ValueBuilder {
-	app.element = element
+// WithToken adds an token to the builder
+func (app *valueBuilder) WithToken(token tokens.Token) ValueBuilder {
+	app.token = token
 	return app
 }
 
@@ -44,8 +44,8 @@ func (app *valueBuilder) Now() (Value, error) {
 		return createValueWithParameter(app.parameter), nil
 	}
 
-	if app.element != nil {
-		return createValueWithElement(app.element), nil
+	if app.token != nil {
+		return createValueWithToken(app.token), nil
 	}
 
 	return nil, errors.New("the Value is invalid")

@@ -2,7 +2,7 @@ package values
 
 import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters"
-	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens"
 )
 
 // NewBuilder creates a new builder
@@ -31,7 +31,7 @@ type Values interface {
 type ValueBuilder interface {
 	Create() ValueBuilder
 	WithParameter(parameter parameters.Parameter) ValueBuilder
-	WithElement(element elements.Element) ValueBuilder
+	WithToken(token tokens.Token) ValueBuilder
 	Now() (Value, error)
 }
 
@@ -39,6 +39,6 @@ type ValueBuilder interface {
 type Value interface {
 	IsParameter() bool
 	Parameter() parameters.Parameter
-	IsElement() bool
-	Element() elements.Element
+	IsToken() bool
+	Token() tokens.Token
 }

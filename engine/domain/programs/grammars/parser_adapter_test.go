@@ -13,7 +13,7 @@ func TestParserAdapter_withOmissions_Success(t *testing.T) {
 		#.first.second.third;
 
 		myFirst: .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth - .MY_REPLACEMENT
-				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth
+				 | ._mySecondCall .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth
 				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement
 				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,]
 				 ---
@@ -21,10 +21,13 @@ func TestParserAdapter_withOmissions_Success(t *testing.T) {
 					secondTest:@.myElement.
 				 ;
 
-		mySecond: .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth - .MY_REPLACEMENT
+		mySecond: ._mySysCall .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth - .MY_REPLACEMENT
 				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth
 				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement
 				 ;
+
+		_mySysCall: @this_is_a_syscall .FIRST .myFirst:first .second[3] .mySecond:second;
+		_mySecondCall: @another_syscall;
 
 		FIRST: "this \" with escape"
 		SECOND: "some value"
