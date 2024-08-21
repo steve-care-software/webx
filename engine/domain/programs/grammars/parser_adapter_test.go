@@ -12,8 +12,8 @@ func TestParserAdapter_withOmissions_Success(t *testing.T) {
 		>.myRoot;
 		#.first.second.third;
 
-		myFirst: .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth - .MY_REPLACEMENT
-				 | ._mySecondCall .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth
+		myFirst: .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth
+				 | ._mySecondCall .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .MY_REPLACEMENT
 				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement
 				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,]
 				 ---
@@ -21,9 +21,9 @@ func TestParserAdapter_withOmissions_Success(t *testing.T) {
 					secondTest:@.myElement.
 				 ;
 
-		mySecond: ._mySysCall .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth - .MY_REPLACEMENT
-				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth
-				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement
+		mySecond: ._mySysCall .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth
+				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth
+				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .MY_REPLACEMENT
 				 ;
 
 		_mySysCall: @this_is_a_syscall .FIRST .myFirst:first .second[3] .mySecond:second;
@@ -81,7 +81,7 @@ func TestParserAdapter_withOmissions_Success(t *testing.T) {
 
 func TestParserAdapter_withoutVersion_returnsError(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
+	input := append([]byte(`>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,];mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
 
 	retAdapter := NewParserAdapter()
 	_, _, err := retAdapter.ToGrammar(input)
@@ -93,7 +93,7 @@ func TestParserAdapter_withoutVersion_returnsError(t *testing.T) {
 
 func TestParserAdapter_withNonNumericVersion_returnsError(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`vDE;>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
+	input := append([]byte(`vDE;>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,];mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
 
 	retAdapter := NewParserAdapter()
 	_, _, err := retAdapter.ToGrammar(input)
@@ -105,7 +105,7 @@ func TestParserAdapter_withNonNumericVersion_returnsError(t *testing.T) {
 
 func TestParserAdapter_withoutRoot_returnsError(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`v1;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
+	input := append([]byte(`v1;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,];mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
 
 	retAdapter := NewParserAdapter()
 	_, _, err := retAdapter.ToGrammar(input)
@@ -117,7 +117,7 @@ func TestParserAdapter_withoutRoot_returnsError(t *testing.T) {
 
 func TestParserAdapter_withInvalidRootElementReference_returnsError(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`v1;>myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
+	input := append([]byte(`v1;>myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,];mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
 
 	retAdapter := NewParserAdapter()
 	_, _, err := retAdapter.ToGrammar(input)
@@ -129,7 +129,7 @@ func TestParserAdapter_withInvalidRootElementReference_returnsError(t *testing.T
 
 func TestParserAdapter_withInvalidOmissionElementReference_returnsError(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`v1;>.myRoot;#invalidReference;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
+	input := append([]byte(`v1;>.myRoot;#invalidReference;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,];mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;FIRST:"this \" with escape"SECOND:"some value"`), remaining...)
 
 	retAdapter := NewParserAdapter()
 	_, _, err := retAdapter.ToGrammar(input)
@@ -153,7 +153,7 @@ func TestParserAdapter_withoutBlocks_returnsError(t *testing.T) {
 
 func TestParserAdapter_withoutRules_returnsError(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`v1;>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement;mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;`), remaining...)
+	input := append([]byte(`v1;>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,];mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;`), remaining...)
 
 	retAdapter := NewParserAdapter()
 	_, _, err := retAdapter.ToGrammar(input)
@@ -177,7 +177,7 @@ func TestApplication_blocks_withoutBlocks_returnsError(t *testing.T) {
 
 func TestApplication_block_withoutSuffix_returnsError(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`myBlock:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.`), remaining...)
+	input := append([]byte(`myBlock:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.`), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)
 	_, _, err := retAdapter.bytesToBlock(input)
@@ -188,7 +188,7 @@ func TestApplication_block_withoutSuffix_returnsError(t *testing.T) {
 }
 
 func TestApplication_block_withoutSuffix_withoutRemaining_returnsError(t *testing.T) {
-	input := []byte(`myBlock:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.`)
+	input := []byte(`myBlock:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.`)
 	retAdapter := NewParserAdapter().(*parserAdapter)
 	_, _, err := retAdapter.bytesToBlock(input)
 	if err == nil {
@@ -198,7 +198,7 @@ func TestApplication_block_withoutSuffix_withoutRemaining_returnsError(t *testin
 }
 
 func TestApplication_block_withoutSuffix_withInvalidBlockDefinition_returnsError(t *testing.T) {
-	input := []byte(`myBlock.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;`)
+	input := []byte(`myBlock.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]---myFirst:.myElement.mySecond:@.myThird.mySecondTest:.myFourth.myTest:@.myElement.;`)
 	retAdapter := NewParserAdapter().(*parserAdapter)
 	_, _, err := retAdapter.bytesToBlock(input)
 	if err == nil {
@@ -359,7 +359,7 @@ func TestApplication_suite_withoutSuiteLineSuffix_withoutRemainingBytes_returnsE
 
 func TestApplication_lines_withOneLine_Success(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT`), remaining...)
+	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth`), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)
 	retLines, retRemaining, err := retAdapter.bytesToLines(input)
@@ -382,7 +382,7 @@ func TestApplication_lines_withOneLine_Success(t *testing.T) {
 
 func TestApplication_lines_withMultipleLines_Success(t *testing.T) {
 	remaining := []byte("!this is some remaining")
-	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth-.MY_REPLACEMENT|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-.myReplacement`), remaining...)
+	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]`), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)
 	retLines, retRemaining, err := retAdapter.bytesToLines(input)
@@ -411,60 +411,6 @@ func TestApplication_lines_withoutLine_returnsError(t *testing.T) {
 	_, _, err := retAdapter.bytesToLines(input)
 	if err == nil {
 		t.Errorf("the returned error was expected to be valid, nil returned")
-		return
-	}
-}
-
-func TestApplication_line_withExecution_withReplacement_Success(t *testing.T) {
-	remaining := []byte("!this is some remaining")
-	input := append([]byte(`.myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth - .MY_REPLACEMENT`), remaining...)
-
-	retAdapter := NewParserAdapter().(*parserAdapter)
-	retLine, retRemaining, err := retAdapter.bytesToLine(input)
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	if !bytes.Equal(remaining, retRemaining) {
-		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
-		return
-	}
-
-	if !retLine.HasReplacement() {
-		t.Errorf("the execution was expected to contain a replacement")
-		return
-	}
-
-	if !retLine.HasExecution() {
-		t.Errorf("the execution was expected to contain an execution")
-		return
-	}
-}
-
-func TestApplication_line_withExecution_withReplacement_reversed_Success(t *testing.T) {
-	remaining := []byte("!this is some remaining")
-	input := append([]byte(`.myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth`), remaining...)
-
-	retAdapter := NewParserAdapter().(*parserAdapter)
-	retLine, retRemaining, err := retAdapter.bytesToLine(input)
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	if !bytes.Equal(remaining, retRemaining) {
-		t.Errorf("the remaining bytes are invalid, expected (%s), returned (%s)", string(remaining), string(retRemaining))
-		return
-	}
-
-	if !retLine.HasReplacement() {
-		t.Errorf("the execution was expected to contain a replacement")
-		return
-	}
-
-	if !retLine.HasExecution() {
-		t.Errorf("the execution was expected to contain an execution")
 		return
 	}
 }

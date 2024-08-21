@@ -603,22 +603,19 @@ func (app *parserAdapter) bytesToLine(input []byte) (lines.Line, []byte, error) 
 		return nil, nil, err
 	}
 
+	remaining := retRemaining
 	builder := app.lineBuilder.Create().WithTokens(retTokens)
-	for i := 0; i < 2; i++ {
-		retExecution, retElement, retRemainingAfterExexOrToken, err := app.bytesToExecutionOrReplacement(retRemaining)
-		if err != nil {
-			break
-		}
+	retExecution, retElement, retRemainingAfterExexOrToken, err := app.bytesToExecutionOrReplacement(retRemaining)
+	if err == nil {
+		remaining = retRemainingAfterExexOrToken
+	}
 
-		if retExecution != nil {
-			builder.WithExecution(retExecution)
-		}
+	if retExecution != nil {
+		builder.WithExecution(retExecution)
+	}
 
-		if retElement != nil {
-			builder.WithReplacement(retElement)
-		}
-
-		retRemaining = retRemainingAfterExexOrToken
+	if retElement != nil {
+		builder.WithReplacement(retElement)
 	}
 
 	line, err := builder.Now()
@@ -626,7 +623,7 @@ func (app *parserAdapter) bytesToLine(input []byte) (lines.Line, []byte, error) 
 		return nil, nil, err
 	}
 
-	return line, retRemaining, nil
+	return line, remaining, nil
 }
 
 func (app *parserAdapter) bytesToExecutionOrReplacement(input []byte) (executions.Execution, elements.Element, []byte, error) {

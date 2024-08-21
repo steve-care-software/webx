@@ -12,14 +12,6 @@ type line struct {
 	replacement elements.Element
 }
 
-func createLineWithExecutionAndReplacement(
-	tokens tokens.Tokens,
-	execution executions.Execution,
-	replacement elements.Element,
-) Line {
-	return createLineInternally(tokens, execution, replacement)
-}
-
 func createLineWithExecution(
 	tokens tokens.Tokens,
 	execution executions.Execution,

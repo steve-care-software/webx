@@ -54,7 +54,7 @@ func (app *lineBuilder) Now() (Line, error) {
 	}
 
 	if app.execution != nil && app.replacement != nil {
-		return createLineWithExecutionAndReplacement(app.tokens, app.execution, app.replacement), nil
+		return nil, errors.New("the execution and replacement cannot both be defined in order to build a Line instance")
 	}
 
 	if app.execution != nil {

@@ -63,7 +63,7 @@ func TestComposeAdapter_withFunc_withReplacement_Success(t *testing.T) {
 		>.addition;
 		# .SPACE .TAB. EOL;
 
-		addition: .firstNumber .PLUS_SIGN .secondNumber - math_operation_arithmetic_addition .firstNumber[0]:first .secondNumber[0]:second - .myReplacement;
+		addition: .firstNumber .PLUS_SIGN .secondNumber - .myReplacement;
 		secondNumber: .N_THREE .N_FOUR .N_FIVE;
 		firstNumber: .N_ONE .N_TWO;
 		myReplacement: .N_ONE .N_THREE;
