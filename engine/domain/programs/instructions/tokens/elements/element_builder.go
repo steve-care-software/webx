@@ -1,17 +1,21 @@
 package elements
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls"
+)
 
 type elementBuilder struct {
 	rule        string
-	syscall     string
+	syscall     syscalls.Syscall
 	instruction string
 }
 
 func createElementBuilder() ElementBuilder {
 	out := elementBuilder{
 		rule:        "",
-		syscall:     "",
+		syscall:     nil,
 		instruction: "",
 	}
 
@@ -30,7 +34,7 @@ func (app *elementBuilder) WithRule(rule string) ElementBuilder {
 }
 
 // WithSyscall adds a syscall to the elementBuilder
-func (app *elementBuilder) WithSyscall(syscall string) ElementBuilder {
+func (app *elementBuilder) WithSyscall(syscall syscalls.Syscall) ElementBuilder {
 	app.syscall = syscall
 	return app
 }
@@ -47,7 +51,7 @@ func (app *elementBuilder) Now() (Element, error) {
 		return createElementWithRule(app.rule), nil
 	}
 
-	if app.syscall != "" {
+	if app.syscall != nil {
 		return createElementWithSyscall(app.syscall), nil
 	}
 

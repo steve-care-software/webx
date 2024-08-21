@@ -45,6 +45,7 @@ func (app *builder) Now() (Tokens, error) {
 			str := fmt.Sprintf("the Token (name: %s) is a duplicate", keyname)
 			return nil, errors.New(str)
 		}
+
 		mp[keyname] = oneToken
 	}
 

@@ -1,26 +1,28 @@
 package elements
 
+import "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls"
+
 type element struct {
 	rule        string
-	syscall     string
+	syscall     syscalls.Syscall
 	instruction string
 }
 
 func createElementWithRule(rule string) Element {
-	return createElementInternally(rule, "", "")
+	return createElementInternally(rule, nil, "")
 }
 
-func createElementWithSyscall(syscall string) Element {
+func createElementWithSyscall(syscall syscalls.Syscall) Element {
 	return createElementInternally("", syscall, "")
 }
 
 func createElementWithInstruction(instruction string) Element {
-	return createElementInternally("", "", instruction)
+	return createElementInternally("", nil, instruction)
 }
 
 func createElementInternally(
 	rule string,
-	syscall string,
+	syscall syscalls.Syscall,
 	instruction string,
 ) Element {
 	out := element{
@@ -39,7 +41,7 @@ func (obj *element) Name() string {
 	}
 
 	if obj.IsSyscall() {
-		return obj.syscall
+		return obj.syscall.Name()
 	}
 
 	return obj.instruction
@@ -57,11 +59,11 @@ func (obj *element) Rule() string {
 
 // IsSyscall returns true if there is a syscall, false otherwise
 func (obj *element) IsSyscall() bool {
-	return obj.syscall != ""
+	return obj.syscall != nil
 }
 
 // Syscall returns the syscall, if any
-func (obj *element) Syscall() string {
+func (obj *element) Syscall() syscalls.Syscall {
 	return obj.syscall
 }
 

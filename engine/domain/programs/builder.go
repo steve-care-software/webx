@@ -6,14 +6,12 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars"
 	"github.com/steve-care-software/webx/engine/domain/programs/instructions"
 	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements"
-	"github.com/steve-care-software/webx/engine/domain/programs/syscalls"
 )
 
 type builder struct {
 	grammar      grammars.Grammar
 	root         elements.Element
 	instructions instructions.Instructions
-	syscalls     syscalls.Syscalls
 }
 
 func createBuilder() Builder {
@@ -21,7 +19,6 @@ func createBuilder() Builder {
 		grammar:      nil,
 		root:         nil,
 		instructions: nil,
-		syscalls:     nil,
 	}
 
 	return &out
@@ -50,12 +47,6 @@ func (app *builder) WithInstructions(instructions instructions.Instructions) Bui
 	return app
 }
 
-// WithSyscalls add syscalls to the builder
-func (app *builder) WithSyscalls(syscalls syscalls.Syscalls) Builder {
-	app.syscalls = syscalls
-	return app
-}
-
 // Now builds a new Program
 func (app *builder) Now() (Program, error) {
 	if app.grammar == nil {
@@ -68,15 +59,6 @@ func (app *builder) Now() (Program, error) {
 
 	if app.instructions == nil {
 		return nil, errors.New("the instructions is mandatory in order to build a Program instance")
-	}
-
-	if app.syscalls != nil {
-		return createProgramWithSyscalls(
-			app.grammar,
-			app.root,
-			app.instructions,
-			app.syscalls,
-		), nil
 	}
 
 	return createProgram(

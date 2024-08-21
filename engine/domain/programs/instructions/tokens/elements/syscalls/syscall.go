@@ -1,8 +1,6 @@
 package syscalls
 
-import (
-	"github.com/steve-care-software/webx/engine/domain/programs/grammars/syscalls/values"
-)
+import "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls/values"
 
 type syscall struct {
 	name     string

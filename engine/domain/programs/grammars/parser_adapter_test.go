@@ -26,7 +26,7 @@ func TestParserAdapter_withOmissions_Success(t *testing.T) {
 				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .MY_REPLACEMENT
 				 ;
 
-		_mySysCall: @this_is_a_syscall .FIRST .myFirst:first .second[3] .mySecond:second;
+		_mySysCall: @this_is_a_syscall .FIRST .myFirst:first .second[3] .mySecond[5]:second;
 		_mySecondCall: @another_syscall;
 
 		FIRST: "this \" with escape";

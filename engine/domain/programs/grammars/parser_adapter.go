@@ -75,6 +75,7 @@ type parserAdapter struct {
 	indexOpen                  byte
 	indexClose                 byte
 	parameterSeparator         byte
+	syscallDefinitionSeparator byte
 	sysCallNamePrefix          byte
 	sysCallFuncNamePrefix      byte
 }
@@ -135,6 +136,7 @@ func createParserAdapter(
 	indexOpen byte,
 	indexClose byte,
 	parameterSeparator byte,
+	syscallDefinitionSeparator byte,
 	sysCallNamePrefix byte,
 	sysCallFuncNamePrefix byte,
 ) ParserAdapter {
@@ -194,6 +196,7 @@ func createParserAdapter(
 		indexOpen:                  indexOpen,
 		indexClose:                 indexClose,
 		parameterSeparator:         parameterSeparator,
+		syscallDefinitionSeparator: syscallDefinitionSeparator,
 		sysCallNamePrefix:          sysCallNamePrefix,
 		sysCallFuncNamePrefix:      sysCallFuncNamePrefix,
 	}
@@ -361,23 +364,30 @@ func (app *parserAdapter) bytesToSyscalls(input []byte) (syscalls.Syscalls, []by
 }
 
 func (app *parserAdapter) bytesToSyscall(input []byte) (syscalls.Syscall, []byte, error) {
-	blockName, retBlockNameRemaining, err := app.bytesToSyscallDefinition(input)
+	sysCallName, retRemainingAfterSyscall, err := app.bytesToSyscallDefinition(
+		input,
+	)
+
 	if err != nil {
 		return nil, nil, err
 	}
 
-	if retBlockNameRemaining[0] != app.sysCallFuncNamePrefix {
-		return nil, nil, errors.New("the sysCallFunc was expecting the sysCallFuncNamePrefix bytes as its prefix")
+	if len(retRemainingAfterSyscall) <= 0 {
+		return nil, nil, errors.New("the sysCall was expected to contain at least 1 byte before its function")
 	}
 
-	funcName, retFuncNameRemaining, err := app.bytesToFuncName(retBlockNameRemaining[1:])
+	if retRemainingAfterSyscall[0] != app.sysCallFuncNamePrefix {
+		return nil, nil, errors.New("the sysCall was expected to contain the sysCallFuncNamePrefix byte before its function")
+	}
+
+	funcName, retFuncNameRemaining, err := app.bytesToFuncName(retRemainingAfterSyscall[1:])
 	if err != nil {
 		return nil, nil, err
 	}
 
 	builder := app.syscallBuilder.Create().
 		WithFuncName(funcName).
-		WithName(blockName)
+		WithName(sysCallName)
 
 	retRemaining := retFuncNameRemaining
 	retValues, retValuesRemaining, err := app.bytesToValues(retFuncNameRemaining)
@@ -403,17 +413,20 @@ func (app *parserAdapter) bytesToSyscall(input []byte) (syscalls.Syscall, []byte
 }
 
 func (app *parserAdapter) bytesToSyscallDefinition(input []byte) (string, []byte, error) {
-	if input[0] != app.sysCallNamePrefix {
-		return "", nil, errors.New("the sysCallDefinition was expecting the sysCallNamePrefix bytes as its prefix")
-	}
-
-	remaining := filterPrefix(input[1:], app.filterBytes)
-	blockName, retBlockNameRemaining, err := app.bytesToBlockDefinition(remaining)
+	syscallName, retRemainingAfterSysCallName, err := app.bytesToSyscallName(input)
 	if err != nil {
 		return "", nil, err
 	}
 
-	return string(blockName), filterPrefix(retBlockNameRemaining, app.filterBytes), nil
+	if len(retRemainingAfterSysCallName) <= 0 {
+		return "", nil, errors.New("the sysCallDefinition was expected to contain at least 1 byte after fetching its name")
+	}
+
+	if retRemainingAfterSysCallName[0] != app.syscallDefinitionSeparator {
+		return "", nil, errors.New("the sysCallDefinition was expected to contain the syscallDefinitionSeparator byte at its suffix")
+	}
+
+	return syscallName, filterPrefix(retRemainingAfterSysCallName[1:], app.filterBytes), nil
 }
 
 func (app *parserAdapter) bytesToSyscallName(input []byte) (string, []byte, error) {

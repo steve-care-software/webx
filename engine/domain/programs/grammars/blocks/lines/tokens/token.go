@@ -24,11 +24,7 @@ func createToken(
 
 // Name returns the name
 func (obj *token) Name() string {
-	if obj.element.IsBlock() {
-		return obj.element.Block()
-	}
-
-	return obj.element.Rule()
+	return obj.element.Name()
 }
 
 // Element returns the element

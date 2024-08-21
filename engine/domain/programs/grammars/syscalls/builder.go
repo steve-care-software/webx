@@ -2,6 +2,7 @@ package syscalls
 
 import (
 	"errors"
+	"fmt"
 )
 
 type builder struct {
@@ -37,5 +38,16 @@ func (app *builder) Now() (Syscalls, error) {
 		return nil, errors.New("there must be at least 1 Syscall in order to build a Syscalls instance")
 	}
 
-	return createSyscalls(app.list), nil
+	mp := map[string]Syscall{}
+	for _, oneToken := range app.list {
+		keyname := oneToken.Name()
+		if _, ok := mp[keyname]; ok {
+			str := fmt.Sprintf("the Syscall (name: %s) is a duplicate", keyname)
+			return nil, errors.New(str)
+		}
+
+		mp[keyname] = oneToken
+	}
+
+	return createSyscalls(app.list, mp), nil
 }

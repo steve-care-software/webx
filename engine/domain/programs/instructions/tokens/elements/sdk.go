@@ -1,5 +1,7 @@
 package elements
 
+import "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls"
+
 // NewBuilder creates a new builder
 func NewBuilder() Builder {
 	return createBuilder()
@@ -26,7 +28,7 @@ type Elements interface {
 type ElementBuilder interface {
 	Create() ElementBuilder
 	WithRule(rule string) ElementBuilder
-	WithSyscall(syscall string) ElementBuilder
+	WithSyscall(syscall syscalls.Syscall) ElementBuilder
 	WithInstruction(instruction string) ElementBuilder
 	Now() (Element, error)
 }
@@ -37,7 +39,7 @@ type Element interface {
 	IsRule() bool
 	Rule() string
 	IsSyscall() bool
-	Syscall() string
+	Syscall() syscalls.Syscall
 	IsInstruction() bool
 	Instruction() string
 }

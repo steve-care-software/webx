@@ -1,8 +1,6 @@
 package syscalls
 
-import (
-	"github.com/steve-care-software/webx/engine/domain/programs/grammars/syscalls/values"
-)
+import "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls/values"
 
 // NewBuilder creates a new builder
 func NewBuilder() Builder {
@@ -24,7 +22,6 @@ type Builder interface {
 // Syscalls represents syscalls
 type Syscalls interface {
 	List() []Syscall
-	Fetch(name string) (Syscall, error)
 }
 
 // SyscallBuilder represents the syscall builder

@@ -18,14 +18,15 @@ func TestParserAdapter_Success(t *testing.T) {
 			| .N_ZERO
 			;
 
-		additionInParenthesis: .OPEN_PARENTHESIS ._myCall .addition .CLOSE_PARENTHESIS;
-		addition: .firstNumber .PLUS_SIGN .secondNumber - .myReplacement;
+		additionInParenthesis: .OPEN_PARENTHESIS .addition .CLOSE_PARENTHESIS;
+		addition: ._myCall ._mySecond .firstNumber .PLUS_SIGN .secondNumber;
 		secondNumber: .N_THREE .N_FOUR .N_FIVE;
 		firstNumber: .N_ONE .N_TWO;
 		myReplacement: .N_ONE .N_THREE;
 		replacedNumber: .N_TWO .N_FOUR;
 
-		_myCall: @my_syscall;
+		_myCall: @my_syscall .firstNumber:first .secondNumber:second;
+		_mySecond: @my_syscall;
 
 		N_ZERO: "0";
 		N_ONE: "1";
