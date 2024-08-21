@@ -1,6 +1,9 @@
 package grammars
 
 import (
+	"errors"
+	"math/big"
+
 	"github.com/steve-care-software/webx/engine/domain/nfts"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines"
@@ -14,6 +17,9 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/rules"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/syscalls"
 )
+
+// CoreFn represents a core fn
+type CoreFn func(input map[string][]byte) ([]byte, error)
 
 const llA = "a"
 const llB = "b"
@@ -109,6 +115,35 @@ const rootSuffix = ";"
 const omissionPrefix = "#"
 const omissionSuffix = ";"
 const filterBytes = " \n\r\t"
+
+// NewComposeAdapter creates a new composer adapter
+func NewComposeAdapter() ComposeAdapter {
+	return createComposeAdapter(
+		map[string]CoreFn{
+			"math_operation_arithmetic_addition": func(input map[string][]byte) ([]byte, error) {
+				if firstBytes, ok := input["first"]; ok {
+					if secondBytes, ok := input["second"]; ok {
+						pFirst, _ := big.NewInt(int64(0)).SetString(string(firstBytes), 10)
+						if pFirst == nil {
+							return nil, errors.New("the first value could not be converted to a number")
+						}
+
+						pSecond, _ := big.NewInt(int64(0)).SetString(string(secondBytes), 10)
+						if pSecond == nil {
+							return nil, errors.New("the second value could not be converted to a number")
+						}
+
+						return []byte(pFirst.Add(pFirst, pSecond).String()), nil
+					}
+
+					return nil, errors.New("the second value was not defined")
+				}
+
+				return nil, errors.New("the first value was not defined")
+			},
+		},
+	)
+}
 
 // NewNFTAdapter creates a new nft adapter
 func NewNFTAdapter() NFTAdapter {
