@@ -12,7 +12,7 @@ import (
 func TestApplication_interpret_Success(t *testing.T) {
 	grammarInput := []byte(`
 		v1;
-		>.oneNumber;
+		>.instructions;
 		# .SPACE .TAB .EOL;
 
 		instructions: instruction*;
