@@ -25,7 +25,7 @@ type Builder interface {
 // Tokens represents tokens
 type Tokens interface {
 	List() []Token
-	Fetch(name string) (Token, error)
+	Fetch(name string, idx uint) (Token, error)
 }
 
 // TokenBuilder represents the token builder

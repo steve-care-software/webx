@@ -5,20 +5,17 @@ import (
 
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars"
 	"github.com/steve-care-software/webx/engine/domain/programs/instructions"
-	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements"
 )
 
 type builder struct {
-	grammar      grammars.Grammar
-	root         elements.Element
-	instructions instructions.Instructions
+	grammar grammars.Grammar
+	root    instructions.Element
 }
 
 func createBuilder() Builder {
 	out := builder{
-		grammar:      nil,
-		root:         nil,
-		instructions: nil,
+		grammar: nil,
+		root:    nil,
 	}
 
 	return &out
@@ -36,14 +33,8 @@ func (app *builder) WithGrammar(grammar grammars.Grammar) Builder {
 }
 
 // WithRoot adds a root to the builder
-func (app *builder) WithRoot(root elements.Element) Builder {
+func (app *builder) WithRoot(root instructions.Element) Builder {
 	app.root = root
-	return app
-}
-
-// WithInstructions add instructions to the builder
-func (app *builder) WithInstructions(instructions instructions.Instructions) Builder {
-	app.instructions = instructions
 	return app
 }
 
@@ -57,13 +48,8 @@ func (app *builder) Now() (Program, error) {
 		return nil, errors.New("the root is mandatory in order to build a Program instance")
 	}
 
-	if app.instructions == nil {
-		return nil, errors.New("the instructions is mandatory in order to build a Program instance")
-	}
-
 	return createProgram(
 		app.grammar,
 		app.root,
-		app.instructions,
 	), nil
 }

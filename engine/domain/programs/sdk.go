@@ -4,17 +4,7 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/nfts"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars"
 	"github.com/steve-care-software/webx/engine/domain/programs/instructions"
-	instructions_tokens "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens"
-	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements"
-	instructions_elements "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements"
-	instructions_syscalls "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls"
-	instructions_syscalls_values_parameters "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls/parameters"
 )
-
-// NewComposerAdapter creates a new composer adapter
-func NewComposerAdapter() ComposeAdapter {
-	return createComposeAdapter()
-}
 
 // NewParserAdapter creates a new parser adapter
 func NewParserAdapter() ParserAdapter {
@@ -22,14 +12,14 @@ func NewParserAdapter() ParserAdapter {
 	builder := NewBuilder()
 	instructionsBuilder := instructions.NewBuilder()
 	instructionBuilder := instructions.NewInstructionBuilder()
-	tokensBuilder := instructions_tokens.NewBuilder()
-	tokenBuilder := instructions_tokens.NewTokenBuilder()
-	elementsBuilder := instructions_elements.NewBuilder()
-	elementBuilder := instructions_elements.NewElementBuilder()
-	syscallsBuilder := instructions_syscalls.NewBuilder()
-	syscallBuilder := instructions_syscalls.NewSyscallBuilder()
-	parametersBuilder := instructions_syscalls_values_parameters.NewBuilder()
-	parameterBuilder := instructions_syscalls_values_parameters.NewParameterBuilder()
+	tokensBuilder := instructions.NewTokensBuilder()
+	tokenBuilder := instructions.NewTokenBuilder()
+	elementsBuilder := instructions.NewElementsBuilder()
+	elementBuilder := instructions.NewElementBuilder()
+	syscallsBuilder := instructions.NewSyscallsBuilder()
+	syscallBuilder := instructions.NewSyscallBuilder()
+	parametersBuilder := instructions.NewParametersBuilder()
+	parameterBuilder := instructions.NewParameterBuilder()
 	return createParserAdapter(
 		grammarAdapter,
 		builder,
@@ -66,24 +56,16 @@ type NFTAdapter interface {
 	ToProgram(nft nfts.NFT) (Program, error)
 }
 
-// ComposeAdapter represents the grammar compose adapter
-type ComposeAdapter interface {
-	// ToBytes takes a program and an element name and returns its bytes
-	ToBytes(program Program, elementName string) ([]byte, error)
-}
-
 // Builder represents the program builder
 type Builder interface {
 	Create() Builder
 	WithGrammar(grammar grammars.Grammar) Builder
-	WithRoot(root elements.Element) Builder
-	WithInstructions(instructions instructions.Instructions) Builder
+	WithRoot(root instructions.Element) Builder
 	Now() (Program, error)
 }
 
 // Program represents a program
 type Program interface {
 	Grammar() grammars.Grammar
-	Root() elements.Element
-	Instructions() instructions.Instructions
+	Root() instructions.Element
 }

@@ -1,29 +1,29 @@
-package elements
+package instructions
 
-import "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls"
+import "github.com/steve-care-software/webx/engine/domain/programs/grammars/rules"
 
 type element struct {
-	rule        string
-	syscall     syscalls.Syscall
-	instruction string
+	rule        rules.Rule
+	syscall     Syscall
+	instruction Instruction
 }
 
-func createElementWithRule(rule string) Element {
-	return createElementInternally(rule, nil, "")
+func createElementWithRule(rule rules.Rule) Element {
+	return createElementInternally(rule, nil, nil)
 }
 
-func createElementWithSyscall(syscall syscalls.Syscall) Element {
-	return createElementInternally("", syscall, "")
+func createElementWithSyscall(syscall Syscall) Element {
+	return createElementInternally(nil, syscall, nil)
 }
 
-func createElementWithInstruction(instruction string) Element {
-	return createElementInternally("", nil, instruction)
+func createElementWithInstruction(instruction Instruction) Element {
+	return createElementInternally(nil, nil, instruction)
 }
 
 func createElementInternally(
-	rule string,
-	syscall syscalls.Syscall,
-	instruction string,
+	rule rules.Rule,
+	syscall Syscall,
+	instruction Instruction,
 ) Element {
 	out := element{
 		rule:        rule,
@@ -37,23 +37,23 @@ func createElementInternally(
 // Name returns the name
 func (obj *element) Name() string {
 	if obj.IsRule() {
-		return obj.rule
+		return obj.rule.Name()
 	}
 
 	if obj.IsSyscall() {
 		return obj.syscall.Name()
 	}
 
-	return obj.instruction
+	return obj.instruction.Block()
 }
 
 // IsRule returns true if there is a rule, false otherwise
 func (obj *element) IsRule() bool {
-	return obj.rule != ""
+	return obj.rule != nil
 }
 
 // Rule returns the rule, if any
-func (obj *element) Rule() string {
+func (obj *element) Rule() rules.Rule {
 	return obj.rule
 }
 
@@ -63,16 +63,16 @@ func (obj *element) IsSyscall() bool {
 }
 
 // Syscall returns the syscall, if any
-func (obj *element) Syscall() syscalls.Syscall {
+func (obj *element) Syscall() Syscall {
 	return obj.syscall
 }
 
 // IsInstruction returns true if there is an instruction, false otherwise
 func (obj *element) IsInstruction() bool {
-	return obj.instruction != ""
+	return obj.instruction != nil
 }
 
 // Instruction returns the instruction, if any
-func (obj *element) Instruction() string {
+func (obj *element) Instruction() Instruction {
 	return obj.instruction
 }

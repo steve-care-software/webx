@@ -2,11 +2,13 @@ package applications
 
 import (
 	"errors"
+	"fmt"
 	"math/big"
 
 	"github.com/steve-care-software/webx/engine/domain/nfts"
 	"github.com/steve-care-software/webx/engine/domain/programs"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars"
+	"github.com/steve-care-software/webx/engine/domain/programs/instructions"
 	"github.com/steve-care-software/webx/engine/domain/stacks"
 )
 
@@ -15,12 +17,12 @@ type SyscallFn func(map[string][]byte) (any, error)
 
 // NewApplication creates a new application
 func NewApplication() Application {
-	programComposer := programs.NewComposerAdapter()
+	elementsAdapter := instructions.NewElementsAdapter()
 	grammarParserAdapter := grammars.NewParserAdapter()
 	grammarNFTAdapter := grammars.NewNFTAdapter()
 	grammarComposeAdapter := grammars.NewComposeAdapter()
 	return createApplication(
-		programComposer,
+		elementsAdapter,
 		grammarParserAdapter,
 		grammarNFTAdapter,
 		grammarComposeAdapter,
@@ -39,6 +41,7 @@ func NewApplication() Application {
 						}
 
 						value := first.Add(first, second)
+						fmt.Printf("\n%s, %s\n", params["first"], params["second"])
 						return value.Int64(), nil
 					}
 

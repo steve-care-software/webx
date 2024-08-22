@@ -1,16 +1,14 @@
-package tokens
-
-import "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements"
+package instructions
 
 type token struct {
 	name     string
-	elements elements.Elements
+	elements Elements
 	amount   uint
 }
 
 func createToken(
 	name string,
-	elements elements.Elements,
+	elements Elements,
 ) Token {
 	out := token{
 		name:     name,
@@ -26,6 +24,6 @@ func (obj *token) Name() string {
 }
 
 // Elements returns the elements
-func (obj *token) Elements() elements.Elements {
+func (obj *token) Elements() Elements {
 	return obj.elements
 }

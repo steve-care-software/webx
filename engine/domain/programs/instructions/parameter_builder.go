@@ -1,43 +1,43 @@
-package parameters
+package instructions
 
 import (
 	"errors"
 )
 
 type parameterBuilder struct {
-	token  string
-	pIndex *uint
-	name   string
+	element string
+	pIndex  *uint
+	name    string
 }
 
 func createParameterBuilder() ParameterBuilder {
 	out := parameterBuilder{
-		token:  "",
-		pIndex: nil,
-		name:   "",
+		element: "",
+		pIndex:  nil,
+		name:    "",
 	}
 
 	return &out
 }
 
-// Create initializes the parameterBuilder
+// Create initializes the builder
 func (app *parameterBuilder) Create() ParameterBuilder {
 	return createParameterBuilder()
 }
 
-// WithToken adds a token to the parameterBuilder
-func (app *parameterBuilder) WithToken(token string) ParameterBuilder {
-	app.token = token
+// WithElement adds an element to the builder
+func (app *parameterBuilder) WithElement(element string) ParameterBuilder {
+	app.element = element
 	return app
 }
 
-// WithIndex adds an index to the parameterBuilder
+// WithIndex adds an index to the builder
 func (app *parameterBuilder) WithIndex(index uint) ParameterBuilder {
 	app.pIndex = &index
 	return app
 }
 
-// WithName adds a name to the parameterBuilder
+// WithName adds a name to the builder
 func (app *parameterBuilder) WithName(name string) ParameterBuilder {
 	app.name = name
 	return app
@@ -45,8 +45,8 @@ func (app *parameterBuilder) WithName(name string) ParameterBuilder {
 
 // Now builds a new Parameter instance
 func (app *parameterBuilder) Now() (Parameter, error) {
-	if app.token == "" {
-		return nil, errors.New("the token is mandatory in order to build a Parameter instance")
+	if app.element == "" {
+		return nil, errors.New("the element is mandatory in order to build a Parameter instance")
 	}
 
 	if app.pIndex == nil {
@@ -58,7 +58,7 @@ func (app *parameterBuilder) Now() (Parameter, error) {
 	}
 
 	return createParameter(
-		app.token,
+		app.element,
 		*app.pIndex,
 		app.name,
 	), nil

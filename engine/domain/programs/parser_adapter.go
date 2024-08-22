@@ -13,26 +13,21 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/syscalls"
 	"github.com/steve-care-software/webx/engine/domain/programs/instructions"
-	instructions_tokens "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens"
-	instructions_elements "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements"
-	instructions_syscalls "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls"
-	instructions_syscalls_values_parameters "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls/parameters"
 )
 
 type parserAdapter struct {
-	grammarAdapter       grammars.ParserAdapter
-	builder              Builder
-	instructionsBuilder  instructions.Builder
-	instructionBuilder   instructions.InstructionBuilder
-	tokensBuilder        instructions_tokens.Builder
-	tokenBuilder         instructions_tokens.TokenBuilder
-	elementsBuilder      instructions_elements.Builder
-	elementBuilder       instructions_elements.ElementBuilder
-	syscallsBuilder      instructions_syscalls.Builder
-	syscallBuilder       instructions_syscalls.SyscallBuilder
-	parametersBuilder    instructions_syscalls_values_parameters.Builder
-	parameterBuilder     instructions_syscalls_values_parameters.ParameterBuilder
-	currrentInstructions []instructions.Instruction
+	grammarAdapter      grammars.ParserAdapter
+	builder             Builder
+	instructionsBuilder instructions.Builder
+	instructionBuilder  instructions.InstructionBuilder
+	tokensBuilder       instructions.TokensBuilder
+	tokenBuilder        instructions.TokenBuilder
+	elementsBuilder     instructions.ElementsBuilder
+	elementBuilder      instructions.ElementBuilder
+	syscallsBuilder     instructions.SyscallsBuilder
+	syscallBuilder      instructions.SyscallBuilder
+	parametersBuilder   instructions.ParametersBuilder
+	parameterBuilder    instructions.ParameterBuilder
 }
 
 func createParserAdapter(
@@ -40,14 +35,14 @@ func createParserAdapter(
 	builder Builder,
 	instructionsBuilder instructions.Builder,
 	instructionBuilder instructions.InstructionBuilder,
-	tokensBuilder instructions_tokens.Builder,
-	tokenBuilder instructions_tokens.TokenBuilder,
-	elementsBuilder instructions_elements.Builder,
-	elementBuilder instructions_elements.ElementBuilder,
-	syscallsBuilder instructions_syscalls.Builder,
-	syscallBuilder instructions_syscalls.SyscallBuilder,
-	parametersBuilder instructions_syscalls_values_parameters.Builder,
-	parameterBuilder instructions_syscalls_values_parameters.ParameterBuilder,
+	tokensBuilder instructions.TokensBuilder,
+	tokenBuilder instructions.TokenBuilder,
+	elementsBuilder instructions.ElementsBuilder,
+	elementBuilder instructions.ElementBuilder,
+	syscallsBuilder instructions.SyscallsBuilder,
+	syscallBuilder instructions.SyscallBuilder,
+	parametersBuilder instructions.ParametersBuilder,
+	parameterBuilder instructions.ParameterBuilder,
 ) ParserAdapter {
 	out := parserAdapter{
 		grammarAdapter:      grammarAdapter,
@@ -64,12 +59,7 @@ func createParserAdapter(
 		parameterBuilder:    parameterBuilder,
 	}
 
-	out.init()
 	return &out
-}
-
-func (app *parserAdapter) init() {
-	app.currrentInstructions = []instructions.Instruction{}
 }
 
 // ToProgram takes the grammar and input and converts them to a program instance and the remaining data
@@ -80,17 +70,8 @@ func (app *parserAdapter) ToProgram(grammar grammars.Grammar, input []byte) (Pro
 		return nil, nil, err
 	}
 
-	instructions, err := app.instructionsBuilder.Create().
-		WithList(app.currrentInstructions).
-		Now()
-
-	if err != nil {
-		return nil, nil, err
-	}
-
 	program, err := app.builder.Create().
 		WithGrammar(grammar).
-		WithInstructions(instructions).
 		WithRoot(retElement).
 		Now()
 
@@ -155,6 +136,7 @@ func (app *parserAdapter) toInstruction(
 		}
 
 		return retIns, retRemaining, nil
+
 	}
 
 	str := fmt.Sprintf("the provided input could not match any line of the block (name: %s)", name)
@@ -165,9 +147,13 @@ func (app *parserAdapter) toTokens(
 	grammar grammars.Grammar,
 	line lines.Line,
 	input []byte,
-) (instructions_tokens.Tokens, []byte, error) {
-	output := []instructions_tokens.Token{}
-	remaining := input
+) (instructions.Tokens, []byte, error) {
+	output := []instructions.Token{}
+	remaining := app.filterOmissions(
+		grammar,
+		input,
+	)
+
 	list := line.Tokens().List()
 	for idx, oneToken := range list {
 		retToken, retRemaining, err := app.toToken(
@@ -198,12 +184,16 @@ func (app *parserAdapter) toToken(
 	grammar grammars.Grammar,
 	token tokens.Token,
 	input []byte,
-) (instructions_tokens.Token, []byte, error) {
-	remaining := input
+) (instructions.Token, []byte, error) {
+	remaining := app.filterOmissions(
+		grammar,
+		input,
+	)
+
 	cardinality := token.Cardinality()
 	hasMax := cardinality.HasMax()
 	pMax := cardinality.Max()
-	elementsList := []instructions_elements.Element{}
+	elementsList := []instructions.Element{}
 	cpt := uint(0)
 	for {
 		// max has been reached
@@ -253,14 +243,14 @@ func (app *parserAdapter) toToken(
 		return nil, nil, err
 	}
 
-	return retToken, remaining, nil
+	return retToken, app.filterOmissions(grammar, remaining), nil
 }
 
 func (app *parserAdapter) toElement(
 	grammar grammars.Grammar,
 	element elements.Element,
 	input []byte,
-) (instructions_elements.Element, []byte, error) {
+) (instructions.Element, []byte, error) {
 	remaining := input
 	builder := app.elementBuilder.Create()
 	if element.IsRule() {
@@ -276,7 +266,7 @@ func (app *parserAdapter) toElement(
 			return nil, nil, errors.New(str)
 		}
 
-		builder.WithRule(ruleName)
+		builder.WithRule(rule)
 		remaining = input[len(ruleBytes):]
 	}
 
@@ -297,12 +287,8 @@ func (app *parserAdapter) toElement(
 			return nil, nil, err
 		}
 
-		name := retInstruction.Block()
-		builder.WithInstruction(name)
+		builder.WithInstruction(retInstruction)
 		remaining = retInstructionRemaining
-
-		// add instruction to the list:
-		app.currrentInstructions = append(app.currrentInstructions, retInstruction)
 	}
 
 	if element.IsSyscall() {
@@ -312,14 +298,17 @@ func (app *parserAdapter) toElement(
 			return nil, nil, err
 		}
 
-		retSysCall, err := app.toSyscall(
+		retSysCall, retRemaining, err := app.toSyscall(
+			grammar,
 			sysCall,
+			remaining,
 		)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		builder.WithSyscall(retSysCall)
+		remaining = retRemaining
 	}
 
 	ins, err := builder.Now()
@@ -331,57 +320,94 @@ func (app *parserAdapter) toElement(
 }
 
 func (app *parserAdapter) toSyscall(
+	grammar grammars.Grammar,
 	syscall syscalls.Syscall,
-) (instructions_syscalls.Syscall, error) {
+	input []byte,
+) (instructions.Syscall, []byte, error) {
+	remaining := input
 	name := syscall.Name()
 	funcName := syscall.FuncName()
-	builder := app.syscallBuilder.Create().WithFuncName(funcName).WithName(name)
+	builder := app.syscallBuilder.Create().
+		WithFuncName(funcName).
+		WithName(name)
+
 	if syscall.HasParameters() {
 		parameters := syscall.Parameters()
-		retParameters, err := app.toParameters(
+		retParameters, retRemaining, err := app.toParameters(
+			grammar,
 			parameters,
+			remaining,
 		)
 
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		builder.WithParameters(retParameters)
+		remaining = retRemaining
 	}
 
 	ins, err := builder.Now()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return ins, nil
+	return ins, remaining, nil
 }
 
 func (app *parserAdapter) toParameters(
+	grammar grammars.Grammar,
 	parameters parameters.Parameters,
-) (instructions_syscalls_values_parameters.Parameters, error) {
+	input []byte,
+) (instructions.Parameters, []byte, error) {
+	remaining := input
 	list := parameters.List()
-	output := []instructions_syscalls_values_parameters.Parameter{}
+	output := []instructions.Parameter{}
 	for _, oneParameter := range list {
-		element := oneParameter.Element()
-		name := oneParameter.Name()
-		index := oneParameter.Index()
-		ins, err := app.parameterBuilder.Create().
-			WithToken(element.Name()).
-			WithName(name).
-			WithIndex(index).
-			Now()
+		retParameter, retRemaining, err := app.toParameter(
+			grammar,
+			oneParameter,
+			remaining,
+		)
 
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
-		output = append(output, ins)
+		output = append(output, retParameter)
+		remaining = retRemaining
 	}
 
-	return app.parametersBuilder.Create().
+	ins, err := app.parametersBuilder.Create().
 		WithList(output).
 		Now()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, remaining, nil
+}
+
+func (app *parserAdapter) toParameter(
+	grammar grammars.Grammar,
+	parameter parameters.Parameter,
+	input []byte,
+) (instructions.Parameter, []byte, error) {
+	element := parameter.Element()
+	name := parameter.Name()
+	index := parameter.Index()
+	ins, err := app.parameterBuilder.Create().
+		WithElement(element.Name()).
+		WithName(name).
+		WithIndex(index).
+		Now()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, input, nil
 }
 
 func (app *parserAdapter) filterOmissions(

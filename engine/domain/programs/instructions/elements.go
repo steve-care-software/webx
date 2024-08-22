@@ -1,4 +1,4 @@
-package elements
+package instructions
 
 type elements struct {
 	list []Element

@@ -2,14 +2,12 @@ package instructions
 
 import (
 	"errors"
-
-	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens"
 )
 
 type instructionBuilder struct {
 	block  string
 	pLine  *uint
-	tokens tokens.Tokens
+	tokens Tokens
 }
 
 func createInstructionBuilder() InstructionBuilder {
@@ -40,7 +38,7 @@ func (app *instructionBuilder) WithLine(line uint) InstructionBuilder {
 }
 
 // WithTokens add tokens to the builder
-func (app *instructionBuilder) WithTokens(tokens tokens.Tokens) InstructionBuilder {
+func (app *instructionBuilder) WithTokens(tokens Tokens) InstructionBuilder {
 	app.tokens = tokens
 	return app
 }

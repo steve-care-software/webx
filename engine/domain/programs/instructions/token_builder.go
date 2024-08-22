@@ -1,14 +1,12 @@
-package tokens
+package instructions
 
 import (
 	"errors"
-
-	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements"
 )
 
 type tokenBuilder struct {
 	name     string
-	elements elements.Elements
+	elements Elements
 }
 
 func createTokenBuilder() TokenBuilder {
@@ -32,7 +30,7 @@ func (app *tokenBuilder) WithName(name string) TokenBuilder {
 }
 
 // WithElements add elements to the builder
-func (app *tokenBuilder) WithElements(elements elements.Elements) TokenBuilder {
+func (app *tokenBuilder) WithElements(elements Elements) TokenBuilder {
 	app.elements = elements
 	return app
 }

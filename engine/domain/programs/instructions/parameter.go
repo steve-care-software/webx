@@ -1,28 +1,28 @@
-package parameters
+package instructions
 
 type parameter struct {
-	token string
-	index uint
-	name  string
+	element string
+	index   uint
+	name    string
 }
 
 func createParameter(
-	token string,
+	element string,
 	index uint,
 	name string,
 ) Parameter {
 	out := parameter{
-		token: token,
-		index: index,
-		name:  name,
+		element: element,
+		index:   index,
+		name:    name,
 	}
 
 	return &out
 }
 
-// Token returns the token
-func (obj *parameter) Token() string {
-	return obj.token
+// Element returns the element
+func (obj *parameter) Element() string {
+	return obj.element
 }
 
 // Index returns the index

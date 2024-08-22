@@ -1,34 +1,34 @@
-package tokens
+package instructions
 
 import (
 	"errors"
 )
 
-type builder struct {
+type tokensBuilder struct {
 	list []Token
 }
 
-func createBuilder() Builder {
-	out := builder{
+func createTokensBuilder() TokensBuilder {
+	out := tokensBuilder{
 		list: nil,
 	}
 
 	return &out
 }
 
-// Create initializes the builder
-func (app *builder) Create() Builder {
-	return createBuilder()
+// Create initializes the tokensBuilder
+func (app *tokensBuilder) Create() TokensBuilder {
+	return createTokensBuilder()
 }
 
-// WithList adds a list to the builder
-func (app *builder) WithList(list []Token) Builder {
+// WithList adds a list to the tokensBuilder
+func (app *tokensBuilder) WithList(list []Token) TokensBuilder {
 	app.list = list
 	return app
 }
 
 // Now builds a new Tokens instance
-func (app *builder) Now() (Tokens, error) {
+func (app *tokensBuilder) Now() (Tokens, error) {
 	if app.list != nil && len(app.list) <= 0 {
 		app.list = nil
 	}

@@ -1,13 +1,9 @@
-package syscalls
-
-import (
-	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls/parameters"
-)
+package instructions
 
 type syscall struct {
 	name       string
 	funcName   string
-	parameters parameters.Parameters
+	parameters Parameters
 }
 
 func createSyscall(
@@ -20,7 +16,7 @@ func createSyscall(
 func createSyscallWithParameters(
 	name string,
 	funcName string,
-	parameters parameters.Parameters,
+	parameters Parameters,
 ) Syscall {
 	return createSyscallInternally(name, funcName, parameters)
 }
@@ -28,7 +24,7 @@ func createSyscallWithParameters(
 func createSyscallInternally(
 	name string,
 	funcName string,
-	parameters parameters.Parameters,
+	parameters Parameters,
 ) Syscall {
 	out := syscall{
 		name:       name,
@@ -55,6 +51,6 @@ func (obj *syscall) HasParameters() bool {
 }
 
 // Parameters returns the parameters
-func (obj *syscall) Parameters() parameters.Parameters {
+func (obj *syscall) Parameters() Parameters {
 	return obj.parameters
 }

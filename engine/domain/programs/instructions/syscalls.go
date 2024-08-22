@@ -1,4 +1,4 @@
-package syscalls
+package instructions
 
 type syscalls struct {
 	list []Syscall

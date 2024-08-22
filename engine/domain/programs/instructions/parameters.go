@@ -1,4 +1,4 @@
-package parameters
+package instructions
 
 type parameters struct {
 	list []Parameter

@@ -3,32 +3,27 @@ package programs
 import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars"
 	"github.com/steve-care-software/webx/engine/domain/programs/instructions"
-	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements"
 )
 
 type program struct {
-	grammar      grammars.Grammar
-	root         elements.Element
-	instructions instructions.Instructions
+	grammar grammars.Grammar
+	root    instructions.Element
 }
 
 func createProgram(
 	grammar grammars.Grammar,
-	root elements.Element,
-	instructions instructions.Instructions,
+	root instructions.Element,
 ) Program {
-	return createProgramInternally(grammar, root, instructions)
+	return createProgramInternally(grammar, root)
 }
 
 func createProgramInternally(
 	grammar grammars.Grammar,
-	root elements.Element,
-	instructions instructions.Instructions,
+	root instructions.Element,
 ) Program {
 	out := program{
-		grammar:      grammar,
-		root:         root,
-		instructions: instructions,
+		grammar: grammar,
+		root:    root,
 	}
 
 	return &out
@@ -40,11 +35,6 @@ func (obj *program) Grammar() grammars.Grammar {
 }
 
 // Root returns the root
-func (obj *program) Root() elements.Element {
+func (obj *program) Root() instructions.Element {
 	return obj.root
-}
-
-// Instructions returns the instructions
-func (obj *program) Instructions() instructions.Instructions {
-	return obj.instructions
 }

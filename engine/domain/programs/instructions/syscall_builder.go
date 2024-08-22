@@ -1,15 +1,13 @@
-package syscalls
+package instructions
 
 import (
 	"errors"
-
-	"github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens/elements/syscalls/parameters"
 )
 
 type syscallBuilder struct {
 	name       string
 	funcName   string
-	parameters parameters.Parameters
+	parameters Parameters
 }
 
 func createSyscallBuilder() SyscallBuilder {
@@ -40,7 +38,7 @@ func (app *syscallBuilder) WithFuncName(funcName string) SyscallBuilder {
 }
 
 // WithParameters add parameters to the builder
-func (app *syscallBuilder) WithParameters(parameters parameters.Parameters) SyscallBuilder {
+func (app *syscallBuilder) WithParameters(parameters Parameters) SyscallBuilder {
 	app.parameters = parameters
 	return app
 }

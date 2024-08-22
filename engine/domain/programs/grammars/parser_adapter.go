@@ -3,6 +3,8 @@ package grammars
 import (
 	"bytes"
 	"errors"
+	"fmt"
+	"log"
 	"strconv"
 	"strings"
 
@@ -270,16 +272,19 @@ func (app *parserAdapter) ToBytes(grammar Grammar) ([]byte, error) {
 }
 
 func (app *parserAdapter) bytesToBlocks(input []byte) (blocks.Blocks, []byte, error) {
+	cpt := 0
 	remaining := input
 	list := []blocks.Block{}
 	for {
 		retBlock, retRemaining, err := app.bytesToBlock(remaining)
 		if err != nil {
+			log.Printf("there was an error while creating the block (idx: %d): %s", cpt, err.Error())
 			break
 		}
 
 		list = append(list, retBlock)
 		remaining = retRemaining
+		cpt++
 	}
 
 	ins, err := app.blocksBuilder.Create().WithList(list).Now()
@@ -324,7 +329,8 @@ func (app *parserAdapter) bytesToBlock(input []byte) (blocks.Block, []byte, erro
 	}
 
 	if remaining[0] != app.blockSuffix {
-		return nil, nil, errors.New("the block was expected to contain the blockSuffix byte at its suffix")
+		str := fmt.Sprintf("the block was expected to contain the blockSuffix byte at its suffix, data: \n%s\n", string(remaining))
+		return nil, nil, errors.New(str)
 	}
 
 	retIns, err := builder.Now()
@@ -722,7 +728,10 @@ func (app *parserAdapter) bytesToTokens(input []byte) (tokens.Tokens, []byte, er
 		return nil, nil, err
 	}
 
-	ins, err := app.tokensBuilder.Create().WithList(list).Now()
+	ins, err := app.tokensBuilder.Create().
+		WithList(list).
+		Now()
+
 	if err != nil {
 		return nil, nil, err
 	}
@@ -747,7 +756,8 @@ func (app *parserAdapter) bytesToTokenList(input []byte) ([]tokens.Token, []byte
 }
 
 func (app *parserAdapter) bytesToToken(input []byte) (tokens.Token, []byte, error) {
-	element, retRemaining, err := app.bytesToElementReference(input)
+	remaining := filterPrefix(input, app.filterBytes)
+	element, retRemaining, err := app.bytesToElementReference(remaining)
 	if err != nil {
 		return nil, nil, err
 	}

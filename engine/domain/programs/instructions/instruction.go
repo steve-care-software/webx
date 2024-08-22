@@ -1,17 +1,15 @@
 package instructions
 
-import "github.com/steve-care-software/webx/engine/domain/programs/instructions/tokens"
-
 type instruction struct {
 	block  string
 	line   uint
-	tokens tokens.Tokens
+	tokens Tokens
 }
 
 func createInstruction(
 	block string,
 	line uint,
-	tokens tokens.Tokens,
+	tokens Tokens,
 ) Instruction {
 	out := instruction{
 		block:  block,
@@ -33,6 +31,6 @@ func (obj *instruction) Line() uint {
 }
 
 // Line returns the line
-func (obj *instruction) Tokens() tokens.Tokens {
+func (obj *instruction) Tokens() Tokens {
 	return obj.tokens
 }

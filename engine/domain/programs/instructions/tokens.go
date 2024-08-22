@@ -1,4 +1,4 @@
-package tokens
+package instructions
 
 import (
 	"errors"
@@ -27,7 +27,7 @@ func (obj *tokens) List() []Token {
 	return obj.list
 }
 
-// Fetch fetches a token by name
+// Fetch fetches a token by name and index
 func (obj *tokens) Fetch(name string, idx uint) (Token, error) {
 	if ins, ok := obj.mp[name]; ok {
 		length := uint(len(ins))
