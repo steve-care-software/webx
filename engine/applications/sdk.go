@@ -21,11 +21,13 @@ func NewApplication() Application {
 	grammarParserAdapter := grammars.NewParserAdapter()
 	grammarNFTAdapter := grammars.NewNFTAdapter()
 	grammarComposeAdapter := grammars.NewComposeAdapter()
+	programParserAdapter := programs.NewParserAdapter()
 	return createApplication(
 		elementsAdapter,
 		grammarParserAdapter,
 		grammarNFTAdapter,
 		grammarComposeAdapter,
+		programParserAdapter,
 		map[string]SyscallFn{
 			"math_operation_arithmetic_add": func(params map[string][]byte) (any, error) {
 				if firstBytes, ok := params["first"]; ok {
@@ -81,8 +83,5 @@ type Application interface {
 	Interpret(program programs.Program) (stacks.Stack, error)
 
 	// Suites executes all the test suites of the grammar
-	Suites(grammar grammars.Grammar) ([]byte, error)
-
-	// Suite executes the test suite of the provided blockName in the grammar
-	Suite(grammar grammars.Grammar, blockName string) ([]byte, error)
+	Suites(grammar grammars.Grammar) error
 }

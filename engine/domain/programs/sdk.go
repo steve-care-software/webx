@@ -45,6 +45,9 @@ func NewBuilder() Builder {
 type ParserAdapter interface {
 	// ToProgram takes the grammar and input and converts them to a program instance and the remaining data
 	ToProgram(grammar grammars.Grammar, input []byte) (Program, []byte, error)
+
+	// ToProgramWithRoot creates a program but changes the root block of the grammar
+	ToProgramWithRoot(grammar grammars.Grammar, rootBlockName string, input []byte) (Program, []byte, error)
 }
 
 // NFTAdapter represents the program nft adapter

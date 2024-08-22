@@ -7,6 +7,7 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/nfts"
 	"github.com/steve-care-software/webx/engine/domain/programs"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/suites"
 	"github.com/steve-care-software/webx/engine/domain/programs/instructions"
 	"github.com/steve-care-software/webx/engine/domain/stacks"
 )
@@ -16,6 +17,7 @@ type application struct {
 	grammarParserAdapter  grammars.ParserAdapter
 	grammarNFTAdapter     grammars.NFTAdapter
 	grammarComposeAdapter grammars.ComposeAdapter
+	programParserAdapter  programs.ParserAdapter
 	syscalls              map[string]SyscallFn
 }
 
@@ -24,6 +26,7 @@ func createApplication(
 	grammarParserAdapter grammars.ParserAdapter,
 	grammarNFTAdapter grammars.NFTAdapter,
 	grammarComposeAdapter grammars.ComposeAdapter,
+	programParserAdapter programs.ParserAdapter,
 	syscalls map[string]SyscallFn,
 ) Application {
 	out := application{
@@ -31,6 +34,7 @@ func createApplication(
 		grammarParserAdapter:  grammarParserAdapter,
 		grammarNFTAdapter:     grammarNFTAdapter,
 		grammarComposeAdapter: grammarComposeAdapter,
+		programParserAdapter:  programParserAdapter,
 		syscalls:              syscalls,
 	}
 
@@ -84,13 +88,92 @@ func (app *application) Interpret(program programs.Program) (stacks.Stack, error
 }
 
 // Suites executes all the test suites of the grammar
-func (app *application) Suites(grammar grammars.Grammar) ([]byte, error) {
-	return nil, nil
+func (app *application) Suites(grammar grammars.Grammar) error {
+	blocksList := grammar.Blocks().List()
+	for _, oneBlock := range blocksList {
+		if !oneBlock.HasSuites() {
+			continue
+		}
+
+		blockName := oneBlock.Name()
+		suitesList := oneBlock.Suites().List()
+		for idx, oneSuite := range suitesList {
+			err := app.interpretSuite(
+				grammar,
+				blockName,
+				oneSuite,
+			)
+
+			prefix := fmt.Sprintf("block (name: %s) index (%d) suite (%s)", blockName, idx, oneSuite.Name())
+			if oneSuite.IsFail() {
+				if err == nil {
+					str := fmt.Sprintf("%s: the suite was expected to FAIL but succeeded!", prefix)
+					return errors.New(str)
+				}
+
+				continue
+			}
+
+			if err != nil {
+				str := fmt.Sprintf("%s the suite was expected to SUCCEED but failed --- error: %s", prefix, err.Error())
+				return errors.New(str)
+			}
+		}
+	}
+	return nil
 }
 
-// Suite executes the test suite of the provided blockName in the grammar
-func (app *application) Suite(grammar grammars.Grammar, blockName string) ([]byte, error) {
-	return nil, nil
+func (app *application) interpretSuite(
+	grammar grammars.Grammar,
+	blockName string,
+	suite suites.Suite,
+) error {
+	input, err := app.fetchInputFromSuite(
+		grammar,
+		blockName,
+		suite,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	program, _, err := app.programParserAdapter.ToProgramWithRoot(
+		grammar,
+		blockName,
+		input,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = app.Interpret(program)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *application) fetchInputFromSuite(
+	grammar grammars.Grammar,
+	blockName string,
+	suite suites.Suite,
+) ([]byte, error) {
+	element := suite.Element()
+	if element.IsRule() {
+		ruleName := element.Rule()
+		rule, err := grammar.Rules().Fetch(ruleName)
+		if err != nil {
+			return nil, err
+		}
+
+		return rule.Bytes(), nil
+	}
+
+	inputBlockName := element.Block()
+	return app.grammarComposeAdapter.ToBytes(grammar, inputBlockName)
 }
 
 func (app *application) interpretInstruction(

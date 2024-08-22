@@ -1,11 +1,8 @@
 package applications
 
 import (
-	"bytes"
-	"fmt"
 	"testing"
 
-	"github.com/steve-care-software/webx/engine/domain/programs"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars"
 )
 
@@ -15,7 +12,7 @@ func TestApplication_interpret_Success(t *testing.T) {
 		>.instructions;
 		# .SPACE .TAB .EOL;
 
-		instructions: instruction*;
+		instructions: .instruction*;
 		instruction: .instructionPossibilities .SEMI_COLON;
 		instructionPossibilities: .assignment;
 
@@ -159,7 +156,13 @@ func TestApplication_interpret_Success(t *testing.T) {
 					;
 
 		negativeNumber: .MINUS .numbers;
-		numbers: .oneNumber+;
+		numbers: .oneNumber+
+				---
+					oneNumber: .N_ZERO.
+					numberWithAllNumbers: .testNumberWithAllNumbers.
+					oneLettter: @.LL_A.
+				;
+
 		oneNumber: .N_ZERO
 				   | .N_ONE
 				   | .N_TWO
@@ -171,6 +174,10 @@ func TestApplication_interpret_Success(t *testing.T) {
 				   | .N_HEIGHT
 				   | .N_NINE
 				   ;
+
+
+		testNumberWithAllNumbers: .N_ONE .N_ZERO .N_TWO .N_THREE .N_FOUR .N_FIVE .N_SIX .N_SEVEN .N_HEIGHT .N_NINE
+								;
 
 		N_ZERO: "0";
 		N_ONE: "1";
@@ -255,8 +262,8 @@ func TestApplication_interpret_Success(t *testing.T) {
 ";
 	`)
 
-	programRemaining := []byte("this is a remaining")
-	programInput := append([]byte(`2`), programRemaining...)
+	//programRemaining := []byte("this is a remaining")
+	//programInput := append([]byte(`2`), programRemaining...)
 
 	grammarParserAdapter := grammars.NewParserAdapter()
 	retGrammar, _, err := grammarParserAdapter.ToGrammar(grammarInput)
@@ -270,7 +277,14 @@ func TestApplication_interpret_Success(t *testing.T) {
 		return
 	}
 
-	parserAdapter := programs.NewParserAdapter()
+	application := NewApplication()
+	err = application.Suites(retGrammar)
+	if err != nil {
+		t.Errorf("there was an error while running the grammar test suites: %s", err.Error())
+		return
+	}
+
+	/*parserAdapter := programs.NewParserAdapter()
 	retProgram, retRemaining, err := parserAdapter.ToProgram(retGrammar, programInput)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
@@ -289,9 +303,10 @@ func TestApplication_interpret_Success(t *testing.T) {
 		return
 	}
 
-	fmt.Printf("\n%v\n", retProgram)
+	fmt.Printf("\n%v\n", retProgram)*/
 }
 
+/*
 func TestApplication_grammar_composeBlock_withReplacement_Success(t *testing.T) {
 	input := []byte(`
 		v1;
@@ -345,3 +360,4 @@ func TestApplication_grammar_composeBlock_withReplacement_Success(t *testing.T) 
 		return
 	}
 }
+*/

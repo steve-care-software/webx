@@ -82,6 +82,43 @@ func (app *parserAdapter) ToProgram(grammar grammars.Grammar, input []byte) (Pro
 	return program, retRemaining, nil
 }
 
+// ToProgramWithRoot creates a program but changes the root block of the grammar
+func (app *parserAdapter) ToProgramWithRoot(grammar grammars.Grammar, rootBlockName string, input []byte) (Program, []byte, error) {
+	rootBlock, err := grammar.Blocks().Fetch(rootBlockName)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	retInstruction, retInstructionRemaining, err := app.toInstruction(
+		grammar,
+		rootBlock,
+		input,
+	)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	element, err := app.elementBuilder.Create().
+		WithInstruction(retInstruction).
+		Now()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	program, err := app.builder.Create().
+		WithGrammar(grammar).
+		WithRoot(element).
+		Now()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return program, retInstructionRemaining, nil
+}
+
 func (app *parserAdapter) toInstruction(
 	grammar grammars.Grammar,
 	block blocks.Block,
@@ -202,6 +239,10 @@ func (app *parserAdapter) toToken(
 			if cpt >= max {
 				break
 			}
+		}
+
+		if len(remaining) <= 0 {
+			break
 		}
 
 		retBytes := app.filterOmissions(
