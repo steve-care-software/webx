@@ -21,62 +21,62 @@ import (
 )
 
 type parserAdapter struct {
-	grammarBuilder             Builder
-	syscallsBuilder            syscalls.Builder
-	syscallBuilder             syscalls.SyscallBuilder
-	blocksBuilder              blocks.Builder
-	blockBuilder               blocks.BlockBuilder
-	suitesBuilder              suites.Builder
-	suiteBuilder               suites.SuiteBuilder
-	linesBuilder               lines.Builder
-	lineBuilder                lines.LineBuilder
-	executionBuilder           executions.Builder
-	parametersBuilder          parameters.Builder
-	parameterBuilder           parameters.ParameterBuilder
-	tokensBuilder              tokens.Builder
-	tokenBuilder               tokens.TokenBuilder
-	elementsBuilder            elements.Builder
-	elementBuilder             elements.ElementBuilder
-	rulesBuilder               rules.Builder
-	ruleBuilder                rules.RuleBuilder
-	cardinalityBuilder         cardinalities.Builder
-	filterBytes                []byte
-	suiteSeparatorPrefix       []byte
-	possibleLetters            []byte
-	possibleLowerCaseLetters   []byte
-	possibleUpperCaseLetters   []byte
-	possibleNumbers            []byte
-	possibleFuncNameCharacters []byte
-	omissionPrefix             byte
-	omissionSuffix             byte
-	versionPrefix              byte
-	versionSuffix              byte
-	rootPrefix                 byte
-	rootSuffix                 byte
-	blockSuffix                byte
-	suiteLineSuffix            byte
-	failSeparator              byte
-	blockDefinitionSeparator   byte
-	linesSeparator             byte
-	lineSeparator              byte
-	tokenReferenceSeparator    byte
-	ruleNameSeparator          byte
-	ruleNameValueSeparator     byte
-	ruleValuePrefix            byte
-	ruleValueSuffix            byte
-	ruleValueEscape            byte
-	cardinalityOpen            byte
-	cardinalityClose           byte
-	cardinalitySeparator       byte
-	cardinalityZeroPlus        byte
-	cardinalityOnePlus         byte
-	cardinalityOptional        byte
-	indexOpen                  byte
-	indexClose                 byte
-	parameterSeparator         byte
-	syscallDefinitionSeparator byte
-	sysCallNamePrefix          byte
-	sysCallFuncNamePrefix      byte
+	grammarBuilder                    Builder
+	syscallsBuilder                   syscalls.Builder
+	syscallBuilder                    syscalls.SyscallBuilder
+	blocksBuilder                     blocks.Builder
+	blockBuilder                      blocks.BlockBuilder
+	suitesBuilder                     suites.Builder
+	suiteBuilder                      suites.SuiteBuilder
+	linesBuilder                      lines.Builder
+	lineBuilder                       lines.LineBuilder
+	executionBuilder                  executions.Builder
+	parametersBuilder                 parameters.Builder
+	parameterBuilder                  parameters.ParameterBuilder
+	tokensBuilder                     tokens.Builder
+	tokenBuilder                      tokens.TokenBuilder
+	elementsBuilder                   elements.Builder
+	elementBuilder                    elements.ElementBuilder
+	rulesBuilder                      rules.Builder
+	ruleBuilder                       rules.RuleBuilder
+	cardinalityBuilder                cardinalities.Builder
+	filterBytes                       []byte
+	suiteSeparatorPrefix              []byte
+	blockNameAfterFirstByteCharacters []byte
+	possibleLowerCaseLetters          []byte
+	possibleUpperCaseLetters          []byte
+	possibleNumbers                   []byte
+	possibleFuncNameCharacters        []byte
+	omissionPrefix                    byte
+	omissionSuffix                    byte
+	versionPrefix                     byte
+	versionSuffix                     byte
+	rootPrefix                        byte
+	rootSuffix                        byte
+	blockSuffix                       byte
+	suiteLineSuffix                   byte
+	failSeparator                     byte
+	blockDefinitionSeparator          byte
+	linesSeparator                    byte
+	lineSeparator                     byte
+	tokenReferenceSeparator           byte
+	ruleNameSeparator                 byte
+	ruleNameValueSeparator            byte
+	ruleValuePrefix                   byte
+	ruleValueSuffix                   byte
+	ruleValueEscape                   byte
+	cardinalityOpen                   byte
+	cardinalityClose                  byte
+	cardinalitySeparator              byte
+	cardinalityZeroPlus               byte
+	cardinalityOnePlus                byte
+	cardinalityOptional               byte
+	indexOpen                         byte
+	indexClose                        byte
+	parameterSeparator                byte
+	syscallDefinitionSeparator        byte
+	sysCallNamePrefix                 byte
+	sysCallFuncNamePrefix             byte
 }
 
 func createParserAdapter(
@@ -101,7 +101,7 @@ func createParserAdapter(
 	cardinalityBuilder cardinalities.Builder,
 	filterBytes []byte,
 	suiteSeparatorPrefix []byte,
-	possibleLetters []byte,
+	blockNameAfterFirstByteCharacters []byte,
 	possibleLowerCaseLetters []byte,
 	possibleUpperCaseLetters []byte,
 	possibleNumbers []byte,
@@ -138,62 +138,62 @@ func createParserAdapter(
 	sysCallFuncNamePrefix byte,
 ) ParserAdapter {
 	out := parserAdapter{
-		grammarBuilder:             grammarBuilder,
-		syscallsBuilder:            syscallsBuilder,
-		syscallBuilder:             syscallBuilder,
-		blocksBuilder:              blocksBuilder,
-		blockBuilder:               blockBuilder,
-		suitesBuilder:              suitesBuilder,
-		suiteBuilder:               suiteBuilder,
-		linesBuilder:               linesBuilder,
-		lineBuilder:                lineBuilder,
-		executionBuilder:           executionBuilder,
-		parametersBuilder:          parametersBuilder,
-		parameterBuilder:           parameterBuilder,
-		tokensBuilder:              tokensBuilder,
-		tokenBuilder:               tokenBuilder,
-		elementsBuilder:            elementsBuilder,
-		elementBuilder:             elementBuilder,
-		rulesBuilder:               rulesBuilder,
-		ruleBuilder:                ruleBuilder,
-		cardinalityBuilder:         cardinalityBuilder,
-		filterBytes:                filterBytes,
-		suiteSeparatorPrefix:       suiteSeparatorPrefix,
-		possibleLetters:            possibleLetters,
-		possibleLowerCaseLetters:   possibleLowerCaseLetters,
-		possibleUpperCaseLetters:   possibleUpperCaseLetters,
-		possibleNumbers:            possibleNumbers,
-		possibleFuncNameCharacters: possibleFuncNameCharacters,
-		omissionPrefix:             omissionPrefix,
-		omissionSuffix:             omissionSuffix,
-		versionPrefix:              versionPrefix,
-		versionSuffix:              versionSuffix,
-		rootPrefix:                 rootPrefix,
-		rootSuffix:                 rootSuffix,
-		suiteLineSuffix:            suiteLineSuffix,
-		failSeparator:              failSeparator,
-		blockDefinitionSeparator:   blockDefinitionSeparator,
-		blockSuffix:                blockSuffix,
-		linesSeparator:             linesSeparator,
-		lineSeparator:              lineSeparator,
-		tokenReferenceSeparator:    tokenReferenceSeparator,
-		ruleNameSeparator:          ruleNameSeparator,
-		ruleNameValueSeparator:     ruleNameValueSeparator,
-		ruleValuePrefix:            ruleValuePrefix,
-		ruleValueSuffix:            ruleValueSuffix,
-		ruleValueEscape:            ruleValueEscape,
-		cardinalityOpen:            cardinalityOpen,
-		cardinalityClose:           cardinalityClose,
-		cardinalitySeparator:       cardinalitySeparator,
-		cardinalityZeroPlus:        cardinalityZeroPlus,
-		cardinalityOnePlus:         cardinalityOnePlus,
-		cardinalityOptional:        cardinalityOptional,
-		indexOpen:                  indexOpen,
-		indexClose:                 indexClose,
-		parameterSeparator:         parameterSeparator,
-		syscallDefinitionSeparator: syscallDefinitionSeparator,
-		sysCallNamePrefix:          sysCallNamePrefix,
-		sysCallFuncNamePrefix:      sysCallFuncNamePrefix,
+		grammarBuilder:                    grammarBuilder,
+		syscallsBuilder:                   syscallsBuilder,
+		syscallBuilder:                    syscallBuilder,
+		blocksBuilder:                     blocksBuilder,
+		blockBuilder:                      blockBuilder,
+		suitesBuilder:                     suitesBuilder,
+		suiteBuilder:                      suiteBuilder,
+		linesBuilder:                      linesBuilder,
+		lineBuilder:                       lineBuilder,
+		executionBuilder:                  executionBuilder,
+		parametersBuilder:                 parametersBuilder,
+		parameterBuilder:                  parameterBuilder,
+		tokensBuilder:                     tokensBuilder,
+		tokenBuilder:                      tokenBuilder,
+		elementsBuilder:                   elementsBuilder,
+		elementBuilder:                    elementBuilder,
+		rulesBuilder:                      rulesBuilder,
+		ruleBuilder:                       ruleBuilder,
+		cardinalityBuilder:                cardinalityBuilder,
+		filterBytes:                       filterBytes,
+		suiteSeparatorPrefix:              suiteSeparatorPrefix,
+		blockNameAfterFirstByteCharacters: blockNameAfterFirstByteCharacters,
+		possibleLowerCaseLetters:          possibleLowerCaseLetters,
+		possibleUpperCaseLetters:          possibleUpperCaseLetters,
+		possibleNumbers:                   possibleNumbers,
+		possibleFuncNameCharacters:        possibleFuncNameCharacters,
+		omissionPrefix:                    omissionPrefix,
+		omissionSuffix:                    omissionSuffix,
+		versionPrefix:                     versionPrefix,
+		versionSuffix:                     versionSuffix,
+		rootPrefix:                        rootPrefix,
+		rootSuffix:                        rootSuffix,
+		suiteLineSuffix:                   suiteLineSuffix,
+		failSeparator:                     failSeparator,
+		blockDefinitionSeparator:          blockDefinitionSeparator,
+		blockSuffix:                       blockSuffix,
+		linesSeparator:                    linesSeparator,
+		lineSeparator:                     lineSeparator,
+		tokenReferenceSeparator:           tokenReferenceSeparator,
+		ruleNameSeparator:                 ruleNameSeparator,
+		ruleNameValueSeparator:            ruleNameValueSeparator,
+		ruleValuePrefix:                   ruleValuePrefix,
+		ruleValueSuffix:                   ruleValueSuffix,
+		ruleValueEscape:                   ruleValueEscape,
+		cardinalityOpen:                   cardinalityOpen,
+		cardinalityClose:                  cardinalityClose,
+		cardinalitySeparator:              cardinalitySeparator,
+		cardinalityZeroPlus:               cardinalityZeroPlus,
+		cardinalityOnePlus:                cardinalityOnePlus,
+		cardinalityOptional:               cardinalityOptional,
+		indexOpen:                         indexOpen,
+		indexClose:                        indexClose,
+		parameterSeparator:                parameterSeparator,
+		syscallDefinitionSeparator:        syscallDefinitionSeparator,
+		sysCallNamePrefix:                 sysCallNamePrefix,
+		sysCallFuncNamePrefix:             sysCallFuncNamePrefix,
 	}
 
 	return &out
@@ -947,7 +947,7 @@ func (app *parserAdapter) bytesToRule(input []byte) (rules.Rule, []byte, error) 
 }
 
 func (app *parserAdapter) bytesToBlockName(input []byte) (string, []byte, error) {
-	blockName, retBlockRemaining, err := blockName(input, app.possibleLowerCaseLetters, app.possibleLetters, app.filterBytes)
+	blockName, retBlockRemaining, err := blockName(input, app.possibleLowerCaseLetters, app.blockNameAfterFirstByteCharacters, app.filterBytes)
 	if err != nil {
 		return "", nil, err
 	}

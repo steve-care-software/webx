@@ -186,7 +186,7 @@ func NewParserAdapter() ParserAdapter {
 	rulesBuilder := rules.NewBuilder()
 	ruleBuilder := rules.NewRuleBuilder()
 	cardinalityBuilder := cardinalities.NewBuilder()
-	possibleLetters := createPossibleLetters()
+	blockNameAfterFirstByteCharacters := createBlockNameCharacters()
 	possibleLowerCaseLetters := createPossibleLowerCaseLetters()
 	possibleUpperCaseLetters := createPossibleUpperCaseLetters()
 	possibleNumbers := createPossibleNumbers()
@@ -213,7 +213,7 @@ func NewParserAdapter() ParserAdapter {
 		cardinalityBuilder,
 		[]byte(filterBytes),
 		[]byte(suiteSeparatorPrefix),
-		possibleLetters,
+		blockNameAfterFirstByteCharacters,
 		possibleLowerCaseLetters,
 		possibleUpperCaseLetters,
 		possibleNumbers,

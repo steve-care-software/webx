@@ -7,7 +7,7 @@ import (
 
 func TestBlockName_Success(t *testing.T) {
 	lowerCaseLetters := createPossibleLowerCaseLetters()
-	anyLetters := createPossibleLetters()
+	anyLetters := createBlockNameCharacters()
 	expectedRemaining := []byte{}
 	expectedBlockName := []byte("myBlockName")
 	input := []byte(append(expectedBlockName, expectedRemaining...))
@@ -30,7 +30,7 @@ func TestBlockName_Success(t *testing.T) {
 
 func TestBlockName_withRemaining_Success(t *testing.T) {
 	lowerCaseLetters := createPossibleLowerCaseLetters()
-	anyLetters := createPossibleLetters()
+	anyLetters := createBlockNameCharacters()
 	expectedRemaining := []byte("!this is some remaining")
 	expectedBlockName := []byte("myBlockName")
 	input := []byte(append(expectedBlockName, expectedRemaining...))
@@ -53,7 +53,7 @@ func TestBlockName_withRemaining_Success(t *testing.T) {
 
 func TestBlockName_withoutMatch_returnsError(t *testing.T) {
 	lowerCaseLetters := createPossibleLowerCaseLetters()
-	anyLetters := createPossibleLetters()
+	anyLetters := createBlockNameCharacters()
 	expectedRemaining := []byte("!this is some remaining")
 	expectedBlockName := []byte("INVALID")
 	input := []byte(append(expectedBlockName, expectedRemaining...))

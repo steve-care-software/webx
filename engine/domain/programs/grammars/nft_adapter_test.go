@@ -65,6 +65,4 @@ func TestApplication_grammar_compileGrammar_decompile_Success(t *testing.T) {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
 	}
-
-	//fmt.Printf("\n%v\n", retNFT)
 }

@@ -10,7 +10,7 @@ import (
 func blockName(
 	data []byte,
 	firstBytes []byte,
-	secondBytes []byte,
+	remainingAcceptableBytes []byte,
 	filterBytes []byte,
 ) ([]byte, []byte, error) {
 	data = filterPrefix(data, filterBytes)
@@ -19,7 +19,7 @@ func blockName(
 		return nil, nil, errors.New("the bytes did not match any of the firstBytes")
 	}
 
-	retSecondMatches, retSecondRemaining := matchBytes(retRemaining, secondBytes, filterBytes)
+	retSecondMatches, retSecondRemaining := matchBytes(retRemaining, remainingAcceptableBytes, filterBytes)
 	return append(retFirstMatches, retSecondMatches...), retSecondRemaining, nil
 }
 
@@ -344,15 +344,18 @@ func filterPrefix(data []byte, possibleBytes []byte) []byte {
 }
 
 func createPossibleFuncNameCharacters() []byte {
-	letters := createPossibleLetters()
+	letters := createBlockNameCharacters()
 	output := append(letters, []byte(funcNameSeparator)...)
 	return append(output, createPossibleNumbers()...)
 }
 
-func createPossibleLetters() []byte {
+func createBlockNameCharacters() []byte {
+	numbers := createPossibleNumbers()
 	lowerCaseLetters := createPossibleLowerCaseLetters()
 	upperCaseLetters := createPossibleUpperCaseLetters()
-	return append(lowerCaseLetters, upperCaseLetters...)
+	output := append(lowerCaseLetters, upperCaseLetters...)
+	output = append(output, numbers...)
+	return output
 }
 
 func createPossibleUpperCaseLetters() []byte {
