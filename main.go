@@ -1,24 +1,26 @@
 package main
 
 import (
-	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/app"
-	"github.com/steve-care-software/webx/gui/menus"
+	"github.com/steve-care-software/webx/gui"
 )
 
 func main() {
-	application := app.New()
-	window := application.NewWindow("Steve Care")
-	mainMenu, err := menus.NewMainMenuBuilder().Create().
-		WithApplication(application).
-		WithWindow(window).
+	title := "Steve Care"
+	width := float32(1024.0)
+	height := float32(1024.0)
+	guiIns, err := gui.NewBuilder().
+		Create().
+		WithTitle(title).
+		WithWidth(width).
+		WithHeight(height).
 		Now()
 
 	if err != nil {
 		panic(err)
 	}
 
-	window.SetMainMenu(mainMenu.Fetch())
-	window.Resize(fyne.NewSize(800, 600))
-	window.ShowAndRun()
+	err = guiIns.Execute()
+	if err != nil {
+		panic(err)
+	}
 }

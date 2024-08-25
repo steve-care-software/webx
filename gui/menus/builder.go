@@ -6,13 +6,13 @@ import (
 	"fyne.io/fyne/v2"
 )
 
-type mainMenuBuilder struct {
+type builder struct {
 	application fyne.App
 	window      fyne.Window
 }
 
-func createMainMenuBuilder() MainMenuBuilder {
-	out := mainMenuBuilder{
+func createBuilder() Builder {
+	out := builder{
 		application: nil,
 		window:      nil,
 	}
@@ -21,24 +21,24 @@ func createMainMenuBuilder() MainMenuBuilder {
 }
 
 // Create initializes the builder
-func (app *mainMenuBuilder) Create() MainMenuBuilder {
-	return createMainMenuBuilder()
+func (app *builder) Create() Builder {
+	return createBuilder()
 }
 
 // WithApplication adds an application to the builder
-func (app *mainMenuBuilder) WithApplication(application fyne.App) MainMenuBuilder {
+func (app *builder) WithApplication(application fyne.App) Builder {
 	app.application = application
 	return app
 }
 
 // WithWindow adds a window to the builder
-func (app *mainMenuBuilder) WithWindow(window fyne.Window) MainMenuBuilder {
+func (app *builder) WithWindow(window fyne.Window) Builder {
 	app.window = window
 	return app
 }
 
 // Now builds a new MainMenu instance
-func (app *mainMenuBuilder) Now() (MainMenu, error) {
+func (app *builder) Now() (MainMenu, error) {
 	if app.application == nil {
 		return nil, errors.New("the application is mandatory in order to build a MainMenu instance")
 	}

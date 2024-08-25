@@ -1,4 +1,4 @@
-package menus
+package top
 
 import "fyne.io/fyne/v2"
 
@@ -7,15 +7,15 @@ func NewBuilder() Builder {
 	return createBuilder()
 }
 
-// Builder creates the main menu builder
+// Builder represents the top builder
 type Builder interface {
 	Create() Builder
 	WithApplication(application fyne.App) Builder
 	WithWindow(window fyne.Window) Builder
-	Now() (MainMenu, error)
+	Now() (Top, error)
 }
 
-// MainMenu creates the main menu
-type MainMenu interface {
-	Fetch() *fyne.MainMenu
+// Top represents the top container in the grid
+type Top interface {
+	Fetch() *fyne.Container
 }

@@ -1,4 +1,4 @@
-package menus
+package center
 
 import "fyne.io/fyne/v2"
 
@@ -7,15 +7,15 @@ func NewBuilder() Builder {
 	return createBuilder()
 }
 
-// Builder creates the main menu builder
+// Builder represents the center builder
 type Builder interface {
 	Create() Builder
 	WithApplication(application fyne.App) Builder
 	WithWindow(window fyne.Window) Builder
-	Now() (MainMenu, error)
+	Now() (Center, error)
 }
 
-// MainMenu creates the main menu
-type MainMenu interface {
-	Fetch() *fyne.MainMenu
+// Center represents the center container in the grid
+type Center interface {
+	Fetch() *fyne.Container
 }
