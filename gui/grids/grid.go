@@ -3,41 +3,52 @@ package grids
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/layout"
-	"github.com/steve-care-software/webx/gui/grids/bottom"
-	"github.com/steve-care-software/webx/gui/grids/center"
-	"github.com/steve-care-software/webx/gui/grids/top"
+	center_center "github.com/steve-care-software/webx/gui/grids/center"
+	center_left "github.com/steve-care-software/webx/gui/grids/left"
+	center_right "github.com/steve-care-software/webx/gui/grids/right"
+	center_top "github.com/steve-care-software/webx/gui/grids/top"
 )
 
-type grid struct {
-	bottom bottom.Bottom
-	center center.Center
-	top    top.Top
+type center struct {
+	top         center_top.Top
+	left        center_left.Left
+	center      center_center.Center
+	right       center_right.Right
+	application fyne.App
+	window      fyne.Window
 }
 
 func createGrid(
-	bottom bottom.Bottom,
-	center center.Center,
-	top top.Top,
+	top center_top.Top,
+	left center_left.Left,
+	centerIns center_center.Center,
+	right center_right.Right,
+	application fyne.App,
+	window fyne.Window,
 ) Grid {
-	out := grid{
-		bottom: bottom,
-		center: center,
-		top:    top,
+	out := center{
+		top:         top,
+		left:        left,
+		center:      centerIns,
+		right:       right,
+		application: application,
+		window:      window,
 	}
 
 	return &out
 }
 
-// Fetch fetches the grid container
-func (app *grid) Fetch() *fyne.Container {
-	top := app.top.Fetch()
-	center := app.center.Fetch()
-	bottom := app.bottom.Fetch()
-	return container.New(
-		layout.NewVBoxLayout(),
-		top,
-		center,
-		bottom,
+// Fetch fetches the the container
+func (app *center) Fetch() *fyne.Container {
+	topContainer := app.top.Fetch()
+	leftContainer := app.left.Fetch()
+	centerContainer := app.center.Fetch()
+	rightContainer := app.right.Fetch()
+	return container.NewBorder(
+		topContainer,    // Top
+		nil,             // Bottom
+		leftContainer,   // Left
+		rightContainer,  // Right
+		centerContainer, // Grid (expands)
 	)
 }

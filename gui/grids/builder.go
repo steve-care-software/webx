@@ -4,28 +4,32 @@ import (
 	"errors"
 
 	"fyne.io/fyne/v2"
-	"github.com/steve-care-software/webx/gui/grids/bottom"
-	"github.com/steve-care-software/webx/gui/grids/center"
-	"github.com/steve-care-software/webx/gui/grids/top"
+	center_center "github.com/steve-care-software/webx/gui/grids/center"
+	center_left "github.com/steve-care-software/webx/gui/grids/left"
+	center_right "github.com/steve-care-software/webx/gui/grids/right"
+	center_top "github.com/steve-care-software/webx/gui/grids/top"
 )
 
 type builder struct {
-	bottomBuilder bottom.Builder
-	centerBuilder center.Builder
-	topBuilder    top.Builder
+	topBuilder    center_top.Builder
+	leftBuilder   center_left.Builder
+	centerBuilder center_center.Builder
+	rightBuilder  center_right.Builder
 	application   fyne.App
 	window        fyne.Window
 }
 
 func createBuilder(
-	bottomBuilder bottom.Builder,
-	centerBuilder center.Builder,
-	topBuilder top.Builder,
+	topBuilder center_top.Builder,
+	leftBuilder center_left.Builder,
+	centerBuilder center_center.Builder,
+	rightBuilder center_right.Builder,
 ) Builder {
 	out := builder{
-		bottomBuilder: bottomBuilder,
-		centerBuilder: centerBuilder,
 		topBuilder:    topBuilder,
+		leftBuilder:   leftBuilder,
+		centerBuilder: centerBuilder,
+		rightBuilder:  rightBuilder,
 		application:   nil,
 		window:        nil,
 	}
@@ -36,9 +40,10 @@ func createBuilder(
 // Create initializes the builder
 func (app *builder) Create() Builder {
 	return createBuilder(
-		app.bottomBuilder,
-		app.centerBuilder,
 		app.topBuilder,
+		app.leftBuilder,
+		app.centerBuilder,
+		app.rightBuilder,
 	)
 }
 
@@ -54,7 +59,7 @@ func (app *builder) WithWindow(window fyne.Window) Builder {
 	return app
 }
 
-// Now builds a new Grid instance
+// Now builds a new Bottom instance
 func (app *builder) Now() (Grid, error) {
 	if app.application == nil {
 		return nil, errors.New("the application is mandatory in order to build a Grid instance")
@@ -64,36 +69,32 @@ func (app *builder) Now() (Grid, error) {
 		return nil, errors.New("the window is mandatory in order to build a Grid instance")
 	}
 
-	bottom, err := app.bottomBuilder.Create().
-		WithApplication(app.application).
-		WithWindow(app.window).
-		Now()
-
+	top, err := app.topBuilder.Create().WithApplication(app.application).WithWindow(app.window).Now()
 	if err != nil {
 		return nil, err
 	}
 
-	center, err := app.centerBuilder.Create().
-		WithApplication(app.application).
-		WithWindow(app.window).
-		Now()
-
+	left, err := app.leftBuilder.Create().WithApplication(app.application).WithWindow(app.window).Now()
 	if err != nil {
 		return nil, err
 	}
 
-	top, err := app.topBuilder.Create().
-		WithApplication(app.application).
-		WithWindow(app.window).
-		Now()
+	center, err := app.centerBuilder.Create().WithApplication(app.application).WithWindow(app.window).Now()
+	if err != nil {
+		return nil, err
+	}
 
+	right, err := app.rightBuilder.Create().WithApplication(app.application).WithWindow(app.window).Now()
 	if err != nil {
 		return nil, err
 	}
 
 	return createGrid(
-		bottom,
-		center,
 		top,
+		left,
+		center,
+		right,
+		app.application,
+		app.window,
 	), nil
 }

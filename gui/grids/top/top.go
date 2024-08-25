@@ -1,12 +1,10 @@
 package top
 
 import (
-	"image/color"
-
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/widget"
 )
 
 type top struct {
@@ -27,9 +25,9 @@ func createTop(
 
 // Fetch fetches the top container
 func (app *top) Fetch() *fyne.Container {
-	text4 := canvas.NewText("top", color.White)
+	/*text4 := canvas.NewText("top", color.White)
 	contentContainer := container.New(
-		layout.NewHBoxLayout(),
+		layout.NewCenterLayout(),
 		layout.NewSpacer(),
 		text4,
 		layout.NewSpacer(),
@@ -39,5 +37,9 @@ func (app *top) Fetch() *fyne.Container {
 	blueContainer := canvas.NewRectangle(color.RGBA{R: 0, G: 0, B: 255, A: 255})
 
 	// Set the stack:
-	return container.NewStack(blueContainer, contentContainer)
+	return container.NewStack(blueContainer, contentContainer)*/
+
+	return container.New(layout.NewVBoxLayout(),
+		widget.NewLabel("Top Container"),
+	)
 }

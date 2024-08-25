@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	"github.com/steve-care-software/webx/gui"
 )
 
@@ -21,6 +23,6 @@ func main() {
 
 	err = guiIns.Execute()
 	if err != nil {
-		panic(err)
+		log.Print(err.Error())
 	}
 }

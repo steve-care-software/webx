@@ -2,24 +2,27 @@ package grids
 
 import (
 	"fyne.io/fyne/v2"
-	"github.com/steve-care-software/webx/gui/grids/bottom"
-	"github.com/steve-care-software/webx/gui/grids/center"
-	"github.com/steve-care-software/webx/gui/grids/top"
+	center_center "github.com/steve-care-software/webx/gui/grids/center"
+	center_left "github.com/steve-care-software/webx/gui/grids/left"
+	center_right "github.com/steve-care-software/webx/gui/grids/right"
+	center_top "github.com/steve-care-software/webx/gui/grids/top"
 )
 
 // NewBuilder creates a new builder
 func NewBuilder() Builder {
-	bottomBuilder := bottom.NewBuilder()
-	centerBuilder := center.NewBuilder()
-	topBuilder := top.NewBuilder()
+	topBuilder := center_top.NewBuilder()
+	leftBuilder := center_left.NewBuilder()
+	centerBuilder := center_center.NewBuilder()
+	rightBuilder := center_right.NewBuilder()
 	return createBuilder(
-		bottomBuilder,
-		centerBuilder,
 		topBuilder,
+		leftBuilder,
+		centerBuilder,
+		rightBuilder,
 	)
 }
 
-// Builder represents the grid builder
+// Builder represents the center builder
 type Builder interface {
 	Create() Builder
 	WithApplication(application fyne.App) Builder
@@ -27,7 +30,7 @@ type Builder interface {
 	Now() (Grid, error)
 }
 
-// Grid represents the application grid
+// Grid represents the center container in the grid
 type Grid interface {
 	Fetch() *fyne.Container
 }

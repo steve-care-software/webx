@@ -2,6 +2,11 @@ package left
 
 import "fyne.io/fyne/v2"
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represents the builder
 type Builder interface {
 	Create() Builder
@@ -12,5 +17,5 @@ type Builder interface {
 
 // Left represents the left container
 type Left interface {
-	Fetch() (*fyne.Container, error)
+	Fetch() *fyne.Container
 }

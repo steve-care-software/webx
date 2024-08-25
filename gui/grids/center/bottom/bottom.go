@@ -1,12 +1,10 @@
 package bottom
 
 import (
-	"image/color"
-
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/widget"
 )
 
 type bottom struct {
@@ -28,17 +26,7 @@ func createBottom(
 
 // Fetch fetches the the container
 func (app *bottom) Fetch() *fyne.Container {
-	text4 := canvas.NewText("bottom", color.White)
-	contentContainer := container.New(
-		layout.NewHBoxLayout(),
-		layout.NewSpacer(),
-		text4,
-		layout.NewSpacer(),
+	return container.New(layout.NewVBoxLayout(),
+		widget.NewLabel("Bottom Container"),
 	)
-
-	// Create a red rectangle to serve as the background
-	redBackground := canvas.NewRectangle(color.RGBA{R: 255, G: 0, B: 0, A: 255})
-
-	// Set the stack:
-	return container.NewStack(redBackground, contentContainer)
 }

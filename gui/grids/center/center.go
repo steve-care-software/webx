@@ -1,24 +1,28 @@
 package center
 
 import (
-	"image/color"
-
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/layout"
+	"github.com/steve-care-software/webx/gui/grids/center/bottom"
+	"github.com/steve-care-software/webx/gui/grids/center/cmain"
 )
 
 type center struct {
+	main        cmain.Main
+	bottom      bottom.Bottom
 	application fyne.App
 	window      fyne.Window
 }
 
 func createCenter(
+	main cmain.Main,
+	bottom bottom.Bottom,
 	application fyne.App,
 	window fyne.Window,
 ) Center {
 	out := center{
+		main:        main,
+		bottom:      bottom,
 		application: application,
 		window:      window,
 	}
@@ -26,19 +30,15 @@ func createCenter(
 	return &out
 }
 
-// Fetch fetches the the container
+// Fetch fetches the container
 func (app *center) Fetch() *fyne.Container {
-	text4 := canvas.NewText("center", color.White)
-	contentContainer := container.New(
-		layout.NewHBoxLayout(),
-		layout.NewSpacer(),
-		text4,
-		layout.NewSpacer(),
+	mainContainer := app.main.Fetch()
+	bottomContainer := app.bottom.Fetch()
+	return container.NewBorder(
+		nil,             // Top
+		bottomContainer, // Bottom
+		nil,             // Left
+		nil,             // Right
+		mainContainer,   // Grid (expands)
 	)
-
-	// Create a green to serve as the background
-	greenContainer := canvas.NewRectangle(color.RGBA{R: 0, G: 255, B: 0, A: 255})
-
-	// Set the stack:
-	return container.NewStack(greenContainer, contentContainer)
 }

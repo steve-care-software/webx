@@ -1,13 +1,22 @@
 package center
 
-import "fyne.io/fyne/v2"
+import (
+	"fyne.io/fyne/v2"
+	"github.com/steve-care-software/webx/gui/grids/center/bottom"
+	"github.com/steve-care-software/webx/gui/grids/center/cmain"
+)
 
 // NewBuilder creates a new builder
 func NewBuilder() Builder {
-	return createBuilder()
+	mainBuilder := cmain.NewBuilder()
+	bottomBuilder := bottom.NewBuilder()
+	return createBuilder(
+		mainBuilder,
+		bottomBuilder,
+	)
 }
 
-// Builder represents the center builder
+// Builder represents the builder
 type Builder interface {
 	Create() Builder
 	WithApplication(application fyne.App) Builder
@@ -15,7 +24,7 @@ type Builder interface {
 	Now() (Center, error)
 }
 
-// Center represents the center container in the grid
+// Center represents the center container
 type Center interface {
 	Fetch() *fyne.Container
 }
