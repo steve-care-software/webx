@@ -2,19 +2,16 @@ class DomLink {
     constructor(
         parentDom,
         identifier,
-        normalStyle,
-        hoverStyle,
         onClickEvent,
     ) {
         this.parentDom = parentDom;
         this.identifier = identifier;
-        this.normalStyle = normalStyle;
-        this.hoverStyle = hoverStyle;
         if (onClickEvent != null) {
             this.clickListener = this.createClickListener(onClickEvent);
         }
 
         this.instance = null;
+        this.styleInstance = null;
     };
 
     createClickListener(onClickEvent) {
@@ -25,15 +22,9 @@ class DomLink {
     };
 
     Init() {
-        var style = `#${this.identifier} { ${this.normalStyle} }`;
-        if (this.hoverStyle != null) {
-            style += `#${this.identifier}:hover { ${this.hoverStyle} }`;
-        }
-
-        const styleIns = document.createElement('style');
-        styleIns.textContent = "text/css";
-        styleIns.innerHTML = style;
-        this.parentDom.appendChild(styleIns);
+        this.styleInstance = document.createElement('style');
+        this.styleInstance.textContent = "text/css";
+        this.parentDom.appendChild(this.styleInstance);
 
         const aIns = document.createElement('a');
         aIns.setAttribute("id", this.identifier);
@@ -48,6 +39,26 @@ class DomLink {
     SetAnchor(anchor) {
         this.instance.innerText = anchor;
         return this;
+    };
+
+    UpdateStyles(styles) {
+        var normalStr = styles.GetNormal().String();
+        var hoverStr = styles.GetHover().String();
+
+        var style = "";
+        if (normalStr != "") {
+            style = `#${this.identifier} { ${normalStr} }`;
+        }
+
+        if (hoverStr != "") {
+            style += `#${this.identifier}:hover { ${hoverStr} }`;
+        }
+
+        if (style == "") {
+            return;
+        }
+
+        this.styleInstance.innerHTML = style;
     };
 
     SetOnClickEvent(onClickEvent) {

@@ -14,6 +14,11 @@ class ApplicationLink {
             this.infra.SetOnClickEvent(onClickEvent);
         };
 
+        if (updatedLink.HasStyles()) {
+            var styles = updatedLink.GetStyles();
+            this.infra.UpdateStyles(styles);
+        }
+        
         this.link = updatedLink;
         return this;
     };
