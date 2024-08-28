@@ -2,21 +2,19 @@ package suites
 
 import (
 	"errors"
-
-	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
 )
 
 type suiteBuilder struct {
-	name    string
-	element elements.Element
-	isFail  bool
+	name   string
+	value  []byte
+	isFail bool
 }
 
 func createSuiteBuilder() SuiteBuilder {
 	out := suiteBuilder{
-		name:    "",
-		element: nil,
-		isFail:  false,
+		name:   "",
+		value:  nil,
+		isFail: false,
 	}
 
 	return &out
@@ -33,9 +31,9 @@ func (app *suiteBuilder) WithName(name string) SuiteBuilder {
 	return app
 }
 
-// WithElement adds an element to the builder
-func (app *suiteBuilder) WithElement(element elements.Element) SuiteBuilder {
-	app.element = element
+// WithValue adds a value to the builder
+func (app *suiteBuilder) WithValue(value []byte) SuiteBuilder {
+	app.value = value
 	return app
 }
 
@@ -47,13 +45,17 @@ func (app *suiteBuilder) IsFail() SuiteBuilder {
 
 // Now builds a new Suite instance
 func (app *suiteBuilder) Now() (Suite, error) {
+	if app.value != nil && len(app.value) <= 0 {
+		app.value = nil
+	}
+
 	if app.name == "" {
 		return nil, errors.New("the name is mandatory in order to build a Suite instance")
 	}
 
-	if app.element == nil {
-		return nil, errors.New("the element is mandatory in order to build a Suite instance")
+	if app.value == nil {
+		return nil, errors.New("the value is mandatory in order to build a Suite instance")
 	}
 
-	return createSuite(app.name, app.element, app.isFail), nil
+	return createSuite(app.name, app.value, app.isFail), nil
 }

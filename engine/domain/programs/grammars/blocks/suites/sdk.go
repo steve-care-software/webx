@@ -1,7 +1,5 @@
 package suites
 
-import "github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
-
 // NewBuilder creates a new builder
 func NewBuilder() Builder {
 	return createBuilder()
@@ -28,7 +26,7 @@ type Suites interface {
 type SuiteBuilder interface {
 	Create() SuiteBuilder
 	WithName(name string) SuiteBuilder
-	WithElement(element elements.Element) SuiteBuilder
+	WithValue(value []byte) SuiteBuilder
 	IsFail() SuiteBuilder
 	Now() (Suite, error)
 }
@@ -36,6 +34,6 @@ type SuiteBuilder interface {
 // Suite represents a suite
 type Suite interface {
 	Name() string
-	Element() elements.Element
+	Value() []byte
 	IsFail() bool
 }

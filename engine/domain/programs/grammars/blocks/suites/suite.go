@@ -1,22 +1,20 @@
 package suites
 
-import "github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
-
 type suite struct {
-	name    string
-	element elements.Element
-	isFail  bool
+	name   string
+	value  []byte
+	isFail bool
 }
 
 func createSuite(
 	name string,
-	element elements.Element,
+	value []byte,
 	isFail bool,
 ) Suite {
 	out := suite{
-		name:    name,
-		element: element,
-		isFail:  isFail,
+		name:   name,
+		value:  value,
+		isFail: isFail,
 	}
 
 	return &out
@@ -27,9 +25,9 @@ func (obj *suite) Name() string {
 	return obj.name
 }
 
-// Element returns the element
-func (obj *suite) Element() elements.Element {
-	return obj.element
+// Value returns the value
+func (obj *suite) Value() []byte {
+	return obj.value
 }
 
 // IsFail returns true if expected to fail, false otherwise

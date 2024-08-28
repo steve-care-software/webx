@@ -254,14 +254,23 @@ func (app *nftAdapter) suiteToNFT(
 	blocks nfts.NFTs,
 	suite suites.Suite,
 ) (nfts.NFT, error) {
-	element := suite.Element()
-	elementNFT, err := app.elementToNFT(
-		parentBlockNames,
-		rules,
-		blocks,
-		element,
-	)
+	nftsList := []nfts.NFT{}
+	valueAsBytes := suite.Value()
+	for _, oneByte := range valueAsBytes {
+		nft, err := app.nftBuilder.Create().WithByte(oneByte).Now()
+		if err != nil {
+			return nil, err
+		}
 
+		nftsList = append(nftsList, nft)
+	}
+
+	suiteNFTs, err := app.nftsBuilder.Create().WithList(nftsList).Now()
+	if err != nil {
+		return nil, err
+	}
+
+	suiteNFT, err := app.nftBuilder.Create().WithNFTs(suiteNFTs).Now()
 	if err != nil {
 		return nil, err
 	}
@@ -281,7 +290,7 @@ func (app *nftAdapter) suiteToNFT(
 
 	name := suite.Name()
 	nft, err := app.nftsListToNFT([]nfts.NFT{
-		elementNFT,
+		suiteNFT,
 		isFailNFT,
 	}, name)
 

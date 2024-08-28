@@ -13,8 +13,8 @@ func TestApplication_grammar_compileGrammar_decompile_Success(t *testing.T) {
 		numberInParenthesis: 	.number - my_func .number:number
 								| .OPEN_PARENTHESIS .numberInParenthesis .CLOSE_PARENTHESIS
 								---
-				 					firstTest:!.N_ONE;
-									secondTest:.N_TWO;
+				 					firstTest:!"1";
+									secondTest:"2";
 								;
 
 		number: .anyNumber+;

@@ -500,25 +500,25 @@ func (app *parserAdapter) bytesToSuite(input []byte) (suites.Suite, []byte, erro
 		remaining = retBlockNameRemaining[1:]
 	}
 
-	element, retElementRemaining, err := app.bytesToElementReference(remaining)
+	retSuiteValue, retRemainingAfterBetween, err := extractBetween(remaining, app.ruleValuePrefix, app.ruleValueSuffix, &app.ruleValueEscape)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	retIns, err := builder.WithElement(element).Now()
+	retIns, err := builder.WithValue(retSuiteValue).Now()
 	if err != nil {
 		return nil, nil, err
 	}
 
-	if len(retElementRemaining) <= 0 {
+	if len(retRemainingAfterBetween) <= 0 {
 		return nil, nil, errors.New("the suite was expected to contain at least 1 byte at the end of its instruction")
 	}
 
-	if retElementRemaining[0] != app.suiteLineSuffix {
+	if retRemainingAfterBetween[0] != app.suiteLineSuffix {
 		return nil, nil, errors.New("the suite was expected to contain the suiteLineSuffix byte at its suffix")
 	}
 
-	return retIns, retElementRemaining[1:], nil
+	return retIns, retRemainingAfterBetween[1:], nil
 }
 
 func (app *parserAdapter) bytesToBlockDefinition(input []byte) (string, []byte, error) {

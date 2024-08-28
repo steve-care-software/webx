@@ -21,75 +21,120 @@ func TestApplication_grammar_withSuites_Success(t *testing.T) {
 					| .intAssignment
 					| .floatAssignment
 					---
-						boolTrue: .testBoolAssignmentTrue;
-						boolFalse: .testBoolAssignmentFalse;
+						bool: "bool myVariable = true";
+						uint: "uint8 myVariable = 32";
+						int: "int64 myVariable = -345";
+						float: "float32 myVariable = -12.45";
 					;
 
-		boolAssignment: .typeBoolDefinition .EQUAL .boolValue;
-		typeBoolDefinition: .typeBool .variableName;
+		boolAssignment: .typeBoolDefinition .EQUAL .boolValue
+						---
+							boolAssignment: "bool myVariable = true";
+						;
+
+		typeBoolDefinition: .typeBool .variableName
+							---
+								definition: "bool myVariable";
+							;
 		boolValue: .TRUE
 				   | .FALSE
-				   ;
+				   ---
+						true: "true";
+						false: "false";
+					;
 
 
-		uintAssignment: .typeUintDefinition .EQUAL .numbers;
+		uintAssignment: .typeUintDefinition .EQUAL .numbers
+						---
+							uint8: "uint8 myVariable = 45";
+							uint16: "uint16 myVariable = 45";
+							uint32: "uint32 myVariable = 45";
+							uint64: "uint64 myVariable = 45";
+						;
+
+		typeUintDefinition: .typeUintAll .variableName
+							---
+								uint8: "uint8 myVariable";
+								uint16: "uint16 myVariable";
+								uint32: "uint32 myVariable";
+								uint64: "uint64 myVariable";
+							;
+
 		intAssignment: .typeIntDefinition .EQUAL .intNumbers;
-		floatAssignment: .typeFloatDefinition .EQUAL .floatNumbers;
+		typeIntDefinition: .typeIntAll .variableName
+							---
+								int8: "int8 myVariable";
+								int16: "int16 myVariable";
+								int32: "int32 myVariable";
+								int64: "int64 myVariable";
+							;
+
+		floatAssignment: .typeFloatDefinition .EQUAL .floatNumbers
+						---
+							float32: "float32 myVariable = 12.32";
+							float64: "float32 myVariable = 12.32";
+						;
+
+		typeFloatDefinition: .typeFloatAll .variableName
+							---
+								float32: "float32 myVariable";
+								float64: "float64 myVariable";
+							;
 
 		variableName: .oneLowerCaseLetter .letters+
 					---
-						good: .testGoodVariableName;
-						firstUpperCaseLetter: !.testVariableNameWithFirstUpperCaseLetter;
+						good: "myVariable";
+						firstUpperCaseLetter: !"MyVariable";
 					;
-		
+
 		typePrimitive: .typeBool
 					   | .typeString
-					   | .typeFloatDefinition
-					   | .typeUintDefinition
-					   | .typeIntDefinition
+					   | .typeFloatAll
+					   | .typeUintAll
+					   | .typeIntAll
 					   ---
-							bool: .typeBool;
-							string: .typeString;
-							float32: .typeFloat32;
-							float64: .typeFloat64;
-							uint8: .testUint8;
-							uint16: .testUint16;
-							uint32: .testUint32;
-							uint64: .testUint64;
-							int8: .testInt8;
-							int16: .testInt16;
-							int32: .testInt32;
-							int64: .testInt64;
+							bool: "bool";
+							string: "string";
+							float32: "float32";
+							float64: "float64";
+							int8: "int8";
+							int16: "int16";
+							int32: "int32";
+							int64: "int64";
+							uint8: "uint8";
+							uint16: "uint16";
+							uint32: "uint32";
+							uint64: "uint64";
 					   ;
-		
+
 		typeBool: .LL_B .LL_O[2] .LL_L;
 		typeString: .LL_S .LL_T .LL_R .LL_I .LL_N .LL_G;
 
-		typeFloatDefinition: .typeFloat64
-				  			 | .typeFloat32
-							 ---
-							 	float32: .typeFloat32;
-								float64: .typeFloat64;
-				  			 ;
+		typeFloatAll: .typeFloat64
+				 	| .typeFloat32
+					---
+						float32: "float32";
+						float64: "float64";
+					;
 
 		typeFloat64: .typeFloat .sixtyFour;
 		typeFloat32: .typeFloat .thirtyTwo;
 		typeFloat: .LL_F .LL_L .LL_O .LL_A .LL_T;
 
-		typeUintDefinition: .typeUint64
-				  			| .typeUint32
-							| .typeUint16
-							| .typeUint8
-							---
-								uint8: .testUint8;
-								uint16: .testUint16;
-								uint32: .testUint32;
-								uint64: .testUint64;
-								int8: !.testInt8;
-								int16: !.testInt16;
-								int32: !.testInt32;
-								int64: !.testInt64;
-				  			;
+		typeUintAll: .typeUint64
+				  	| .typeUint32
+					| .typeUint16
+					| .typeUint8
+					---
+						int8: !"int8";
+						int16: !"int16";
+						int32: !"int32";
+						int64: !"int64";
+						uint8: "uint8";
+						uint16: "uint16";
+						uint32: "uint32";
+						uint64: "uint64";
+				  	;
 
 		typeUint64: .typeUint .sixtyFour;
 		typeUint32: .typeUint .thirtyTwo;
@@ -97,20 +142,20 @@ func TestApplication_grammar_withSuites_Success(t *testing.T) {
 		typeUint8: .typeUint .N_HEIGHT;
 		typeUint: .LL_U .typeInt;
 
-		typeIntDefinition: .typeInt64
-				  		   | .typeInt32
-						   | .typeInt16
-						   | .typeInt8
-						   ---
-						   		int8: .testInt8;
-								int16: .testInt16;
-								int32: .testInt32;
-								int64: .testInt64;
-								uint8: !.testUint8;
-								uint16: !.testUint16;
-								uint32: !.testUint32;
-								uint64: !.testUint64;
-				  		   ;
+		typeIntAll: .typeInt64
+				  | .typeInt32
+				  | .typeInt16
+				  | .typeInt8
+				  ---
+					int8: "int8";
+					int16: "int16";
+					int32: "int32";
+					int64: "int64";
+					uint8: !"uint8";
+					uint16: !"uint16";
+					uint32: !"uint32";
+					uint64: !"uint64";
+				;
 
 		typeInt64: .typeInt .sixtyFour;
 		typeInt32: .typeInt .thirtyTwo;
@@ -125,11 +170,11 @@ func TestApplication_grammar_withSuites_Success(t *testing.T) {
 		letters: .uppercaseLetters
 				 | .lowerCaseLetters
 				---
-					oneLowerCaseLetter: .LL_A;
-					lowerCaseLetters: .testLowerCaseLetter;
-					oneUpperCaseLetter: .UL_A;
-					upperCaseLetter: .testUpperCaseLetter;
-					oneNumber: !.N_ZERO;
+					oneLowerCaseLetter: "a";
+					lowerCaseLetters: "abcdefghijklmnopqrstuvwxyz";
+					oneUpperCaseLetter: "A";
+					upperCaseLetter: "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+					oneNumber: !"0";
 				;
 
 		uppercaseLetters: .oneUpperCaseLetter+;
@@ -163,11 +208,11 @@ func TestApplication_grammar_withSuites_Success(t *testing.T) {
 
 		lowerCaseLetters: .oneLowerCaseLetter+
 							---
-						  		oneLowerCaseLetter: .LL_A;
-						  		lowerCaseLetters: .testLowerCaseLetter;
-								oneUpperCaseLetter: !.UL_A;
-								upperCaseLetter: !.testUpperCaseLetter;
-								oneNumber: !.N_ZERO;
+						  		oneLowerCaseLetter: "a";
+						  		lowerCaseLetters: "abcdefghijklmnopqrstuvwxyz";
+								oneUpperCaseLetter: !"A";
+								upperCaseLetter: !"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+								oneNumber: !"0";
 						  	;
 
 		oneLowerCaseLetter: .LL_A
@@ -198,46 +243,46 @@ func TestApplication_grammar_withSuites_Success(t *testing.T) {
 							| .LL_Z
 							;
 
-		
 		floatNumbers: .negativeFloatNumber
 					  | .floatNumber
 					---
-						floatValue: .testFloatValue;
-						negativeFloatValue: .testNegativeFloatValue;
-						negativeNumberWithAllNumbers: !.testNegativeNumberWithAllNumber;
-						oneLettter: !.LL_A;
+						floatValue: "13.09";
+						negativeFloatValue: "-13.09";
+						negativeNumberWithAllNumbers: !"-1234567890";
+						oneLettter: !"a";
 					;
 
 		negativeFloatNumber: .MINUS .floatNumber;
 		floatNumber: .numbers .DOT .numbers
 					---
-						floatValue: .testFloatValue;
-						negativeFloatValue: !.testNegativeFloatValue;
-						negativeNumberWithAllNumbers: !.testNegativeNumberWithAllNumber;
-						oneLettter: !.LL_A;
+						floatValue: "13.09";
+						negativeFloatValue: !"-13.09";
+						negativeNumberWithAllNumbers: !"-1234567890";
+						oneLettter: !"a";
 					;
 
 		intNumbers: .negativeNumber
 					| .numbers
 					---
-						negativeNumberWithAllNumbers: .testNegativeNumberWithAllNumber;
-						numberWithAllNumbers: .testNumberWithAllNumbers;
-						oneLettter: !.LL_A;
+						negativeNumberWithAllNumbers: "-1234567890";
+						numberWithAllNumbers: "1234567890";
+						oneLettter: !"a";
 					;
 
 		negativeNumber: .MINUS .numbers
 				---
-					oneNegativeZero: .testOneNegativeZero;
-					negativeNumberWithAllNumbers: .testNegativeNumberWithAllNumber;
-					numberWithAllNumbers: !.testNumberWithAllNumbers;
-					oneLettter: !.LL_A;
+					oneNegativeZero: "-0";
+					negativeNumberWithAllNumbers: "-1234567890";
+					numberWithAllNumbers: !"1234567890";
+					oneLettter: !"a";
 				;
 
 		numbers: .oneNumber+
 				---
-					oneNumber: .N_ZERO;
-					negativeNumberWithAllNumbers: .testNumberWithAllNumbers;
-					oneLettter: !.LL_A;
+					oneNumber: "1";
+					numberWithAllNumbers: "1234567890";
+					negativeNumberWithAllNumbers: !"-1234567890";
+					oneLettter: !"a";
 				;
 
 		oneNumber: .N_ZERO
@@ -250,31 +295,18 @@ func TestApplication_grammar_withSuites_Success(t *testing.T) {
 				   | .N_SEVEN
 				   | .N_HEIGHT
 				   | .N_NINE
+				   ---
+				   		zero: "0";
+						one: "1";
+						two: "2";
+						three: "3";
+						four: "4";
+						five: "5";
+						six: "6";
+						seven: "7";
+						height: "8";
+						nine: "9";
 				   ;
-
-		testBoolAssignmentFalse: .typeBool .testGoodVariableName .EQUAL .FALSE;
-		testBoolAssignmentTrue: .typeBool .testGoodVariableName .EQUAL .TRUE;
-		testVariableNameWithFirstUpperCaseLetter: .UL_M .LL_Y .UL_V .LL_A .LL_R;
-		testGoodVariableName: .LL_M .LL_Y .UL_V .LL_A .LL_R;
-		testUint64: .LL_U .testInt64;
-		testUint32: .LL_U .testInt32;
-		testUint16: .LL_U .testInt16;
-		testUint8: .LL_U .testInt8;
-		testInt64: .testInt .test64;
-		testInt32: .testInt .test32;
-		testInt16: .testInt .test16;
-		testInt8: .testInt .N_HEIGHT;
-		test64: .N_SIX .N_FOUR;
-		test32: .N_THREE .N_TWO;
-		test16: .N_ONE .N_SIX;
-		testInt: .LL_I .LL_N .LL_T;
-		testUpperCaseLetter: .UL_A .UL_B .UL_C .UL_D .UL_E .UL_F .UL_G .UL_H .UL_I .UL_J .UL_K .UL_L .UL_M .UL_N .UL_O .UL_P .UL_Q .UL_R .UL_S .UL_T .UL_U .UL_V .UL_W .UL_X .UL_Y .UL_Z ;
-		testLowerCaseLetter: .LL_A .LL_B .LL_C .LL_D .LL_E .LL_F .LL_G .LL_H .LL_I .LL_J .LL_K .LL_L .LL_M .LL_N .LL_O .LL_P .LL_Q .LL_R .LL_S .LL_T .LL_U .LL_V .LL_W .LL_X .LL_Y .LL_Z ;
-		testNegativeFloatValue: .MINUS .testFloatValue;
-		testFloatValue: .testNumberWithAllNumbers .DOT .testNumberWithAllNumbers;
-		testNegativeNumberWithAllNumber: .MINUS .testNumberWithAllNumbers;
-		testOneNegativeZero: .MINUS .N_ZERO;
-		testNumberWithAllNumbers: .N_ONE .N_ZERO .N_TWO .N_THREE .N_FOUR .N_FIVE .N_SIX .N_SEVEN .N_HEIGHT .N_NINE;
 
 		N_ZERO: "0";
 		N_ONE: "1";
@@ -347,7 +379,7 @@ func TestApplication_grammar_withSuites_Success(t *testing.T) {
 		PLUS: "+";
 		MINUS: "-";
 		DOT: ".";
-		EQUAL: ".";
+		EQUAL: "=";
 		SEMI_COLON: ";";
 
 		TRUE: "true";

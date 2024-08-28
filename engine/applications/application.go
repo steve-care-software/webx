@@ -128,20 +128,10 @@ func (app *application) interpretSuite(
 	blockName string,
 	suite suites.Suite,
 ) error {
-	input, err := app.fetchInputFromSuite(
-		grammar,
-		blockName,
-		suite,
-	)
-
-	if err != nil {
-		return err
-	}
-
 	program, _, err := app.programParserAdapter.ToProgramWithRoot(
 		grammar,
 		blockName,
-		input,
+		suite.Value(),
 	)
 
 	if err != nil {
@@ -154,26 +144,6 @@ func (app *application) interpretSuite(
 	}
 
 	return nil
-}
-
-func (app *application) fetchInputFromSuite(
-	grammar grammars.Grammar,
-	blockName string,
-	suite suites.Suite,
-) ([]byte, error) {
-	element := suite.Element()
-	if element.IsRule() {
-		ruleName := element.Rule()
-		rule, err := grammar.Rules().Fetch(ruleName)
-		if err != nil {
-			return nil, err
-		}
-
-		return rule.Bytes(), nil
-	}
-
-	inputBlockName := element.Block()
-	return app.grammarComposeAdapter.ToBytes(grammar, inputBlockName)
 }
 
 func (app *application) interpretInstruction(
