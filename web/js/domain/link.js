@@ -47,8 +47,6 @@ class Style {
             output += key + this.separator + this.values[key] + this.eol;
         }
 
-       // console.log(output);
-
         return output;
     };
 };
@@ -110,7 +108,7 @@ class StylesBuilder {
                                             WithValues(this.hoverValues).
                                             WithSeparator(this.separator).
                                             WithEOL(this.eol);
-                                            
+
         if (this.existing != null) {
             var normal = {...this.existing.GetNormal().Values(), ...normalValues};
             normalBuilder.WithValues(normal)
