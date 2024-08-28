@@ -1,6 +1,7 @@
 import {Alignment} from './alignments/alignment'
 import {Overflow} from './overflows/overflow'
 import {Direction} from './directions/direction'
+import {Surface} from './../../surfaces/surface'
 
 export class Flex {
     private horizontal: Alignment;
