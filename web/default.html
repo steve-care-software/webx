@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Steve Care</title>
+        <link rel="stylesheet" href="css/test.css">
+    </head>
+    <body>
+
+        <div class="carousel">
+            <div class="row">
+                <div class="element grammar">
+                    <h1>MyGrammar</h1>
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin efficitur dignissim suscipit. Nullam purus mauris, gravida sed egestas cursus, ultricies ut augue. Nam iaculis felis sed laoreet rhoncus. Pellentesque interdum sollicitudin gravida. Nullam maximus eget sapien et hendrerit. Nullam sit amet nisi arcu. Morbi aliquam ante non odio posuere tristique.
+                    </p>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="name">Version:</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td class="name">Root:</td>
+                                <td>
+                                    <a href="#">myRootToken</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="name">Omissions:</td>
+                                <td>
+                                    <ul>
+                                        <li><a href="#">firstToken</a></li>
+                                        <li><a href="#">secondToken</a></li>
+                                        <li><a href="#">thirdToken</a></li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="element rules">
+                    <h1>Rules</h1>
+                    <p class="paragraph">Rules represents a variable name that can contain a fixed constant.  It must be a character string or bytes of data.</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <td>Name:</td>
+                                <td>Value:</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="variable"><input type="text" value="PLUS_SIGN" /></td>
+                                <td class="value"><input type="text" value="+" /></td>
+                            </tr>
+                            <tr class="selected">
+                                <td class="variable"><input type="text" value="SOME_BYTES" /></td>
+                                <td class="value">
+                                    <ul>
+                                        <li class="bytes"><input type="text" value="20" /></li>
+                                        <li class="bytes"><input type="text" value="32" /></li>
+                                        <li class="bytes"><input type="text" value="44" /></li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="variable"><input type="text" value="OTHER_BYTES" /></td>
+                                <td class="value">
+                                    <ul>
+                                        <li class="bytes"><input type="text" value="12" /></li>
+                                        <li class="bytes"><input type="text" value="33" /></li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr class="selected">
+                                <td class="variable"><input type="text" value="OPEN_PARENTHESIS" /></td>
+                                <td class="value"><input type="text" value="(" /></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="add">
+                        <a href="#" class="add">Add</a>
+                    </div>
+                </div>
+                <div class="element syscalls">
+                    <h1>Syscalls</h1>
+                    <p class="paragraph">The syscalls represents function calls to the engine using token parameters, that are wrapped in a custom grammar.</p>
+                    <div class="add">
+                        <a href="#" class="add">Add</a>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="element block">
+                    <h1>myBlock</h1>
+                    <p class="paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum fringilla maximus ex sit amet porta. Etiam mauris elit, finibus eget commodo eu, porttitor in ipsum.</p>
+                    <div class="tokens">
+                        <ul>
+                            <li class="line">
+                                <ul class="innerline">
+                                    <li class="token">
+                                        <a href="#">firstToken</a>
+                                        <ul>
+                                            <li>range: [1,1]</li>
+                                            <li>negate: false</li>
+                                        </ul>
+                                    </li>
+                                    <li class="token">
+                                        <a href="#">secondToken</a>
+                                        <ul>
+                                            <li>range: [1,]</li>
+                                            <li>negate: true</li>
+                                        </ul>
+                                    </li>
+                                    <li class="token">
+                                        <a href="#">thirdToken</a>
+                                        <ul>
+                                            <li>range: [0,1]</li>
+                                            <li>negate: false</li>
+                                        </ul>
+                                    </li>
+                                    <li class="token">
+                                        <a href="#">fourthToken</a>
+                                        <ul>
+                                            <li>range: [1,1]</li>
+                                            <li>negate: false</li>
+                                        </ul>
+                                    </li>
+                                    <li class="add">
+                                        <a href="#">Add</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="line">
+                                <ul class="innerline">
+                                    <li class="token">
+                                        <a href="#">firstToken</a>
+                                        <ul>
+                                            <li>range: [1,1]</li>
+                                            <li>negate: false</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="execution">
+                        <h2>Text Executions:</h2>
+                        <div class="results">
+                            <ol>
+                                <li class="success">
+                                    <span class="title">myTest</span>: 
+                                    <span class="reason">success!</span>
+                                </li>
+                                <li class="failure">
+                                    <span class="title">mySecondTest</span>: 
+                                    <span class="reason">the second element could not be found!</span>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                <div class="element block">
+                    <h1>myBlock</h1>
+                    <p class="paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum fringilla maximus ex sit amet porta. Etiam mauris elit, finibus eget commodo eu, porttitor in ipsum.</p>
+                    <div class="tokens">
+                        <ul>
+                            <li class="line">
+                                <ul class="innerline">
+                                    <li class="token">
+                                        <a href="#">firstToken</a>
+                                        <ul>
+                                            <li>range: [1,1]</li>
+                                            <li>negate: false</li>
+                                        </ul>
+                                    </li>
+                                    <li class="token">
+                                        <a href="#">secondToken</a>
+                                        <ul>
+                                            <li>range: [1,1]</li>
+                                            <li>negate: true</li>
+                                        </ul>
+                                    </li>
+                                    <li class="add">
+                                        <a href="#">Add</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="line">
+                                <ul class="innerline">
+                                    <li class="token">
+                                        <a href="#">firstToken</a>
+                                        <ul>
+                                            <li>range: [1,1]</li>
+                                            <li>negate: false</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="execution">
+                        <h2>Text Executions:</h2>
+                        <div class="results">
+                            <ol>
+                                <li class="success">
+                                    <span class="title">myTest</span>: 
+                                    <span class="reason">success!</span>
+                                </li>
+                                <li class="failure">
+                                    <span class="title">mySecondTest</span>: 
+                                    <span class="reason">the second element could not be found!</span>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+        
+<div id="overlay">
+    <div class="container">
+        <div class="middle">
+
+        </div>
+    </div>
+</div>
+
+        
+
+
+        <div id="root"></div>
+        <script src="js/applications/link.js" defer></script>
+        <script src="js/domain/link.js" defer></script>
+        <script src="js/infrastructure/dom/link.js" defer></script>
+        <script src="js/main.js" defer></script>
+    </body>
+</html>

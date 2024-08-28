@@ -1,0 +1,372 @@
+body {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background-color: #212121;
+    padding: 10px 0px 10px 0px;
+}
+
+.grammar {
+    background-color: #000000;
+    border: 2px solid #000000;
+    border-radius: 15px;
+    margin: 20px 20px 0px 20px;
+    padding: 20px;
+    color: #ffffff;
+}
+
+.grammar h1 {
+    font-size: 26px;
+    margin: 0px 0px 15px 0px;
+    padding: 0;
+}
+
+.grammar table {
+    color: #ffffff;
+}
+
+.grammar table a {
+    display: block;
+    color: #2e95d3;
+    text-decoration: none;
+}
+
+.grammar table a:hover {
+    color: #df3079;
+}
+
+.grammar table td {
+    padding: 10px;
+    margin: 5px;
+    font-size: 16px;
+    display: inline-block;
+}
+
+.grammar table .name {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.grammar table ul {
+    list-style: none;
+    color: #ffffff;
+    display: flex;
+    padding: 0;
+    margin: 0;
+}
+
+.grammar table ul li {
+    flex-direction: row;
+    align-items: center;
+    padding: 0px 5px 0px 5px 0px;
+    margin-right: 15px;
+}
+
+
+.carousel {
+    display: flex;
+}
+
+.carousel .row {
+    flex-direction: row;
+    align-items: center;
+    width: 50%;
+}
+
+.carousel .row .element {
+    background-color: #000000;
+    color: #ffffff;
+    margin: 20px;
+    padding: 20px;
+    border-radius: 15px;
+    line-height: 1.5;
+}
+
+.carousel .row .element h1 {
+    text-decoration: none;
+    margin: 0;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    border-bottom: 2px solid #ffffff;
+}
+
+.carousel .row .element .paragraph {
+    padding: 10px 0px 10px 0px;
+    margin: 0;
+}
+
+.carousel .row .element table {
+    width: 100%;
+    padding: 0;
+    margin: 20px 0px 0px 0px;
+}
+
+.carousel .row .element table .selected {
+    background-color: #f1cfdd;
+}
+
+.carousel .row .element table .selected .variable input {
+    background-color: #f1cfdd;
+    color: #000000;
+}
+
+.carousel .row .element table .selected .value input {
+    background-color: #f1cfdd;
+    color: #000000;
+    border: 2px solid #000000;
+}
+
+
+.carousel .row .element table .selected .bytes {
+    color: #000000;
+}
+
+.carousel .row .element table .selected .bytes input {
+    background-color: #f1cfdd;
+    color: #000000;
+}
+
+.carousel .row .element table thead {
+    border: 2px solid #df3079;
+    background-color: #df3079;
+    color: #ffffff;
+}
+
+.carousel .row .element table thead td {
+    padding: 20px;
+}
+
+.carousel .row .element table tbody td {
+    text-align: center;
+}
+
+.carousel .row .element table .variable input {
+    text-align: center;
+    background-color: #000000;
+    padding: 10px;
+    border: 0;
+    margin: 10px;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.carousel .row .element table .value input {
+    width: 100px;
+    text-align: center;
+    background-color: #ffffff;
+    color: #000000;
+    padding: 10px;
+    border: none;
+    margin: 10px;
+    width: 50px;
+}
+
+.carousel .row .element table ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel .row .element table .bytes {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.carousel .row .element table .bytes input {
+    border: none;
+    text-decoration: none;
+    background-color: #ffffff;
+    border: none;
+    color: #000000;
+}
+
+.carousel .row .element table .bytes::before {
+    content: "[";
+}
+
+.carousel .row .element table .bytes::after {
+    content: "]";
+}
+
+
+/*
+    Rules
+*/
+
+
+.carousel .row  .rules {
+    border: 5px solid #df3079;
+}
+
+.carousel .row .rules .add {
+    display: flex;
+    align-items: right;
+    justify-content: right;
+}
+
+.carousel .row  .rules .add a {
+    color: #ffffff;
+    background-color: #df3079;
+    padding: 20px;
+    margin: 5px;
+    text-decoration: none;
+}
+
+
+/*
+    Syscalls
+*/
+
+.carousel .row  .syscalls {
+    border: 5px solid #30df90;
+}
+
+.carousel .row  .syscalls .add {
+    display: flex;
+    align-items: right;
+    justify-content: right;
+}
+
+.carousel .row  .syscalls .add a {
+    color: #000000;
+    background-color: #30df90;
+    padding: 20px;
+    margin: 5px;
+    text-decoration: none;
+}
+
+/*
+    Block tokens
+*/
+
+.block {
+    border: 5px solid #2e95d3;
+}
+
+.block .tokens {
+    border-left: 2px solid #ffffff;
+    padding: 0;
+    margin: 20px 20px 20px 0px;
+}
+
+.block .tokens ul {
+    margin: 0;
+    padding: 0;
+}
+
+.block .tokens .line {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.block .tokens .line .innerline {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    background: linear-gradient(180deg, 
+        rgba(192, 192, 192, 0) calc(50% - 2px), 
+        rgba(255,255,255, 1) calc(50%), 
+        rgba(192, 192, 192, 0) calc(50% + 2px)
+    );
+    background-position-y: -10px;
+    width: auto;
+}
+
+.block .tokens .line .innerline .token {
+    border: 2px solid #ffffff;
+    margin: 15px 0px 15px 20px;
+}
+
+.block .tokens .line .innerline .token a {
+    display: block;
+    font-size: 15px;
+    padding: 15px;
+    background-color: #2e95d3;
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.block .tokens .line .innerline .add {
+    flex-direction: row;
+    align-items: center;
+    margin: 45px 50px 0px 50px;
+}
+
+.block .tokens .line .innerline .add a {
+    display: block;
+    font-size: 15px;
+    padding: 15px;
+    background-color: #2e95d3;
+    text-decoration: none;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+}
+
+.block .tokens .line .innerline .token ul {
+    list-style:disc;
+    display: block;
+    font-size: 12px;
+    padding: 0;
+    margin: 20px;
+}
+
+
+/*
+    Block execution:
+*/
+
+.block .execution h2 {
+    background-color: #ffffff;
+    color: #000000;
+    font-size: 12px;
+    padding: 5px 10px 5px 10px;
+    margin: 0;
+    text-decoration: none;
+    font-weight: normal;
+    border-bottom: 1px solid #ffffff;
+}
+
+.block .execution .results {
+    background-color: #000000;
+    padding: 10px;
+    font-size: 14px;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+}
+
+.block .execution .results ol {
+    padding: 5px 10px 5px 10px;
+    margin: 5px 10px 5px 10px;
+}
+
+.block .execution .results ol li {
+    margin: 5px 0px 5px 0px;
+    padding: 0;
+}
+
+.block .execution .results ol li .title {
+    text-decoration: underline;
+}
+
+.block .execution .results ol .success .reason {
+    color: #2e95d3;
+}
+
+.block .execution .results ol .failure .reason {
+    color: #df3079;
+}
+
+
+/*
+    Overlay
+*/
+
+#overlay {background-color: #000000; position: absolute; width: 100%; height: 100%; top: 0px; left: 0px; opacity: 90%;}
+#overlay .container {width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;}
+#overlay .container .middle {background-color: #ffffff;  border-radius: 15px; width: 600px; height: 400px;  }
