@@ -1,7 +1,7 @@
-import {Dimension} from './../dimensions/dimension'
-import {Position} from './../positions/position'
-import {Color} from './../colors/color'
-import {Border} from './../borders/border'
+import {Dimension} from '../dimensions/dimension'
+import {Position} from '../positions/position'
+import {Color} from '../colors/color'
+import {Border} from '../borders/border'
 
 export class Surface {
     private dimension?: Dimension;
