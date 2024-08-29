@@ -5,6 +5,11 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/stacks/frames/variables"
 )
 
+// Factory represents a frame factory
+type Factory interface {
+	Create() (Frame, error)
+}
+
 // Builder represents a frame builder
 type Builder interface {
 	Create() Builder
@@ -17,5 +22,5 @@ type Frame interface {
 	Hash() hash.Hash
 	Fetch(name string) (variables.Variable, error)
 	HasVariables() bool
-	Variables() (variables.Variables, error)
+	Variables() variables.Variables
 }
