@@ -2,8 +2,25 @@ package stackframes
 
 import (
 	"github.com/steve-care-software/webx/engine/domain/stacks"
+	"github.com/steve-care-software/webx/engine/domain/stacks/frames"
 	"github.com/steve-care-software/webx/engine/domain/stacks/frames/variables"
 )
+
+// NewFactory creates a new factory
+func NewFactory() Factory {
+	stackFactory := stacks.NewFactory()
+	stackBuilder := stacks.NewBuilder()
+	frameBuilder := frames.NewBuilder()
+	variablesBuilder := variables.NewBuilder()
+	variableBuilder := variables.NewVariableBuilder()
+	return cretaeFactory(
+		stackFactory,
+		stackBuilder,
+		frameBuilder,
+		variablesBuilder,
+		variableBuilder,
+	)
+}
 
 // Factory represents the application factory
 type Factory interface {
