@@ -1,7 +1,6 @@
 package stacks
 
 import (
-	"github.com/steve-care-software/webx/engine/domain/hash"
 	"github.com/steve-care-software/webx/engine/domain/stacks/frames"
 	"github.com/steve-care-software/webx/engine/domain/stacks/frames/variables"
 )
@@ -21,7 +20,6 @@ type Builder interface {
 
 // Stack represents a stack instance
 type Stack interface {
-	Hash() hash.Hash
 	Frame() frames.Frame
 	Fetch(name string) (variables.Variable, error)
 	Height() uint
