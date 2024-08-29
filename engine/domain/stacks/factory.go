@@ -1,14 +1,19 @@
 package stacks
 
+import "github.com/steve-care-software/webx/engine/domain/stacks/frames"
+
 type factory struct {
-	builder Builder
+	builder      Builder
+	frameFactory frames.Factory
 }
 
 func createFactory(
 	builder Builder,
+	frameFactory frames.Factory,
 ) Factory {
 	out := factory{
-		builder: builder,
+		builder:      builder,
+		frameFactory: frameFactory,
 	}
 
 	return &out
@@ -16,5 +21,12 @@ func createFactory(
 
 // Create creates a new stack
 func (app *factory) Create() (Stack, error) {
-	return app.builder.Now()
+	frame, err := app.frameFactory.Create()
+	if err != nil {
+		return nil, err
+	}
+
+	return app.builder.Create().
+		WithFrame(frame).
+		Now()
 }

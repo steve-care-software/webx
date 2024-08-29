@@ -8,8 +8,10 @@ import (
 // NewFactory creates a new factory
 func NewFactory() Factory {
 	builder := NewBuilder()
+	frameFactory := frames.NewFactory()
 	return createFactory(
 		builder,
+		frameFactory,
 	)
 }
 

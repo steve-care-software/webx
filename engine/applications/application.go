@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/steve-care-software/webx/engine/applications/stackframes"
 	"github.com/steve-care-software/webx/engine/domain/nfts"
 	"github.com/steve-care-software/webx/engine/domain/programs"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars"
@@ -13,6 +14,7 @@ import (
 )
 
 type application struct {
+	stackFrameApp         stackframes.Application
 	elementsAdapter       instructions.ElementsAdapter
 	grammarParserAdapter  grammars.ParserAdapter
 	grammarNFTAdapter     grammars.NFTAdapter
@@ -22,6 +24,7 @@ type application struct {
 }
 
 func createApplication(
+	stackFrameApp stackframes.Application,
 	elementsAdapter instructions.ElementsAdapter,
 	grammarParserAdapter grammars.ParserAdapter,
 	grammarNFTAdapter grammars.NFTAdapter,
@@ -30,6 +33,7 @@ func createApplication(
 	syscalls map[string]SyscallFn,
 ) Application {
 	out := application{
+		stackFrameApp:         stackFrameApp,
 		elementsAdapter:       elementsAdapter,
 		grammarParserAdapter:  grammarParserAdapter,
 		grammarNFTAdapter:     grammarNFTAdapter,
@@ -84,7 +88,7 @@ func (app *application) Interpret(program programs.Program) (stacks.Stack, error
 		root,
 	)
 
-	return nil, nil
+	return app.stackFrameApp.Root().Fetch()
 }
 
 // Suites executes all the test suites of the grammar

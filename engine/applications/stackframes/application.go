@@ -39,14 +39,15 @@ func createApplication(
 }
 
 // Root selects the root stack
-func (app *application) Root() {
+func (app *application) Root() Application {
 	app.path = []string{}
+	return app
 }
 
 // Navigate navigates to the stack where the path points
-func (app *application) Navigate(path []string) error {
+func (app *application) Navigate(path []string) Application {
 	app.path = path
-	return nil
+	return app
 }
 
 // Fetch fetches the stack where our cursor points to

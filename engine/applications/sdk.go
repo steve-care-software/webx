@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"strconv"
 
+	"github.com/steve-care-software/webx/engine/applications/stackframes"
 	"github.com/steve-care-software/webx/engine/applications/stackframes/cursors"
 	"github.com/steve-care-software/webx/engine/domain/nfts"
 	"github.com/steve-care-software/webx/engine/domain/programs"
@@ -20,12 +21,18 @@ type SyscallFn func(map[string][]byte) error
 // NewApplication creates a new application
 func NewApplication() Application {
 	cursorApp := cursors.NewApplication()
+	stackframeApp, err := stackframes.NewFactory().Create()
+	if err != nil {
+		panic(err)
+	}
+
 	elementsAdapter := instructions.NewElementsAdapter()
 	grammarParserAdapter := grammars.NewParserAdapter()
 	grammarNFTAdapter := grammars.NewNFTAdapter()
 	grammarComposeAdapter := grammars.NewComposeAdapter()
 	programParserAdapter := programs.NewParserAdapter()
 	return createApplication(
+		stackframeApp,
 		elementsAdapter,
 		grammarParserAdapter,
 		grammarNFTAdapter,
