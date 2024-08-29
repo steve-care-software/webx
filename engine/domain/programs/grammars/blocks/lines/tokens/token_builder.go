@@ -10,12 +10,14 @@ import (
 type tokenBuilder struct {
 	element     elements.Element
 	cardinality cardinalities.Cardinality
+	isReverse   bool
 }
 
 func createTokenBuilder() TokenBuilder {
 	out := tokenBuilder{
 		element:     nil,
 		cardinality: nil,
+		isReverse:   false,
 	}
 
 	return &out
@@ -38,6 +40,12 @@ func (app *tokenBuilder) WithCardinality(cardinality cardinalities.Cardinality) 
 	return app
 }
 
+// IsReverse flags the builder as isReverse
+func (app *tokenBuilder) IsReverse() TokenBuilder {
+	app.isReverse = true
+	return app
+}
+
 // Now builds a new Token instance
 func (app *tokenBuilder) Now() (Token, error) {
 	if app.element == nil {
@@ -51,5 +59,6 @@ func (app *tokenBuilder) Now() (Token, error) {
 	return createToken(
 		app.element,
 		app.cardinality,
+		app.isReverse,
 	), nil
 }

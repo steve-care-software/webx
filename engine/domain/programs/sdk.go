@@ -3,6 +3,7 @@ package programs
 import (
 	"github.com/steve-care-software/webx/engine/domain/nfts"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/rules"
 	"github.com/steve-care-software/webx/engine/domain/programs/instructions"
 )
 
@@ -16,6 +17,7 @@ func NewParserAdapter() ParserAdapter {
 	tokenBuilder := instructions.NewTokenBuilder()
 	elementsBuilder := instructions.NewElementsBuilder()
 	elementBuilder := instructions.NewElementBuilder()
+	ruleBuilder := rules.NewRuleBuilder()
 	syscallsBuilder := instructions.NewSyscallsBuilder()
 	syscallBuilder := instructions.NewSyscallBuilder()
 	parametersBuilder := instructions.NewParametersBuilder()
@@ -29,6 +31,7 @@ func NewParserAdapter() ParserAdapter {
 		tokenBuilder,
 		elementsBuilder,
 		elementBuilder,
+		ruleBuilder,
 		syscallsBuilder,
 		syscallBuilder,
 		parametersBuilder,

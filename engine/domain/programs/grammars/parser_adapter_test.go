@@ -6,13 +6,13 @@ import (
 )
 
 func TestParserAdapter_withOmissions_Success(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`
 		v1;
 		>.myRoot;
 		#.first.second.third;
 
-		myFirst: .myFirst[1] .mySecond* .myThird+ .myFourth? .myFifth[1,] - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth
+		myFirst: !.myFirst[1] .mySecond* .myThird+ .myFourth? .myFifth[1,] - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth
 				 | ._mySecondCall .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .MY_REPLACEMENT
 				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement
 				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,]
@@ -80,7 +80,7 @@ func TestParserAdapter_withOmissions_Success(t *testing.T) {
 }
 
 func TestParserAdapter_withoutVersion_returnsError(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,];mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]---myFirst:"somedata";mySecond:!"somedata";mySecondTest:"somedata";myTest:!"somedata";;FIRST:"this \" with escape";SECOND:"some value";`), remaining...)
 
 	retAdapter := NewParserAdapter()
@@ -92,7 +92,7 @@ func TestParserAdapter_withoutVersion_returnsError(t *testing.T) {
 }
 
 func TestParserAdapter_withNonNumericVersion_returnsError(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`vDE;>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,];mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]---myFirst:"somedata";mySecond:!"somedata";mySecondTest:"somedata";myTest:!"somedata";;FIRST:"this \" with escape";SECOND:"some value";`), remaining...)
 
 	retAdapter := NewParserAdapter()
@@ -104,7 +104,7 @@ func TestParserAdapter_withNonNumericVersion_returnsError(t *testing.T) {
 }
 
 func TestParserAdapter_withoutRoot_returnsError(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`v1;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,];mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]---myFirst:"somedata";mySecond:!"somedata";mySecondTest:"somedata";myTest:!"somedata";;FIRST:"this \" with escape";SECOND:"some value";`), remaining...)
 
 	retAdapter := NewParserAdapter()
@@ -116,7 +116,7 @@ func TestParserAdapter_withoutRoot_returnsError(t *testing.T) {
 }
 
 func TestParserAdapter_withInvalidRootElementReference_returnsError(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`v1;>myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,];mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]---myFirst:"somedata";mySecond:!"somedata";mySecondTest:"somedata";myTest:!"somedata";;FIRST:"this \" with escape";SECOND:"some value";`), remaining...)
 
 	retAdapter := NewParserAdapter()
@@ -128,7 +128,7 @@ func TestParserAdapter_withInvalidRootElementReference_returnsError(t *testing.T
 }
 
 func TestParserAdapter_withInvalidOmissionElementReference_returnsError(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`v1;>.myRoot;#invalidReference;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,];mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]---myFirst:"somedata";mySecond:!"somedata";mySecondTest:"somedata";myTest:!"somedata";;FIRST:"this \" with escape";SECOND:"some value";`), remaining...)
 
 	retAdapter := NewParserAdapter()
@@ -140,7 +140,7 @@ func TestParserAdapter_withInvalidOmissionElementReference_returnsError(t *testi
 }
 
 func TestParserAdapter_withoutBlocks_returnsError(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`v1;>.myRoot;FIRST:"this \" with escape";SECOND:"some value";`), remaining...)
 
 	retAdapter := NewParserAdapter()
@@ -152,7 +152,7 @@ func TestParserAdapter_withoutBlocks_returnsError(t *testing.T) {
 }
 
 func TestParserAdapter_withoutRules_returnsError(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`v1;>.myRoot;myFirst:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,];mySecond:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]---myFirst:"somedata";mySecond:!"somedata";mySecondTest:"somedata";myTest:!"somedata";;`), remaining...)
 
 	retAdapter := NewParserAdapter()
@@ -164,7 +164,7 @@ func TestParserAdapter_withoutRules_returnsError(t *testing.T) {
 }
 
 func TestApplication_blocks_withoutBlocks_returnsError(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(``), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)
@@ -176,7 +176,7 @@ func TestApplication_blocks_withoutBlocks_returnsError(t *testing.T) {
 }
 
 func TestApplication_block_withoutSuffix_returnsError(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`myBlock:.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]---myFirst:"somedata";mySecond:!"somedata";mySecondTest:"somedata";myTest:!"somedata";`), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)
@@ -218,7 +218,7 @@ func TestApplication_block_withoutSuffix_withoutLines_returnsError(t *testing.T)
 }
 
 func TestApplication_suites_Success(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`---myTest:"somedata";myTest:!"somedata";`), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)
@@ -241,7 +241,7 @@ func TestApplication_suites_Success(t *testing.T) {
 }
 
 func TestApplication_suites_withoutSuites_returnsError(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(``), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)
@@ -252,7 +252,7 @@ func TestApplication_suites_withoutSuites_returnsError(t *testing.T) {
 }
 
 func TestApplication_suite_Success(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`myTest:"somedata";`), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)
@@ -279,7 +279,7 @@ func TestApplication_suite_Success(t *testing.T) {
 }
 
 func TestApplication_suite_isFail_Success(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`myTest:!"somedata";`), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)
@@ -306,7 +306,7 @@ func TestApplication_suite_isFail_Success(t *testing.T) {
 }
 
 func TestApplication_suite_withInvalidElement_returnsError(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`myTest:myElement`), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)
@@ -317,7 +317,7 @@ func TestApplication_suite_withInvalidElement_returnsError(t *testing.T) {
 }
 
 func TestApplication_suite_withInvalidBlockNameDefinition_returnsError(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`#myTest:.myElement`), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)
@@ -328,7 +328,7 @@ func TestApplication_suite_withInvalidBlockNameDefinition_returnsError(t *testin
 }
 
 func TestApplication_suite_withoutSuiteLineSuffix_returnsError(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`myTest:.myElement`), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)
@@ -348,7 +348,7 @@ func TestApplication_suite_withoutSuiteLineSuffix_withoutRemainingBytes_returnsE
 }
 
 func TestApplication_lines_withOneLine_Success(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth`), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)
@@ -371,7 +371,7 @@ func TestApplication_lines_withOneLine_Success(t *testing.T) {
 }
 
 func TestApplication_lines_withMultipleLines_Success(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]-myFuncName_secondSection.myFirst:first.mySecond:second.myThird:third.myFourth:fourth.myFifth:fifth|.myFirst[1].mySecond*.myThird+.myFourth.myFifth[1,]`), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)
@@ -394,7 +394,7 @@ func TestApplication_lines_withMultipleLines_Success(t *testing.T) {
 }
 
 func TestApplication_lines_withoutLine_returnsError(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`not a line`), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)
@@ -406,7 +406,7 @@ func TestApplication_lines_withoutLine_returnsError(t *testing.T) {
 }
 
 func TestApplication_line_withExecution_Success(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`.myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth`), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)
@@ -433,7 +433,7 @@ func TestApplication_line_withExecution_Success(t *testing.T) {
 }
 
 func TestApplication_line_withReplacement_Success(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`.myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement`), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)
@@ -460,7 +460,7 @@ func TestApplication_line_withReplacement_Success(t *testing.T) {
 }
 
 func TestApplication_withoutTokens_returnsError(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth - .MY_REPLACEMENT`), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)
@@ -472,7 +472,7 @@ func TestApplication_withoutTokens_returnsError(t *testing.T) {
 }
 
 func TestApplication_execution_withElements_Success(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth`), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)
@@ -528,7 +528,7 @@ func TestApplication_execution_withElements_withoutRemaining_Success(t *testing.
 }
 
 func TestApplication_execution_withoutElements_Success(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(`myFuncName_secondSection`), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)
@@ -635,7 +635,7 @@ func TestApplication_token_withBlockName_withCardinality_Success(t *testing.T) {
 }
 
 func TestApplication_token_withBlockName_withoutCardinality_Success(t *testing.T) {
-	remaining := []byte("!this is some remaining")
+	remaining := []byte("%!this is some remaining")
 	input := append([]byte(` . myToken`), remaining...)
 
 	retAdapter := NewParserAdapter().(*parserAdapter)

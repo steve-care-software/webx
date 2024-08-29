@@ -100,6 +100,7 @@ const cardinalityOptional = "?"
 const indexOpen = "["
 const indexClose = "]"
 const parameterSeparator = ":"
+const tokenReverse = "!"
 const tokenReference = "."
 const linesSeparator = "|"
 const lineSeparator = "-"
@@ -230,6 +231,7 @@ func NewParserAdapter() ParserAdapter {
 		[]byte(blockDefinitionSeparator)[0],
 		[]byte(linesSeparator)[0],
 		[]byte(lineSeparator)[0],
+		[]byte(tokenReverse)[0],
 		[]byte(tokenReference)[0],
 		[]byte(ruleNameSeparator)[0],
 		[]byte(ruleNameValueSeparator)[0],

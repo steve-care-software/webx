@@ -270,12 +270,11 @@ func extractBetween(data []byte, prefix byte, suffix byte, pEscape *byte) ([]byt
 
 	output := []byte{}
 	escapeReached := false
-	lastByteInInt := -1
 	isSuffixReached := false
 	lastIndex := 1
 	for _, oneByte := range data[1:] {
 		lastIndex++
-		if pEscape != nil && !escapeReached && lastByteInInt != -1 {
+		if pEscape != nil && !escapeReached {
 			escapeReached = oneByte == *pEscape
 			if escapeReached {
 				continue
@@ -284,7 +283,6 @@ func extractBetween(data []byte, prefix byte, suffix byte, pEscape *byte) ([]byt
 
 		if escapeReached {
 			output = append(output, oneByte)
-			lastByteInInt = int(oneByte)
 			escapeReached = false
 			continue
 		}
@@ -295,7 +293,6 @@ func extractBetween(data []byte, prefix byte, suffix byte, pEscape *byte) ([]byt
 		}
 
 		output = append(output, oneByte)
-		lastByteInInt = int(oneByte)
 	}
 
 	if !isSuffixReached {

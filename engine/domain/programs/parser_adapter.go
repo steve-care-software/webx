@@ -11,6 +11,7 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/rules"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/syscalls"
 	"github.com/steve-care-software/webx/engine/domain/programs/instructions"
 )
@@ -24,6 +25,7 @@ type parserAdapter struct {
 	tokenBuilder        instructions.TokenBuilder
 	elementsBuilder     instructions.ElementsBuilder
 	elementBuilder      instructions.ElementBuilder
+	ruleBuilder         rules.RuleBuilder
 	syscallsBuilder     instructions.SyscallsBuilder
 	syscallBuilder      instructions.SyscallBuilder
 	parametersBuilder   instructions.ParametersBuilder
@@ -39,6 +41,7 @@ func createParserAdapter(
 	tokenBuilder instructions.TokenBuilder,
 	elementsBuilder instructions.ElementsBuilder,
 	elementBuilder instructions.ElementBuilder,
+	ruleBuilder rules.RuleBuilder,
 	syscallsBuilder instructions.SyscallsBuilder,
 	syscallBuilder instructions.SyscallBuilder,
 	parametersBuilder instructions.ParametersBuilder,
@@ -53,6 +56,7 @@ func createParserAdapter(
 		tokenBuilder:        tokenBuilder,
 		elementsBuilder:     elementsBuilder,
 		elementBuilder:      elementBuilder,
+		ruleBuilder:         ruleBuilder,
 		syscallsBuilder:     syscallsBuilder,
 		syscallBuilder:      syscallBuilder,
 		parametersBuilder:   parametersBuilder,
@@ -251,6 +255,49 @@ func (app *parserAdapter) toToken(
 		)
 
 		element := token.Element()
+		if token.IsReverse() {
+			retRemaining := retBytes
+			accumulated := []byte{}
+			for _, oneByte := range retBytes {
+				accumulated = append(accumulated, oneByte)
+				_, _, err := app.toElement(
+					grammar,
+					element,
+					retRemaining,
+				)
+
+				if err != nil {
+					retRemaining = retRemaining[1:]
+					continue
+				}
+
+				break
+			}
+
+			name := token.Name()
+			rule, err := app.ruleBuilder.Create().
+				WithBytes(accumulated).
+				WithName(name).
+				Now()
+
+			if err != nil {
+				return nil, nil, err
+			}
+
+			retElement, err := app.elementBuilder.Create().
+				WithRule(rule).
+				Now()
+
+			if err != nil {
+				return nil, nil, err
+			}
+
+			elementsList = append(elementsList, retElement)
+			remaining = retRemaining
+			cpt++
+			continue
+		}
+
 		retElement, retRemaining, err := app.toElement(
 			grammar,
 			element,

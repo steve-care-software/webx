@@ -59,6 +59,7 @@ type parserAdapter struct {
 	blockDefinitionSeparator          byte
 	linesSeparator                    byte
 	lineSeparator                     byte
+	tokenReverseCharacter             byte
 	tokenReferenceSeparator           byte
 	ruleNameSeparator                 byte
 	ruleNameValueSeparator            byte
@@ -118,6 +119,7 @@ func createParserAdapter(
 	blockDefinitionSeparator byte,
 	linesSeparator byte,
 	lineSeparator byte,
+	tokenReverseCharacter byte,
 	tokenReferenceSeparator byte,
 	ruleNameSeparator byte,
 	ruleNameValueSeparator byte,
@@ -176,6 +178,7 @@ func createParserAdapter(
 		blockSuffix:                       blockSuffix,
 		linesSeparator:                    linesSeparator,
 		lineSeparator:                     lineSeparator,
+		tokenReverseCharacter:             tokenReverseCharacter,
 		tokenReferenceSeparator:           tokenReferenceSeparator,
 		ruleNameSeparator:                 ruleNameSeparator,
 		ruleNameValueSeparator:            ruleNameValueSeparator,
@@ -757,6 +760,16 @@ func (app *parserAdapter) bytesToTokenList(input []byte) ([]tokens.Token, []byte
 
 func (app *parserAdapter) bytesToToken(input []byte) (tokens.Token, []byte, error) {
 	remaining := filterPrefix(input, app.filterBytes)
+	if len(remaining) <= 0 {
+		return nil, nil, errors.New("the token was expected to contain at least 1 byte")
+	}
+
+	builder := app.tokenBuilder.Create()
+	if remaining[0] == app.tokenReverseCharacter {
+		builder.IsReverse()
+		remaining = remaining[1:]
+	}
+
 	element, retRemaining, err := app.bytesToElementReference(remaining)
 	if err != nil {
 		return nil, nil, err
@@ -776,7 +789,7 @@ func (app *parserAdapter) bytesToToken(input []byte) (tokens.Token, []byte, erro
 		retRemaining = retRemainingAfterCardinality
 	}
 
-	ins, err := app.tokenBuilder.Create().
+	ins, err := builder.
 		WithCardinality(cardinalityIns).
 		WithElement(element).
 		Now()

@@ -33,6 +33,7 @@ type TokenBuilder interface {
 	Create() TokenBuilder
 	WithElement(element elements.Element) TokenBuilder
 	WithCardinality(cardinality cardinalities.Cardinality) TokenBuilder
+	IsReverse() TokenBuilder
 	Now() (Token, error)
 }
 
@@ -41,4 +42,5 @@ type Token interface {
 	Name() string
 	Element() elements.Element
 	Cardinality() cardinalities.Cardinality
+	IsReverse() bool
 }

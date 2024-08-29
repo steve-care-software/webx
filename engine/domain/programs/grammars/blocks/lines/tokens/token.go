@@ -8,15 +8,18 @@ import (
 type token struct {
 	element     elements.Element
 	cardinality cardinalities.Cardinality
+	isReverse   bool
 }
 
 func createToken(
 	element elements.Element,
 	cardinality cardinalities.Cardinality,
+	isReverse bool,
 ) Token {
 	out := token{
 		element:     element,
 		cardinality: cardinality,
+		isReverse:   isReverse,
 	}
 
 	return &out
@@ -35,4 +38,9 @@ func (obj *token) Element() elements.Element {
 // Cardinality returns the cardinality
 func (obj *token) Cardinality() cardinalities.Cardinality {
 	return obj.cardinality
+}
+
+// IsReverse returns true if isReverse, false otherwise
+func (obj *token) IsReverse() bool {
+	return obj.isReverse
 }

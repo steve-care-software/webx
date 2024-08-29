@@ -85,26 +85,25 @@ func TestExtractBetween_withEscape_Success(t *testing.T) {
 	}
 }
 
-func TestExtractBetween_withoutPrefix_returnsErrpr(t *testing.T) {
-	valueWithEscape := []byte(`this \" with escape`)
+func TestExtractBetween_withOnlyEscape_Success(t *testing.T) {
+	valueWithEscape := []byte(`\"`)
+	expectedValue := []byte(`"`)
 	expectedRemaining := []byte("this is some remaining")
 	escapeByte := []byte(ruleValueEscape)[0]
-	input := []byte(fmt.Sprintf(`%s"%s`, string(valueWithEscape), string(expectedRemaining)))
-	_, _, err := extractBetween(input, []byte(ruleValuePrefix)[0], []byte(ruleValueSuffix)[0], &escapeByte)
-	if err == nil {
-		t.Errorf("the error was expected to be valid, nil returned")
+	input := []byte(fmt.Sprintf(`"%s"%s`, string(valueWithEscape), string(expectedRemaining)))
+	retValue, retRemaining, err := extractBetween(input, []byte(ruleValuePrefix)[0], []byte(ruleValueSuffix)[0], &escapeByte)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
 	}
-}
 
-func TestExtractBetween_withoutSuffix_returnsErrpr(t *testing.T) {
-	valueWithEscape := []byte(`this \" with escape`)
-	expectedRemaining := []byte("this is some remaining")
-	escapeByte := []byte(ruleValueEscape)[0]
-	input := []byte(fmt.Sprintf(`"%s%s`, string(valueWithEscape), string(expectedRemaining)))
-	_, _, err := extractBetween(input, []byte(ruleValuePrefix)[0], []byte(ruleValueSuffix)[0], &escapeByte)
-	if err == nil {
-		t.Errorf("the error was expected to be valid, nil returned")
+	if !bytes.Equal(expectedValue, retValue) {
+		t.Errorf("the expected output was expected to be (%s), returned (%s)", expectedValue, retValue)
+		return
+	}
+
+	if !bytes.Equal(expectedRemaining, retRemaining) {
+		t.Errorf("the expected remaining was expected to be (%s), returned (%s)", expectedRemaining, retRemaining)
 		return
 	}
 }

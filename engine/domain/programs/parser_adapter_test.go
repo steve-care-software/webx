@@ -14,7 +14,7 @@ func TestParserAdapter_Success(t *testing.T) {
 		>.line;
 		# .SPACE .TAB. EOL;
 		
-		line: .additionInParenthesis
+		line: !.additionInParenthesis .additionInParenthesis
 			| .N_ZERO
 			;
 
@@ -46,7 +46,7 @@ func TestParserAdapter_Success(t *testing.T) {
 
 	programRemaining := []byte("this is a remaining")
 	programInput := append([]byte(`
-		( 12 + 345 )`), programRemaining...)
+		salut ( 12 + 345 )`), programRemaining...)
 
 	grammarParserAdapter := grammars.NewParserAdapter()
 	retGrammar, _, err := grammarParserAdapter.ToGrammar(grammarInput)
