@@ -255,19 +255,52 @@ func (app *parserAdapter) toToken(
 		)
 
 		element := token.Element()
-		if token.IsReverse() {
+		if token.HasReverse() {
+			isEscaped := false
+			reverse := token.Reverse()
 			retRemaining := retBytes
 			accumulated := []byte{}
 			for _, oneByte := range retBytes {
-				accumulated = append(accumulated, oneByte)
-				_, _, err := app.toElement(
+				if reverse.HasEscape() {
+					escapeElement := reverse.Escape()
+					_, retRemainingAfterEscape, err := app.toElement(
+						grammar,
+						escapeElement,
+						retRemaining,
+					)
+
+					if err == nil {
+						retRemaining = retRemainingAfterEscape
+						isEscaped = true
+						continue
+					}
+				}
+
+				_, retRemainingAfterElement, err := app.toElement(
 					grammar,
 					element,
 					retRemaining,
 				)
 
+				if isEscaped || err != nil {
+					accumulated = append(accumulated, oneByte)
+				}
+
 				if err != nil {
+					// previous character was escape but the next one did not match the element, so reset the escape:
+					if isEscaped {
+						isEscaped = false
+						continue
+					}
+
 					retRemaining = retRemaining[1:]
+					continue
+				}
+
+				// we escape the character so continue and reset it:
+				if isEscaped {
+					isEscaped = false
+					retRemaining = retRemainingAfterElement
 					continue
 				}
 

@@ -3,6 +3,7 @@ package tokens
 import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/cardinalities"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/reverses"
 )
 
 // NewBuilder creates a new builder
@@ -33,7 +34,7 @@ type TokenBuilder interface {
 	Create() TokenBuilder
 	WithElement(element elements.Element) TokenBuilder
 	WithCardinality(cardinality cardinalities.Cardinality) TokenBuilder
-	IsReverse() TokenBuilder
+	WithReverse(reverse reverses.Reverse) TokenBuilder
 	Now() (Token, error)
 }
 
@@ -42,5 +43,6 @@ type Token interface {
 	Name() string
 	Element() elements.Element
 	Cardinality() cardinalities.Cardinality
-	IsReverse() bool
+	HasReverse() bool
+	Reverse() reverses.Reverse
 }

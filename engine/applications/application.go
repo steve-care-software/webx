@@ -128,7 +128,7 @@ func (app *application) interpretSuite(
 	blockName string,
 	suite suites.Suite,
 ) error {
-	program, _, err := app.programParserAdapter.ToProgramWithRoot(
+	program, retRemaining, err := app.programParserAdapter.ToProgramWithRoot(
 		grammar,
 		blockName,
 		suite.Value(),
@@ -136,6 +136,11 @@ func (app *application) interpretSuite(
 
 	if err != nil {
 		return err
+	}
+
+	if len(retRemaining) != 0 {
+		str := fmt.Sprintf("the bytes (%s) were remaining", retRemaining)
+		return errors.New(str)
 	}
 
 	_, err = app.Interpret(program)

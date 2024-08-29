@@ -15,6 +15,7 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/cardinalities"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/reverses"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/suites"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/rules"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/syscalls"
@@ -35,6 +36,7 @@ type parserAdapter struct {
 	parameterBuilder                  parameters.ParameterBuilder
 	tokensBuilder                     tokens.Builder
 	tokenBuilder                      tokens.TokenBuilder
+	reverseBuilder                    reverses.Builder
 	elementsBuilder                   elements.Builder
 	elementBuilder                    elements.ElementBuilder
 	rulesBuilder                      rules.Builder
@@ -59,7 +61,9 @@ type parserAdapter struct {
 	blockDefinitionSeparator          byte
 	linesSeparator                    byte
 	lineSeparator                     byte
-	tokenReverseCharacter             byte
+	tokenReversePrefix                byte
+	tokenReverseEscapePrefix          byte
+	tokenReverseEscapeSuffix          byte
 	tokenReferenceSeparator           byte
 	ruleNameSeparator                 byte
 	ruleNameValueSeparator            byte
@@ -95,6 +99,7 @@ func createParserAdapter(
 	parameterBuilder parameters.ParameterBuilder,
 	tokensBuilder tokens.Builder,
 	tokenBuilder tokens.TokenBuilder,
+	reverseBuilder reverses.Builder,
 	elementsBuilder elements.Builder,
 	elementBuilder elements.ElementBuilder,
 	rulesBuilder rules.Builder,
@@ -119,7 +124,9 @@ func createParserAdapter(
 	blockDefinitionSeparator byte,
 	linesSeparator byte,
 	lineSeparator byte,
-	tokenReverseCharacter byte,
+	tokenReversePrefix byte,
+	tokenReverseEscapePrefix byte,
+	tokenReverseEscapeSuffix byte,
 	tokenReferenceSeparator byte,
 	ruleNameSeparator byte,
 	ruleNameValueSeparator byte,
@@ -154,6 +161,7 @@ func createParserAdapter(
 		parameterBuilder:                  parameterBuilder,
 		tokensBuilder:                     tokensBuilder,
 		tokenBuilder:                      tokenBuilder,
+		reverseBuilder:                    reverseBuilder,
 		elementsBuilder:                   elementsBuilder,
 		elementBuilder:                    elementBuilder,
 		rulesBuilder:                      rulesBuilder,
@@ -178,7 +186,9 @@ func createParserAdapter(
 		blockSuffix:                       blockSuffix,
 		linesSeparator:                    linesSeparator,
 		lineSeparator:                     lineSeparator,
-		tokenReverseCharacter:             tokenReverseCharacter,
+		tokenReversePrefix:                tokenReversePrefix,
+		tokenReverseEscapePrefix:          tokenReverseEscapePrefix,
+		tokenReverseEscapeSuffix:          tokenReverseEscapeSuffix,
 		tokenReferenceSeparator:           tokenReferenceSeparator,
 		ruleNameSeparator:                 ruleNameSeparator,
 		ruleNameValueSeparator:            ruleNameValueSeparator,
@@ -760,14 +770,11 @@ func (app *parserAdapter) bytesToTokenList(input []byte) ([]tokens.Token, []byte
 
 func (app *parserAdapter) bytesToToken(input []byte) (tokens.Token, []byte, error) {
 	remaining := filterPrefix(input, app.filterBytes)
-	if len(remaining) <= 0 {
-		return nil, nil, errors.New("the token was expected to contain at least 1 byte")
-	}
-
 	builder := app.tokenBuilder.Create()
-	if remaining[0] == app.tokenReverseCharacter {
-		builder.IsReverse()
-		remaining = remaining[1:]
+	retReverse, retRemainingAfterReverse, err := app.bytesToTokenReverse(remaining)
+	if err == nil {
+		builder.WithReverse(retReverse)
+		remaining = retRemainingAfterReverse
 	}
 
 	element, retRemaining, err := app.bytesToElementReference(remaining)
@@ -799,6 +806,59 @@ func (app *parserAdapter) bytesToToken(input []byte) (tokens.Token, []byte, erro
 	}
 
 	return ins, retRemaining, nil
+}
+
+func (app *parserAdapter) bytesToTokenReverse(input []byte) (reverses.Reverse, []byte, error) {
+	remaining := filterPrefix(input, app.filterBytes)
+	if len(remaining) <= 0 {
+		return nil, nil, errors.New("the tokenReverse was expected to contain at least 1 byte")
+	}
+
+	if remaining[0] != app.tokenReversePrefix {
+		return nil, nil, errors.New("the tokenReverse was expected to contain the tokenReversePrefix byte at its prefix")
+	}
+
+	remaining = remaining[1:]
+	builder := app.reverseBuilder.Create()
+	retEscape, retRemaining, err := app.bytesToTokenReverseEscape(remaining)
+	if err == nil {
+		remaining = retRemaining
+		builder.WithEscape(retEscape)
+	}
+
+	ins, err := builder.Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, remaining, nil
+}
+
+func (app *parserAdapter) bytesToTokenReverseEscape(input []byte) (elements.Element, []byte, error) {
+	remaining := filterPrefix(input, app.filterBytes)
+	if len(remaining) <= 0 {
+		return nil, nil, errors.New("the tokenReverseEscape was expected to contain at least 1 byte at its prefix")
+	}
+
+	if remaining[0] != app.tokenReverseEscapePrefix {
+		return nil, nil, errors.New("the tokenReverseEscape was expected to contain the tokenReverseEscapePrefix byte at its prefix")
+	}
+
+	remaining = remaining[1:]
+	retElement, retRemaining, err := app.bytesToElementReference(remaining)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if len(retRemaining) <= 0 {
+		return nil, nil, errors.New("the tokenReverseEscape was expected to contain at least 1 byte at its suffix")
+	}
+
+	if retRemaining[0] != app.tokenReverseEscapeSuffix {
+		return nil, nil, errors.New("the tokenReverseEscape was expected to contain the tokenReverseEscapeSuffix byte at its suffix")
+	}
+
+	return retElement, retRemaining[1:], nil
 }
 
 func (app *parserAdapter) bytesToElementReferences(input []byte) (elements.Elements, []byte, error) {

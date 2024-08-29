@@ -27,9 +27,9 @@ func TestApplication_grammar_withSuites_Success(t *testing.T) {
 						float: "float32 myVariable = -12.45";
 					;
 
-		stringValue: .QUOTE !.QUOTE .QUOTE
+		stringValue: .QUOTE ![.BACKSLASH].QUOTE .QUOTE
 					---
-						stringInQuotes: "\"this is 13 string values!\"";
+						stringInQuotes: "\"this is 13 \\\" string values!\"";
 					;
 
 		boolAssignment: .typeBoolDefinition .EQUAL .boolValue
@@ -378,6 +378,7 @@ func TestApplication_grammar_withSuites_Success(t *testing.T) {
 		UL_Y: "Y";
 		UL_Z: "Z";
 
+		BACKSLASH: "\\";
 		QUOTE: "\"";
 
 		OPEN_PARENTHESIS: "(";

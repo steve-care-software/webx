@@ -13,6 +13,7 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/cardinalities"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/cardinalities/uints"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/reverses"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/suites"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/rules"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/syscalls"
@@ -100,7 +101,9 @@ const cardinalityOptional = "?"
 const indexOpen = "["
 const indexClose = "]"
 const parameterSeparator = ":"
-const tokenReverse = "!"
+const tokenReversePrefix = "!"
+const tokenReverseEscapePrefix = "["
+const tokenReverseEscapeSuffix = "]"
 const tokenReference = "."
 const linesSeparator = "|"
 const lineSeparator = "-"
@@ -182,6 +185,7 @@ func NewParserAdapter() ParserAdapter {
 	parameterBuilder := parameters.NewParameterBuilder()
 	tokensBuilder := tokens.NewBuilder()
 	tokenBuilder := tokens.NewTokenBuilder()
+	reverseBuilder := reverses.NewBuilder()
 	elementsBuilder := elements.NewBuilder()
 	elementBuilder := elements.NewElementBuilder()
 	rulesBuilder := rules.NewBuilder()
@@ -207,6 +211,7 @@ func NewParserAdapter() ParserAdapter {
 		parameterBuilder,
 		tokensBuilder,
 		tokenBuilder,
+		reverseBuilder,
 		elementsBuilder,
 		elementBuilder,
 		rulesBuilder,
@@ -231,7 +236,9 @@ func NewParserAdapter() ParserAdapter {
 		[]byte(blockDefinitionSeparator)[0],
 		[]byte(linesSeparator)[0],
 		[]byte(lineSeparator)[0],
-		[]byte(tokenReverse)[0],
+		[]byte(tokenReversePrefix)[0],
+		[]byte(tokenReverseEscapePrefix)[0],
+		[]byte(tokenReverseEscapeSuffix)[0],
 		[]byte(tokenReference)[0],
 		[]byte(ruleNameSeparator)[0],
 		[]byte(ruleNameValueSeparator)[0],

@@ -5,19 +5,20 @@ import (
 
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/cardinalities"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/reverses"
 )
 
 type tokenBuilder struct {
 	element     elements.Element
 	cardinality cardinalities.Cardinality
-	isReverse   bool
+	reverse     reverses.Reverse
 }
 
 func createTokenBuilder() TokenBuilder {
 	out := tokenBuilder{
 		element:     nil,
 		cardinality: nil,
-		isReverse:   false,
+		reverse:     nil,
 	}
 
 	return &out
@@ -40,9 +41,9 @@ func (app *tokenBuilder) WithCardinality(cardinality cardinalities.Cardinality) 
 	return app
 }
 
-// IsReverse flags the builder as isReverse
-func (app *tokenBuilder) IsReverse() TokenBuilder {
-	app.isReverse = true
+// WithReverse adds a reverse to the builder
+func (app *tokenBuilder) WithReverse(reverse reverses.Reverse) TokenBuilder {
+	app.reverse = reverse
 	return app
 }
 
@@ -56,9 +57,16 @@ func (app *tokenBuilder) Now() (Token, error) {
 		return nil, errors.New("the cardinality is mandatory in order to build a Token instance")
 	}
 
+	if app.reverse != nil {
+		return createTokenWithReverse(
+			app.element,
+			app.cardinality,
+			app.reverse,
+		), nil
+	}
+
 	return createToken(
 		app.element,
 		app.cardinality,
-		app.isReverse,
 	), nil
 }
