@@ -293,22 +293,35 @@ func (app *application) fetchParameter(
 	currentTokens instructions.Tokens,
 	parameter instructions.Parameter,
 ) (string, []byte, error) {
-	element := parameter.Element()
-	index := parameter.Index()
-	retToken, err := currentTokens.Fetch(element, index)
-	if err != nil {
-		return "", nil, err
-	}
-
-	elements := retToken.Elements()
-	retBytes, err := app.elementsAdapter.ToBytes(elements)
-	if err != nil {
-		return "", nil, err
-	}
+	value := parameter.Value()
+	retBytes, err := app.fetchValue(
+		currentTokens,
+		value,
+	)
 
 	if err != nil {
 		return "", nil, err
 	}
 
 	return parameter.Name(), retBytes, nil
+}
+
+func (app *application) fetchValue(
+	currentTokens instructions.Tokens,
+	value instructions.Value,
+) ([]byte, error) {
+	if value.IsBytes() {
+		return value.Bytes(), nil
+	}
+
+	reference := value.Reference()
+	element := reference.Element()
+	index := reference.Index()
+	retToken, err := currentTokens.Fetch(element, index)
+	if err != nil {
+		return nil, err
+	}
+
+	elements := retToken.Elements()
+	return app.elementsAdapter.ToBytes(elements)
 }

@@ -1,38 +1,32 @@
 package parameters
 
-import "github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
+import (
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters/values"
+)
 
 type parameter struct {
-	element elements.Element
-	index   uint
-	name    string
+	name  string
+	value values.Value
 }
 
 func createParameter(
-	element elements.Element,
-	index uint,
 	name string,
+	value values.Value,
 ) Parameter {
 	out := parameter{
-		element: element,
-		index:   index,
-		name:    name,
+		name:  name,
+		value: value,
 	}
 
 	return &out
 }
 
-// Element returns the element
-func (obj *parameter) Element() elements.Element {
-	return obj.element
-}
-
-// Index returns the index
-func (obj *parameter) Index() uint {
-	return obj.index
-}
-
 // Name returns the name
 func (obj *parameter) Name() string {
 	return obj.name
+}
+
+// Value returns the value
+func (obj *parameter) Value() values.Value {
+	return obj.value
 }

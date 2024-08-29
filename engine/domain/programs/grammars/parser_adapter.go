@@ -12,6 +12,8 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters/values"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters/values/references"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/cardinalities"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
@@ -34,6 +36,8 @@ type parserAdapter struct {
 	executionBuilder                  executions.Builder
 	parametersBuilder                 parameters.Builder
 	parameterBuilder                  parameters.ParameterBuilder
+	valueBuilder                      values.Builder
+	referenceBuilder                  references.Builder
 	tokensBuilder                     tokens.Builder
 	tokenBuilder                      tokens.TokenBuilder
 	reverseBuilder                    reverses.Builder
@@ -97,6 +101,8 @@ func createParserAdapter(
 	executionBuilder executions.Builder,
 	parametersBuilder parameters.Builder,
 	parameterBuilder parameters.ParameterBuilder,
+	valueBuilder values.Builder,
+	referenceBuilder references.Builder,
 	tokensBuilder tokens.Builder,
 	tokenBuilder tokens.TokenBuilder,
 	reverseBuilder reverses.Builder,
@@ -159,6 +165,8 @@ func createParserAdapter(
 		executionBuilder:                  executionBuilder,
 		parametersBuilder:                 parametersBuilder,
 		parameterBuilder:                  parameterBuilder,
+		valueBuilder:                      valueBuilder,
+		referenceBuilder:                  referenceBuilder,
 		tokensBuilder:                     tokensBuilder,
 		tokenBuilder:                      tokenBuilder,
 		reverseBuilder:                    reverseBuilder,
@@ -402,7 +410,7 @@ func (app *parserAdapter) bytesToSyscall(input []byte) (syscalls.Syscall, []byte
 		WithName(sysCallName)
 
 	retRemaining := retFuncNameRemaining
-	retParameters, retValuesRemaining, err := app.bytesToParameteres(retFuncNameRemaining)
+	retParameters, retValuesRemaining, err := app.bytesToParameters(retFuncNameRemaining)
 	if err == nil {
 		builder.WithParameters(retParameters)
 		retRemaining = retValuesRemaining
@@ -460,8 +468,8 @@ func (app *parserAdapter) bytesToSyscallName(input []byte) (string, []byte, erro
 	return sysCallName, filterPrefix(retBlockNameRemaining, app.filterBytes), nil
 }
 
-func (app *parserAdapter) bytesToParametereOrToken(input []byte) (parameters.Parameter, tokens.Token, []byte, error) {
-	retParameter, retRemaining, err := app.bytesToParametere(input)
+func (app *parserAdapter) bytesToParameterOrToken(input []byte) (parameters.Parameter, tokens.Token, []byte, error) {
+	retParameter, retRemaining, err := app.bytesToParameter(input)
 	if err == nil {
 		return retParameter, nil, retRemaining, err
 	}
@@ -643,7 +651,7 @@ func (app *parserAdapter) bytesToExecution(input []byte) (executions.Execution, 
 	}
 
 	builder := app.executionBuilder.Create().WithFuncName(string(funcName))
-	parameters, retParametersRemaining, err := app.bytesToParameteres(retRemaining)
+	parameters, retParametersRemaining, err := app.bytesToParameters(retRemaining)
 	if err == nil {
 		builder.WithParameters(parameters)
 		retRemaining = retParametersRemaining
@@ -666,11 +674,11 @@ func (app *parserAdapter) bytesToFuncName(input []byte) (string, []byte, error) 
 	return string(funcName), retRemaining, nil
 }
 
-func (app *parserAdapter) bytesToParameteres(input []byte) (parameters.Parameters, []byte, error) {
+func (app *parserAdapter) bytesToParameters(input []byte) (parameters.Parameters, []byte, error) {
 	list := []parameters.Parameter{}
 	remaining := input
 	for {
-		retParameter, retRemaining, err := app.bytesToParametere(remaining)
+		retParameter, retRemaining, err := app.bytesToParameter(remaining)
 		if err != nil {
 			break
 		}
@@ -690,7 +698,32 @@ func (app *parserAdapter) bytesToParameteres(input []byte) (parameters.Parameter
 	return ins, remaining, nil
 }
 
-func (app *parserAdapter) bytesToParametere(input []byte) (parameters.Parameter, []byte, error) {
+func (app *parserAdapter) bytesToValue(input []byte) (values.Value, []byte, error) {
+	builder := app.valueBuilder.Create()
+	retReference, retRemaining, err := app.bytesToReference(input)
+	if err != nil {
+		retValue, retRemainingAfterValue, err := extractBetween(input, app.ruleValuePrefix, app.ruleValueSuffix, &app.ruleValueEscape)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		builder.WithBytes(retValue)
+		retRemaining = retRemainingAfterValue
+	}
+
+	if retReference != nil {
+		builder.WithReference(retReference)
+	}
+
+	ins, err := builder.Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, retRemaining, nil
+}
+
+func (app *parserAdapter) bytesToReference(input []byte) (references.Reference, []byte, error) {
 	element, retElementRemaining, err := app.bytesToElementReference(input)
 	if err != nil {
 		return nil, nil, err
@@ -704,27 +737,41 @@ func (app *parserAdapter) bytesToParametere(input []byte) (parameters.Parameter,
 		app.filterBytes,
 	)
 
+	builder := app.referenceBuilder.Create().WithIndex(retValue).WithElement(element)
 	if err != nil {
-		retValue = 0
+		builder.WithIndex(0)
 		retValueRemaining = retElementRemaining
 	}
 
-	if len(retValueRemaining) <= 0 {
+	ins, err := builder.Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return ins, retValueRemaining, nil
+}
+
+func (app *parserAdapter) bytesToParameter(input []byte) (parameters.Parameter, []byte, error) {
+	value, retRemainingAfterValue, err := app.bytesToValue(input)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if len(retRemainingAfterValue) <= 0 {
 		return nil, nil, errors.New("the parameter was expected to contain at least 1 byte before its name")
 	}
 
-	if retValueRemaining[0] != app.parameterSeparator {
+	if retRemainingAfterValue[0] != app.parameterSeparator {
 		return nil, nil, errors.New("the parameter was expected to contain the parameterSeparator byte before its name")
 	}
 
-	name, retNameRemaining, err := app.bytesToBlockName(retValueRemaining[1:])
+	name, retNameRemaining, err := app.bytesToBlockName(retRemainingAfterValue[1:])
 	if err != nil {
 		return nil, nil, err
 	}
 
 	ins, err := app.parameterBuilder.Create().
-		WithElement(element).
-		WithIndex(uint(retValue)).
+		WithValue(value).
 		WithName(name).
 		Now()
 

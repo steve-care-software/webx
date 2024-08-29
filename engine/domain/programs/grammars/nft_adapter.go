@@ -9,6 +9,8 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters/values"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters/values/references"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/cardinalities"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/cardinalities/uints"
@@ -539,7 +541,58 @@ func (app *nftAdapter) parameterToNFT(
 	blocks nfts.NFTs,
 	parameter parameters.Parameter,
 ) (nfts.NFT, error) {
-	element := parameter.Element()
+	value := parameter.Value()
+	retNFT, err := app.valueToNFT(
+		parentBlockNames,
+		rules,
+		blocks,
+		value,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	list := []nfts.NFT{
+		retNFT,
+	}
+
+	name := parameter.Name()
+	nft, err := app.nftsListToNFT(list, name)
+	if err != nil {
+		return nil, err
+	}
+
+	return nft, nil
+}
+
+func (app *nftAdapter) valueToNFT(
+	parentBlockNames []string,
+	rules nfts.NFT,
+	blocks nfts.NFTs,
+	value values.Value,
+) (nfts.NFT, error) {
+	if value.IsReference() {
+		reference := value.Reference()
+		return app.referenceToNFT(
+			parentBlockNames,
+			rules,
+			blocks,
+			reference,
+		)
+	}
+
+	bytes := value.Bytes()
+	return app.bytesToNFT(bytes)
+}
+
+func (app *nftAdapter) referenceToNFT(
+	parentBlockNames []string,
+	rules nfts.NFT,
+	blocks nfts.NFTs,
+	reference references.Reference,
+) (nfts.NFT, error) {
+	element := reference.Element()
 	elementNFT, err := app.elementToNFT(
 		parentBlockNames,
 		rules,
@@ -551,14 +604,8 @@ func (app *nftAdapter) parameterToNFT(
 		return nil, err
 	}
 
-	index := parameter.Index()
+	index := reference.Index()
 	indexNFT, err := app.uintAdapter.ToNFT(uint64(index))
-	if err != nil {
-		return nil, err
-	}
-
-	name := parameter.Name()
-	nameNFT, err := app.stringToNFT(name)
 	if err != nil {
 		return nil, err
 	}
@@ -566,7 +613,6 @@ func (app *nftAdapter) parameterToNFT(
 	list := []nfts.NFT{
 		elementNFT,
 		indexNFT,
-		nameNFT,
 	}
 
 	nft, err := app.nftsListToNFT(list, "")
@@ -580,8 +626,14 @@ func (app *nftAdapter) parameterToNFT(
 func (app *nftAdapter) stringToNFT(
 	value string,
 ) (nfts.NFT, error) {
-	list := []nfts.NFT{}
 	data := []byte(value)
+	return app.bytesToNFT(data)
+}
+
+func (app *nftAdapter) bytesToNFT(
+	data []byte,
+) (nfts.NFT, error) {
+	list := []nfts.NFT{}
 	for _, oneByte := range data {
 		nft, err := app.nftBuilder.Create().WithByte(oneByte).Now()
 		if err != nil {

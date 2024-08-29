@@ -59,15 +59,22 @@ func (app *composeAdapter) writeLine(grammar Grammar, line lines.Line) ([]byte, 
 		if execution.HasParameters() {
 			parametersList := execution.Parameters().List()
 			for _, oneParameter := range parametersList {
-				paramElementName := oneParameter.Element().Name()
-				paramElementIndex := oneParameter.Index()
-				if _, ok := tokensMap[paramElementName]; !ok {
-					str := fmt.Sprintf("the func (name: %s) contains a param (name: %s, index: %d) that is not declared in the line", fnName, paramElementName, paramElementIndex)
-					return nil, errors.New(str)
+				name := oneParameter.Name()
+				value := oneParameter.Value()
+				if value.IsReference() {
+					reference := value.Reference()
+					paramElementName := reference.Element().Name()
+					paramElementIndex := reference.Index()
+					if _, ok := tokensMap[paramElementName]; !ok {
+						str := fmt.Sprintf("the func (name: %s) contains a param (name: %s, index: %d) that is not declared in the line", fnName, paramElementName, paramElementIndex)
+						return nil, errors.New(str)
+					}
+
+					params[name] = tokensMap[paramElementName][int(paramElementIndex)]
+					continue
 				}
 
-				name := oneParameter.Name()
-				params[name] = tokensMap[paramElementName][int(paramElementIndex)]
+				params[name] = value.Bytes()
 			}
 		}
 

@@ -22,6 +22,8 @@ func NewParserAdapter() ParserAdapter {
 	syscallBuilder := instructions.NewSyscallBuilder()
 	parametersBuilder := instructions.NewParametersBuilder()
 	parameterBuilder := instructions.NewParameterBuilder()
+	valueBuilder := instructions.NewValueBuilder()
+	referenceBuilder := instructions.NewReferenceBuilder()
 	return createParserAdapter(
 		grammarAdapter,
 		builder,
@@ -36,6 +38,8 @@ func NewParserAdapter() ParserAdapter {
 		syscallBuilder,
 		parametersBuilder,
 		parameterBuilder,
+		valueBuilder,
+		referenceBuilder,
 	)
 }
 

@@ -313,7 +313,7 @@ func TestApplication_grammar_withSuites_Success(t *testing.T) {
 						nine: "9";
 				   ;
 
-		_cursorPushUint8: @cursor_push .numbers:value;
+		_cursorPushUint8: @cursor_push .numbers:value "0":kind;
 
 		N_ZERO: "0";
 		N_ONE: "1";

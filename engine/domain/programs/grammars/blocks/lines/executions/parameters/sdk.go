@@ -1,7 +1,7 @@
 package parameters
 
 import (
-	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters/values"
 )
 
 // NewBuilder creates a new builder
@@ -29,15 +29,13 @@ type Parameters interface {
 // ParameterBuilder represents the parameter builder
 type ParameterBuilder interface {
 	Create() ParameterBuilder
-	WithElement(element elements.Element) ParameterBuilder
-	WithIndex(index uint) ParameterBuilder
 	WithName(name string) ParameterBuilder
+	WithValue(value values.Value) ParameterBuilder
 	Now() (Parameter, error)
 }
 
 // Parameter represents an execution parameter
 type Parameter interface {
-	Element() elements.Element
-	Index() uint
 	Name() string
+	Value() values.Value
 }

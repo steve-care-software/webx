@@ -9,6 +9,8 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters/values"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters/values/references"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/cardinalities"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/cardinalities/uints"
@@ -183,6 +185,8 @@ func NewParserAdapter() ParserAdapter {
 	executionBuilder := executions.NewBuilder()
 	parametersBuilder := parameters.NewBuilder()
 	parameterBuilder := parameters.NewParameterBuilder()
+	valueBuilder := values.NewBuilder()
+	referenceBuilder := references.NewBuilder()
 	tokensBuilder := tokens.NewBuilder()
 	tokenBuilder := tokens.NewTokenBuilder()
 	reverseBuilder := reverses.NewBuilder()
@@ -209,6 +213,8 @@ func NewParserAdapter() ParserAdapter {
 		executionBuilder,
 		parametersBuilder,
 		parameterBuilder,
+		valueBuilder,
+		referenceBuilder,
 		tokensBuilder,
 		tokenBuilder,
 		reverseBuilder,

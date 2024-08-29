@@ -9,6 +9,7 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters/values"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/rules"
@@ -30,6 +31,8 @@ type parserAdapter struct {
 	syscallBuilder      instructions.SyscallBuilder
 	parametersBuilder   instructions.ParametersBuilder
 	parameterBuilder    instructions.ParameterBuilder
+	valueBuilder        instructions.ValueBuilder
+	referenceBuilder    instructions.ReferenceBuilder
 }
 
 func createParserAdapter(
@@ -46,6 +49,8 @@ func createParserAdapter(
 	syscallBuilder instructions.SyscallBuilder,
 	parametersBuilder instructions.ParametersBuilder,
 	parameterBuilder instructions.ParameterBuilder,
+	valueBuilder instructions.ValueBuilder,
+	referenceBuilder instructions.ReferenceBuilder,
 ) ParserAdapter {
 	out := parserAdapter{
 		grammarAdapter:      grammarAdapter,
@@ -61,6 +66,8 @@ func createParserAdapter(
 		syscallBuilder:      syscallBuilder,
 		parametersBuilder:   parametersBuilder,
 		parameterBuilder:    parameterBuilder,
+		valueBuilder:        valueBuilder,
+		referenceBuilder:    referenceBuilder,
 	}
 
 	return &out
@@ -419,17 +426,14 @@ func (app *parserAdapter) toElement(
 			return nil, nil, err
 		}
 
-		retSysCall, retRemaining, err := app.toSyscall(
-			grammar,
+		retSysCall, err := app.toSyscall(
 			sysCall,
-			remaining,
 		)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		builder.WithSyscall(retSysCall)
-		remaining = retRemaining
 	}
 
 	ins, err := builder.Now()
@@ -441,11 +445,8 @@ func (app *parserAdapter) toElement(
 }
 
 func (app *parserAdapter) toSyscall(
-	grammar grammars.Grammar,
 	syscall syscalls.Syscall,
-	input []byte,
-) (instructions.Syscall, []byte, error) {
-	remaining := input
+) (instructions.Syscall, error) {
 	name := syscall.Name()
 	funcName := syscall.FuncName()
 	builder := app.syscallBuilder.Create().
@@ -454,49 +455,35 @@ func (app *parserAdapter) toSyscall(
 
 	if syscall.HasParameters() {
 		parameters := syscall.Parameters()
-		retParameters, retRemaining, err := app.toParameters(
-			grammar,
+		retParameters, err := app.toParameters(
 			parameters,
-			remaining,
 		)
 
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 
 		builder.WithParameters(retParameters)
-		remaining = retRemaining
 	}
 
-	ins, err := builder.Now()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return ins, remaining, nil
+	return builder.Now()
 }
 
 func (app *parserAdapter) toParameters(
-	grammar grammars.Grammar,
 	parameters parameters.Parameters,
-	input []byte,
-) (instructions.Parameters, []byte, error) {
-	remaining := input
+) (instructions.Parameters, error) {
 	list := parameters.List()
 	output := []instructions.Parameter{}
 	for _, oneParameter := range list {
-		retParameter, retRemaining, err := app.toParameter(
-			grammar,
+		retParameter, err := app.toParameter(
 			oneParameter,
-			remaining,
 		)
 
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 
 		output = append(output, retParameter)
-		remaining = retRemaining
 	}
 
 	ins, err := app.parametersBuilder.Create().
@@ -504,31 +491,54 @@ func (app *parserAdapter) toParameters(
 		Now()
 
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	return ins, remaining, nil
+	return ins, nil
 }
 
 func (app *parserAdapter) toParameter(
-	grammar grammars.Grammar,
 	parameter parameters.Parameter,
-	input []byte,
-) (instructions.Parameter, []byte, error) {
-	element := parameter.Element()
-	name := parameter.Name()
-	index := parameter.Index()
-	ins, err := app.parameterBuilder.Create().
-		WithElement(element.Name()).
-		WithName(name).
-		WithIndex(index).
-		Now()
-
+) (instructions.Parameter, error) {
+	value := parameter.Value()
+	retValue, err := app.toValue(value)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	return ins, input, nil
+	name := parameter.Name()
+	return app.parameterBuilder.Create().
+		WithName(name).
+		WithValue(retValue).
+		Now()
+}
+
+func (app *parserAdapter) toValue(
+	value values.Value,
+) (instructions.Value, error) {
+	builder := app.valueBuilder.Create()
+	if value.IsBytes() {
+		bytes := value.Bytes()
+		builder.WithBytes(bytes)
+	}
+
+	if value.IsReference() {
+		reference := value.Reference()
+		element := reference.Element()
+		index := reference.Index()
+		retRef, err := app.referenceBuilder.Create().
+			WithElement(element.Name()).
+			WithIndex(index).
+			Now()
+
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithReference(retRef)
+	}
+
+	return builder.Now()
 }
 
 func (app *parserAdapter) filterOmissions(

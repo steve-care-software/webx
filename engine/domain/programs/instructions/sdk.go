@@ -57,6 +57,16 @@ func NewParameterBuilder() ParameterBuilder {
 	return createParameterBuilder()
 }
 
+// NewValueBuilder creates a new value builder
+func NewValueBuilder() ValueBuilder {
+	return createValueBuilder()
+}
+
+// NewReferenceBuilder creates a new reference builder
+func NewReferenceBuilder() ReferenceBuilder {
+	return createReferenceBuilder()
+}
+
 // Builder represents the instructions builder
 type Builder interface {
 	Create() Builder
@@ -195,15 +205,43 @@ type Parameters interface {
 // ParameterBuilder represents the parameter builder
 type ParameterBuilder interface {
 	Create() ParameterBuilder
-	WithElement(element string) ParameterBuilder
-	WithIndex(index uint) ParameterBuilder
 	WithName(name string) ParameterBuilder
+	WithValue(value Value) ParameterBuilder
 	Now() (Parameter, error)
 }
 
 // Parameter represents an execution parameter
 type Parameter interface {
+	Name() string
+	Value() Value
+}
+
+// ValueBuilder represents the value builder
+type ValueBuilder interface {
+	Create() ValueBuilder
+	WithReference(reference Reference) ValueBuilder
+	WithBytes(bytes []byte) ValueBuilder
+	Now() (Value, error)
+}
+
+// Value represents a value
+type Value interface {
+	IsReference() bool
+	Reference() Reference
+	IsBytes() bool
+	Bytes() []byte
+}
+
+// ReferenceBuilder represents the reference builder
+type ReferenceBuilder interface {
+	Create() ReferenceBuilder
+	WithElement(element string) ReferenceBuilder
+	WithIndex(index uint) ReferenceBuilder
+	Now() (Reference, error)
+}
+
+// Reference represents a reference
+type Reference interface {
 	Element() string
 	Index() uint
-	Name() string
 }
