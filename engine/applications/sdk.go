@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"strconv"
 
+	"github.com/steve-care-software/webx/engine/applications/stackframes/cursors"
 	"github.com/steve-care-software/webx/engine/domain/nfts"
 	"github.com/steve-care-software/webx/engine/domain/programs"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars"
@@ -13,10 +15,11 @@ import (
 )
 
 // SyscallFn represents the syscall func
-type SyscallFn func(map[string][]byte) (any, error)
+type SyscallFn func(map[string][]byte) error
 
 // NewApplication creates a new application
 func NewApplication() Application {
+	cursorApp := cursors.NewApplication()
 	elementsAdapter := instructions.NewElementsAdapter()
 	grammarParserAdapter := grammars.NewParserAdapter()
 	grammarNFTAdapter := grammars.NewNFTAdapter()
@@ -29,28 +32,44 @@ func NewApplication() Application {
 		grammarComposeAdapter,
 		programParserAdapter,
 		map[string]SyscallFn{
-			"math_operation_arithmetic_add": func(params map[string][]byte) (any, error) {
+			"math_operation_arithmetic_add": func(params map[string][]byte) error {
 				if firstBytes, ok := params["first"]; ok {
 					if secondBytes, ok := params["second"]; ok {
 						first, _ := big.NewInt(0).SetString(string(firstBytes), 0)
 						if first == nil {
-							return nil, errors.New("the values passed to the first paramter could not be casted to an int")
+							return errors.New("the values passed to the first paramter could not be casted to an int")
 						}
 
 						second, _ := big.NewInt(0).SetString(string(secondBytes), 0)
 						if second == nil {
-							return nil, errors.New("the values passed to the second paramter could not be casted to an int")
+							return errors.New("the values passed to the second paramter could not be casted to an int")
 						}
 
 						value := first.Add(first, second)
-						fmt.Printf("\n%s, %s\n", params["first"], params["second"])
-						return value.Int64(), nil
+						fmt.Printf("\n%s, %s, %d\n", params["first"], params["second"], value.Int64())
+						return nil
 					}
 
-					return nil, errors.New("the first parameter could not be found")
+					return errors.New("the second parameter could not be found")
 				}
 
-				return nil, errors.New("the second parameter could not be found")
+				return errors.New("the first parameter could not be found")
+			},
+			"cursor_push": func(params map[string][]byte) error {
+				if valueStrBytes, ok := params["value"]; ok {
+					if kindStrBytes, ok := params["kind"]; ok {
+						kind, err := strconv.Atoi(string(kindStrBytes))
+						if err != nil {
+							return err
+						}
+
+						return cursorApp.PushAsStringBytes(valueStrBytes, uint8(kind))
+					}
+
+					return errors.New("the kind parameter could not be found")
+				}
+
+				return errors.New("the value parameter could not be found")
 			},
 		},
 	)

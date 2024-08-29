@@ -22,6 +22,7 @@ type Application interface {
 	Amount(kind uint8) (*uint, error)
 	Fetch(index uint, kind uint8) (any, error)
 	Push(value any, kind uint8) error
+	PushAsStringBytes(valueStrAsBytes []byte, kind uint8) error
 	Save(index uint, kind uint8, variable string, replaceIfExists bool) error
 	Remove(index uint, kind uint8) error
 	Clear(kind uint8) error

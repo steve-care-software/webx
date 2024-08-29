@@ -253,7 +253,7 @@ func (app *application) interpretSyscall(
 	}
 
 	if fn, ok := app.syscalls[fnName]; ok {
-		_, err := fn(mpParams)
+		err := fn(mpParams)
 		if err != nil {
 			return err
 		}
