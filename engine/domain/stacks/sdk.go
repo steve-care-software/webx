@@ -5,6 +5,19 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/stacks/frames/variables"
 )
 
+// NewFactory creates a new factory
+func NewFactory() Factory {
+	builder := NewBuilder()
+	return createFactory(
+		builder,
+	)
+}
+
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Factory represents a stack factory
 type Factory interface {
 	Create() (Stack, error)
