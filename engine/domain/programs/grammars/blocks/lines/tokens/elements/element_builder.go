@@ -3,16 +3,14 @@ package elements
 import "errors"
 
 type elementBuilder struct {
-	rule    string
-	block   string
-	syscall string
+	rule  string
+	block string
 }
 
 func createElementBuilder() ElementBuilder {
 	out := elementBuilder{
-		rule:    "",
-		block:   "",
-		syscall: "",
+		rule:  "",
+		block: "",
 	}
 
 	return &out
@@ -35,12 +33,6 @@ func (app *elementBuilder) WithBlock(block string) ElementBuilder {
 	return app
 }
 
-// WithSyscall adds a syscall to the builder
-func (app *elementBuilder) WithSyscall(syscall string) ElementBuilder {
-	app.syscall = syscall
-	return app
-}
-
 // Now builds a new Element
 func (app *elementBuilder) Now() (Element, error) {
 	if app.rule != "" {
@@ -49,10 +41,6 @@ func (app *elementBuilder) Now() (Element, error) {
 
 	if app.block != "" {
 		return createElementWithBlock(app.block), nil
-	}
-
-	if app.syscall != "" {
-		return createElementWithSyscall(app.syscall), nil
 	}
 
 	return nil, errors.New("the Element is invalid")

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"strconv"
-	"strings"
 
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines"
@@ -14,25 +13,24 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters/values"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters/values/references"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/processors"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/cardinalities"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/reverses"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/suites"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/rules"
-	"github.com/steve-care-software/webx/engine/domain/programs/grammars/syscalls"
 )
 
 type parserAdapter struct {
 	grammarBuilder                    Builder
-	syscallsBuilder                   syscalls.Builder
-	syscallBuilder                    syscalls.SyscallBuilder
 	blocksBuilder                     blocks.Builder
 	blockBuilder                      blocks.BlockBuilder
 	suitesBuilder                     suites.Builder
 	suiteBuilder                      suites.SuiteBuilder
 	linesBuilder                      lines.Builder
 	lineBuilder                       lines.LineBuilder
+	processorBuilder                  processors.Builder
 	executionBuilder                  executions.Builder
 	parametersBuilder                 parameters.Builder
 	parameterBuilder                  parameters.ParameterBuilder
@@ -86,18 +84,19 @@ type parserAdapter struct {
 	syscallDefinitionSeparator        byte
 	sysCallNamePrefix                 byte
 	sysCallFuncNamePrefix             byte
+	sysCallPrefix                     byte
+	sysCallSuffix                     byte
 }
 
 func createParserAdapter(
 	grammarBuilder Builder,
-	syscallsBuilder syscalls.Builder,
-	syscallBuilder syscalls.SyscallBuilder,
 	blocksBuilder blocks.Builder,
 	blockBuilder blocks.BlockBuilder,
 	suitesBuilder suites.Builder,
 	suiteBuilder suites.SuiteBuilder,
 	linesBuilder lines.Builder,
 	lineBuilder lines.LineBuilder,
+	processorBuilder processors.Builder,
 	executionBuilder executions.Builder,
 	parametersBuilder parameters.Builder,
 	parameterBuilder parameters.ParameterBuilder,
@@ -151,17 +150,18 @@ func createParserAdapter(
 	syscallDefinitionSeparator byte,
 	sysCallNamePrefix byte,
 	sysCallFuncNamePrefix byte,
+	sysCallPrefix byte,
+	sysCallSuffix byte,
 ) ParserAdapter {
 	out := parserAdapter{
 		grammarBuilder:                    grammarBuilder,
-		syscallsBuilder:                   syscallsBuilder,
-		syscallBuilder:                    syscallBuilder,
 		blocksBuilder:                     blocksBuilder,
 		blockBuilder:                      blockBuilder,
 		suitesBuilder:                     suitesBuilder,
 		suiteBuilder:                      suiteBuilder,
 		linesBuilder:                      linesBuilder,
 		lineBuilder:                       lineBuilder,
+		processorBuilder:                  processorBuilder,
 		executionBuilder:                  executionBuilder,
 		parametersBuilder:                 parametersBuilder,
 		parameterBuilder:                  parameterBuilder,
@@ -215,6 +215,8 @@ func createParserAdapter(
 		syscallDefinitionSeparator:        syscallDefinitionSeparator,
 		sysCallNamePrefix:                 sysCallNamePrefix,
 		sysCallFuncNamePrefix:             sysCallFuncNamePrefix,
+		sysCallPrefix:                     sysCallPrefix,
+		sysCallSuffix:                     sysCallSuffix,
 	}
 
 	return &out
@@ -263,15 +265,8 @@ func (app *parserAdapter) ToGrammar(input []byte) (Grammar, []byte, error) {
 		return nil, nil, err
 	}
 
-	retRemaining := retBlocksRemaining
 	builder = builder.WithBlocks(retBlocks)
-	retSyscalls, retSyscallsRemaining, err := app.bytesToSyscalls(retBlocksRemaining)
-	if err == nil {
-		builder.WithSyscalls(retSyscalls)
-		retRemaining = retSyscallsRemaining
-	}
-
-	retRules, retRemaining, err := app.bytesToRules(retRemaining)
+	retRules, retRemaining, err := app.bytesToRules(retBlocksRemaining)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -360,112 +355,6 @@ func (app *parserAdapter) bytesToBlock(input []byte) (blocks.Block, []byte, erro
 	}
 
 	return retIns, filterPrefix(remaining[1:], app.filterBytes), nil
-}
-
-func (app *parserAdapter) bytesToSyscalls(input []byte) (syscalls.Syscalls, []byte, error) {
-	remaining := input
-	list := []syscalls.Syscall{}
-	for {
-		retSyscall, retRemaining, err := app.bytesToSyscall(remaining)
-		if err != nil {
-			break
-		}
-
-		list = append(list, retSyscall)
-		remaining = retRemaining
-	}
-
-	ins, err := app.syscallsBuilder.Create().WithList(list).Now()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return ins, filterPrefix(remaining, app.filterBytes), nil
-}
-
-func (app *parserAdapter) bytesToSyscall(input []byte) (syscalls.Syscall, []byte, error) {
-	sysCallName, retRemainingAfterSyscall, err := app.bytesToSyscallDefinition(
-		input,
-	)
-
-	if err != nil {
-		return nil, nil, err
-	}
-
-	if len(retRemainingAfterSyscall) <= 0 {
-		return nil, nil, errors.New("the sysCall was expected to contain at least 1 byte before its function")
-	}
-
-	if retRemainingAfterSyscall[0] != app.sysCallFuncNamePrefix {
-		return nil, nil, errors.New("the sysCall was expected to contain the sysCallFuncNamePrefix byte before its function")
-	}
-
-	funcName, retFuncNameRemaining, err := app.bytesToFuncName(retRemainingAfterSyscall[1:])
-	if err != nil {
-		return nil, nil, err
-	}
-
-	builder := app.syscallBuilder.Create().
-		WithFuncName(funcName).
-		WithName(sysCallName)
-
-	retRemaining := retFuncNameRemaining
-	retParameters, retValuesRemaining, err := app.bytesToParameters(retFuncNameRemaining)
-	if err == nil {
-		builder.WithParameters(retParameters)
-		retRemaining = retValuesRemaining
-	}
-
-	if len(retRemaining) <= 0 {
-		return nil, nil, errors.New("the sysCall was expected to contain at least 1 byte at the end of its definition")
-	}
-
-	if retRemaining[0] != app.blockSuffix {
-		return nil, nil, errors.New("the sysCall was expected to contain the blockSuffix byte at its suffix")
-	}
-
-	ins, err := builder.Now()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return ins, filterPrefix(retRemaining[1:], app.filterBytes), nil
-}
-
-func (app *parserAdapter) bytesToSyscallDefinition(input []byte) (string, []byte, error) {
-	syscallName, retRemainingAfterSysCallName, err := app.bytesToSyscallName(input)
-	if err != nil {
-		return "", nil, err
-	}
-
-	if len(retRemainingAfterSysCallName) <= 0 {
-		return "", nil, errors.New("the sysCallDefinition was expected to contain at least 1 byte after fetching its name")
-	}
-
-	if retRemainingAfterSysCallName[0] != app.syscallDefinitionSeparator {
-		return "", nil, errors.New("the sysCallDefinition was expected to contain the syscallDefinitionSeparator byte at its suffix")
-	}
-
-	return syscallName, filterPrefix(retRemainingAfterSysCallName[1:], app.filterBytes), nil
-}
-
-func (app *parserAdapter) bytesToSyscallName(input []byte) (string, []byte, error) {
-	if input[0] != app.sysCallNamePrefix {
-		return "", nil, errors.New("the sysCallDefinition was expecting the sysCallNamePrefix bytes as its prefix")
-	}
-
-	remaining := filterPrefix(input[1:], app.filterBytes)
-	blockName, retBlockNameRemaining, err := app.bytesToBlockName(remaining)
-	if err != nil {
-		return "", nil, err
-	}
-
-	sysCallName := strings.Join([]string{
-		string([]byte{input[0]}),
-		blockName,
-	}, "")
-
-	return sysCallName, filterPrefix(retBlockNameRemaining, app.filterBytes), nil
 }
 
 func (app *parserAdapter) bytesToParameterOrToken(input []byte) (parameters.Parameter, tokens.Token, []byte, error) {
@@ -593,14 +482,66 @@ func (app *parserAdapter) bytesToLines(input []byte) (lines.Lines, []byte, error
 }
 
 func (app *parserAdapter) bytesToLine(input []byte) (lines.Line, []byte, error) {
-	retTokens, retRemaining, err := app.bytesToTokens(input)
+	remaining := input
+	builder := app.lineBuilder.Create()
+	retSyscall, retRemainingAfterSyscall, err := app.bytesToSyscall(remaining)
+	if err == nil {
+		builder.WithSyscall(retSyscall)
+		remaining = retRemainingAfterSyscall
+	}
+
+	retTokens, retRemaining, err := app.bytesToTokens(remaining)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	remaining := retRemaining
-	builder := app.lineBuilder.Create().WithTokens(retTokens)
-	retExecution, retElement, retRemainingAfterExexOrToken, err := app.bytesToExecutionOrReplacement(retRemaining)
+	remaining = retRemaining
+	builder.WithTokens(retTokens)
+	retProcessor, retRemainingAfterProcessor, err := app.bytesToProcessor(remaining)
+	if err == nil {
+		builder.WithProcessor(retProcessor)
+		remaining = retRemainingAfterProcessor
+	}
+
+	line, err := builder.Now()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return line, remaining, nil
+}
+
+func (app *parserAdapter) bytesToSyscall(input []byte) (executions.Execution, []byte, error) {
+	input = filterPrefix(input, app.filterBytes)
+	if len(input) <= 0 {
+		return nil, nil, errors.New("the syscall was expected to contain at least 1 byte for its prefix")
+	}
+
+	if input[0] != app.sysCallPrefix {
+		return nil, nil, errors.New("the syscall was expected to contain the sysCallPrefix as its first byte")
+	}
+
+	remaining := input[1:]
+	retExecution, retRemaining, err := app.bytesToExecution(remaining)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if len(retRemaining) <= 0 {
+		return nil, nil, errors.New("the syscall was expected to contain at least 1 byte for its prefix")
+	}
+
+	if retRemaining[0] != app.sysCallSuffix {
+		return nil, nil, errors.New("the syscall was expected to contain the sysCallSuffix as its last byte")
+	}
+
+	return retExecution, retRemaining[1:], nil
+}
+
+func (app *parserAdapter) bytesToProcessor(input []byte) (processors.Processor, []byte, error) {
+	remaining := input
+	builder := app.processorBuilder.Create()
+	retExecution, retElement, retRemainingAfterExexOrToken, err := app.bytesToExecutionOrReplacement(remaining)
 	if err == nil {
 		remaining = retRemainingAfterExexOrToken
 	}
@@ -613,12 +554,12 @@ func (app *parserAdapter) bytesToLine(input []byte) (lines.Line, []byte, error) 
 		builder.WithReplacement(retElement)
 	}
 
-	line, err := builder.Now()
+	processor, err := builder.Now()
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return line, remaining, nil
+	return processor, remaining, nil
 }
 
 func (app *parserAdapter) bytesToExecutionOrReplacement(input []byte) (executions.Execution, elements.Element, []byte, error) {
@@ -951,14 +892,7 @@ func (app *parserAdapter) bytesToElement(input []byte) (elements.Element, []byte
 		// there is no rule, so try to match a block
 		blockName, retBlockRemaining, err := app.bytesToBlockName(input)
 		if err != nil {
-			// there is no block, so try to match a syscall:
-			sysCallName, retSysCallRemaining, err := app.bytesToSyscallName(input)
-			if err != nil {
-				return nil, nil, err
-			}
-
-			elementBuilder.WithSyscall(string(sysCallName))
-			retRemaining = retSysCallRemaining
+			return nil, nil, err
 		}
 
 		if err == nil {

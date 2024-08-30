@@ -18,7 +18,6 @@ func NewParserAdapter() ParserAdapter {
 	elementsBuilder := instructions.NewElementsBuilder()
 	elementBuilder := instructions.NewElementBuilder()
 	ruleBuilder := rules.NewRuleBuilder()
-	syscallsBuilder := instructions.NewSyscallsBuilder()
 	syscallBuilder := instructions.NewSyscallBuilder()
 	parametersBuilder := instructions.NewParametersBuilder()
 	parameterBuilder := instructions.NewParameterBuilder()
@@ -34,7 +33,6 @@ func NewParserAdapter() ParserAdapter {
 		elementsBuilder,
 		elementBuilder,
 		ruleBuilder,
-		syscallsBuilder,
 		syscallBuilder,
 		parametersBuilder,
 		parameterBuilder,

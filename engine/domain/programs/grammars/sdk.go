@@ -11,6 +11,7 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters/values"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters/values/references"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/processors"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/cardinalities"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/cardinalities/uints"
@@ -18,7 +19,6 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/reverses"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/suites"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/rules"
-	"github.com/steve-care-software/webx/engine/domain/programs/grammars/syscalls"
 )
 
 // CoreFn represents a core fn
@@ -125,6 +125,8 @@ const filterBytes = " \n\r\t"
 const syscallDefinitionSeparator = ":"
 const sysCallNamePrefix = "_"
 const sysCallFuncNamePrefix = "@"
+const sysCallPrefix = "("
+const sysCallSuffix = ")"
 
 // NewComposeAdapter creates a new composer adapter
 func NewComposeAdapter() ComposeAdapter {
@@ -174,14 +176,13 @@ func NewNFTAdapter() NFTAdapter {
 // NewParserAdapter creates a new parser adapter
 func NewParserAdapter() ParserAdapter {
 	grammarBuilder := NewBuilder()
-	syscallsBuilder := syscalls.NewBuilder()
-	syscallBuilder := syscalls.NewSyscallBuilder()
 	blocksBuilder := blocks.NewBuilder()
 	blockBuilder := blocks.NewBlockBuilder()
 	suitesBuilder := suites.NewBuilder()
 	suiteBuilder := suites.NewSuiteBuilder()
 	linesBuilder := lines.NewBuilder()
 	lineBuilder := lines.NewLineBuilder()
+	processorBuilder := processors.NewBuilder()
 	executionBuilder := executions.NewBuilder()
 	parametersBuilder := parameters.NewBuilder()
 	parameterBuilder := parameters.NewParameterBuilder()
@@ -202,14 +203,13 @@ func NewParserAdapter() ParserAdapter {
 	possibleFuncNameCharacters := createPossibleFuncNameCharacters()
 	return createParserAdapter(
 		grammarBuilder,
-		syscallsBuilder,
-		syscallBuilder,
 		blocksBuilder,
 		blockBuilder,
 		suitesBuilder,
 		suiteBuilder,
 		linesBuilder,
 		lineBuilder,
+		processorBuilder,
 		executionBuilder,
 		parametersBuilder,
 		parameterBuilder,
@@ -263,6 +263,8 @@ func NewParserAdapter() ParserAdapter {
 		[]byte(syscallDefinitionSeparator)[0],
 		[]byte(sysCallNamePrefix)[0],
 		[]byte(sysCallFuncNamePrefix)[0],
+		[]byte(sysCallPrefix)[0],
+		[]byte(sysCallSuffix)[0],
 	)
 }
 
@@ -302,7 +304,6 @@ type Builder interface {
 	WithRoot(root elements.Element) Builder
 	WithRules(rules rules.Rules) Builder
 	WithBlocks(blocks blocks.Blocks) Builder
-	WithSyscalls(syscalls syscalls.Syscalls) Builder
 	WithOmissions(omissions elements.Elements) Builder
 	Now() (Grammar, error)
 }
@@ -313,8 +314,6 @@ type Grammar interface {
 	Root() elements.Element
 	Rules() rules.Rules
 	Blocks() blocks.Blocks
-	HasSyscalls() bool
-	Syscalls() syscalls.Syscalls
 	HasOmissions() bool
 	Omissions() elements.Elements
 }

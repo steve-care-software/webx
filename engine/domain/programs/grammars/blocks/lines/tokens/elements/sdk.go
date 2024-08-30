@@ -28,7 +28,6 @@ type ElementBuilder interface {
 	Create() ElementBuilder
 	WithRule(rule string) ElementBuilder
 	WithBlock(block string) ElementBuilder
-	WithSyscall(syscall string) ElementBuilder
 	Now() (Element, error)
 }
 
@@ -39,6 +38,4 @@ type Element interface {
 	Rule() string
 	IsBlock() bool
 	Block() string
-	IsSyscall() bool
-	Syscall() string
 }

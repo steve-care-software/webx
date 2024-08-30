@@ -81,10 +81,6 @@ func (app *elementsAdapter) elementToBytes(
 		return rule.Bytes(), nil
 	}
 
-	if element.IsSyscall() {
-		return []byte{}, nil
-	}
-
 	instruction := element.Instruction()
 	return app.instructionToBytes(
 		instruction,

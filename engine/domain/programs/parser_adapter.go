@@ -8,12 +8,12 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters/values"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/rules"
-	"github.com/steve-care-software/webx/engine/domain/programs/grammars/syscalls"
 	"github.com/steve-care-software/webx/engine/domain/programs/instructions"
 )
 
@@ -27,7 +27,6 @@ type parserAdapter struct {
 	elementsBuilder     instructions.ElementsBuilder
 	elementBuilder      instructions.ElementBuilder
 	ruleBuilder         rules.RuleBuilder
-	syscallsBuilder     instructions.SyscallsBuilder
 	syscallBuilder      instructions.SyscallBuilder
 	parametersBuilder   instructions.ParametersBuilder
 	parameterBuilder    instructions.ParameterBuilder
@@ -45,7 +44,6 @@ func createParserAdapter(
 	elementsBuilder instructions.ElementsBuilder,
 	elementBuilder instructions.ElementBuilder,
 	ruleBuilder rules.RuleBuilder,
-	syscallsBuilder instructions.SyscallsBuilder,
 	syscallBuilder instructions.SyscallBuilder,
 	parametersBuilder instructions.ParametersBuilder,
 	parameterBuilder instructions.ParameterBuilder,
@@ -62,7 +60,6 @@ func createParserAdapter(
 		elementsBuilder:     elementsBuilder,
 		elementBuilder:      elementBuilder,
 		ruleBuilder:         ruleBuilder,
-		syscallsBuilder:     syscallsBuilder,
 		syscallBuilder:      syscallBuilder,
 		parametersBuilder:   parametersBuilder,
 		parameterBuilder:    parameterBuilder,
@@ -148,12 +145,22 @@ func (app *parserAdapter) toInstruction(
 			return nil, nil, err
 		}
 
-		retIns, err := app.instructionBuilder.Create().
+		builder := app.instructionBuilder.Create().
 			WithBlock(name).
 			WithLine(uint(0)).
-			WithTokens(retTokens).
-			Now()
+			WithTokens(retTokens)
 
+		if line.HasSyscall() {
+			syscall := line.Syscall()
+			retSyscall, err := app.toSysCall(syscall)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			builder.WithSyscall(retSyscall)
+		}
+
+		retIns, err := builder.Now()
 		if err != nil {
 			return nil, nil, err
 		}
@@ -173,12 +180,22 @@ func (app *parserAdapter) toInstruction(
 			continue
 		}
 
-		retIns, err := app.instructionBuilder.Create().
+		builder := app.instructionBuilder.Create().
 			WithBlock(name).
 			WithLine(uint(idx)).
-			WithTokens(retTokens).
-			Now()
+			WithTokens(retTokens)
 
+		if oneLine.HasSyscall() {
+			syscall := oneLine.Syscall()
+			retSyscall, err := app.toSysCall(syscall)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			builder.WithSyscall(retSyscall)
+		}
+
+		retIns, err := builder.Now()
 		if err != nil {
 			return nil, nil, err
 		}
@@ -419,23 +436,6 @@ func (app *parserAdapter) toElement(
 		remaining = retInstructionRemaining
 	}
 
-	if element.IsSyscall() {
-		syscallName := element.Syscall()
-		sysCall, err := grammar.Syscalls().Fetch(syscallName)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		retSysCall, err := app.toSyscall(
-			sysCall,
-		)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		builder.WithSyscall(retSysCall)
-	}
-
 	ins, err := builder.Now()
 	if err != nil {
 		return nil, nil, err
@@ -444,17 +444,15 @@ func (app *parserAdapter) toElement(
 	return ins, remaining, nil
 }
 
-func (app *parserAdapter) toSyscall(
-	syscall syscalls.Syscall,
+func (app *parserAdapter) toSysCall(
+	execution executions.Execution,
 ) (instructions.Syscall, error) {
-	name := syscall.Name()
-	funcName := syscall.FuncName()
+	funcName := execution.FuncName()
 	builder := app.syscallBuilder.Create().
-		WithFuncName(funcName).
-		WithName(name)
+		WithFuncName(funcName)
 
-	if syscall.HasParameters() {
-		parameters := syscall.Parameters()
+	if execution.HasParameters() {
+		parameters := execution.Parameters()
 		retParameters, err := app.toParameters(
 			parameters,
 		)

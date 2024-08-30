@@ -2,28 +2,14 @@ package lines
 
 import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/processors"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens"
-	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
 )
 
 type line struct {
-	tokens      tokens.Tokens
-	execution   executions.Execution
-	replacement elements.Element
-}
-
-func createLineWithExecution(
-	tokens tokens.Tokens,
-	execution executions.Execution,
-) Line {
-	return createLineInternally(tokens, execution, nil)
-}
-
-func createLineWithReplacement(
-	tokens tokens.Tokens,
-	replacement elements.Element,
-) Line {
-	return createLineInternally(tokens, nil, replacement)
+	tokens    tokens.Tokens
+	processor processors.Processor
+	syscall   executions.Execution
 }
 
 func createLine(
@@ -32,15 +18,37 @@ func createLine(
 	return createLineInternally(tokens, nil, nil)
 }
 
+func createLineWithProcessor(
+	tokens tokens.Tokens,
+	processor processors.Processor,
+) Line {
+	return createLineInternally(tokens, processor, nil)
+}
+
+func createLineWithSyscall(
+	tokens tokens.Tokens,
+	syscall executions.Execution,
+) Line {
+	return createLineInternally(tokens, nil, syscall)
+}
+
+func createLineWithProcessorAndSyscall(
+	tokens tokens.Tokens,
+	processor processors.Processor,
+	syscall executions.Execution,
+) Line {
+	return createLineInternally(tokens, processor, syscall)
+}
+
 func createLineInternally(
 	tokens tokens.Tokens,
-	execution executions.Execution,
-	replacement elements.Element,
+	processor processors.Processor,
+	syscall executions.Execution,
 ) Line {
 	out := line{
-		tokens:      tokens,
-		execution:   execution,
-		replacement: replacement,
+		tokens:    tokens,
+		processor: processor,
+		syscall:   syscall,
 	}
 
 	return &out
@@ -51,22 +59,22 @@ func (obj *line) Tokens() tokens.Tokens {
 	return obj.tokens
 }
 
-// HasExecution returns true if there is an execution, false otherwise
-func (obj *line) HasExecution() bool {
-	return obj.execution != nil
+// HasProcessor returns true if there is a processor, false otherwise
+func (obj *line) HasProcessor() bool {
+	return obj.processor != nil
 }
 
-// Execution returns the execution, if any
-func (obj *line) Execution() executions.Execution {
-	return obj.execution
+// Processor returns the processor, if any
+func (obj *line) Processor() processors.Processor {
+	return obj.processor
 }
 
-// HasReplacement returns true if there is a replacement, false otherwise
-func (obj *line) HasReplacement() bool {
-	return obj.replacement != nil
+// HasSyscall returns true if there is a syscall, false otherwise
+func (obj *line) HasSyscall() bool {
+	return obj.syscall != nil
 }
 
-// Replacement returns the replacement, if any
-func (obj *line) Replacement() elements.Element {
-	return obj.replacement
+// Syscall returns the syscall, if any
+func (obj *line) Syscall() executions.Execution {
+	return obj.syscall
 }

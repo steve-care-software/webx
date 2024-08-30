@@ -13,7 +13,7 @@ func TestParserAdapter_withOmissions_Success(t *testing.T) {
 		#.first.second.third;
 
 		myFirst: !.myFirst[1] .mySecond* .myThird+ .myFourth? .myFifth[1,] - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth
-				 | ._mySecondCall .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .MY_REPLACEMENT
+				 | (another_syscall) .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .MY_REPLACEMENT
 				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .myReplacement
 				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,]
 				 ---
@@ -21,13 +21,10 @@ func TestParserAdapter_withOmissions_Success(t *testing.T) {
 					secondTest:!"this is some value";
 				 ;
 
-		mySecond: ._mySysCall .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth
+		mySecond: (this_is_a_syscall .myFirst:first.mySecond[5]:second) .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth
 				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - myFuncName_secondSection .myFirst:first .mySecond:second .myThird:third .myFourth:fourth .myFifth:fifth
 				 | .myFirst[1] .mySecond* .myThird+ .myFourth .myFifth[1,] - .MY_REPLACEMENT
 				 ;
-
-		_mySysCall: @this_is_a_syscall  .myFirst:first.mySecond[5]:second;
-		_mySecondCall: @another_syscall;
 
 		FIRST: "this \" with escape";
 		SECOND: "some value";
@@ -421,13 +418,8 @@ func TestApplication_line_withExecution_Success(t *testing.T) {
 		return
 	}
 
-	if retLine.HasReplacement() {
-		t.Errorf("the execution was expected to NOT contain a replacement")
-		return
-	}
-
-	if !retLine.HasExecution() {
-		t.Errorf("the execution was expected to contain an execution")
+	if !retLine.HasProcessor() {
+		t.Errorf("the execution was expected to contain a processor")
 		return
 	}
 }
@@ -448,13 +440,8 @@ func TestApplication_line_withReplacement_Success(t *testing.T) {
 		return
 	}
 
-	if !retLine.HasReplacement() {
-		t.Errorf("the execution was expected to contain a replacement")
-		return
-	}
-
-	if retLine.HasExecution() {
-		t.Errorf("the execution was expected to NOT contain an execution")
+	if !retLine.HasProcessor() {
+		t.Errorf("the execution was expected to contain a processor")
 		return
 	}
 }

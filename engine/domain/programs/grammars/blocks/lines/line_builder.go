@@ -4,21 +4,21 @@ import (
 	"errors"
 
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/processors"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens"
-	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
 )
 
 type lineBuilder struct {
-	tokens      tokens.Tokens
-	execution   executions.Execution
-	replacement elements.Element
+	tokens    tokens.Tokens
+	processor processors.Processor
+	syscall   executions.Execution
 }
 
 func createLineBuilder() LineBuilder {
 	out := lineBuilder{
-		tokens:      nil,
-		execution:   nil,
-		replacement: nil,
+		tokens:    nil,
+		processor: nil,
+		syscall:   nil,
 	}
 
 	return &out
@@ -35,15 +35,15 @@ func (app *lineBuilder) WithTokens(tokens tokens.Tokens) LineBuilder {
 	return app
 }
 
-// WithExecution adds execution to the builder
-func (app *lineBuilder) WithExecution(execution executions.Execution) LineBuilder {
-	app.execution = execution
+// WithProcessor adds a processor to the builder
+func (app *lineBuilder) WithProcessor(processor processors.Processor) LineBuilder {
+	app.processor = processor
 	return app
 }
 
-// WithReplacement adds replacement to the builder
-func (app *lineBuilder) WithReplacement(replacement elements.Element) LineBuilder {
-	app.replacement = replacement
+// WithSyscall adds a syscall to the builder
+func (app *lineBuilder) WithSyscall(syscall executions.Execution) LineBuilder {
+	app.syscall = syscall
 	return app
 }
 
@@ -53,16 +53,16 @@ func (app *lineBuilder) Now() (Line, error) {
 		return nil, errors.New("there must be at least 1 Token in order to build a Line instance")
 	}
 
-	if app.execution != nil && app.replacement != nil {
-		return nil, errors.New("the execution and replacement cannot both be defined in order to build a Line instance")
+	if app.processor != nil && app.syscall != nil {
+		return createLineWithProcessorAndSyscall(app.tokens, app.processor, app.syscall), nil
 	}
 
-	if app.execution != nil {
-		return createLineWithExecution(app.tokens, app.execution), nil
+	if app.processor != nil {
+		return createLineWithProcessor(app.tokens, app.processor), nil
 	}
 
-	if app.replacement != nil {
-		return createLineWithReplacement(app.tokens, app.replacement), nil
+	if app.syscall != nil {
+		return createLineWithSyscall(app.tokens, app.syscall), nil
 	}
 
 	return createLine(app.tokens), nil

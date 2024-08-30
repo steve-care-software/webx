@@ -8,14 +8,12 @@ import (
 
 type elementBuilder struct {
 	rule        rules.Rule
-	syscall     Syscall
 	instruction Instruction
 }
 
 func createElementBuilder() ElementBuilder {
 	out := elementBuilder{
 		rule:        nil,
-		syscall:     nil,
 		instruction: nil,
 	}
 
@@ -33,12 +31,6 @@ func (app *elementBuilder) WithRule(rule rules.Rule) ElementBuilder {
 	return app
 }
 
-// WithSyscall adds a syscall to the elementBuilder
-func (app *elementBuilder) WithSyscall(syscall Syscall) ElementBuilder {
-	app.syscall = syscall
-	return app
-}
-
 // WithInstruction adds an instruction to the elementBuilder
 func (app *elementBuilder) WithInstruction(instruction Instruction) ElementBuilder {
 	app.instruction = instruction
@@ -49,10 +41,6 @@ func (app *elementBuilder) WithInstruction(instruction Instruction) ElementBuild
 func (app *elementBuilder) Now() (Element, error) {
 	if app.rule != nil {
 		return createElementWithRule(app.rule), nil
-	}
-
-	if app.syscall != nil {
-		return createElementWithSyscall(app.syscall), nil
 	}
 
 	if app.instruction != nil {

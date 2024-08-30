@@ -220,14 +220,6 @@ func (app *application) interpretElement(
 		return nil
 	}
 
-	if element.IsSyscall() {
-		syscall := element.Syscall()
-		return app.interpretSyscall(
-			currentTokens,
-			syscall,
-		)
-	}
-
 	instruction := element.Instruction()
 	return app.interpretInstruction(
 		instruction,
@@ -238,7 +230,6 @@ func (app *application) interpretSyscall(
 	currentTokens instructions.Tokens,
 	sysCall instructions.Syscall,
 ) error {
-	name := sysCall.Name()
 	fnName := sysCall.FuncName()
 	mpParams := map[string][]byte{}
 	if sysCall.HasParameters() {
@@ -249,7 +240,7 @@ func (app *application) interpretSyscall(
 		)
 
 		if err != nil {
-			str := fmt.Sprintf("there was an error while fetching the syscall (blockName: %s, sysCallFn: %s) parameters: %s", name, fnName, err.Error())
+			str := fmt.Sprintf("there was an error while fetching the syscall (sysCallFn: %s) parameters: %s", fnName, err.Error())
 			return errors.New(str)
 		}
 
@@ -263,7 +254,7 @@ func (app *application) interpretSyscall(
 		}
 	}
 
-	str := fmt.Sprintf("the sysCall (sysCallFn: %s) declared in block (name: %s) does not exists", fnName, name)
+	str := fmt.Sprintf("the sysCall (sysCallFn: %s) does not exists", fnName)
 	return errors.New(str)
 }
 

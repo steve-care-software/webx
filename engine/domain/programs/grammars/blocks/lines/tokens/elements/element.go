@@ -1,32 +1,25 @@
 package elements
 
 type element struct {
-	rule    string
-	block   string
-	syscall string
+	rule  string
+	block string
 }
 
 func createElementWithRule(rule string) Element {
-	return createElementInternally(rule, "", "")
+	return createElementInternally(rule, "")
 }
 
 func createElementWithBlock(block string) Element {
-	return createElementInternally("", block, "")
-}
-
-func createElementWithSyscall(syscall string) Element {
-	return createElementInternally("", "", syscall)
+	return createElementInternally("", block)
 }
 
 func createElementInternally(
 	rule string,
 	block string,
-	syscall string,
 ) Element {
 	out := element{
-		rule:    rule,
-		block:   block,
-		syscall: syscall,
+		rule:  rule,
+		block: block,
 	}
 
 	return &out
@@ -38,11 +31,7 @@ func (obj *element) Name() string {
 		return obj.block
 	}
 
-	if obj.IsRule() {
-		return obj.rule
-	}
-
-	return obj.syscall
+	return obj.rule
 }
 
 // IsRule returns true if there is a rule, false otherwise
@@ -63,14 +52,4 @@ func (obj *element) IsBlock() bool {
 // Block returns the block, if any
 func (obj *element) Block() string {
 	return obj.block
-}
-
-// IsSyscall returns true if there is a syscall, false otherwise
-func (obj *element) IsSyscall() bool {
-	return obj.syscall != ""
-}
-
-// Syscall returns the syscall, if any
-func (obj *element) Syscall() string {
-	return obj.syscall
 }

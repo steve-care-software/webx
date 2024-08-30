@@ -37,11 +37,6 @@ func NewElementBuilder() ElementBuilder {
 	return createElementBuilder()
 }
 
-// NewSyscallsBuilder creates a new syscalls builder
-func NewSyscallsBuilder() SyscallsBuilder {
-	return createSyscallsBuilder()
-}
-
 // NewSyscallBuilder creates a new syscall builder
 func NewSyscallBuilder() SyscallBuilder {
 	return createSyscallBuilder()
@@ -86,6 +81,7 @@ type InstructionBuilder interface {
 	WithBlock(block string) InstructionBuilder
 	WithLine(line uint) InstructionBuilder
 	WithTokens(tokens Tokens) InstructionBuilder
+	WithSyscall(syscall Syscall) InstructionBuilder
 	Now() (Instruction, error)
 }
 
@@ -94,6 +90,8 @@ type Instruction interface {
 	Block() string
 	Line() uint
 	Tokens() Tokens
+	HasSyscall() bool
+	Syscall() Syscall
 }
 
 // TokensBuilder represents the tokens builder
@@ -145,7 +143,6 @@ type Elements interface {
 type ElementBuilder interface {
 	Create() ElementBuilder
 	WithRule(rule rules.Rule) ElementBuilder
-	WithSyscall(syscall Syscall) ElementBuilder
 	WithInstruction(instruction Instruction) ElementBuilder
 	Now() (Element, error)
 }
@@ -155,28 +152,13 @@ type Element interface {
 	Name() string
 	IsRule() bool
 	Rule() rules.Rule
-	IsSyscall() bool
-	Syscall() Syscall
 	IsInstruction() bool
 	Instruction() Instruction
-}
-
-// SyscallsBuilder represents the syscalls builder
-type SyscallsBuilder interface {
-	Create() SyscallsBuilder
-	WithList(list []Syscall) SyscallsBuilder
-	Now() (Syscalls, error)
-}
-
-// Syscalls represents syscalls
-type Syscalls interface {
-	List() []Syscall
 }
 
 // SyscallBuilder represents the syscall builder
 type SyscallBuilder interface {
 	Create() SyscallBuilder
-	WithName(name string) SyscallBuilder
 	WithFuncName(fnName string) SyscallBuilder
 	WithParameters(parameters Parameters) SyscallBuilder
 	Now() (Syscall, error)
@@ -184,7 +166,6 @@ type SyscallBuilder interface {
 
 // Syscall represents a syscall
 type Syscall interface {
-	Name() string
 	FuncName() string
 	HasParameters() bool
 	Parameters() Parameters

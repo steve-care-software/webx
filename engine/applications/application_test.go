@@ -49,7 +49,7 @@ func TestApplication_grammar_withSuites_Success(t *testing.T) {
 					;
 
 
-		uintAssignment: ._cursorPushUint8 .typeUintDefinition .EQUAL .numbers
+		uintAssignment: (cursor_push .numbers:value "0":kind) .typeUintDefinition .EQUAL .numbers
 						---
 							uint8: "uint8 myVariable = 45";
 							uint16: "uint16 myVariable = 45";
@@ -312,8 +312,6 @@ func TestApplication_grammar_withSuites_Success(t *testing.T) {
 						height: "8";
 						nine: "9";
 				   ;
-
-		_cursorPushUint8: @cursor_push .numbers:value "0":kind;
 
 		N_ZERO: "0";
 		N_ONE: "1";

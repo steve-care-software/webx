@@ -1,43 +1,33 @@
 package instructions
 
 type syscall struct {
-	name       string
 	funcName   string
 	parameters Parameters
 }
 
 func createSyscall(
-	name string,
 	funcName string,
 ) Syscall {
-	return createSyscallInternally(name, funcName, nil)
+	return createSyscallInternally(funcName, nil)
 }
 
 func createSyscallWithParameters(
-	name string,
 	funcName string,
 	parameters Parameters,
 ) Syscall {
-	return createSyscallInternally(name, funcName, parameters)
+	return createSyscallInternally(funcName, parameters)
 }
 
 func createSyscallInternally(
-	name string,
 	funcName string,
 	parameters Parameters,
 ) Syscall {
 	out := syscall{
-		name:       name,
 		funcName:   funcName,
 		parameters: parameters,
 	}
 
 	return &out
-}
-
-// Name returns the name
-func (obj *syscall) Name() string {
-	return obj.name
 }
 
 // FuncName returns the funcName

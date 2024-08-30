@@ -6,6 +6,7 @@ import (
 
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/processors"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
 )
@@ -52,8 +53,26 @@ func (app *composeAdapter) writeLine(grammar Grammar, line lines.Line) ([]byte, 
 	}
 
 	output := retBytes
-	if line.HasExecution() {
-		execution := line.Execution()
+	if line.HasProcessor() {
+		processor := line.Processor()
+		retBytes, err := app.writeProcessor(grammar, tokensMap, processor)
+		if err != nil {
+			return nil, err
+		}
+
+		output = retBytes
+	}
+
+	return output, nil
+}
+
+func (app *composeAdapter) writeProcessor(
+	grammar Grammar,
+	tokensMap map[string][][]byte,
+	processor processors.Processor,
+) ([]byte, error) {
+	if processor.IsExecution() {
+		execution := processor.Execution()
 		fnName := execution.FuncName()
 		params := map[string][]byte{}
 		if execution.HasParameters() {
@@ -79,26 +98,12 @@ func (app *composeAdapter) writeLine(grammar Grammar, line lines.Line) ([]byte, 
 		}
 
 		if fn, ok := app.funcsMap[fnName]; ok {
-			execOutput, err := fn(params)
-			if err != nil {
-				return nil, err
-			}
-
-			output = execOutput
+			return fn(params)
 		}
 	}
 
-	if line.HasReplacement() {
-		replacement := line.Replacement()
-		retValueBytes, err := app.writeElement(grammar, replacement)
-		if err != nil {
-			return nil, err
-		}
-
-		output = retValueBytes
-	}
-
-	return output, nil
+	replacement := processor.Replacement()
+	return app.writeElement(grammar, replacement)
 }
 
 func (app *composeAdapter) writeTokens(grammar Grammar, tokens tokens.Tokens) ([]byte, map[string][][]byte, error) {

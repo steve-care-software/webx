@@ -11,6 +11,7 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters/values"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions/parameters/values/references"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/processors"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/cardinalities"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/cardinalities/uints"
@@ -356,36 +357,36 @@ func (app *nftAdapter) lineToNFT(
 		tokensNFT,
 	}
 
-	if line.HasExecution() {
-		execution := line.Execution()
-		execNFT, err := app.executionToNFT(
+	if line.HasProcessor() {
+		processor := line.Processor()
+		processNFT, err := app.processorToNFT(
 			parentBlockNames,
 			rules,
 			blocks,
-			execution,
+			processor,
 		)
 
 		if err != nil {
 			return nil, err
 		}
 
-		list = append(list, execNFT)
+		list = append(list, processNFT)
 	}
 
-	if line.HasReplacement() {
-		replacement := line.Replacement()
-		execNFT, err := app.elementToNFT(
+	if line.HasSyscall() {
+		syscall := line.Syscall()
+		syscallNFT, err := app.executionToNFT(
 			parentBlockNames,
 			rules,
 			blocks,
-			replacement,
+			syscall,
 		)
 
 		if err != nil {
 			return nil, err
 		}
 
-		list = append(list, execNFT)
+		list = append(list, syscallNFT)
 	}
 
 	nft, err := app.nftsListToNFT(list, "")
@@ -394,6 +395,31 @@ func (app *nftAdapter) lineToNFT(
 	}
 
 	return nft, nil
+}
+
+func (app *nftAdapter) processorToNFT(
+	parentBlockNames []string,
+	rules nfts.NFT,
+	blocks nfts.NFTs,
+	processor processors.Processor,
+) (nfts.NFT, error) {
+	if processor.IsExecution() {
+		execution := processor.Execution()
+		return app.executionToNFT(
+			parentBlockNames,
+			rules,
+			blocks,
+			execution,
+		)
+	}
+
+	replacement := processor.Replacement()
+	return app.elementToNFT(
+		parentBlockNames,
+		rules,
+		blocks,
+		replacement,
+	)
 }
 
 func (app *nftAdapter) tokensToNFT(
