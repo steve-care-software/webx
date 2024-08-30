@@ -2,19 +2,23 @@ package suites
 
 import (
 	"errors"
+
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/suites/validations"
 )
 
 type suiteBuilder struct {
-	name   string
-	value  []byte
-	isFail bool
+	name        string
+	value       []byte
+	isFail      bool
+	validations validations.Validations
 }
 
 func createSuiteBuilder() SuiteBuilder {
 	out := suiteBuilder{
-		name:   "",
-		value:  nil,
-		isFail: false,
+		name:        "",
+		value:       nil,
+		isFail:      false,
+		validations: nil,
 	}
 
 	return &out
@@ -43,6 +47,12 @@ func (app *suiteBuilder) IsFail() SuiteBuilder {
 	return app
 }
 
+// WithValidations add the validations to the builder
+func (app *suiteBuilder) WithValidations(validations validations.Validations) SuiteBuilder {
+	app.validations = validations
+	return app
+}
+
 // Now builds a new Suite instance
 func (app *suiteBuilder) Now() (Suite, error) {
 	if app.value != nil && len(app.value) <= 0 {
@@ -55,6 +65,10 @@ func (app *suiteBuilder) Now() (Suite, error) {
 
 	if app.value == nil {
 		return nil, errors.New("the value is mandatory in order to build a Suite instance")
+	}
+
+	if app.validations != nil {
+		return createSuiteWithValidations(app.name, app.value, app.isFail, app.validations), nil
 	}
 
 	return createSuite(app.name, app.value, app.isFail), nil

@@ -1,9 +1,12 @@
 package suites
 
+import "github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/suites/validations"
+
 type suite struct {
-	name   string
-	value  []byte
-	isFail bool
+	name        string
+	value       []byte
+	isFail      bool
+	validations validations.Validations
 }
 
 func createSuite(
@@ -11,10 +14,39 @@ func createSuite(
 	value []byte,
 	isFail bool,
 ) Suite {
+	return createSuiteInternally(
+		name,
+		value,
+		isFail,
+		nil,
+	)
+}
+
+func createSuiteWithValidations(
+	name string,
+	value []byte,
+	isFail bool,
+	validations validations.Validations,
+) Suite {
+	return createSuiteInternally(
+		name,
+		value,
+		isFail,
+		validations,
+	)
+}
+
+func createSuiteInternally(
+	name string,
+	value []byte,
+	isFail bool,
+	validations validations.Validations,
+) Suite {
 	out := suite{
-		name:   name,
-		value:  value,
-		isFail: isFail,
+		name:        name,
+		value:       value,
+		isFail:      isFail,
+		validations: validations,
 	}
 
 	return &out
@@ -33,4 +65,14 @@ func (obj *suite) Value() []byte {
 // IsFail returns true if expected to fail, false otherwise
 func (obj *suite) IsFail() bool {
 	return obj.isFail
+}
+
+// HasValidations returns true if there is validations, false otherwise
+func (obj *suite) HasValidations() bool {
+	return obj.validations != nil
+}
+
+// Validations returns the validations, if any
+func (obj *suite) Validations() validations.Validations {
+	return obj.validations
 }

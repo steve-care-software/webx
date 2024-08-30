@@ -1,5 +1,7 @@
 package suites
 
+import "github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/suites/validations"
+
 // NewBuilder creates a new builder
 func NewBuilder() Builder {
 	return createBuilder()
@@ -27,6 +29,7 @@ type SuiteBuilder interface {
 	Create() SuiteBuilder
 	WithName(name string) SuiteBuilder
 	WithValue(value []byte) SuiteBuilder
+	WithValidations(validations validations.Validations) SuiteBuilder
 	IsFail() SuiteBuilder
 	Now() (Suite, error)
 }
@@ -36,4 +39,6 @@ type Suite interface {
 	Name() string
 	Value() []byte
 	IsFail() bool
+	HasValidations() bool
+	Validations() validations.Validations
 }
