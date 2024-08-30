@@ -159,6 +159,18 @@ func (app *application) interpretInstruction(
 	instruction instructions.Instruction,
 ) error {
 	tokens := instruction.Tokens()
+	if instruction.HasSyscall() {
+		syscall := instruction.Syscall()
+		err := app.interpretSyscall(
+			tokens,
+			syscall,
+		)
+
+		if err != nil {
+			return err
+		}
+	}
+
 	return app.interpretTokens(
 		tokens,
 	)
