@@ -122,9 +122,6 @@ const rootSuffix = ";"
 const omissionPrefix = "#"
 const omissionSuffix = ";"
 const filterBytes = " \n\r\t"
-const syscallDefinitionSeparator = ":"
-const sysCallNamePrefix = "_"
-const sysCallFuncNamePrefix = "@"
 const sysCallPrefix = "("
 const sysCallSuffix = ")"
 
@@ -260,9 +257,6 @@ func NewParserAdapter() ParserAdapter {
 		[]byte(indexOpen)[0],
 		[]byte(indexClose)[0],
 		[]byte(parameterSeparator)[0],
-		[]byte(syscallDefinitionSeparator)[0],
-		[]byte(sysCallNamePrefix)[0],
-		[]byte(sysCallFuncNamePrefix)[0],
 		[]byte(sysCallPrefix)[0],
 		[]byte(sysCallSuffix)[0],
 	)

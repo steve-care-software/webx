@@ -81,9 +81,6 @@ type parserAdapter struct {
 	indexOpen                         byte
 	indexClose                        byte
 	parameterSeparator                byte
-	syscallDefinitionSeparator        byte
-	sysCallNamePrefix                 byte
-	sysCallFuncNamePrefix             byte
 	sysCallPrefix                     byte
 	sysCallSuffix                     byte
 }
@@ -147,9 +144,6 @@ func createParserAdapter(
 	indexOpen byte,
 	indexClose byte,
 	parameterSeparator byte,
-	syscallDefinitionSeparator byte,
-	sysCallNamePrefix byte,
-	sysCallFuncNamePrefix byte,
 	sysCallPrefix byte,
 	sysCallSuffix byte,
 ) ParserAdapter {
@@ -212,9 +206,6 @@ func createParserAdapter(
 		indexOpen:                         indexOpen,
 		indexClose:                        indexClose,
 		parameterSeparator:                parameterSeparator,
-		syscallDefinitionSeparator:        syscallDefinitionSeparator,
-		sysCallNamePrefix:                 sysCallNamePrefix,
-		sysCallFuncNamePrefix:             sysCallFuncNamePrefix,
 		sysCallPrefix:                     sysCallPrefix,
 		sysCallSuffix:                     sysCallSuffix,
 	}
