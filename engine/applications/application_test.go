@@ -6,14 +6,6 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars"
 )
 
-/*
-
-	@myToken: @origin:.target @secondOrigin:.secondTarget
-			| @origin[0]:.target @secondOrigin:.secondTarget @origin[1]:.suffix
-			;
-
-*/
-
 func TestApplication_grammar_withSuites_Success(t *testing.T) {
 
 	// in the header:
