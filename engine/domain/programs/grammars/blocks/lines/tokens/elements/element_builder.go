@@ -3,16 +3,18 @@ package elements
 import "errors"
 
 type elementBuilder struct {
-	rule   string
-	block  string
-	spacer string
+	rule     string
+	block    string
+	spacer   string
+	constant string
 }
 
 func createElementBuilder() ElementBuilder {
 	out := elementBuilder{
-		rule:   "",
-		block:  "",
-		spacer: "",
+		rule:     "",
+		block:    "",
+		spacer:   "",
+		constant: "",
 	}
 
 	return &out
@@ -41,6 +43,12 @@ func (app *elementBuilder) WithSpacer(spacer string) ElementBuilder {
 	return app
 }
 
+// WithConstant adds a constant to the builder
+func (app *elementBuilder) WithConstant(constant string) ElementBuilder {
+	app.constant = constant
+	return app
+}
+
 // Now builds a new Element
 func (app *elementBuilder) Now() (Element, error) {
 	if app.rule != "" {
@@ -53,6 +61,10 @@ func (app *elementBuilder) Now() (Element, error) {
 
 	if app.spacer != "" {
 		return createElementWithSpacer(app.spacer), nil
+	}
+
+	if app.constant != "" {
+		return createElementWithConstant(app.constant), nil
 	}
 
 	return nil, errors.New("the Element is invalid")

@@ -3,9 +3,9 @@ package grammars
 import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/constants"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/resources"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/rules"
-	"github.com/steve-care-software/webx/engine/domain/programs/grammars/spacers"
 )
 
 type grammar struct {
@@ -15,7 +15,7 @@ type grammar struct {
 	blocks    blocks.Blocks
 	omissions elements.Elements
 	resources resources.Resources
-	spacers   spacers.Spacers
+	constants constants.Constants
 }
 
 func createGrammar(
@@ -47,36 +47,36 @@ func createGrammarWithResources(
 	return createGrammarInternally(version, root, rules, blocks, nil, resources, nil)
 }
 
-func createGrammarWithSpacers(
+func createGrammarWithConstants(
 	version uint,
 	root elements.Element,
 	rules rules.Rules,
 	blocks blocks.Blocks,
-	spacers spacers.Spacers,
+	constants constants.Constants,
 ) Grammar {
-	return createGrammarInternally(version, root, rules, blocks, nil, nil, spacers)
+	return createGrammarInternally(version, root, rules, blocks, nil, nil, constants)
 }
 
-func createGrammarWithOmissionsAndSpacers(
+func createGrammarWithOmissionsAndConstants(
 	version uint,
 	root elements.Element,
 	rules rules.Rules,
 	blocks blocks.Blocks,
 	omissions elements.Elements,
-	spacers spacers.Spacers,
+	constants constants.Constants,
 ) Grammar {
-	return createGrammarInternally(version, root, rules, blocks, omissions, nil, spacers)
+	return createGrammarInternally(version, root, rules, blocks, omissions, nil, constants)
 }
 
-func createGrammarWithResourcesAndSpacers(
+func createGrammarWithResourcesAndConstants(
 	version uint,
 	root elements.Element,
 	rules rules.Rules,
 	blocks blocks.Blocks,
 	resources resources.Resources,
-	spacers spacers.Spacers,
+	constants constants.Constants,
 ) Grammar {
-	return createGrammarInternally(version, root, rules, blocks, nil, resources, spacers)
+	return createGrammarInternally(version, root, rules, blocks, nil, resources, constants)
 }
 
 func createGrammarWithOmissionsAndResources(
@@ -90,16 +90,16 @@ func createGrammarWithOmissionsAndResources(
 	return createGrammarInternally(version, root, rules, blocks, omissions, resources, nil)
 }
 
-func createGrammarWithOmissionsAndResourcesAndSpacers(
+func createGrammarWithOmissionsAndResourcesAndConstants(
 	version uint,
 	root elements.Element,
 	rules rules.Rules,
 	blocks blocks.Blocks,
 	omissions elements.Elements,
 	resources resources.Resources,
-	spacers spacers.Spacers,
+	constants constants.Constants,
 ) Grammar {
-	return createGrammarInternally(version, root, rules, blocks, omissions, resources, spacers)
+	return createGrammarInternally(version, root, rules, blocks, omissions, resources, constants)
 }
 
 func createGrammarInternally(
@@ -109,7 +109,7 @@ func createGrammarInternally(
 	blocks blocks.Blocks,
 	omissions elements.Elements,
 	resources resources.Resources,
-	spacers spacers.Spacers,
+	constants constants.Constants,
 ) Grammar {
 	out := grammar{
 		version:   version,
@@ -118,7 +118,7 @@ func createGrammarInternally(
 		blocks:    blocks,
 		omissions: omissions,
 		resources: resources,
-		spacers:   spacers,
+		constants: constants,
 	}
 
 	return &out
@@ -164,12 +164,12 @@ func (obj *grammar) Resources() resources.Resources {
 	return obj.resources
 }
 
-// HasSpacers returns true if there is spacers, false otherwise
-func (obj *grammar) HasSpacers() bool {
-	return obj.spacers != nil
+// HasConstants returns true if there is constants, false otherwise
+func (obj *grammar) HasConstants() bool {
+	return obj.constants != nil
 }
 
-// Spacers returns the spacers, if any
-func (obj *grammar) Spacers() spacers.Spacers {
-	return obj.spacers
+// Constants returns the constants, if any
+func (obj *grammar) Constants() constants.Constants {
+	return obj.constants
 }

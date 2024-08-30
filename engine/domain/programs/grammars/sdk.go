@@ -18,9 +18,9 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/reverses"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/suites"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/constants"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/resources"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/rules"
-	"github.com/steve-care-software/webx/engine/domain/programs/grammars/spacers"
 )
 
 // CoreFn represents a core fn
@@ -302,7 +302,7 @@ type Builder interface {
 	WithBlocks(blocks blocks.Blocks) Builder
 	WithOmissions(omissions elements.Elements) Builder
 	WithResources(resources resources.Resources) Builder
-	WithSpacers(spacers spacers.Spacers) Builder
+	WithConstants(constants constants.Constants) Builder
 	Now() (Grammar, error)
 }
 
@@ -316,6 +316,6 @@ type Grammar interface {
 	Omissions() elements.Elements
 	HasResources() bool
 	Resources() resources.Resources
-	HasSpacers() bool
-	Spacers() spacers.Spacers
+	HasConstants() bool
+	Constants() constants.Constants
 }

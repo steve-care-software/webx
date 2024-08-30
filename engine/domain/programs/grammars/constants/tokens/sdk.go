@@ -1,6 +1,6 @@
 package tokens
 
-import "github.com/steve-care-software/webx/engine/domain/programs/grammars/spacers/tokens/elements"
+import "github.com/steve-care-software/webx/engine/domain/programs/grammars/constants/tokens/elements"
 
 // Builder represents a tokens builder
 type Builder interface {
@@ -23,7 +23,7 @@ type TokenBuilder interface {
 	Now() (Token, error)
 }
 
-// Token represents a spacer token
+// Token represents a constant token
 type Token interface {
 	Name() string
 	Element() elements.Element
