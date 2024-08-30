@@ -2,6 +2,16 @@ package tokens
 
 import "github.com/steve-care-software/webx/engine/domain/programs/grammars/constants/tokens/elements"
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewTokenBuilder creates a new token builder
+func NewTokenBuilder() TokenBuilder {
+	return createTokenBuilder()
+}
+
 // Builder represents a tokens builder
 type Builder interface {
 	Create() Builder
@@ -12,6 +22,7 @@ type Builder interface {
 // Tokens represents a list of tokens
 type Tokens interface {
 	List() []Token
+	Fetch(name string) (Token, error)
 }
 
 // TokenBuilder represents the token builder
