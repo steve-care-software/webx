@@ -6,9 +6,27 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars"
 )
 
+/*
+
+	@myToken: @origin:.target @secondOrigin:.secondTarget
+			| @origin[0]:.target @secondOrigin:.secondTarget @origin[1]:.suffix
+			;
+
+*/
+
 func TestApplication_grammar_withSuites_Success(t *testing.T) {
+
+	// in the header:
+	// %myDefaultAfterTokenSpace [%myDefaultPrefix, %myDefaultSuffix];
+
+	// spacers block:
+	// %myEndOfLine: .MY_LINE[2] .%mySubSpacer;
+
+	// resources block:
 	//_myGlobalValue: ./this/is/a/path.json;
-	// > _myGlobalValue > !(myVariable "some value":uint8 true) (mySecond "second value":uint8 true)
+
+	// inside a test:
+	// boolAssignment: "bool myVariable = true" > _myGlobalValue > !(myVariable "some value":uint8 true) (mySecond "second value":uint8 true);
 	grammarInput := []byte(`
 		v1;
 		> .instructions;

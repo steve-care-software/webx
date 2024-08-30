@@ -7,6 +7,7 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/resources"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/rules"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/spacers"
 )
 
 type builder struct {
@@ -16,6 +17,7 @@ type builder struct {
 	blocks    blocks.Blocks
 	omissions elements.Elements
 	resources resources.Resources
+	spacers   spacers.Spacers
 }
 
 func createBuilder() Builder {
@@ -26,6 +28,7 @@ func createBuilder() Builder {
 		blocks:    nil,
 		omissions: nil,
 		resources: nil,
+		spacers:   nil,
 	}
 
 	return &out
@@ -72,6 +75,12 @@ func (app *builder) WithResources(resources resources.Resources) Builder {
 	return app
 }
 
+// WithSpacers add spacers to the builder
+func (app *builder) WithSpacers(spacers spacers.Spacers) Builder {
+	app.spacers = spacers
+	return app
+}
+
 // Now builds a new Grammar instance
 func (app *builder) Now() (Grammar, error) {
 	if app.pVersion == nil {
@@ -90,8 +99,20 @@ func (app *builder) Now() (Grammar, error) {
 		return nil, errors.New("the blocks is mandatory in order to build a Grammar instance")
 	}
 
+	if app.omissions != nil && app.resources != nil && app.spacers != nil {
+		return createGrammarWithOmissionsAndResourcesAndSpacers(*app.pVersion, app.root, app.rules, app.blocks, app.omissions, app.resources, app.spacers), nil
+	}
+
 	if app.omissions != nil && app.resources != nil {
 		return createGrammarWithOmissionsAndResources(*app.pVersion, app.root, app.rules, app.blocks, app.omissions, app.resources), nil
+	}
+
+	if app.omissions != nil && app.spacers != nil {
+		return createGrammarWithOmissionsAndSpacers(*app.pVersion, app.root, app.rules, app.blocks, app.omissions, app.spacers), nil
+	}
+
+	if app.resources != nil && app.spacers != nil {
+		return createGrammarWithResourcesAndSpacers(*app.pVersion, app.root, app.rules, app.blocks, app.resources, app.spacers), nil
 	}
 
 	if app.omissions != nil {
@@ -100,6 +121,10 @@ func (app *builder) Now() (Grammar, error) {
 
 	if app.resources != nil {
 		return createGrammarWithResources(*app.pVersion, app.root, app.rules, app.blocks, app.resources), nil
+	}
+
+	if app.spacers != nil {
+		return createGrammarWithSpacers(*app.pVersion, app.root, app.rules, app.blocks, app.spacers), nil
 	}
 
 	return createGrammar(*app.pVersion, app.root, app.rules, app.blocks), nil
