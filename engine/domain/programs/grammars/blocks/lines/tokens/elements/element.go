@@ -1,25 +1,32 @@
 package elements
 
 type element struct {
-	rule  string
-	block string
+	rule   string
+	block  string
+	spacer string
 }
 
 func createElementWithRule(rule string) Element {
-	return createElementInternally(rule, "")
+	return createElementInternally(rule, "", "")
 }
 
 func createElementWithBlock(block string) Element {
-	return createElementInternally("", block)
+	return createElementInternally("", block, "")
+}
+
+func createElementWithSpacer(spacer string) Element {
+	return createElementInternally("", "", spacer)
 }
 
 func createElementInternally(
 	rule string,
 	block string,
+	spacer string,
 ) Element {
 	out := element{
-		rule:  rule,
-		block: block,
+		rule:   rule,
+		block:  block,
+		spacer: spacer,
 	}
 
 	return &out
@@ -52,4 +59,14 @@ func (obj *element) IsBlock() bool {
 // Block returns the block, if any
 func (obj *element) Block() string {
 	return obj.block
+}
+
+// IsSpacer returns true if there is a spacer, false otherwise
+func (obj *element) IsSpacer() bool {
+	return obj.spacer != ""
+}
+
+// Spacer returns the spacer, if any
+func (obj *element) Spacer() string {
+	return obj.spacer
 }
