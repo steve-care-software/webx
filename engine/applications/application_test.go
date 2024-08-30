@@ -9,7 +9,7 @@ import (
 func TestApplication_grammar_withSuites_Success(t *testing.T) {
 	grammarInput := []byte(`
 		v1;
-		>.instructions;
+		> .instructions;
 		# .SPACE .TAB .EOL;
 
 		instructions: .instruction*;

@@ -5,6 +5,7 @@ import (
 
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/resources"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/rules"
 )
 
@@ -14,6 +15,7 @@ type builder struct {
 	rules     rules.Rules
 	blocks    blocks.Blocks
 	omissions elements.Elements
+	resources resources.Resources
 }
 
 func createBuilder() Builder {
@@ -23,6 +25,7 @@ func createBuilder() Builder {
 		rules:     nil,
 		blocks:    nil,
 		omissions: nil,
+		resources: nil,
 	}
 
 	return &out
@@ -63,6 +66,12 @@ func (app *builder) WithOmissions(omissions elements.Elements) Builder {
 	return app
 }
 
+// WithResources add resources to the builder
+func (app *builder) WithResources(resources resources.Resources) Builder {
+	app.resources = resources
+	return app
+}
+
 // Now builds a new Grammar instance
 func (app *builder) Now() (Grammar, error) {
 	if app.pVersion == nil {
@@ -81,8 +90,16 @@ func (app *builder) Now() (Grammar, error) {
 		return nil, errors.New("the blocks is mandatory in order to build a Grammar instance")
 	}
 
+	if app.omissions != nil && app.resources != nil {
+		return createGrammarWithOmissionsAndResources(*app.pVersion, app.root, app.rules, app.blocks, app.omissions, app.resources), nil
+	}
+
 	if app.omissions != nil {
 		return createGrammarWithOmissions(*app.pVersion, app.root, app.rules, app.blocks, app.omissions), nil
+	}
+
+	if app.resources != nil {
+		return createGrammarWithResources(*app.pVersion, app.root, app.rules, app.blocks, app.resources), nil
 	}
 
 	return createGrammar(*app.pVersion, app.root, app.rules, app.blocks), nil

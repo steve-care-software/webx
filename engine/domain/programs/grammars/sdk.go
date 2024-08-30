@@ -18,6 +18,7 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/reverses"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/suites"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/resources"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/rules"
 )
 
@@ -299,6 +300,7 @@ type Builder interface {
 	WithRules(rules rules.Rules) Builder
 	WithBlocks(blocks blocks.Blocks) Builder
 	WithOmissions(omissions elements.Elements) Builder
+	WithResources(resources resources.Resources) Builder
 	Now() (Grammar, error)
 }
 
@@ -310,4 +312,6 @@ type Grammar interface {
 	Blocks() blocks.Blocks
 	HasOmissions() bool
 	Omissions() elements.Elements
+	HasResources() bool
+	Resources() resources.Resources
 }
