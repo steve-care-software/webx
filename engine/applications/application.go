@@ -135,7 +135,7 @@ func (app *application) interpretSuite(
 	program, retRemaining, err := app.programParserAdapter.ToProgramWithRoot(
 		grammar,
 		blockName,
-		suite.Value(),
+		suite.Input(),
 	)
 
 	if err != nil {

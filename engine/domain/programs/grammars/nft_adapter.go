@@ -258,8 +258,8 @@ func (app *nftAdapter) suiteToNFT(
 	suite suites.Suite,
 ) (nfts.NFT, error) {
 	nftsList := []nfts.NFT{}
-	valueAsBytes := suite.Value()
-	for _, oneByte := range valueAsBytes {
+	inputAsBytes := suite.Input()
+	for _, oneByte := range inputAsBytes {
 		nft, err := app.nftBuilder.Create().WithByte(oneByte).Now()
 		if err != nil {
 			return nil, err

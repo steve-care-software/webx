@@ -1,6 +1,9 @@
 package suites
 
-import "github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/suites/validations"
+import (
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/suites/lexers"
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/suites/validations"
+)
 
 // NewBuilder creates a new builder
 func NewBuilder() Builder {
@@ -28,7 +31,8 @@ type Suites interface {
 type SuiteBuilder interface {
 	Create() SuiteBuilder
 	WithName(name string) SuiteBuilder
-	WithValue(value []byte) SuiteBuilder
+	WithInput(input []byte) SuiteBuilder
+	WithLexer(lexer lexers.Lexer) SuiteBuilder
 	WithValidations(validations validations.Validations) SuiteBuilder
 	IsFail() SuiteBuilder
 	Now() (Suite, error)
@@ -37,8 +41,10 @@ type SuiteBuilder interface {
 // Suite represents a suite
 type Suite interface {
 	Name() string
-	Value() []byte
+	Input() []byte
 	IsFail() bool
+	HasLexer() bool
+	Lexer() lexers.Lexer
 	HasValidations() bool
 	Validations() validations.Validations
 }

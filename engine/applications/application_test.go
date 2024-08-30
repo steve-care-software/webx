@@ -7,6 +7,8 @@ import (
 )
 
 func TestApplication_grammar_withSuites_Success(t *testing.T) {
+	//_myGlobalValue: ./this/is/a/path.json;
+	// > _myGlobalValue > !(myVariable "some value":uint8 true) (mySecond "second value":uint8 true)
 	grammarInput := []byte(`
 		v1;
 		> .instructions;

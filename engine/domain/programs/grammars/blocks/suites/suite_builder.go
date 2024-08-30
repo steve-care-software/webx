@@ -3,21 +3,24 @@ package suites
 import (
 	"errors"
 
+	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/suites/lexers"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/suites/validations"
 )
 
 type suiteBuilder struct {
 	name        string
-	value       []byte
+	input       []byte
 	isFail      bool
+	lexer       lexers.Lexer
 	validations validations.Validations
 }
 
 func createSuiteBuilder() SuiteBuilder {
 	out := suiteBuilder{
 		name:        "",
-		value:       nil,
+		input:       nil,
 		isFail:      false,
+		lexer:       nil,
 		validations: nil,
 	}
 
@@ -35,15 +38,21 @@ func (app *suiteBuilder) WithName(name string) SuiteBuilder {
 	return app
 }
 
-// WithValue adds a value to the builder
-func (app *suiteBuilder) WithValue(value []byte) SuiteBuilder {
-	app.value = value
+// WithInput adds a input to the builder
+func (app *suiteBuilder) WithInput(input []byte) SuiteBuilder {
+	app.input = input
 	return app
 }
 
 // IsFail flags the suite as fail
 func (app *suiteBuilder) IsFail() SuiteBuilder {
 	app.isFail = true
+	return app
+}
+
+// WithLexer adds a lexer to the builder
+func (app *suiteBuilder) WithLexer(lexer lexers.Lexer) SuiteBuilder {
+	app.lexer = lexer
 	return app
 }
 
@@ -55,21 +64,21 @@ func (app *suiteBuilder) WithValidations(validations validations.Validations) Su
 
 // Now builds a new Suite instance
 func (app *suiteBuilder) Now() (Suite, error) {
-	if app.value != nil && len(app.value) <= 0 {
-		app.value = nil
+	if app.input != nil && len(app.input) <= 0 {
+		app.input = nil
 	}
 
 	if app.name == "" {
 		return nil, errors.New("the name is mandatory in order to build a Suite instance")
 	}
 
-	if app.value == nil {
-		return nil, errors.New("the value is mandatory in order to build a Suite instance")
+	if app.input == nil {
+		return nil, errors.New("the input is mandatory in order to build a Suite instance")
 	}
 
 	if app.validations != nil {
-		return createSuiteWithValidations(app.name, app.value, app.isFail, app.validations), nil
+		return createSuiteWithValidations(app.name, app.input, app.isFail, app.validations), nil
 	}
 
-	return createSuite(app.name, app.value, app.isFail), nil
+	return createSuite(app.name, app.input, app.isFail), nil
 }

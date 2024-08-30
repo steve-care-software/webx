@@ -401,12 +401,12 @@ func (app *parserAdapter) bytesToSuite(input []byte) (suites.Suite, []byte, erro
 		remaining = retBlockNameRemaining[1:]
 	}
 
-	retSuiteValue, retRemainingAfterBetween, err := extractBetween(remaining, app.ruleValuePrefix, app.ruleValueSuffix, &app.ruleValueEscape)
+	retSuiteInput, retRemainingAfterBetween, err := extractBetween(remaining, app.ruleValuePrefix, app.ruleValueSuffix, &app.ruleValueEscape)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	retIns, err := builder.WithValue(retSuiteValue).Now()
+	retIns, err := builder.WithInput(retSuiteInput).Now()
 	if err != nil {
 		return nil, nil, err
 	}
