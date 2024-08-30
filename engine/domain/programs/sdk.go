@@ -1,7 +1,6 @@
 package programs
 
 import (
-	"github.com/steve-care-software/webx/engine/domain/nfts"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/rules"
 	"github.com/steve-care-software/webx/engine/domain/programs/instructions"
@@ -53,15 +52,6 @@ type ParserAdapter interface {
 
 	// ToProgramWithRoot creates a program but changes the root block of the grammar
 	ToProgramWithRoot(grammar grammars.Grammar, rootBlockName string, input []byte) (Program, []byte, error)
-}
-
-// NFTAdapter represents the program nft adapter
-type NFTAdapter interface {
-	// ToNFT converts a program instance to an NFT
-	ToNFT(program Program) (nfts.NFT, error)
-
-	// ToProgram converts an NFT to a program instance
-	ToProgram(nft nfts.NFT) (Program, error)
 }
 
 // Builder represents the program builder

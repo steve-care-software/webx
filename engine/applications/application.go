@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/steve-care-software/webx/engine/applications/stackframes"
-	"github.com/steve-care-software/webx/engine/domain/nfts"
 	"github.com/steve-care-software/webx/engine/domain/programs"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/suites"
@@ -17,7 +16,6 @@ type application struct {
 	stackFrameApp         stackframes.Application
 	elementsAdapter       instructions.ElementsAdapter
 	grammarParserAdapter  grammars.ParserAdapter
-	grammarNFTAdapter     grammars.NFTAdapter
 	grammarComposeAdapter grammars.ComposeAdapter
 	programParserAdapter  programs.ParserAdapter
 	syscalls              map[string]SyscallFn
@@ -27,7 +25,6 @@ func createApplication(
 	stackFrameApp stackframes.Application,
 	elementsAdapter instructions.ElementsAdapter,
 	grammarParserAdapter grammars.ParserAdapter,
-	grammarNFTAdapter grammars.NFTAdapter,
 	grammarComposeAdapter grammars.ComposeAdapter,
 	programParserAdapter programs.ParserAdapter,
 	syscalls map[string]SyscallFn,
@@ -36,7 +33,6 @@ func createApplication(
 		stackFrameApp:         stackFrameApp,
 		elementsAdapter:       elementsAdapter,
 		grammarParserAdapter:  grammarParserAdapter,
-		grammarNFTAdapter:     grammarNFTAdapter,
 		grammarComposeAdapter: grammarComposeAdapter,
 		programParserAdapter:  programParserAdapter,
 		syscalls:              syscalls,
@@ -50,16 +46,6 @@ func (app *application) ParseGrammar(input []byte) (grammars.Grammar, []byte, er
 	return app.grammarParserAdapter.ToGrammar(input)
 }
 
-// CompileGrammar compiles a grammar to an NFT
-func (app *application) CompileGrammar(grammar grammars.Grammar) (nfts.NFT, error) {
-	return app.grammarNFTAdapter.ToNFT(grammar)
-}
-
-// DecompileGrammar decompiles an NFT into a grammar instance
-func (app *application) DecompileGrammar(ast nfts.NFT) (grammars.Grammar, error) {
-	return nil, nil
-}
-
 // ComposeBlock fetches a blockName from the grammar and composes an output
 func (app *application) ComposeBlock(grammar grammars.Grammar, blockName string) ([]byte, error) {
 	return app.grammarComposeAdapter.ToBytes(grammar, blockName)
@@ -67,16 +53,6 @@ func (app *application) ComposeBlock(grammar grammars.Grammar, blockName string)
 
 // ParseProgram takes a grammar and an input, parses it and returns the program
 func (app *application) ParseProgram(grammar grammars.Grammar, input []byte) (programs.Program, error) {
-	return nil, nil
-}
-
-// CompileProgram compiles a program to an NFT
-func (app *application) CompileProgram(program programs.Program) (nfts.NFT, error) {
-	return nil, nil
-}
-
-// DecompileProgram decompiles an NFT into a program instance
-func (app *application) DecompileProgram(nft nfts.NFT) (programs.Program, error) {
 	return nil, nil
 }
 

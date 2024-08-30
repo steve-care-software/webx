@@ -4,7 +4,6 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/steve-care-software/webx/engine/domain/nfts"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/executions"
@@ -14,7 +13,6 @@ import (
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/processors"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/cardinalities"
-	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/cardinalities/uints"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/elements"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/lines/tokens/reverses"
 	"github.com/steve-care-software/webx/engine/domain/programs/grammars/blocks/suites"
@@ -156,22 +154,6 @@ func NewComposeAdapter() ComposeAdapter {
 	)
 }
 
-// NewNFTAdapter creates a new nft adapter
-func NewNFTAdapter() NFTAdapter {
-	ruleAdapter := rules.NewAdapter()
-	cardinalityAdapter := cardinalities.NewAdapter()
-	uintAdapter := uints.NewAdapter()
-	nftsBuilder := nfts.NewBuilder()
-	nftBuilder := nfts.NewNFTBuilder()
-	return createNFTAdapter(
-		ruleAdapter,
-		cardinalityAdapter,
-		uintAdapter,
-		nftsBuilder,
-		nftBuilder,
-	)
-}
-
 // NewParserAdapter creates a new parser adapter
 func NewParserAdapter() ParserAdapter {
 	grammarBuilder := NewBuilder()
@@ -276,15 +258,6 @@ type ParserAdapter interface {
 
 	// ToBytes takes a grammar and returns the bytes
 	ToBytes(grammar Grammar) ([]byte, error)
-}
-
-// NFTAdapter represents the grammar nft adapter
-type NFTAdapter interface {
-	// ToNFT converts a grammar instance to an NFT
-	ToNFT(grammar Grammar) (nfts.NFT, error)
-
-	// ToGrammar converts an NFT to a grammar instance
-	ToGrammar(nft nfts.NFT) (Grammar, error)
 }
 
 // ComposeAdapter represents the grammar compose adapter
